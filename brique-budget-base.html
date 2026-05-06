@@ -48,6 +48,11 @@
 
     /* ── Progress bar ── */
     .brick-progress{display:flex;gap:0.35rem;margin-bottom:2rem;}
+
+    /* ── Indicateur Étape X/Y ── */
+    .step-indicator{font-size:0.72rem;font-weight:600;color:var(--text-faint);letter-spacing:0.05em;margin-bottom:0.75rem;display:none;}
+    .screen.active-screen .step-indicator{display:block;}
+
     .bp-dot{flex:1;height:4px;border-radius:var(--r-full);background:var(--surface-3);transition:background 0.3s var(--ease-out);}
     .bp-dot.done{background:linear-gradient(90deg,var(--indigo),var(--purple));}
     .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
@@ -276,6 +281,7 @@
   <!-- ── SCREEN 1 — Ce qui rentre ── -->
   <div class="screen" id="screen-1" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 1 / 5</div>
       <h2 class="brick-title">D'abord, ce qui rentre.</h2>
       <p class="brick-subtitle">Même une estimation suffit pour commencer.</p>
 
@@ -318,6 +324,7 @@
   <!-- ── SCREEN 2 — Charges fixes ── -->
   <div class="screen" id="screen-2" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 2 / 5</div>
       <h2 class="brick-title">Ce qui tombe presque automatiquement.</h2>
       <p class="brick-subtitle">Loyer, forfaits, crédits, abonnements : tout ce qui part chaque mois.</p>
       <p class="field-help" style="margin-bottom:1rem;">Tu peux laisser vide ce que tu n'as pas.</p>
@@ -338,7 +345,7 @@
       <div id="s2-accordions">
 
         <!-- Logement -->
-        <div class="accordion" data-cat="logement">
+        <div class="accordion open" data-cat="logement">
           <div class="accordion-header">
             <span class="accordion-title">🏠 Logement</span>
             <div style="display:flex;align-items:center;gap:0.75rem;">
@@ -482,6 +489,7 @@
   <!-- ── SCREEN 3 — Dépenses variables ── -->
   <div class="screen" id="screen-3" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 3 / 5</div>
       <h2 class="brick-title">Ton argent part surtout où, au quotidien ?</h2>
       <p class="brick-subtitle">Choisis un montant ou une fourchette. Le but est de voir les ordres de grandeur.</p>
 
@@ -507,6 +515,7 @@
   <!-- ── SCREEN 4 — Synthesis ── -->
   <div class="screen" id="screen-4" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 4 / 5</div>
       <h2 class="brick-title">Voilà ton mois, en version claire.</h2>
       <p class="brick-subtitle">Ce n'est pas une note. C'est une base pour reprendre la main.</p>
 
@@ -585,6 +594,7 @@
   <!-- ── SCREEN 5 — Engagement ── -->
   <div class="screen" id="screen-5" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 5 / 5</div>
       <h2 class="brick-title">Choisis une seule action pour ce mois-ci.</h2>
       <p class="brick-subtitle">Pas besoin d'en faire dix. Une seule action bien tenue vaut mieux qu'un grand plan abandonné.</p>
 
@@ -750,6 +760,11 @@
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Marquer l'écran actif pour CSS step-indicator
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+    const activeEl = document.getElementById(typeof idx === 'number' ? 'screen-' + idx : 'screen-exit');
+    if (activeEl) activeEl.classList.add('active-screen');
+    updateStepIndicator(typeof idx === 'number' ? idx : null);
   }
 
   /* ── Format euro helpers ── */
@@ -963,6 +978,11 @@
   });
 
   document.getElementById('s2-cta').addEventListener('click', () => {
+    // Guard: si aucun champ renseigné, demander confirmation
+    if (calcS2Total() === 0) {
+      const confirmed = window.confirm("Tu n'as saisi aucune charge fixe. Continuer quand même ?");
+      if (!confirmed) return;
+    }
     // Collect all fixed charges data
     budgetData.chargesFixes = {};
     Object.keys(s2CatInputs).forEach(cat => {
@@ -1354,6 +1374,47 @@
   updateProgress(0);
   screenViewed(BRICK_ID, 0);
 </script>
+
+  /* ══════════════════════════════════════════
+     UX AMÉLIORATIONS — injected
+  ══════════════════════════════════════════ */
+
+  /* ── 1. Indicateur Étape X/Y ──
+     Mise à jour à chaque changement d'écran.
+     Chaque brique doit appeler updateStepIndicator(idx) dans sa fn de navigation.
+     La fonction est no-op si totalSteps n'est pas défini. */
+  function updateStepIndicator(idx) {
+    const steps = typeof _UX_TOTAL_STEPS !== 'undefined' ? _UX_TOTAL_STEPS : null;
+    document.querySelectorAll('.step-indicator').forEach(el => {
+      if (steps && typeof idx === 'number' && idx > 0) {
+        el.textContent = 'Étape ' + idx + ' / ' + steps;
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  /* ── 2. Enter → déclenche le bouton primaire visible ── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    // Ignorer si focus dans textarea
+    if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;
+    // Trouver le bouton primaire de l'écran actif (visible, non-disabled)
+    const activeScreen = document.querySelector('.screen[style*="display: block"], .screen[style*="display:block"]');
+    if (!activeScreen) return;
+    const btn = activeScreen.querySelector('.btn-primary:not([disabled]):not([style*="display:none"])');
+    if (btn) {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+
+  /* ── budget_base : totalSteps pour indicateur ── */
+  var _UX_TOTAL_STEPS = 5;
+  // Init indicateur sur écran 0 (pas d'étape affichée)
+  updateStepIndicator(0);
+
 <script src="feedback-widget.js"></script>
 </body>
 </html>

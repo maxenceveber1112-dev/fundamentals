@@ -49,6 +49,11 @@
     .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
 
     /* ─── SCREEN ─── */
+
+    /* ── Indicateur Étape X/Y ── */
+    .step-indicator{font-size:0.72rem;font-weight:600;color:var(--text-faint);letter-spacing:0.05em;margin-bottom:0.75rem;display:none;}
+    .screen.active-screen .step-indicator{display:block;}
+
     .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
     @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
@@ -270,6 +275,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-1" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 1 / 5</div>
       <h1 class="brick-title">Le but n'est pas d'être "parfait". Le but, c'est d'éviter le prochain trou.</h1>
       <p class="brick-subtitle" style="margin-bottom:0.5rem;">Le coussin d'urgence, c'est pour des moments comme ça :</p>
 
@@ -292,6 +298,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-2" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 2 / 5</div>
       <h1 class="brick-title">Commençons par le strict nécessaire.</h1>
       <p class="brick-subtitle">Le coussin d'urgence protège d'abord tes dépenses vitales.</p>
 
@@ -382,6 +389,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-3" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 3 / 5</div>
       <h1 class="brick-title">Voici une cible réaliste pour toi.</h1>
 
       <div class="target-card" id="target-card">
@@ -415,6 +423,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-4" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 4 / 5</div>
       <h1 class="brick-title">Quel rythme peux-tu vraiment tenir ?</h1>
       <p class="brick-subtitle">Choisis un montant que tu es sûr(e) de mettre de côté, régulièrement.</p>
 
@@ -465,6 +474,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-5" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 5 / 5</div>
       <h1 class="brick-title">On le prend où, concrètement ?</h1>
       <p class="brick-subtitle">Choisis une source simple pour alimenter ton coussin.</p>
 
@@ -938,6 +948,47 @@ function goToNextBrick() {
 // ════════════════════════════════════════════════════════════════
 (function init() {
   initBgCanvas('bg-canvas');
+
+  /* ── Pré-remplissage depuis budget_base ──
+     Si le profil contient des données de budget_base, on pré-remplit
+     les champs de charges vitales pour éviter la double saisie. */
+  (function prefillFromBudgetBase() {
+    try {
+      const storedProfil = loadFromStorage('profil') || {};
+      // Mapping : profil budget_base → champs fonds_urgence
+      const prefillMap = {
+        'charge-logement': storedProfil.revenus_nets_mensuel ? null : null, // loyer seul n'est pas dans profil
+        'charge-transport': storedProfil.transport_total || null,
+        'charge-nourriture': null, // pas dans budget_base
+        'charge-sante': null,
+        'charge-autres': null,
+      };
+      // On récupère les données brutes de la brique budget_base depuis localStorage
+      const budgetRaw = loadFromStorage('fund_brick_budget_base') || null;
+      if (budgetRaw && budgetRaw.chargesFixes) {
+        const cf = budgetRaw.chargesFixes;
+        // Logement = loyer + charges loc
+        const logement = (cf.logement || 0);
+        const transport = (cf.transport || 0);
+        if (logement > 0) {
+          const el = document.getElementById('charge-logement');
+          if (el && !el.value) { el.value = logement; updateVitalTotal(); }
+        }
+        if (transport > 0) {
+          const el = document.getElementById('charge-transport');
+          if (el && !el.value) { el.value = transport; updateVitalTotal(); }
+        }
+        // Marquer les champs pré-remplis visuellement
+        ['charge-logement', 'charge-transport'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el && el.value) {
+            el.style.borderColor = 'rgba(99,102,241,0.4)';
+            el.title = 'Pré-rempli depuis ton budget — tu peux modifier';
+          }
+        });
+      }
+    } catch(e) { /* silencieux */ }
+  })();
   brickStarted(BRICK_ID);
   // ── Reprise d'état depuis Supabase ──
   (async function resumeIfNeeded() {
@@ -970,6 +1021,46 @@ function goToNextBrick() {
   populateExampleCards();
 })();
 </script>
+
+  /* ══════════════════════════════════════════
+     UX AMÉLIORATIONS — injected
+  ══════════════════════════════════════════ */
+
+  /* ── 1. Indicateur Étape X/Y ──
+     Mise à jour à chaque changement d'écran.
+     Chaque brique doit appeler updateStepIndicator(idx) dans sa fn de navigation.
+     La fonction est no-op si totalSteps n'est pas défini. */
+  function updateStepIndicator(idx) {
+    const steps = typeof _UX_TOTAL_STEPS !== 'undefined' ? _UX_TOTAL_STEPS : null;
+    document.querySelectorAll('.step-indicator').forEach(el => {
+      if (steps && typeof idx === 'number' && idx > 0) {
+        el.textContent = 'Étape ' + idx + ' / ' + steps;
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  /* ── 2. Enter → déclenche le bouton primaire visible ── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    // Ignorer si focus dans textarea
+    if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;
+    // Trouver le bouton primaire de l'écran actif (visible, non-disabled)
+    const activeScreen = document.querySelector('.screen[style*="display: block"], .screen[style*="display:block"]');
+    if (!activeScreen) return;
+    const btn = activeScreen.querySelector('.btn-primary:not([disabled]):not([style*="display:none"])');
+    if (btn) {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+
+  /* ── fonds_urgence : totalSteps ── */
+  var _UX_TOTAL_STEPS = 5;
+  updateStepIndicator(0);
+
 <script src="feedback-widget.js"></script>
 </body>
 </html>

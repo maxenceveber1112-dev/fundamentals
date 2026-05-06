@@ -49,6 +49,11 @@
     .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
 
     /* ── Screen container ── */
+
+    /* ── Indicateur Étape X/Y ── */
+    .step-indicator{font-size:0.72rem;font-weight:600;color:var(--text-faint);letter-spacing:0.05em;margin-bottom:0.75rem;display:none;}
+    .screen.active-screen .step-indicator{display:block;}
+
     .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
     @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
@@ -273,6 +278,7 @@
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-1" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 1 / 4</div>
       <h1 class="brick-title">Qu'est-ce qui est encore en cours&nbsp;?</h1>
       <p class="brick-subtitle">Ajoute seulement ce dont tu te souviens. On peut compléter plus tard.</p>
 
@@ -299,6 +305,7 @@
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-2" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 2 / 4</div>
       <h1 class="brick-title">Voilà ce que ces paiements prennent ensemble.</h1>
       <p class="brick-subtitle">C'est souvent ça qui rend le mois flou.</p>
 
@@ -350,6 +357,7 @@
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-3" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 3 / 4</div>
       <h1 class="brick-title">Lequel te libère le plus vite&nbsp;?</h1>
       <p class="brick-subtitle">On cherche un premier allègement crédible, pas une solution parfaite.</p>
 
@@ -372,6 +380,7 @@
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-4" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 4 / 4</div>
       <h1 class="brick-title">Le vrai piège, ce n'est pas un paiement. C'est l'accumulation.</h1>
       <p class="brick-subtitle">Le "ça va" répété 4 fois finit souvent par manger tout le reste-à-vivre.</p>
 
@@ -963,6 +972,8 @@ function setupScreen3() {
       // Animate impact display
       animateImpact(s.before, s.after, s.isFuture);
       document.getElementById('btn-s3-next').disabled = false;
+      // Auto-avance après sélection stratégie
+      setTimeout(() => { document.getElementById('btn-s3-next').click(); }, 400);
 
       // Pre-fill engagement option 2 with the strategy
       const priorityInput = document.getElementById('priority-input');
@@ -1158,6 +1169,46 @@ function escAttr(str) {
   return String(str).replace(/"/g, '&quot;');
 }
 </script>
+
+  /* ══════════════════════════════════════════
+     UX AMÉLIORATIONS — injected
+  ══════════════════════════════════════════ */
+
+  /* ── 1. Indicateur Étape X/Y ──
+     Mise à jour à chaque changement d'écran.
+     Chaque brique doit appeler updateStepIndicator(idx) dans sa fn de navigation.
+     La fonction est no-op si totalSteps n'est pas défini. */
+  function updateStepIndicator(idx) {
+    const steps = typeof _UX_TOTAL_STEPS !== 'undefined' ? _UX_TOTAL_STEPS : null;
+    document.querySelectorAll('.step-indicator').forEach(el => {
+      if (steps && typeof idx === 'number' && idx > 0) {
+        el.textContent = 'Étape ' + idx + ' / ' + steps;
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  /* ── 2. Enter → déclenche le bouton primaire visible ── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    // Ignorer si focus dans textarea
+    if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;
+    // Trouver le bouton primaire de l'écran actif (visible, non-disabled)
+    const activeScreen = document.querySelector('.screen[style*="display: block"], .screen[style*="display:block"]');
+    if (!activeScreen) return;
+    const btn = activeScreen.querySelector('.btn-primary:not([disabled]):not([style*="display:none"])');
+    if (btn) {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+
+  /* ── paiements_fractionnes : totalSteps ── */
+  var _UX_TOTAL_STEPS = 4;
+  updateStepIndicator(0);
+
 <script src="feedback-widget.js"></script>
 </body>
 </html>

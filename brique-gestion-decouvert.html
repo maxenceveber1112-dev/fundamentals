@@ -47,6 +47,11 @@
     .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
 
     /* SCREEN */
+
+    /* ── Indicateur Étape X/Y ── */
+    .step-indicator{font-size:0.72rem;font-weight:600;color:var(--text-faint);letter-spacing:0.05em;margin-bottom:0.75rem;display:none;}
+    .screen.active-screen .step-indicator{display:block;}
+
     .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
     @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 
@@ -247,6 +252,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-1" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 1 / 5</div>
       <p class="brick-title">Comment ça se passe, concrètement ?</p>
       <p class="brick-subtitle">Quelques questions rapides pour mieux cerner ta situation.</p>
 
@@ -302,6 +308,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-2" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 2 / 5</div>
       <p class="brick-title">Voici à quoi ressemble ton mois quand le découvert revient souvent.</p>
       <p class="brick-subtitle">Plus il dure, plus il mange ta marge et ton calme.</p>
 
@@ -327,6 +334,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-3" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 3 / 5</div>
       <p class="brick-title">Même "petit", le découvert peut coûter cher.</p>
       <p class="brick-subtitle">On parle ici d'un ordre de grandeur pour te donner une base concrète.</p>
 
@@ -352,6 +360,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-4" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 4 / 5</div>
       <p class="brick-title">Tu préfères quelle trajectoire ?</p>
 
       <div class="traj-cards" role="group" aria-label="Choix de trajectoire">
@@ -383,6 +392,7 @@
   ══════════════════════════════════════════ -->
   <div class="screen" id="screen-5" style="display:none;">
     <div class="brick-card">
+      <div class="step-indicator">Étape 5 / 5</div>
       <p class="brick-title">Ton plan de sortie, très concret.</p>
       <p class="brick-subtitle">On vise moins de jours dans le rouge et une baisse progressive du montant.</p>
 
@@ -637,6 +647,10 @@
       const softMsg = document.getElementById('soft-frais');
       softMsg.style.display = ['souvent','presque'].includes(state.fraisChip) ? 'block' : 'none';
       if (typeof fieldCompleted === 'function') fieldCompleted(BRICK_ID, 'frais_rejets');
+      // Auto-avance si le montant est déjà renseigné
+      if (state.montantDecouvert && state.montantDecouvert !== -200) {
+        setTimeout(() => { document.getElementById('btn-s1').click(); }, 350);
+      }
     });
   });
 
@@ -865,6 +879,46 @@
   renderProgress();
   if (typeof screenViewed === 'function') screenViewed(BRICK_ID, 0);
 </script>
+
+  /* ══════════════════════════════════════════
+     UX AMÉLIORATIONS — injected
+  ══════════════════════════════════════════ */
+
+  /* ── 1. Indicateur Étape X/Y ──
+     Mise à jour à chaque changement d'écran.
+     Chaque brique doit appeler updateStepIndicator(idx) dans sa fn de navigation.
+     La fonction est no-op si totalSteps n'est pas défini. */
+  function updateStepIndicator(idx) {
+    const steps = typeof _UX_TOTAL_STEPS !== 'undefined' ? _UX_TOTAL_STEPS : null;
+    document.querySelectorAll('.step-indicator').forEach(el => {
+      if (steps && typeof idx === 'number' && idx > 0) {
+        el.textContent = 'Étape ' + idx + ' / ' + steps;
+        el.style.display = 'block';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  /* ── 2. Enter → déclenche le bouton primaire visible ── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter') return;
+    // Ignorer si focus dans textarea
+    if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;
+    // Trouver le bouton primaire de l'écran actif (visible, non-disabled)
+    const activeScreen = document.querySelector('.screen[style*="display: block"], .screen[style*="display:block"]');
+    if (!activeScreen) return;
+    const btn = activeScreen.querySelector('.btn-primary:not([disabled]):not([style*="display:none"])');
+    if (btn) {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+
+  /* ── gestion_decouvert : totalSteps ── */
+  var _UX_TOTAL_STEPS = 5;
+  updateStepIndicator(0);
+
 <script src="feedback-widget.js"></script>
 </body>
 </html>
