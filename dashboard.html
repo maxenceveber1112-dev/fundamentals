@@ -437,7 +437,7 @@
   <!-- ════════════════════════════════════════════════════════════════
        ZONE 1 — HERO BRIQUE
   ════════════════════════════════════════════════════════════════ -->
-  <div class="zone-hero">
+  <div class="zone-hero" id="zone-hero">
     <p class="section-label" id="hero-label">Prochaine étape</p>
     <div class="hero-card" id="hero-card">
       <div class="hero-card-inner">
@@ -692,7 +692,6 @@
     const briqData = dash.briques.find(b => b.statut === 'en_cours')
                   || dash.briques.find(b => b.statut === 'a_faire')
                   || dash.briques[0];
-    console.log('[hero] briqData:', briqData, '| meta:', BRIQUES_META[briqData?.id]);
     if (!briqData) return;
     const meta = BRIQUES_META[briqData.id];
     if (!meta) return;
@@ -1013,7 +1012,6 @@
 
   // ─── RENDER ALL ────────────────────────────────────────────────
   function renderAll() {
-    console.log('[dash] renderAll — briques:', dash.briques?.length, '| briques[0]:', dash.briques?.[0]);
     renderGreeting();
     renderHero();
     renderBriquesGrid();
