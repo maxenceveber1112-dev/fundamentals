@@ -624,13 +624,7 @@
 
   function save() { saveToStorage('fund_dashboard', dash); saveDashboard(dash).catch(() => {}); }
 
-  const BRICK_FILES = {
-    budget_base:            'brique-budget-base.html',
-    gestion_decouvert:      'brique-gestion-decouvert.html',
-    paiements_fractionnes:  'brique-paiements-fractionnes.html',
-    fonds_urgence:          'brique-fonds-urgence.html',
-    premiers_pas_bancaires: 'brique-premiers-pas-bancaires.html'
-  };
+  // BRICK_FILES est défini dans shared.js — pas de redéclaration ici
   const PACK_COLORS = {
     'Survie & stabilité':        '#f87171',
     'Construction & projets':    '#60a5fa',
