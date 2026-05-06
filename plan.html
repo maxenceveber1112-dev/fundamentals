@@ -243,9 +243,19 @@
   initBgCanvas('bg-canvas');
 
   // ─── LOAD PROFILE (Supabase first, then hash, then mock) ──────
-  let profil = getMockProfile(); // default while loading
+  let profil = null; // sera initialisé dans initPage()
+
+  // Affiche un skeleton/loader pendant le chargement Supabase
+  function showPlanLoader() {
+    document.getElementById('profile-tags').innerHTML = '<span style="color:var(--text-faint);font-size:0.8rem;">Chargement…</span>';
+    document.getElementById('profile-sentences').innerHTML = '';
+    document.getElementById('plan-list').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-faint);font-size:0.875rem;">Chargement de ton plan…</div>';
+    document.getElementById('cta-title').textContent = 'Chargement…';
+    document.getElementById('cta-desc').textContent = '';
+  }
 
   async function initPage() {
+    showPlanLoader();
     // Try Supabase first
     const user = await getCurrentUser();
     if (user) {
@@ -266,12 +276,16 @@
       }
     } catch(e) {}
     // Fallback: localStorage
-    const stored = loadFromStorage('fund_profil');
-    if (stored && stored.briques_recommandees) profil = stored;
+    if (!profil) {
+      const stored = loadFromStorage('fund_profil');
+      if (stored && stored.briques_recommandees) profil = stored;
+    }
+    // Dernier recours : mock (ne devrait plus arriver si l'auth gate est actif)
+    if (!profil) profil = getMockProfile();
     renderAll();
   }
 
-  let briquesIds = profil.briques_recommandees || ['budget_base','gestion_decouvert','fonds_urgence'];
+  let briquesIds = []; // sera rempli dans renderAll()
   let showingAll = false;
   const SHOW_INIT = 4;
 
@@ -430,8 +444,7 @@
   }
 
   // ─── INIT ─────────────────────────────────────────────────────
-  renderAll();   // immediate render with mock/cached data
-  initPage();    // async re-render with Supabase data
+  initPage();    // un seul point d'entrée : attend Supabase, puis renderAll()
 </script>
 <script src="feedback-widget.js"></script>
 </body>

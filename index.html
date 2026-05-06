@@ -1013,6 +1013,9 @@
   </div><!-- /.quiz-card -->
 </div><!-- /#app -->
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared.js"></script>
+<script src="supabase.js"></script>
 <script>
 // ─── CANVAS PARTICLES ──────────────────────────────────────────
 (function() {
@@ -1289,8 +1292,7 @@ function submitQuiz() {
       epargne_liquide_total: em.epargne_liquide_total || null
     };
     saveToStorage('fund_profil', profileOut);
-    // Async save to Supabase (if user is logged in)
-    saveProfile(profileOut).catch(() => {});
+    // saveToStorage déclenche saveProfile async via supabase.js
   } catch(e) {
     console.error('submitQuiz error:', e);
   }
@@ -1401,25 +1403,16 @@ function restart() {
 
 // ─── NAVIGATE TO PLAN (encode profil in hash for storage-less envs) ────────
 function goToPlan() {
-  try {
-    const stored = loadFromStorage('fund_profil');
-    if (stored) {
-      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(stored))));
-      window.location.href = 'plan.html#p=' + encoded;
-      return;
-    }
-  } catch(e) {}
   window.location.href = 'plan.html';
 }
 
-// Init
+// Init — auth gate obligatoire
 applyConditionals();
 
-// Hydrate nav avec info user (async, non-bloquant)
 (async () => {
-  const user = await getCurrentUser();
+  const user = await requireAuth(); // redirige vers auth.html si non connecté
   if (!user) return;
-  // Si l'utilisateur a déjà un profil en base, pré-remplir si quizz non commencé
+  // Si l'utilisateur a déjà un profil en base, pré-remplir si quiz non commencé
   const profil = await loadProfile();
   if (profil && profil.briques_recommandees && profil.briques_recommandees.length > 0) {
     saveToStorage('fund_profil', profil);
