@@ -578,6 +578,11 @@
     try {
       const [dbProfil, dbDash] = await Promise.all([loadProfile(), loadDashboard()]);
 
+      // DIAGNOSTIC — à retirer en prod
+      console.log('[FUND:loadData] dbProfil:', dbProfil);
+      console.log('[FUND:loadData] dbDash:', dbDash);
+      console.log('[FUND:loadData] dash.briques at start:', dash.briques?.length);
+
       if (dbProfil && dbProfil.briques_recommandees && dbProfil.briques_recommandees.length > 0) {
         profil = dbProfil;
         saveToStorage('fund_profil', profil);
@@ -790,9 +795,12 @@
 
   function renderBriquesGrid() {
     const container = document.getElementById('briques-sections');
+    if (!container) { console.error('[FUND] briques-sections introuvable dans le DOM'); return; }
     container.innerHTML = '';
     const activeId = dash.brique_active_id;
     const planIds  = new Set((dash.briques || []).map(b => b.id));
+    console.log('[FUND:renderBriquesGrid] dash.briques:', dash.briques?.length, '| planIds:', [...planIds]);
+    console.log('[FUND:renderBriquesGrid] BRIQUES_META keys:', Object.keys(BRIQUES_META).length);
 
     // Catégorie 1 : Disponibles (dans le plan, non terminées)
     const disponibles = (dash.briques || []).filter(b => b.statut !== 'terminee');
