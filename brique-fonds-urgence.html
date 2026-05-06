@@ -208,9 +208,7 @@
     </svg>
     Fundamental
   </a>
-  <div class="nav-right">
-    <a href="dashboard.html" class="nav-link">← Dashboard</a>
-  </div>
+  <div class="nav-right" id="nav-right-slot"></div>
 </nav>
 
 <main>
@@ -562,6 +560,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
+  <script src="nav-avatar.js"></script>
 <script src="supabase.js"></script>
 <script>
 // ════════════════════════════════════════════════════════════════
@@ -669,6 +668,7 @@ function goToScreen(n) {
   currentScreen = n;
   updateProgress(n);
   screenViewed(BRICK_ID, n);
+    autosaveBrickProgress(BRICK_ID, typeof idx === 'number' ? idx : (typeof n === 'number' ? n : currentScreen), state);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -894,7 +894,20 @@ function finalizeBrick() {
     }
   ];
 
-  completeBrick(BRICK_ID, engagements);
+  completeBrickFull(BRICK_ID, {
+    profileFields: {
+      charges_vitales_total:        state.totalVital || 0,
+      fonds_urgence_objectif:       state.targetAmount || 0,
+      fonds_urgence_rythme_mensuel: state.rhythmMonthly || 0,
+      fonds_urgence_source:         state.sourceKey || null,
+      fonds_urgence_date_estimee:   state.projectionDate
+                                      ? state.projectionDate.toISOString().split('T')[0]
+                                      : null
+    },
+    rawData: state,
+    engagements: engagements,
+    insights: buildInsights(BRICK_ID, profil, state)
+  });
 
   // Show exit nav
   document.getElementById('exit-nav').style.display = 'block';
@@ -926,6 +939,20 @@ function goToNextBrick() {
 (function init() {
   initBgCanvas('bg-canvas');
   brickStarted(BRICK_ID);
+  // ── Reprise d'état depuis Supabase ──
+  (async function resumeIfNeeded() {
+    const saved = await loadBrickState('fonds_urgence');
+    if (saved && saved.data && Object.keys(saved.data).length > 0) {
+      // Restaurer les données dans l'état local
+      if (typeof restoreState === 'function') restoreState(saved.data);
+      // Ne pas sauter l'écran de démarrage si la brique est déjà terminée
+      if (!saved.completed && saved.screenCourant > 0) {
+        console.log('[Fund] Reprise brique fonds_urgence écran', saved.screenCourant);
+        // showScreen/goTo sera appelé après hydrateFromSupabase
+        window._brickResume_fonds_urgence = saved.screenCourant;
+      }
+    }
+  })();
   screenViewed(BRICK_ID, 0);
 
   const { isPrecarious, isAlreadySaving } = state;

@@ -236,12 +236,13 @@ function profileToSentences(profil) {
   return s.filter(Boolean);
 }
 
-// ─── STORAGE (in-memory + persistent) ─────────────────────────────
-const STORAGE_KEYS = { profil:'fund_profil', plan:'fund_plan', dashboard:'fund_dashboard' };
-const _STORE = {}; // in-memory fallback — shared within same page session
+// ─── STORAGE ────────────────────────────────────────────────────
+// Double-write : mémoire (sync, immédiat) + Supabase (async, persistant).
+// supabase.js DOIT être chargé avant shared.js dans chaque page HTML.
 
-// Use persistent storage when available — survives page navigation within same origin.
-// Try localStorage first (persists across pages), then sessionStorage, then in-memory.
+const STORAGE_KEYS = { profil:'fund_profil', plan:'fund_plan', dashboard:'fund_dashboard' };
+const _STORE = {};
+
 const _tabStore = (function() {
   const stores = [
     () => window['local'+'Storage'],
@@ -260,29 +261,30 @@ const _tabStore = (function() {
 function saveToStorage(key, val) {
   if (_tabStore) { try { _tabStore.setItem(key, JSON.stringify(val)); } catch(e) {} }
   _STORE[key] = val;
+  if (key === 'fund_profil')    { if (typeof saveProfile   === 'function') saveProfile(val).catch(()=>{});   }
+  if (key === 'fund_dashboard') { if (typeof saveDashboard === 'function') saveDashboard(val).catch(()=>{}); }
 }
+
 function loadFromStorage(key) {
   if (_tabStore) {
-    try {
-      const v = _tabStore.getItem(key);
-      if (v) return JSON.parse(v);
-    } catch(e) {}
+    try { const v = _tabStore.getItem(key); if (v) return JSON.parse(v); } catch(e) {}
   }
   return _STORE[key] || null;
 }
 
-// ─── MOCK DATA (démo sans quizz) ─────────────────────────────────
+// ─── MOCK DATA ──────────────────────────────────────────────────
 function getMockProfile() {
   return {
     age_group: '25_34', status_pro: 'sal_ouvrier_employe',
     revenu_sentiment: 'juste_juste', stress_budget: 4,
     logement_situation: 'locataire', logement_projet: 'je_veux_acheter',
-    objectifs: ['stabiliser_budget', 'acheter_logement'],
-    dettes_types: ['decouvert_regulier', 'credit_conso'],
+    objectifs: ['stabiliser_budget','acheter_logement'],
+    dettes_types: ['decouvert_regulier','credit_conso'],
     retards_paiement: 'occasionnel', produits_detenu: ['livrets_seuls'],
     confort_numerique: 'moyen', fraude_experience: 'non',
     urgence_principale: 'projet_prochain_mois',
-    briques_recommandees: ['budget_base','gestion_decouvert','fonds_urgence','plan_desendettement','anti_arnaques','plan_multi_objectifs','projet_immo']
+    briques_recommandees: ['budget_base','gestion_decouvert','fonds_urgence',
+      'plan_desendettement','anti_arnaques','plan_multi_objectifs','projet_immo']
   };
 }
 
@@ -299,64 +301,222 @@ function getMockDashboard() {
     ],
     brique_active_id: 'budget_base',
     engagements: [
-      { id:'e1', type:'fonds_urgence', label:'Mini fonds d\'urgence', detail:'Objectif 300 €', montant_actuel:60, montant_cible:300, versement:'20 €/mois', brique_id:'fonds_urgence', atteint:false },
-      { id:'e2', type:'decouvert', label:'Plafond découvert', detail:'Ne pas dépasser –100 € ce mois-ci', brique_id:'gestion_decouvert', atteint:false }
+      { id:'e1', type:'fonds_urgence', label:"Mini fonds d'urgence", detail:'Objectif 300 €',
+        montant_actuel:60, montant_cible:300, versement:'20 €/mois', brique_id:'fonds_urgence', atteint:false },
+      { id:'e2', type:'decouvert', label:'Plafond découvert', detail:"Ne pas dépasser –100 € ce mois-ci",
+        brique_id:'gestion_decouvert', atteint:false }
     ],
     streak: 3, modules_completes: 1, derniere_activite: new Date().toISOString()
   };
 }
 
-// ─── BRICK HELPERS ──────────────────────────────────────────────
+// ─── ANALYTICS ────────────────────────────────────────────────────
+function trackEvent(eventName, data) { console.log('[FUND]', eventName, data || ''); }
+function brickStarted(brickId)              { trackEvent('brick_started',      { brick: brickId, ts: Date.now() }); }
+function screenViewed(brickId, screenIdx)   { trackEvent('screen_viewed',      { brick: brickId, screen: screenIdx }); }
+function fieldCompleted(brickId, fieldName) { trackEvent('field_completed',    { brick: brickId, field: fieldName }); }
+function fieldSkipped(brickId, fieldName)   { trackEvent('field_skipped',      { brick: brickId, field: fieldName }); }
+function estimateUsed(brickId, fieldName)   { trackEvent('estimate_used',      { brick: brickId, field: fieldName }); }
+function resultViewed(brickId)              { trackEvent('result_viewed',      { brick: brickId }); }
+function commitmentCreated(brickId, eng)    { trackEvent('commitment_created', { brick: brickId, engagement: eng }); }
+function brickCompleted(brickId)            { trackEvent('brick_completed',    { brick: brickId, ts: Date.now() }); }
+function brickAbandoned(brickId, screenIdx) { trackEvent('brick_abandoned',    { brick: brickId, screen: screenIdx }); }
+function helpClicked(brickId, context)      { trackEvent('help_clicked',       { brick: brickId, context }); }
 
-// Analytics stub — logs events to console, ready for real implementation
-function trackEvent(eventName, data) {
-  // ANALYTICS: replace with real endpoint when ready
-  console.log('[FUND]', eventName, data || '');
+// ─── updateProfileFromBrick ────────────────────────────────────────
+// Point d'entrée unique pour persister les données d'une brique.
+//   profileFields : champs plats à écrire dans profiles (réutilisables par les autres briques)
+//   rawData       : données brutes complètes de la brique (JSON libre)
+//   screenIdx     : écran courant (pour la reprise)
+//   completed     : true quand la brique est finie
+async function updateProfileFromBrick(brickId, profileFields = {}, rawData = {}, screenIdx = 0, completed = false) {
+  // 1. Fusion dans le profil local + Supabase profiles
+  let profil = loadFromStorage('fund_profil') || {};
+  Object.assign(profil, profileFields);
+  saveToStorage('fund_profil', profil);
+
+  // 2. Persist brick raw data (Supabase brick_data)
+  if (typeof saveBrickData === 'function') {
+    saveBrickData(brickId, rawData, completed).catch(() => {});
+  }
+
+  // 3. Update screen_courant pour la reprise
+  if (typeof getClient === 'function' && typeof getCurrentUser === 'function') {
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        const sb = getClient();
+        await sb.from('brick_data').upsert({
+          user_id: user.id, brick_id: brickId,
+          data: rawData, completed, screen_courant: screenIdx
+        }, { onConflict: 'user_id,brick_id' });
+      }
+    } catch(e) { console.warn('[Fund] updateProfileFromBrick error', e); }
+  }
 }
 
-// Standard brick analytics events
-function brickStarted(brickId) { trackEvent('brick_started', { brick: brickId, ts: Date.now() }); }
-function screenViewed(brickId, screenIdx) { trackEvent('screen_viewed', { brick: brickId, screen: screenIdx }); }
-function fieldCompleted(brickId, fieldName) { trackEvent('field_completed', { brick: brickId, field: fieldName }); }
-function fieldSkipped(brickId, fieldName) { trackEvent('field_skipped', { brick: brickId, field: fieldName }); }
-function estimateUsed(brickId, fieldName) { trackEvent('estimate_used', { brick: brickId, field: fieldName }); }
-function resultViewed(brickId) { trackEvent('result_viewed', { brick: brickId }); }
-function commitmentCreated(brickId, engagement) { trackEvent('commitment_created', { brick: brickId, engagement }); }
-function brickCompleted(brickId) { trackEvent('brick_completed', { brick: brickId, ts: Date.now() }); }
-function brickAbandoned(brickId, screenIdx) { trackEvent('brick_abandoned', { brick: brickId, screen: screenIdx }); }
-function helpClicked(brickId, context) { trackEvent('help_clicked', { brick: brickId, context }); }
+// ─── loadBrickState ────────────────────────────────────────────────────
+// Charge l'état sauvegardé d'une brique au démarrage.
+// Retourne { data, screenCourant, completed } ou null.
+async function loadBrickState(brickId) {
+  if (typeof getClient !== 'function' || typeof getCurrentUser !== 'function') return null;
+  try {
+    const user = await getCurrentUser();
+    if (!user) return null;
+    const sb = getClient();
+    const { data, error } = await sb
+      .from('brick_data')
+      .select('data, screen_courant, completed, completed_at')
+      .eq('user_id', user.id)
+      .eq('brick_id', brickId)
+      .maybeSingle();
+    if (error || !data) return null;
+    return {
+      data:          data.data || {},
+      screenCourant: data.screen_courant || 0,
+      completed:     data.completed || false,
+      completedAt:   data.completed_at || null
+    };
+  } catch(e) { return null; }
+}
 
-// Save brick completion to dashboard state
-function completeBrick(brickId, engagements) {
-  let dash = loadFromStorage('dashboard') || getMockDashboard();
+// ─── autosaveBrickProgress ─────────────────────────────────────────────
+// À appeler à chaque changement d'écran. Léger fire-and-forget.
+// Empêche la perte de progression si l'utilisateur ferme l'onglet.
+function autosaveBrickProgress(brickId, screenIdx, rawData) {
+  saveToStorage('fund_brick_' + brickId, { screen: screenIdx, data: rawData, ts: Date.now() });
+  if (typeof getClient === 'function' && typeof getCurrentUser === 'function') {
+    getCurrentUser().then(user => {
+      if (!user) return;
+      const sb = getClient();
+      sb.from('brick_data').upsert({
+        user_id: user.id, brick_id: brickId,
+        data: rawData, completed: false, screen_courant: screenIdx
+      }, { onConflict: 'user_id,brick_id' }).catch(() => {});
+    }).catch(() => {});
+  }
+}
+
+// ─── completeBrickFull ──────────────────────────────────────────────────
+// Remplace completeBrick pour les nouvelles implémentations.
+// Fait tout en une passe : dashboard, profil, brick_data, insights.
+//
+//   profileFields : champs profil enrichis (voir migration_v2.sql)
+//   rawData       : état final de la brique
+//   engagements   : [{id, type, label, detail, montant_actuel, montant_cible, brique_id}]
+//   insights      : [{id, type, titre, contenu}] (utiliser buildInsights())
+async function completeBrickFull(brickId, { profileFields = {}, rawData = {}, engagements = [], insights = [] } = {}) {
+  let dash = loadFromStorage('fund_dashboard') || getMockDashboard();
   const b = dash.briques.find(br => br.id === brickId);
   if (b) { b.statut = 'terminee'; b.progression = 100; }
   dash.modules_completes = (dash.modules_completes || 0) + 1;
-  // Advance to next brick
+
   const next = dash.briques.find(br => br.statut === 'a_faire');
   if (next) { next.statut = 'en_cours'; dash.brique_active_id = next.id; }
-  // Add engagements if any
+
+  if (engagements.length > 0) {
+    dash.engagements = dash.engagements || [];
+    engagements.forEach(e => {
+      if (!dash.engagements.find(x => x.id === e.id)) dash.engagements.push(e);
+    });
+  }
+  if (insights.length > 0) {
+    dash.insights = dash.insights || [];
+    insights.forEach(ins => {
+      if (!dash.insights.find(x => x.id === ins.id))
+        dash.insights.push({ ...ins, brique_source: brickId, ts: Date.now() });
+    });
+  }
+
+  dash.derniere_activite = new Date().toISOString();
+  saveToStorage('fund_dashboard', dash);
+
+  await updateProfileFromBrick(brickId, profileFields, rawData, 999, true);
+
+  brickCompleted(brickId);
+  if (engagements.length > 0) engagements.forEach(e => commitmentCreated(brickId, e));
+
+  return dash;
+}
+
+// Rétro-compatibilité — completeBrick reste utilisable
+function completeBrick(brickId, engagements) {
+  let dash = loadFromStorage('fund_dashboard') || getMockDashboard();
+  const b = dash.briques.find(br => br.id === brickId);
+  if (b) { b.statut = 'terminee'; b.progression = 100; }
+  dash.modules_completes = (dash.modules_completes || 0) + 1;
+  const next = dash.briques.find(br => br.statut === 'a_faire');
+  if (next) { next.statut = 'en_cours'; dash.brique_active_id = next.id; }
   if (engagements && engagements.length > 0) {
     dash.engagements = dash.engagements || [];
     engagements.forEach(e => dash.engagements.push(e));
   }
   dash.derniere_activite = new Date().toISOString();
-  saveToStorage('dashboard', dash);
+  saveToStorage('fund_dashboard', dash);
   brickCompleted(brickId);
   return dash;
 }
 
-// Update brick progression mid-way
 function updateBrickProgress(brickId, progression) {
-  let dash = loadFromStorage('dashboard') || getMockDashboard();
+  let dash = loadFromStorage('fund_dashboard') || getMockDashboard();
   const b = dash.briques.find(br => br.id === brickId);
   if (b) { b.progression = progression; b.statut = 'en_cours'; }
   dash.brique_active_id = brickId;
   dash.derniere_activite = new Date().toISOString();
-  saveToStorage('dashboard', dash);
+  saveToStorage('fund_dashboard', dash);
 }
 
-// Map brick IDs to their HTML files — the 5 priority bricks have real files
+// ─── INSIGHTS BUILDER ─────────────────────────────────────────────────
+// Génère les insights à débloquer à la fin d'une brique.
+// Usage : buildInsights(brickId, profil, rawData) → tableau pour completeBrickFull
+function buildInsights(brickId, profil, data) {
+  const ins = [];
+  if (brickId === 'budget_base') {
+    const ral = data.reste_a_vivre || 0;
+    if (ral < 0) {
+      ins.push({ id: 'ins_budget_negatif', type: 'alerte',
+        titre: 'Budget en déficit',
+        contenu: `Ton reste-à-vivre est négatif (${formatEuro(ral)}). Regarde la brique “Sortir du rouge” pour identifier les leviers.` });
+    } else if (ral < 200) {
+      ins.push({ id: 'ins_budget_serre', type: 'conseil',
+        titre: 'Marge très serrée',
+        contenu: `Il te reste ${formatEuro(ral)} en fin de mois. Pense à constituer un petit coussin avant tout investissement.` });
+    } else {
+      ins.push({ id: 'ins_budget_ok', type: 'info',
+        titre: 'Marge disponible',
+        contenu: `Tu as ${formatEuro(ral)} de marge mensuelle. C'est une base solide pour construire ton coussin d'urgence.` });
+    }
+  }
+  if (brickId === 'gestion_decouvert') {
+    const cout = data.decouvert_cout_mensuel || 0;
+    if (cout > 0) {
+      ins.push({ id: 'ins_decouvert_cout', type: 'chiffre',
+        titre: 'Coût réel du découvert',
+        contenu: `Le découvert te coûte environ ${formatEuro(cout)}/mois, soit ${formatEuro(cout * 12)}/an en frais bancaires.` });
+    }
+  }
+  if (brickId === 'paiements_fractionnes') {
+    const liberation = data.bnpl_date_liberation;
+    const mensualite = data.bnpl_mensualite_total || 0;
+    if (liberation && mensualite > 0) {
+      ins.push({ id: 'ins_bnpl_liberation', type: 'projection',
+        titre: 'Date de libération BNPL',
+        contenu: `À partir du ${liberation}, tu récupères ${formatEuro(mensualite)}/mois de marge — si tu n'ajoutes pas de nouveaux paiements.` });
+    }
+  }
+  if (brickId === 'fonds_urgence') {
+    const objectif = data.fonds_urgence_objectif || 0;
+    const date = data.fonds_urgence_date_estimee;
+    if (objectif > 0) {
+      ins.push({ id: 'ins_urgence_objectif', type: 'objectif',
+        titre: 'Coussin de sécurité en cours',
+        contenu: 'Objectif ' + formatEuro(objectif) + (date ? ' — estimé atteint le ' + date : '') + '.' });
+    }
+  }
+  return ins;
+}
+
+// ─── BRICK FILES + NAVIGATION ────────────────────────────────────────────
 const BRICK_FILES = {
   budget_base:             'brique-budget-base.html',
   gestion_decouvert:       'brique-gestion-decouvert.html',
@@ -365,44 +525,41 @@ const BRICK_FILES = {
   premiers_pas_bancaires:  'brique-premiers-pas-bancaires.html'
 };
 
-// Get the next recommended brick after the current one
-// Returns the BRIQUES_META object enriched with a .file property
 function getNextBrick(currentBrickId) {
-  let dash = loadFromStorage('dashboard') || getMockDashboard();
+  let dash = loadFromStorage('fund_dashboard') || getMockDashboard();
   const currentIdx = dash.briques.findIndex(br => br.id === currentBrickId);
   const next = dash.briques.find((br, i) => i > currentIdx && br.statut !== 'terminee');
   if (!next) return null;
   const meta = BRIQUES_META[next.id];
   if (!meta) return null;
-  // Enrich with file path so any brick can navigate directly
   return Object.assign({}, meta, { file: BRICK_FILES[next.id] || null });
 }
 
-// Format euro amounts
+// ─── FORMAT ────────────────────────────────────────────────────
 function formatEuro(val) {
   if (val === null || val === undefined || isNaN(val)) return '—';
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(val);
+  return new Intl.NumberFormat('fr-FR', {
+    style: 'currency', currency: 'EUR',
+    minimumFractionDigits: 0, maximumFractionDigits: 0
+  }).format(val);
 }
 
-// Profile intro variant for Budget brick (from Playbook section 4)
+// ─── PROFILE UTILS ────────────────────────────────────────────────
 function getBudgetIntroVariant(profil) {
   const age = profil.age_group;
   const status = profil.status_pro;
   if (age === '18_24' || status === 'etudiant') return { intro: 'On va rendre ton mois plus respirable.', levier: 'Sorties, abonnements, reste-à-vivre.' };
   if (age === '25_34') return { intro: 'On va voir ce que ton quotidien te coûte vraiment.', levier: 'Logement, transport, crédits, marge.' };
-  if (age === '35_54') return { intro: 'On va remettre ton mois à plat pour récupérer de l\'air.', levier: 'Charges fixes, crédits, pression du mois.' };
+  if (age === '35_54') return { intro: "On va remettre ton mois à plat pour récupérer de l'air.", levier: 'Charges fixes, crédits, pression du mois.' };
   return { intro: 'On va clarifier ton flux mensuel pour dégager une marge utile.', levier: 'Automatisation, objectifs, allocation de marge.' };
 }
 
-// Variable spending paliers by age
 function getSpendingPaliers(age) {
-  // Returns [tres_peu, un_peu, assez_souvent, beaucoup] as monthly amounts
   if (age === '15_17' || age === '18_24') return [15, 40, 80, 150];
   if (age === '25_34') return [30, 70, 140, 250];
   return [40, 90, 180, 350];
 }
 
-// Shared brick CSS — returns a string of common styles for all bricks
 function getBrickCSS() {
   return `
     :root {
@@ -421,7 +578,7 @@ function getBrickCSS() {
   `;
 }
 
-// ─── BACKGROUND CANVAS (shared) ─────────────────────────────────
+// ─── BACKGROUND CANVAS ──────────────────────────────────────────────
 function initBgCanvas(canvasId) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;

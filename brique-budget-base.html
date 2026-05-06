@@ -244,9 +244,7 @@
     </svg>
     Fundamental
   </a>
-  <div class="nav-right">
-    <a href="dashboard.html" class="nav-link">← Dashboard</a>
-  </div>
+  <div class="nav-right" id="nav-right-slot"></div>
 </nav>
 
 <main>
@@ -664,6 +662,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
+  <script src="nav-avatar.js"></script>
 <script src="supabase.js"></script>
 <script>
   /* ── Init ── */
@@ -671,6 +670,20 @@
   const BRICK_ID = 'budget_base';
   let profil = loadFromStorage('profil') || getMockProfile();
   brickStarted(BRICK_ID);
+  // ── Reprise d'état depuis Supabase ──
+  (async function resumeIfNeeded() {
+    const saved = await loadBrickState('budget_base');
+    if (saved && saved.data && Object.keys(saved.data).length > 0) {
+      // Restaurer les données dans l'état local
+      if (typeof restoreState === 'function') restoreState(saved.data);
+      // Ne pas sauter l'écran de démarrage si la brique est déjà terminée
+      if (!saved.completed && saved.screenCourant > 0) {
+        console.log('[Fund] Reprise brique budget_base écran', saved.screenCourant);
+        // showScreen/goTo sera appelé après hydrateFromSupabase
+        window._brickResume_budget_base = saved.screenCourant;
+      }
+    }
+  })();
 
   /* ── State ── */
   let currentScreen = 0;
@@ -731,6 +744,7 @@
       currentScreen = idx;
       updateProgress(idx);
       screenViewed(BRICK_ID, idx);
+    autosaveBrickProgress(BRICK_ID, typeof idx === 'number' ? idx : (typeof n === 'number' ? n : currentScreen), budgetData);
     } else {
       updateProgress(totalScreens);
     }
@@ -1256,7 +1270,21 @@
 
     const engagement = { label: engText, type: 'budget_engagement', idx: selectedEngagement };
     commitmentCreated(BRICK_ID, engagement);
-    completeBrick(BRICK_ID, [engagement]);
+    completeBrickFull(BRICK_ID, {
+      profileFields: ({
+        revenus_nets_mensuel:   budgetData.revenus || 0,
+        aides_mensuelles:       budgetData.aides || 0,
+        charges_fixes_total:    Object.values(budgetData.chargesFixes||{}).reduce((a,b)=>a+(parseFloat(b)||0),0),
+        depenses_variables_total: Object.values(budgetData.variable||{}).reduce((a,b)=>a+(parseFloat(b)||0),0),
+        reste_a_vivre:          (budgetData.revenus||0) + (budgetData.aides||0)
+                                  - Object.values(budgetData.chargesFixes||{}).reduce((a,b)=>a+(parseFloat(b)||0),0)
+                                  - Object.values(budgetData.variable||{}).reduce((a,b)=>a+(parseFloat(b)||0),0),
+        engagement_budget:      selectedEngagement ? { type: selectedEngagement } : null
+      }),
+      rawData: budgetData,
+      engagements: [engagement],
+      insights: buildInsights(BRICK_ID, profil, budgetData)
+    });
 
     buildExitScreen(engagement);
     showScreen('exit');

@@ -235,9 +235,7 @@
     </svg>
     Fundamental
   </a>
-  <div class="nav-right">
-    <a href="dashboard.html" class="nav-link">← Dashboard</a>
-  </div>
+  <div class="nav-right" id="nav-right-slot"></div>
 </nav>
 
 <main>
@@ -455,6 +453,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
+  <script src="nav-avatar.js"></script>
 <script src="supabase.js"></script>
 <script>
 /* ══════════════════════════════════════════════
@@ -468,6 +467,20 @@ const TOTAL_SCREENS = 6; // 0-5 (exit is separate)
 
 let profil = loadFromStorage('profil') || getMockProfile();
 brickStarted(BRICK_ID);
+  // ── Reprise d'état depuis Supabase ──
+  (async function resumeIfNeeded() {
+    const saved = await loadBrickState('paiements_fractionnes');
+    if (saved && saved.data && Object.keys(saved.data).length > 0) {
+      // Restaurer les données dans l'état local
+      if (typeof restoreState === 'function') restoreState(saved.data);
+      // Ne pas sauter l'écran de démarrage si la brique est déjà terminée
+      if (!saved.completed && saved.screenCourant > 0) {
+        console.log('[Fund] Reprise brique paiements_fractionnes écran', saved.screenCourant);
+        // showScreen/goTo sera appelé après hydrateFromSupabase
+        window._brickResume_paiements_fractionnes = saved.screenCourant;
+      }
+    }
+  })();
 
 /* ── State ── */
 let currentScreen = 0;
@@ -506,6 +519,7 @@ function showScreen(idx) {
     currentScreen = idx;
     updateProgress(idx);
     screenViewed(BRICK_ID, idx);
+    autosaveBrickProgress(BRICK_ID, typeof idx === 'number' ? idx : (typeof n === 'number' ? n : currentScreen), { payments: payments });
     // Screen-specific setup
     if (idx === 1) setupScreen1();
     if (idx === 2) setupScreen2();
@@ -1069,7 +1083,21 @@ document.getElementById('btn-s5-validate').addEventListener('click', () => {
   ];
 
   setTimeout(() => {
-    completeBrick(BRICK_ID, engagements);
+    completeBrickFull(BRICK_ID, {
+    profileFields: {
+      bnpl_mensualite_total:  payments.reduce((a,p) => a + (parseFloat(p.amount)||0), 0),
+      bnpl_engagement_count:  payments.length,
+      bnpl_date_liberation:   window._bnplDateLiberation || null,
+      bnpl_strategie_choisie: selectedEngagement || null,
+      bnpl_taux_effort:       profil.revenus_nets_mensuel
+                                ? Math.round(payments.reduce((a,p) => a+(parseFloat(p.amount)||0),0)
+                                  / profil.revenus_nets_mensuel * 100)
+                                : null
+    },
+    rawData: { payments: payments, selectedEngagement: selectedEngagement },
+    engagements: engagements,
+    insights: buildInsights(BRICK_ID, profil, { bnpl_mensualite_total: payments.reduce((a,p)=>a+(parseFloat(p.amount)||0),0), bnpl_date_liberation: window._bnplDateLiberation })
+  });
     setupExitScreen(engagementText);
     showScreen('exit');
   }, 1400);

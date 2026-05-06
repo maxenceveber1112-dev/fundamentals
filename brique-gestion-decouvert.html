@@ -208,9 +208,7 @@
     </svg>
     Fundamental
   </a>
-  <div class="nav-right">
-    <a href="dashboard.html" class="nav-link">← Dashboard</a>
-  </div>
+  <div class="nav-right" id="nav-right-slot"></div>
 </nav>
 
 <main>
@@ -473,6 +471,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
+  <script src="nav-avatar.js"></script>
 <script src="supabase.js"></script>
 <script>
   // ── Init ──────────────────────────────────────────────────────────────
@@ -482,6 +481,20 @@
 
   if (typeof initBgCanvas === 'function') initBgCanvas('bg-canvas');
   if (typeof brickStarted === 'function') brickStarted(BRICK_ID);
+  // ── Reprise d'état depuis Supabase ──
+  (async function resumeIfNeeded() {
+    const saved = await loadBrickState('gestion_decouvert');
+    if (saved && saved.data && Object.keys(saved.data).length > 0) {
+      // Restaurer les données dans l'état local
+      if (typeof restoreState === 'function') restoreState(saved.data);
+      // Ne pas sauter l'écran de démarrage si la brique est déjà terminée
+      if (!saved.completed && saved.screenCourant > 0) {
+        console.log('[Fund] Reprise brique gestion_decouvert écran', saved.screenCourant);
+        // showScreen/goTo sera appelé après hydrateFromSupabase
+        window._brickResume_gestion_decouvert = saved.screenCourant;
+      }
+    }
+  })();
 
   // ── State ─────────────────────────────────────────────────────────────
   const state = {
@@ -521,6 +534,7 @@
     }
     renderProgress();
     if (typeof screenViewed === 'function') screenViewed(BRICK_ID, n);
+    autosaveBrickProgress(BRICK_ID, typeof idx === 'number' ? idx : (typeof n === 'number' ? n : currentScreen), state);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -829,7 +843,20 @@
     }
 
     // Complete brick
-    try { completeBrick(BRICK_ID, [engagement]); } catch(e) {}
+    try { completeBrickFull(BRICK_ID, {
+      profileFields: ({
+        decouvert_jours_mois:      state.joursRouge || 0,
+        decouvert_montant_max:     Math.abs(state.montantDecouvert || 0),
+        decouvert_frais_type:      state.fraisChip || null,
+        decouvert_cout_mensuel:    state._coutMensuel || 0,
+        decouvert_plan_choisi:     state.trajChoix || null,
+        decouvert_engagement_jours:state.engagementDays || 0,
+        decouvert_alerte_seuil:    state.alerteAmount || 0
+      }),
+      rawData: state,
+      engagements: [engagement],
+      insights: buildInsights(BRICK_ID, profil, state)
+    }); } catch(e) {}
 
     goTo(6);
   });
