@@ -385,7 +385,7 @@
     Fundamental
   </a>
   <div class="nav-right">
-    <a href="index.html" class="nav-link">Questionnaire</a>
+    <a href="index.html" class="nav-link" id="nav-quiz-link">Questionnaire</a>
     <a href="plan.html" class="nav-link">Mon plan</a>
     <a href="dashboard.html" class="nav-link active">Dashboard</a>
     <!-- Avatar injecté par nav-avatar.js -->
@@ -396,9 +396,8 @@
 
   <!-- ══ Completed banner ══════════════════════════════════════════ -->
   <div class="completed-banner" id="completed-banner">
-    <div style="font-size:2.5rem;margin-bottom:0.75rem;">🎉</div>
-    <h2>Tu as terminé ton parcours !</h2>
-    <p>Tous les modules sont complétés. Explore de nouvelles briques ou recommence le questionnaire pour affiner ton profil.</p>
+    <h2>Parcours complété</h2>
+    <p>Tous les modules sont terminés. Explore de nouvelles briques dans la section ci-dessous.</p>
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════
@@ -686,8 +685,10 @@
     const meta = BRIQUES_META[briqData.id];
     if (!meta) return;
 
-    const isFirst = briqData.statut === 'a_faire';
-    document.getElementById('hero-label').textContent = isFirst ? 'Première étape' : 'Continuer là où tu t\'es arrêté';
+    const isFirst   = briqData.statut === 'a_faire';
+    const isEnCours  = briqData.statut === 'en_cours';
+    document.getElementById('hero-label').textContent =
+      isEnCours ? 'Module en cours' : isFirst ? 'Prochaine étape' : 'Continuer';
 
     const pc = PACK_COLORS[meta.pack] || '#818cf8';
     document.getElementById('hero-icon').textContent = meta.icon;
@@ -735,72 +736,84 @@
     if (next) { next.statut = 'en_cours'; dash.brique_active_id = next.id; }
   }
 
-  // ─── ZONE 2 — BRIQUES GRID ─────────────────────────────────────
-  let briquesFilter = 'all';
+  // ─── ZONE 2 — BRIQUES 3 CATÉGORIES ────────────────────────────
 
-  function filterBriques(filter, btn) {
-    briquesFilter = filter;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderBriquesGrid();
+  function makeBriqueCard(item, meta, activeId) {
+    const isDone   = item.statut === 'terminee';
+    const isActive = item.id === activeId || item.statut === 'en_cours';
+    const isSoon   = item.statut === 'bientot';
+    const file     = BRICK_FILES[item.id];
+
+    let cls = 'bq-card';
+    if (isDone)        cls += ' done-card clickable';
+    else if (isActive) cls += ' active-card clickable';
+    else if (isSoon)   cls += ' soon-card';
+    else if (file)     cls += ' clickable';
+    else               cls += ' clickable';
+
+    const dotClass = isDone ? 'done' : isActive ? 'active' : isSoon ? 'soon' : 'todo';
+    let status = '';
+    if (isDone)                  status = '<span class="bq-badge-done">✓</span>';
+    else if (item.progression > 0) status = `<span class="bq-pct">${item.progression}%</span>`;
+    else if (isSoon)             status = '<span class="bq-badge-soon">Bientôt</span>';
+
+    const el = document.createElement(file && !isSoon ? 'a' : 'div');
+    el.className = cls; el.setAttribute('role', 'listitem');
+    if (file && !isSoon) { el.href = file; el.title = meta.nom; }
+    el.innerHTML = `
+      <div class="bq-dot ${dotClass}"></div>
+      <span class="bq-icon" aria-hidden="true">${meta.icon}</span>
+      <div class="bq-info">
+        <div class="bq-name">${meta.nom}</div>
+        <div class="bq-pack">${meta.pack}</div>
+      </div>
+      <div class="bq-status">${status}</div>`;
+    return el;
   }
 
   function renderBriquesGrid() {
-    const grid = document.getElementById('briques-grid');
-    grid.innerHTML = '';
+    const container = document.getElementById('briques-sections');
+    container.innerHTML = '';
     const activeId = dash.brique_active_id;
-    const planIds = new Set(dash.briques.map(b => b.id));
+    const planIds  = new Set((dash.briques || []).map(b => b.id));
 
-    let items = [...dash.briques];
-    if (briquesFilter === 'todo') items = items.filter(b => b.statut !== 'terminee');
-    if (briquesFilter === 'done') items = items.filter(b => b.statut === 'terminee');
+    // Catégorie 1 : Disponibles (dans le plan, non terminées)
+    const disponibles = (dash.briques || []).filter(b => b.statut !== 'terminee');
 
-    // Briques disponibles hors plan
-    if (briquesFilter === 'all') {
-      Object.values(BRIQUES_META).forEach(m => {
-        if (!planIds.has(m.id) && BRICK_FILES[m.id]) {
-          items.push({ id: m.id, statut: 'explorer', progression: 0 });
-        }
+    // Catégorie 2 : Réalisées
+    const realisees = (dash.briques || []).filter(b => b.statut === 'terminee');
+
+    // Catégorie 3 : Bientôt disponibles (toutes les briques META hors plan)
+    const bientot = Object.values(BRIQUES_META)
+      .filter(m => !planIds.has(m.id))
+      .map(m => ({ id: m.id, statut: 'bientot', progression: 0 }));
+
+    function renderSection(title, items, accentColor) {
+      if (items.length === 0) return;
+      const section = document.createElement('div');
+      section.style.cssText = 'margin-bottom:1.5rem;';
+      const lbl = document.createElement('p');
+      lbl.style.cssText = `font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${accentColor};margin-bottom:0.5rem;`;
+      lbl.textContent = title;
+      section.appendChild(lbl);
+      const grid = document.createElement('div');
+      grid.className = 'briques-grid';
+      grid.setAttribute('role', 'list');
+      items.forEach(item => {
+        const meta = BRIQUES_META[item.id]; if (!meta) return;
+        grid.appendChild(makeBriqueCard(item, meta, activeId));
       });
+      section.appendChild(grid);
+      container.appendChild(section);
     }
 
-    if (items.length === 0) {
-      grid.innerHTML = '<p style="font-size:0.8rem;color:var(--text-faint);padding:0.5rem;">Aucune brique dans cette catégorie.</p>';
-      return;
+    renderSection('Disponibles', disponibles, 'var(--violet)');
+    renderSection('Réalisées', realisees, 'var(--green)');
+    renderSection('Bientôt disponibles', bientot, 'var(--text-faint)');
+
+    if (disponibles.length === 0 && realisees.length === 0 && bientot.length === 0) {
+      container.innerHTML = '<p style="font-size:0.8rem;color:var(--text-faint);padding:0.5rem;">Ton plan est en cours de construction.</p>';
     }
-
-    items.forEach(item => {
-      const meta = BRIQUES_META[item.id]; if (!meta) return;
-      const isDone   = item.statut === 'terminee';
-      const isActive = item.id === activeId || item.statut === 'en_cours';
-      const isExplore= item.statut === 'explorer';
-      const file     = BRICK_FILES[item.id];
-
-      let cls = 'bq-card';
-      if (isDone)       cls += ' done-card';
-      else if (isActive) cls += ' active-card clickable';
-      else if (isExplore) cls += ' clickable';
-      else if (file)    cls += ' clickable';
-
-      const dotClass = isDone ? 'done' : isActive ? 'active' : 'todo';
-      let status = '';
-      if (isDone)               status = '<span class="bq-badge-done">✓</span>';
-      else if (item.progression > 0) status = `<span class="bq-pct">${item.progression}%</span>`;
-      else if (isExplore)       status = '<span class="bq-badge-soon" style="color:var(--violet);border-color:rgba(99,102,241,0.3);background:var(--indigo-dim);">+ Explorer</span>';
-
-      const el = document.createElement(file ? 'a' : 'div');
-      el.className = cls; el.setAttribute('role', 'listitem');
-      if (file) { el.href = file; el.title = meta.nom; }
-      el.innerHTML = `
-        <div class="bq-dot ${dotClass}"></div>
-        <span class="bq-icon" aria-hidden="true">${meta.icon}</span>
-        <div class="bq-info">
-          <div class="bq-name">${meta.nom}</div>
-          <div class="bq-pack">${meta.pack}</div>
-        </div>
-        <div class="bq-status">${status}</div>`;
-      grid.appendChild(el);
-    });
   }
 
   // ─── ZONE 3 — INSIGHT ──────────────────────────────────────────
@@ -991,6 +1004,18 @@
     renderBriquesGrid();
     renderInsight();
     renderExplorer();
+    renderQuizLink();
+  }
+
+  // Lien Questionnaire : discret si profil déjà complété
+  function renderQuizLink() {
+    const quizLink = document.getElementById('nav-quiz-link');
+    if (!quizLink) return;
+    const hasProfile = profil && profil.briques_recommandees && profil.briques_recommandees.length > 0;
+    if (hasProfile) {
+      quizLink.style.cssText = 'font-size:0.72rem;opacity:0.38;border-color:transparent;padding:0.3rem 0.55rem;';
+      quizLink.title = 'Refaire le questionnaire pour affiner ton profil';
+    }
   }
 </script>
 <script src="nav-avatar.js"></script>

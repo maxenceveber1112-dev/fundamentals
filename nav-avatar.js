@@ -6,8 +6,24 @@
 
 (async function initNavAvatar() {
   const user = await getCurrentUser();
-  const navRight = document.querySelector('.nav-right');
-  if (!navRight) return;
+  let navRight = document.querySelector('.nav-right');
+
+  // Si pas de .nav-right, on en crée un dans le header (quiz, etc.)
+  if (!navRight) {
+    const header = document.querySelector('header');
+    if (!header) return; // pas de header du tout, on abandonne
+    navRight = document.createElement('div');
+    navRight.className = 'nav-right';
+    navRight.style.cssText = 'display:flex;align-items:center;gap:0.75rem;margin-left:auto;';
+    header.appendChild(navRight);
+    // S'assurer que le header est en flex s'il ne l'est pas déjà
+    const cs = window.getComputedStyle(header);
+    if (cs.display !== 'flex' && cs.display !== 'inline-flex') {
+      header.style.display = 'flex';
+      header.style.alignItems = 'center';
+      header.style.justifyContent = 'space-between';
+    }
+  }
 
   // ── Styles ──────────────────────────────────────────────────
   const style = document.createElement('style');
