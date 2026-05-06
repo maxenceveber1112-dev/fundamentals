@@ -559,38 +559,62 @@
 <script>
   initBgCanvas('bg-canvas');
 
-  // ─── AUTH GATE ─────────────────────────────────────────────────
+  // ─── STATE ─────────────────────────────────────────────────────
   let currentUser = null;
+  let dash   = getMockDashboard();
+  let profil = getMockProfile();
+
+  // ─── AUTH GATE + INIT ──────────────────────────────────────────
   (async () => {
     currentUser = await requireAuth();
     if (!currentUser) return;
+    // Render immédiat avec données mock (affiche déjà les briques catalogue)
+    renderAll();
+    // Puis charge les vraies données et re-render
     await loadData();
   })();
 
-  // ─── STATE ─────────────────────────────────────────────────────
-  let dash   = getMockDashboard();
-  let profil = getMockProfile();
-  const budget = null;
-
   async function loadData() {
-    const [dbProfil, dbDash] = await Promise.all([loadProfile(), loadDashboard()]);
-    if (dbProfil && dbProfil.briques_recommandees) {
-      profil = dbProfil;
-      saveToStorage('fund_profil', profil);
+    try {
+      const [dbProfil, dbDash] = await Promise.all([loadProfile(), loadDashboard()]);
+
+      if (dbProfil && dbProfil.briques_recommandees && dbProfil.briques_recommandees.length > 0) {
+        profil = dbProfil;
+        saveToStorage('fund_profil', profil);
+      }
+
+      // Normaliser dbDash : accepte tableau ou objet avec .briques
+      let dbBriques = null;
+      if (Array.isArray(dbDash)) {
+        dbBriques = dbDash;
+      } else if (dbDash && Array.isArray(dbDash.briques) && dbDash.briques.length > 0) {
+        dbBriques = dbDash.briques;
+      }
+
+      if (dbBriques && dbBriques.length > 0) {
+        if (Array.isArray(dbDash)) {
+          dash = getMockDashboard();
+          dash.briques = dbBriques;
+          dash.brique_active_id = dbBriques.find(b => b.statut === 'en_cours')?.id || dbBriques[0]?.id;
+        } else {
+          dash = dbDash;
+        }
+        saveToStorage('fund_dashboard', dash);
+      } else if (profil.briques_recommandees && profil.briques_recommandees.length > 0) {
+        // Premier accès : construire dash depuis profil
+        dash.briques = profil.briques_recommandees.map((id, i) => ({
+          id, statut: i === 0 ? 'en_cours' : 'a_faire', progression: 0
+        }));
+        dash.brique_active_id = profil.briques_recommandees[0];
+        saveDashboard(dash).catch(() => {});
+        saveToStorage('fund_dashboard', dash);
+      }
+      // Re-render avec données réelles
+      renderAll();
+    } catch(e) {
+      console.warn('[dashboard] loadData error:', e);
+      renderAll(); // render quand même avec mock
     }
-    if (dbDash && dbDash.briques && dbDash.briques.length > 0) {
-      dash = dbDash;
-      saveToStorage('fund_dashboard', dash);
-    } else if (profil.briques_recommandees && profil.briques_recommandees.length > 0) {
-      // Premier accès : construire dash depuis profil
-      dash.briques = profil.briques_recommandees.map((id, i) => ({
-        id, statut: i === 0 ? 'en_cours' : 'a_faire', progression: 0
-      }));
-      dash.brique_active_id = profil.briques_recommandees[0];
-      saveDashboard(dash).catch(() => {});
-      saveToStorage('fund_dashboard', dash);
-    }
-    renderAll();
   }
 
   function save() { saveToStorage('fund_dashboard', dash); saveDashboard(dash).catch(() => {}); }
