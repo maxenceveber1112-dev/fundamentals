@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamental — Construisons ton parcours</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── TOKENS ────────────────────────────────────────────────── */
+    :root {
+      --bg:          #0b0d17;
+      --surface:     #111320;
+      --surface-2:   #171a2e;
+      --surface-3:   #1d2038;
+      --border:      #252845;
+      --border-hover:#363a68;
+      --text:        #e2e4f0;
+      --text-muted:  #8b90b8;
+      --text-faint:  #444868;
+      --violet:      #818cf8;
+      --purple:      #c084fc;
+      --indigo:      #6366f1;
+      --indigo-dim:  rgba(99,102,241,0.14);
+      --indigo-glow: rgba(99,102,241,0.22);
+      --violet-glow: rgba(129,140,248,0.10);
+      --green:       #4ade80;
+      --green-dim:   rgba(74,222,128,0.10);
+      --red:         #f87171;
+
+      --r-sm: 0.5rem;
+      --r-md: 0.875rem;
+      --r-lg: 1.125rem;
+      --r-xl: 1.5rem;
+      --r-full: 9999px;
+
+      --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+      --ease-out:    cubic-bezier(0.16,1,0.3,1);
+      --t:           180ms;
+    }
+
+    /* ─── BASE ──────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+    body {
+      min-height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
+    :focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; border-radius: var(--r-sm); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ─── CANVAS BG ─────────────────────────────────────────────── */
+    #bg-canvas {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none; opacity: 0.25;
+    }
+
+    /* ─── LAYOUT ────────────────────────────────────────────────── */
+    #app {
+      position: relative; z-index: 1;
+      min-height: 100dvh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 0 1rem 4rem;
+    }
+
+    /* ─── HEADER ────────────────────────────────────────────────── */
+    header {
+      width: 100%; max-width: 680px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem 0 2rem;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-weight: 800; font-size: 1.05rem;
+      background: linear-gradient(135deg, var(--violet), var(--purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+
+    /* ─── CARD WRAPPER ──────────────────────────────────────────── */
+    .quiz-card {
+      width: 100%; max-width: 680px;
+      background: rgba(17,19,32,0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 24px 64px rgba(0,0,0,0.6), 0 0 40px var(--violet-glow);
+      overflow: hidden;
+    }
+
+    /* ─── PROGRESS (dots + bar) ─────────────────────────────────── */
+    .progress-top {
+      padding: 1.5rem 2rem 0;
+      display: flex; flex-direction: column; gap: 0.75rem;
+    }
+    .dots {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    }
+    .dot {
+      height: 4px; border-radius: var(--r-full);
+      background: var(--border);
+      transition: width var(--t) var(--ease-out), background var(--t);
+    }
+    .dot.active   { background: linear-gradient(90deg, var(--violet), var(--purple)); width: 2rem; }
+    .dot.done     { background: var(--indigo); width: 1.5rem; }
+    .dot.inactive { width: 1rem; }
+    .progress-label {
+      text-align: center; font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    /* ─── STEP CONTENT ──────────────────────────────────────────── */
+    .step {
+      padding: 2rem;
+      display: none; flex-direction: column; gap: 1.75rem;
+    }
+    .step.active { display: flex; }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .step.active { animation: slideInUp 0.38s var(--ease-out) both; }
+
+    /* ─── STEP HEADER ───────────────────────────────────────────── */
+    .step-header { display: flex; flex-direction: column; gap: 0.5rem; text-align: center; }
+    .step-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.4rem;
+      align-self: center;
+      padding: 0.25rem 0.85rem;
+      border-radius: var(--r-full);
+      background: var(--indigo-dim);
+      border: 1px solid rgba(99,102,241,0.25);
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #a5b4fc;
+    }
+    .step-badge .dot-live {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--violet);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.85); } }
+    .step-title {
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+      font-weight: 800; color: #fff; line-height: 1.25;
+    }
+    .step-sub { font-size: 0.875rem; color: var(--text-muted); }
+
+    /* ─── QUESTION BLOCK ────────────────────────────────────────── */
+    .q-block { display: flex; flex-direction: column; gap: 0.75rem; }
+    .q-label {
+      font-size: 0.9375rem; font-weight: 600; color: var(--text);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .q-label .req { color: var(--red); font-size: 0.75rem; }
+    .q-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: -0.25rem; }
+
+    /* ─── GRID PILLS (âge, logement, etc.) ──────────────────────── */
+    .pill-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.625rem;
+    }
+    .pill-grid.col2 { grid-template-columns: repeat(2, 1fr); }
+    .pill-grid.col3 { grid-template-columns: repeat(3, 1fr); }
+
+    /* Universal selectable item */
+    .sel-item {
+      position: relative;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 0.625rem;
+      padding: 0.875rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      font-size: 0.875rem; font-weight: 500; color: var(--text-muted);
+      text-align: left;
+      cursor: pointer;
+      transition:
+        border-color var(--t) var(--ease-out),
+        background var(--t) var(--ease-out),
+        color var(--t) var(--ease-out),
+        box-shadow var(--t) var(--ease-out),
+        transform 0.12s var(--ease-spring);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .sel-item:hover:not(.selected) {
+      border-color: var(--border-hover);
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
+    .sel-item:active { transform: scale(0.975); }
+    .sel-item.selected {
+      border-color: var(--indigo);
+      background: var(--indigo-dim);
+      color: #fff;
+      box-shadow: 0 0 0 3px var(--indigo-glow), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    /* Check icon inside sel-item */
+    .sel-check {
+      flex-shrink: 0; width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border-hover);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color var(--t), background var(--t), transform var(--t) var(--ease-spring);
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    .sel-item.selected .sel-check {
+      border-color: var(--violet);
+      background: var(--violet);
+      transform: scale(1);
+      opacity: 1;
+    }
+    .sel-check svg { width: 9px; height: 9px; }
+
+    /* Pill-style (compact, no check) */
+    .pill {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.4rem;
+      padding: 0.6rem 1rem;
+      border-radius: var(--r-full);
+      border: 1.5px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      font-size: 0.825rem; font-weight: 500; color: var(--text-muted);
+      cursor: pointer;
+      transition:
+        border-color var(--t), background var(--t), color var(--t),
+        box-shadow var(--t), transform 0.12s var(--ease-spring);
+      user-select: none;
+    }
+    .pill:hover:not(.selected) { border-color: var(--border-hover); color: var(--text); background: rgba(255,255,255,0.05); }
+    .pill:active { transform: scale(0.96); }
+    .pill.selected {
+      border-color: var(--violet);
+      background: rgba(129,140,248,0.12);
+      color: #c7d2fe;
+      box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
+    }
+    .pill-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+    /* ─── LIKERT ─────────────────────────────────────────────────── */
+    .likert-row { display: flex; gap: 0.5rem; }
+    .likert-btn {
+      flex: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.4rem;
+      padding: 0.875rem 0.25rem;
+      border-radius: var(--r-md);
+      border: 1.5px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--text-faint);
+      font-size: 0.78rem; font-weight: 600;
+      cursor: pointer;
+      transition:
+        border-color var(--t), background var(--t), color var(--t),
+        box-shadow var(--t), transform 0.12s var(--ease-spring);
+      user-select: none;
+    }
+    .likert-btn .lk-emoji { font-size: 1.4rem; line-height: 1; }
+    .likert-btn:hover:not(.selected) { border-color: var(--border-hover); color: var(--text-muted); }
+    .likert-btn:active { transform: scale(0.96) translateY(-1px); }
+    .likert-btn.selected {
+      border-color: var(--indigo);
+      background: var(--indigo-dim);
+      color: #c7d2fe;
+      box-shadow: 0 0 0 3px var(--indigo-glow);
+      transform: translateY(-3px);
+    }
+    .likert-caption {
+      display: flex; justify-content: space-between;
+      font-size: 0.7rem; color: var(--text-faint);
+      padding: 0 0.25rem;
+    }
+
+    /* ─── DIVIDER ────────────────────────────────────────────────── */
+    .divider {
+      height: 1px; background: var(--border); border: none;
+      margin: 0.25rem 0;
+    }
+
+    /* ─── MAX-SELECT BADGE ───────────────────────────────────────── */
+    .max-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-size: 0.73rem; color: var(--text-muted);
+    }
+    .max-badge-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 18px; height: 18px; padding: 0 4px;
+      border-radius: var(--r-full);
+      background: var(--indigo-dim); border: 1px solid rgba(99,102,241,0.3);
+      color: #a5b4fc; font-weight: 700; font-size: 0.7rem;
+      transition: background var(--t), color var(--t);
+    }
+    .max-badge-count.full { background: var(--indigo); color: #fff; }
+
+    /* ─── CONDITIONAL ────────────────────────────────────────────── */
+    .cond { overflow: hidden; max-height: 0; opacity: 0;
+      transition: max-height 0.45s var(--ease-out), opacity 0.3s ease; }
+    .cond.visible { max-height: 800px; opacity: 1; }
+
+    /* ─── FIELD ERROR ────────────────────────────────────────────── */
+    .field-error {
+      display: none; align-items: center; gap: 0.3rem;
+      font-size: 0.75rem; color: var(--red);
+    }
+    .field-error.show { display: flex; }
+
+    /* ─── NAV ROW ────────────────────────────────────────────────── */
+    .nav-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .btn-back {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.7rem 1.1rem;
+      border-radius: var(--r-full);
+      border: 1.5px solid var(--border);
+      font-size: 0.85rem; font-weight: 500; color: var(--text-muted);
+      transition: border-color var(--t), color var(--t), background var(--t);
+    }
+    .btn-back:hover { border-color: var(--border-hover); color: var(--text); background: rgba(255,255,255,0.04); }
+    .btn-back:active { transform: scale(0.97); }
+    .btn-next {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.875rem 1.5rem;
+      border-radius: var(--r-full);
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--purple) 100%);
+      font-size: 0.9rem; font-weight: 700; color: #fff;
+      border: none;
+      box-shadow: 0 0 24px rgba(99,102,241,0.3), 0 4px 12px rgba(0,0,0,0.4);
+      transition: box-shadow var(--t), transform 0.12s var(--ease-spring), opacity var(--t);
+    }
+    .btn-next:hover { box-shadow: 0 0 36px rgba(99,102,241,0.45), 0 6px 20px rgba(0,0,0,0.5); }
+    .btn-next:active { transform: scale(0.98); }
+
+    /* ─── LOADER SCREEN ──────────────────────────────────────────── */
+    #loader {
+      display: none; flex-direction: column; align-items: center;
+      gap: 1.5rem; padding: 3rem 2rem; text-align: center;
+    }
+    #loader.active { display: flex; }
+    .loader-ring {
+      width: 56px; height: 56px;
+      border: 3px solid var(--border);
+      border-top-color: var(--violet);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: 1rem; font-weight: 600; color: var(--text-muted); }
+    .loader-sub   { font-size: 0.825rem; color: var(--text-faint); }
+
+    /* ─── RESULT SCREEN ──────────────────────────────────────────── */
+    #result {
+      display: none; flex-direction: column; gap: 1.75rem; padding: 2rem;
+    }
+    #result.active { display: flex; animation: slideInUp 0.4s var(--ease-out) both; }
+
+    .result-hero { display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
+    .result-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--green-dim); border: 2px solid var(--green);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 28px rgba(74,222,128,0.15);
+      animation: popIn 0.5s 0.05s var(--ease-spring) both;
+    }
+    @keyframes popIn { from { transform:scale(0.4); opacity:0; } to { transform:scale(1); opacity:1; } }
+    .result-title { font-size: 1.5rem; font-weight: 800; color: #fff; }
+    .result-sub { font-size: 0.875rem; color: var(--text-muted); max-width: 40ch; }
+
+    /* Brique cards */
+    .result-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-faint);
+    }
+    .briques-list { display: flex; flex-direction: column; gap: 0.625rem; }
+    .brique-card {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.125rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      transition: border-color var(--t), background var(--t), transform 0.12s var(--ease-spring);
+      animation: slideInUp 0.35s var(--ease-out) both;
+    }
+    .brique-card:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.05); transform: translateY(-1px); }
+    .brique-icon-wrap {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: var(--r-md);
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; line-height: 1;
+    }
+    .brique-text { flex: 1; }
+    .brique-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+    .brique-desc  { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+    .brique-more  { font-size: 0.75rem; color: var(--text-faint); text-align: center; }
+
+    /* JSON details */
+    .json-details {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: var(--r-lg); overflow: hidden;
+    }
+    .json-details summary {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.875rem 1rem;
+      font-size: 0.8rem; font-weight: 600; color: var(--text-muted);
+      cursor: pointer; list-style: none;
+    }
+    .json-details summary::-webkit-details-marker { display: none; }
+    .json-details pre {
+      padding: 0 1rem 1rem;
+      font-size: 0.7rem; color: var(--violet);
+      white-space: pre-wrap; word-break: break-word;
+      font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+      max-height: 220px; overflow-y: auto;
+    }
+
+    .btn-restart {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      align-self: center;
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--r-full);
+      border: 1.5px solid var(--border);
+      font-size: 0.825rem; font-weight: 500; color: var(--text-muted);
+      transition: border-color var(--t), color var(--t);
+    }
+    .btn-restart:hover { border-color: var(--violet); color: var(--violet); }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
+    /* ── Q11 produit expand inline ── */
+    .produit-item {
+      display: flex;
+      flex-direction: column;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      overflow: hidden;
+      transition: border-color var(--t);
+    }
+    .produit-item.selected-prod { border-color: rgba(99,102,241,0.4); }
+    .produit-item .sel-item {
+      border: none;
+      border-radius: 0;
+      width: 100%;
+    }
+    .produit-montant-row {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.28s cubic-bezier(0.16,1,0.3,1), opacity 0.22s;
+      opacity: 0;
+      background: var(--surface-2);
+    }
+    .produit-montant-row.open {
+      max-height: 72px;
+      opacity: 1;
+    }
+    .produit-montant-inner {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.5rem 0.875rem 0.625rem;
+      border-top: 1px solid var(--border);
+    }
+    .produit-montant-label {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      flex-shrink: 0;
+    }
+    .produit-montant-input {
+      flex: 1;
+      padding: 0.35rem 0.625rem;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+      transition: border-color var(--t);
+    }
+    .produit-montant-input:focus { border-color: var(--violet); outline: none; }
+    .produit-montant-input::placeholder { color: var(--text-faint); }
+    .produit-montant-suffix {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .q-hint-amount {
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      margin: 0.25rem 0 0.75rem;
+      display: none;
+    }
+    .q-hint-amount.show { display: block; }
+    /* layout: produits en 1 col, pleine largeur */
+    .produit-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+    }
+
+    @media (max-width: 520px) {
+      .step { padding: 1.5rem; }
+      .progress-top { padding: 1.25rem 1.5rem 0; }
+      #result, #loader { padding: 1.5rem; }
+      .likert-row { gap: 0.3rem; }
+      .likert-btn { padding: 0.7rem 0.15rem; font-size: 0.7rem; }
+      .likert-btn .lk-emoji { font-size: 1.1rem; }
+      .pill-grid.col3 { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<div id="app">
+  <header>
+    <a href="#" class="logo" aria-label="Fundamental">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/>
+          </linearGradient>
+        </defs>
+        <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg)"/>
+        <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg)" opacity=".55"/>
+        <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".55"/>
+        <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".25"/>
+      </svg>
+      Fundamental
+    </a>
+  </header>
+
+  <div class="quiz-card">
+    <!-- PROGRESS -->
+    <div class="progress-top" id="progress-wrapper">
+      <div class="dots" id="dots" aria-hidden="true">
+        <div class="dot active" id="d1"></div>
+        <div class="dot inactive" id="d2"></div>
+        <div class="dot inactive" id="d3"></div>
+        <div class="dot inactive" id="d4"></div>
+        <div class="dot inactive" id="d5"></div>
+      </div>
+      <p class="progress-label" id="progress-label">Étape 1 sur 5</p>
+    </div>
+
+    <!-- ═══ STEP 1 — Identité ════════════════════════════════════ -->
+    <div class="step active" id="step-1" aria-label="Étape 1">
+      <div class="step-header">
+        <span class="step-badge"><span class="dot-live"></span>Profil de départ</span>
+        <h1 class="step-title">Pour commencer, parlons un peu de toi</h1>
+        <p class="step-sub">Deux questions pour calibrer ton parcours.</p>
+      </div>
+
+      <!-- Q1 -->
+      <div class="q-block">
+        <p class="q-label">Quel âge as-tu ?<span class="req">*</span></p>
+        <div class="pill-grid col3" role="radiogroup" aria-label="Tranche d'âge">
+          <button class="sel-item" data-q="q_age_group" data-val="15_17" role="radio" aria-checked="false"><span>15–17 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_age_group" data-val="18_24" role="radio" aria-checked="false"><span>18–24 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_age_group" data-val="25_34" role="radio" aria-checked="false"><span>25–34 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_age_group" data-val="35_54" role="radio" aria-checked="false"><span>35–54 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_age_group" data-val="55_64" role="radio" aria-checked="false"><span>55–64 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_age_group" data-val="65_plus" role="radio" aria-checked="false"><span>65 ans ou plus</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+        <span class="field-error" id="e-q1" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Choisis ta tranche d'âge pour continuer.
+        </span>
+      </div>
+
+      <!-- Q2 -->
+      <div class="q-block">
+        <p class="q-label">Quelle est ta situation actuelle ?<span class="req">*</span></p>
+        <div class="pill-grid col2" role="radiogroup" aria-label="Situation professionnelle">
+          <button class="sel-item" data-q="q_status_pro" data-val="college_lycee" role="radio" aria-checked="false"><span>Collégien / Lycéen</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_status_pro" data-val="etudiant" role="radio" aria-checked="false"><span>Étudiant</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_status_pro" data-val="sal_ouvrier_employe" role="radio" aria-checked="false"><span>Salarié ouvrier / employé</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_status_pro" data-val="sal_prof_inter" role="radio" aria-checked="false"><span>Salarié prof. interméd.</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_status_pro" data-val="cadre_prof_lib" role="radio" aria-checked="false"><span>Cadre / Prof. libérale</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_status_pro" data-val="indep_tpe" role="radio" aria-checked="false"><span>Indépendant / TPE</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_status_pro" data-val="chomeur_inactif" role="radio" aria-checked="false"><span>En recherche d'emploi</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_status_pro" data-val="retraite" role="radio" aria-checked="false"><span>Retraité</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_status_pro" data-val="autre" role="radio" aria-checked="false"><span>Autre</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+        <span class="field-error" id="e-q2" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Sélectionne ta situation.
+        </span>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-next" onclick="goNext(1)">
+          Continuer
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 2 — Budget & Logement ══════════════════════════ -->
+    <div class="step" id="step-2" aria-label="Étape 2">
+      <div class="step-header">
+        <span class="step-badge"><span class="dot-live"></span>Ressenti financier</span>
+        <h2 class="step-title">Comment vis-tu ton argent aujourd'hui ?</h2>
+      </div>
+
+      <!-- Q3 -->
+      <div class="q-block">
+        <p class="q-label">Comment te sens-tu en fin de mois ?<span class="req">*</span></p>
+        <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Sentiment de revenu">
+          <button class="sel-item" data-q="q_revenu_sentiment" data-val="difficile_fin_mois" role="radio" aria-checked="false">
+            <span>😟 J'ai du mal à finir le mois</span>
+            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+          <button class="sel-item" data-q="q_revenu_sentiment" data-val="juste_juste" role="radio" aria-checked="false">
+            <span>😐 Ça passe tout juste</span>
+            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+          <button class="sel-item" data-q="q_revenu_sentiment" data-val="a_l_aise" role="radio" aria-checked="false">
+            <span>😌 Je suis plutôt à l'aise</span>
+            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+        </div>
+        <span class="field-error" id="e-q3" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Choisis une option.
+        </span>
+      </div>
+
+      <!-- Q4 Likert -->
+      <div class="q-block">
+        <p class="q-label">Ton budget est une source de stress ?<span class="req">*</span></p>
+        <div class="likert-row" role="radiogroup" aria-label="Niveau de stress budgétaire">
+          <button class="likert-btn" data-q="q_stress_budget" data-val="1" role="radio" aria-checked="false" aria-label="1 — Pas du tout"><span class="lk-emoji">😌</span><span>Pas du tout</span></button>
+          <button class="likert-btn" data-q="q_stress_budget" data-val="2" role="radio" aria-checked="false" aria-label="2 — Un peu"><span class="lk-emoji">😐</span><span>Un peu</span></button>
+          <button class="likert-btn" data-q="q_stress_budget" data-val="3" role="radio" aria-checked="false" aria-label="3 — Moyen"><span class="lk-emoji">😕</span><span>Moyen</span></button>
+          <button class="likert-btn" data-q="q_stress_budget" data-val="4" role="radio" aria-checked="false" aria-label="4 — Souvent"><span class="lk-emoji">😟</span><span>Souvent</span></button>
+          <button class="likert-btn" data-q="q_stress_budget" data-val="5" role="radio" aria-checked="false" aria-label="5 — Tous les jours"><span class="lk-emoji">😫</span><span>Tous les jours</span></button>
+        </div>
+        <span class="field-error" id="e-q4" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Indique ton niveau de stress.
+        </span>
+      </div>
+
+      <!-- Q5 conditional -->
+      <div class="cond" id="cond-q5">
+        <div class="q-block">
+          <p class="q-label">Où habites-tu en ce moment ?<span class="req">*</span></p>
+          <div class="pill-grid col2" role="radiogroup" aria-label="Situation de logement">
+            <button class="sel-item" data-q="q_logement_situation" data-val="chez_parents" role="radio" aria-checked="false"><span>Chez mes parents / famille</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+            <button class="sel-item" data-q="q_logement_situation" data-val="colocation" role="radio" aria-checked="false"><span>En colocation</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+            <button class="sel-item" data-q="q_logement_situation" data-val="locataire" role="radio" aria-checked="false"><span>Locataire</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+            <button class="sel-item" data-q="q_logement_situation" data-val="proprietaire" role="radio" aria-checked="false"><span>Propriétaire</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+            <button class="sel-item" data-q="q_logement_situation" data-val="heberge_autre" role="radio" aria-checked="false"><span>Hébergé / autre</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          </div>
+          <span class="field-error" id="e-q5" role="alert">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Indique ta situation de logement.
+          </span>
+        </div>
+      </div>
+
+      <!-- Q6 conditional -->
+      <div class="cond" id="cond-q6">
+        <div class="q-block">
+          <p class="q-label">Un projet de logement dans les 12 mois ?<span class="req">*</span></p>
+          <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Projet logement">
+            <button class="sel-item" data-q="q_logement_projet" data-val="aucun" role="radio" aria-checked="false"><span>Non, pas spécialement</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+            <button class="sel-item" data-q="q_logement_projet" data-val="je_vais_demenager" role="radio" aria-checked="false"><span>Oui, je vais déménager</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+            <button class="sel-item" data-q="q_logement_projet" data-val="je_veux_acheter" role="radio" aria-checked="false"><span>Oui, je veux acheter ma résidence principale</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          </div>
+          <span class="field-error" id="e-q6" role="alert">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Indique ton projet de logement.
+          </span>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack(2)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Retour
+        </button>
+        <button class="btn-next" onclick="goNext(2)">
+          Continuer
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 3 — Objectifs ═══════════════════════════════════ -->
+    <div class="step" id="step-3" aria-label="Étape 3">
+      <div class="step-header">
+        <span class="step-badge"><span class="dot-live"></span>Tes priorités</span>
+        <h2 class="step-title">Qu'est-ce que tu veux changer en priorité ?</h2>
+      </div>
+
+      <!-- Q7 multi max 2 -->
+      <div class="q-block">
+        <p class="q-label">Tes objectifs prioritaires<span class="req">*</span></p>
+        <div class="max-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Sélectionne jusqu'à <span class="max-badge-count" id="cnt-obj">0</span> / 2
+        </div>
+        <div class="pill-grid col2" role="group" aria-label="Objectifs">
+          <button class="sel-item" data-q="q_objectifs" data-val="sortir_decouvert" role="checkbox" aria-checked="false" data-excl="false"><span>Sortir du découvert</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_objectifs" data-val="stabiliser_budget" role="checkbox" aria-checked="false" data-excl="false"><span>Stabiliser mon budget</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_objectifs" data-val="rembourser_dettes" role="checkbox" aria-checked="false" data-excl="false"><span>Rembourser mes dettes</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_objectifs" data-val="financer_projet_court_terme" role="checkbox" aria-checked="false" data-excl="false"><span>Financer un projet court terme</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_objectifs" data-val="acheter_logement" role="checkbox" aria-checked="false" data-excl="false"><span>Acheter un logement</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_objectifs" data-val="preparer_retraite" role="checkbox" aria-checked="false" data-excl="false"><span>Préparer ma retraite</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_objectifs" data-val="investir_long_terme" role="checkbox" aria-checked="false" data-excl="false"><span>Investir intelligemment</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_objectifs" data-val="mieux_comprendre_contrats" role="checkbox" aria-checked="false" data-excl="false"><span>Comprendre mes contrats</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_objectifs" data-val="preparer_transmission" role="checkbox" aria-checked="false" data-excl="false"><span>Préparer ma transmission</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_objectifs" data-val="se_reperer" role="checkbox" aria-checked="false" data-excl="false"><span>Juste m'y retrouver</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+        <span class="field-error" id="e-q7" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Sélectionne au moins un objectif.
+        </span>
+      </div>
+
+      <hr class="divider">
+
+      <!-- Q8 urgence -->
+      <div class="q-block">
+        <p class="q-label">Qu'est-ce qui est le plus urgent pour toi ?<span class="req">*</span></p>
+        <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Urgence principale">
+          <button class="sel-item" data-q="q_urgence_principale" data-val="survie_mois" role="radio" aria-checked="false">
+            <span>🚨 M'en sortir ce mois-ci — découvert, factures, dettes</span>
+            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+          <button class="sel-item" data-q="q_urgence_principale" data-val="projet_prochain_mois" role="radio" aria-checked="false">
+            <span>📅 Préparer un projet dans les prochains mois</span>
+            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+          <button class="sel-item" data-q="q_urgence_principale" data-val="long_terme" role="radio" aria-checked="false">
+            <span>🌱 Construire quelque chose sur le long terme</span>
+            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </button>
+        </div>
+        <span class="field-error" id="e-q8" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Choisis le niveau d'urgence.
+        </span>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack(3)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Retour
+        </button>
+        <button class="btn-next" onclick="goNext(3)">
+          Continuer
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 4 — Dettes ══════════════════════════════════════ -->
+    <div class="step" id="step-4" aria-label="Étape 4">
+      <div class="step-header">
+        <span class="step-badge"><span class="dot-live"></span>Crédits & dettes</span>
+        <h2 class="step-title">Tes crédits et paiements en cours</h2>
+      </div>
+
+      <!-- Q9 multi -->
+      <div class="q-block">
+        <p class="q-label">As-tu actuellement l'un de ces éléments ?<span class="req">*</span></p>
+        <p class="q-hint">Plusieurs choix possibles</p>
+        <div class="pill-grid" style="grid-template-columns:1fr" role="group" aria-label="Types de dettes">
+          <button class="sel-item" data-q="q_dettes_types" data-val="decouvert_regulier" role="checkbox" aria-checked="false" data-excl="false"><span>💳 Découvert bancaire utilisé souvent</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_dettes_types" data-val="paiement_fractionne_mini_credit" role="checkbox" aria-checked="false" data-excl="false"><span>🛒 Paiements en plusieurs fois / cartes de magasin</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_dettes_types" data-val="credit_conso" role="checkbox" aria-checked="false" data-excl="false"><span>📝 Crédit(s) à la consommation</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_dettes_types" data-val="credit_immo" role="checkbox" aria-checked="false" data-excl="false"><span>🏠 Crédit immobilier</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_dettes_types" data-val="autre_credit" role="checkbox" aria-checked="false" data-excl="false"><span>📋 Un autre type de crédit</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_dettes_types" data-val="aucun" role="checkbox" aria-checked="false" data-excl="true"><span>✅ Aucun de tout ça</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+        <span class="field-error" id="e-q9" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Sélectionne au moins une option.
+        </span>
+      </div>
+
+      <!-- Q10 conditional -->
+      <div class="cond" id="cond-q10">
+        <hr class="divider">
+        <div class="q-block" style="margin-top:0.75rem">
+          <p class="q-label">Des retards de paiement sur factures, loyers ou crédits ?<span class="req">*</span></p>
+          <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Retards de paiement">
+            <button class="sel-item" data-q="q_retards_paiement" data-val="aucun" role="radio" aria-checked="false"><span>✅ Non, jamais</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+            <button class="sel-item" data-q="q_retards_paiement" data-val="occasionnel" role="radio" aria-checked="false"><span>⚠️ Oui, de temps en temps</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+            <button class="sel-item" data-q="q_retards_paiement" data-val="frequent" role="radio" aria-checked="false"><span>🔴 Oui, souvent / en ce moment</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          </div>
+          <span class="field-error" id="e-q10" role="alert">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Indique si tu as eu des retards.
+          </span>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack(4)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Retour
+        </button>
+        <button class="btn-next" onclick="goNext(4)">
+          Continuer
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 5 — Épargne & Sécurité ═════════════════════════ -->
+    <div class="step" id="step-5" aria-label="Étape 5">
+      <div class="step-header">
+        <span class="step-badge"><span class="dot-live"></span>Dernière étape</span>
+        <h2 class="step-title">Ton épargne, tes placements & ta sécurité</h2>
+        <p class="step-sub">Promis, c'est la dernière.</p>
+      </div>
+
+      <!-- Q11 conditional -->
+      <div class="cond" id="cond-q11">
+        <div class="q-block">
+          <p class="q-label">Quels produits d'épargne ou d'investissement possèdes-tu ?<span class="req">*</span></p>
+          <p class="q-hint">Plusieurs choix possibles</p>
+
+          <!-- Produits avec expansion montant inline -->
+          <div class="produit-grid" role="group" aria-label="Produits détenus" id="produit-grid">
+
+            <!-- Item: Aucun (exclusif, pas de montant) -->
+            <div class="produit-item" id="prod-aucun">
+              <button class="sel-item" data-q="q_produits_detenu" data-val="aucun_ou_je_sais_pas" role="checkbox" aria-checked="false" data-excl="true">
+                <span>❓ Aucun / je ne sais pas</span>
+                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>
+            </div>
+
+            <!-- Livrets — montant liquide utile pour matelas -->
+            <div class="produit-item" id="prod-livrets">
+              <button class="sel-item" data-q="q_produits_detenu" data-val="livrets_seuls" role="checkbox" aria-checked="false" data-excl="false" data-has-montant="true" data-montant-key="montant_livrets">
+                <span>💰 Livrets (Livret A, LDDS, LEP…)</span>
+                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>
+              <div class="produit-montant-row" id="montant-row-livrets">
+                <div class="produit-montant-inner">
+                  <span class="produit-montant-label">Total sur livrets :</span>
+                  <input class="produit-montant-input" id="montant-livrets" type="text" inputmode="numeric" placeholder="Ex. 1 500" autocomplete="off" />
+                  <span class="produit-montant-suffix">€</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Assurance-vie — montant optionnel (moins liquide) -->
+            <div class="produit-item" id="prod-av">
+              <button class="sel-item" data-q="q_produits_detenu" data-val="assurance_vie" role="checkbox" aria-checked="false" data-excl="false" data-has-montant="true" data-montant-key="montant_assurance_vie">
+                <span>📄 Assurance-vie</span>
+                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>
+              <div class="produit-montant-row" id="montant-row-assurance_vie">
+                <div class="produit-montant-inner">
+                  <span class="produit-montant-label">Valeur estimée :</span>
+                  <input class="produit-montant-input" id="montant-assurance_vie" type="text" inputmode="numeric" placeholder="Ex. 5 000" autocomplete="off" />
+                  <span class="produit-montant-suffix">€</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PEA — pas de montant (non liquide, hors scope matelas) -->
+            <div class="produit-item" id="prod-pea">
+              <button class="sel-item" data-q="q_produits_detenu" data-val="pea" role="checkbox" aria-checked="false" data-excl="false">
+                <span>📈 PEA</span>
+                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>
+            </div>
+
+            <!-- PER — pas de montant (non liquide) -->
+            <div class="produit-item" id="prod-per">
+              <button class="sel-item" data-q="q_produits_detenu" data-val="per" role="checkbox" aria-checked="false" data-excl="false">
+                <span>🏦 PER (retraite)</span>
+                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>
+            </div>
+
+            <!-- Immobilier locatif — pas de montant -->
+            <div class="produit-item" id="prod-immo">
+              <button class="sel-item" data-q="q_produits_detenu" data-val="immo_locatif" role="checkbox" aria-checked="false" data-excl="false">
+                <span>🏘️ Immobilier locatif</span>
+                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>
+            </div>
+
+            <!-- Trading / néo-broker — pas de montant -->
+            <div class="produit-item" id="prod-trading">
+              <button class="sel-item" data-q="q_produits_detenu" data-val="trading_neo_broker" role="checkbox" aria-checked="false" data-excl="false">
+                <span>💹 Trading / néo-broker</span>
+                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>
+            </div>
+
+            <!-- Crypto — pas de montant -->
+            <div class="produit-item" id="prod-crypto">
+              <button class="sel-item" data-q="q_produits_detenu" data-val="crypto" role="checkbox" aria-checked="false" data-excl="false">
+                <span>🪙 Crypto-actifs</span>
+                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </button>
+            </div>
+
+          </div><!-- /.produit-grid -->
+
+          <!-- Hint d'aide affiché dès qu'un produit avec montant est sélectionné -->
+          <p class="q-hint-amount" id="hint-montant-optionnel">Si tu veux, tu peux renseigner les montants — ça nous aide à calibrer ton matelas de sécurité. C'est complètement optionnel.</p>
+
+          <span class="field-error" id="e-q11" role="alert">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Sélectionne au moins une option.
+          </span>
+        </div>
+        <hr class="divider" style="margin:0.75rem 0">
+      </div>
+
+      <!-- Q12 -->
+      <div class="q-block">
+        <p class="q-label">À l'aise avec les démarches en ligne ?<span class="req">*</span></p>
+        <div class="pill-wrap" role="radiogroup" aria-label="Confort numérique">
+          <button class="pill" data-q="q_confort_numerique" data-val="a_l_aise" role="radio" aria-checked="false">💻 Oui, très à l'aise</button>
+          <button class="pill" data-q="q_confort_numerique" data-val="moyen" role="radio" aria-checked="false">🙂 Ça va, sans plus</button>
+          <button class="pill" data-q="q_confort_numerique" data-val="peu_a_l_aise" role="radio" aria-checked="false">😬 Pas vraiment</button>
+        </div>
+        <span class="field-error" id="e-q12" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Indique ton confort numérique.
+        </span>
+      </div>
+
+      <!-- Q13 -->
+      <div class="q-block">
+        <p class="q-label">Déjà victime d'une arnaque liée à l'argent ?<span class="req">*</span></p>
+        <div class="pill-wrap" role="radiogroup" aria-label="Expérience de fraude">
+          <button class="pill" data-q="q_fraude_experience" data-val="oui" role="radio" aria-checked="false">Oui</button>
+          <button class="pill" data-q="q_fraude_experience" data-val="non" role="radio" aria-checked="false">Non</button>
+          <button class="pill" data-q="q_fraude_experience" data-val="incertain" role="radio" aria-checked="false">Pas sûr</button>
+        </div>
+        <span class="field-error" id="e-q13" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Réponds à cette question pour finaliser.
+        </span>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn-back" onclick="goBack(5)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Retour
+        </button>
+        <button class="btn-next" onclick="submitQuiz()">
+          Voir mon parcours ✨
+        </button>
+      </div>
+    </div>
+
+    <!-- LOADER -->
+    <div id="loader">
+      <div class="loader-ring"></div>
+      <p class="loader-text">Fundy analyse ton profil…</p>
+      <p class="loader-sub">Génération de ton parcours personnalisé</p>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result" role="region" aria-label="Résultats">
+      <div class="result-hero">
+        <div class="result-icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h2 class="result-title">Ton parcours est prêt&nbsp;!</h2>
+        <p class="result-sub">Voici les modules sélectionnés pour toi, dans l'ordre de priorité.</p>
+      </div>
+      <span class="result-label">Briques recommandées</span>
+      <div class="briques-list" id="briques-list" role="list"></div>
+      <details class="json-details">
+        <summary>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Voir le profil JSON complet
+        </summary>
+        <pre id="json-out"></pre>
+      </details>
+      <button onclick="goToPlan()" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:1rem 1.75rem;border-radius:9999px;background:linear-gradient(135deg,#6366f1,#c084fc);font-size:0.9rem;font-weight:700;color:#fff;border:none;cursor:pointer;box-shadow:0 0 28px rgba(99,102,241,0.35);margin-top:0.25rem;">
+        Voir mon plan complet
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <button class="btn-restart" onclick="restart()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        Recommencer
+      </button>
+    </div>
+
+  </div><!-- /.quiz-card -->
+</div><!-- /#app -->
+
+<script>
+// ─── CANVAS PARTICLES ──────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  const resize = () => { W = canvas.width = innerWidth; H = canvas.height = innerHeight; };
+  window.addEventListener('resize', resize); resize();
+  class P {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W; this.y = H + 10;
+      this.vy = -(Math.random() * 0.4 + 0.15);
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.r  = Math.random() * 1.8 + 0.4;
+      this.a  = Math.random() * 0.5 + 0.1;
+    }
+    tick() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.y < -10) this.reset();
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(139,92,246,${this.a})`;
+      ctx.fill();
+    }
+  }
+  for (let i=0; i<40; i++) { const p = new P(); p.y = Math.random()*H; particles.push(p); }
+  const loop = () => { ctx.clearRect(0,0,W,H); particles.forEach(p=>p.tick()); requestAnimationFrame(loop); };
+  loop();
+})();
+
+// ─── STATE ─────────────────────────────────────────────────────
+const A = {
+  q_age_group: null, q_status_pro: null,
+  q_revenu_sentiment: null, q_stress_budget: null,
+  q_logement_situation: null, q_logement_projet: null,
+  q_objectifs: [], q_urgence_principale: null,
+  q_dettes_types: [], q_retards_paiement: null,
+  q_produits_detenu: [], q_confort_numerique: null,
+  q_fraude_experience: null
+};
+
+let current = 1;
+
+// ─── SELECTION HANDLERS ─────────────────────────────────────────
+document.querySelectorAll('[data-q]').forEach(btn => {
+  const q = btn.dataset.q, val = btn.dataset.val, role = btn.getAttribute('role');
+
+  btn.addEventListener('click', () => {
+    if (role === 'radio') {
+      document.querySelectorAll(`[data-q="${q}"]`).forEach(b => {
+        b.classList.remove('selected'); b.setAttribute('aria-checked','false');
+      });
+      btn.classList.add('selected'); btn.setAttribute('aria-checked','true');
+      A[q] = val;
+      clearErr(q); applyConditionals(); autoUrgence();
+
+    } else if (role === 'checkbox') {
+      const excl = btn.dataset.excl === 'true';
+      const sel  = btn.classList.contains('selected');
+
+      if (q === 'q_objectifs') {
+        if (!sel && A[q].length >= 2) return;
+        if (!sel) {
+          document.querySelectorAll(`[data-q="${q}"][data-excl="true"]`).forEach(b => {
+            b.classList.remove('selected'); b.setAttribute('aria-checked','false');
+          });
+          A[q] = A[q].filter(v => v !== 'aucun'); A[q].push(val);
+          btn.classList.add('selected'); btn.setAttribute('aria-checked','true');
+        } else {
+          A[q] = A[q].filter(v => v !== val);
+          btn.classList.remove('selected'); btn.setAttribute('aria-checked','false');
+        }
+        const cnt = document.getElementById('cnt-obj');
+        cnt.textContent = A[q].length; cnt.classList.toggle('full', A[q].length>=2);
+        autoUrgence();
+
+      } else if (excl) {
+        if (!sel) {
+          document.querySelectorAll(`[data-q="${q}"]`).forEach(b => { b.classList.remove('selected'); b.setAttribute('aria-checked','false'); });
+          btn.classList.add('selected'); btn.setAttribute('aria-checked','true');
+          A[q] = [val];
+        } else { btn.classList.remove('selected'); btn.setAttribute('aria-checked','false'); A[q] = []; }
+      } else {
+        document.querySelectorAll(`[data-q="${q}"][data-excl="true"]`).forEach(b => {
+          b.classList.remove('selected'); b.setAttribute('aria-checked','false');
+          A[q] = A[q].filter(v => v !== b.dataset.val);
+        });
+        if (!sel) { A[q].push(val); btn.classList.add('selected'); btn.setAttribute('aria-checked','true'); }
+        else { A[q] = A[q].filter(v => v !== val); btn.classList.remove('selected'); btn.setAttribute('aria-checked','false'); }
+      }
+      clearErr(q); applyConditionals();
+      // Q11 specific: toggle montant expansion after state update
+      if (q === 'q_produits_detenu') handleProduitExpansion(btn);
+    }
+  });
+});
+
+// ─── AUTO-URGENCE ───────────────────────────────────────────────
+function autoUrgence() {
+  if (A.q_urgence_principale) return;
+  const obj = A.q_objectifs, rev = A.q_revenu_sentiment;
+  let s = null;
+  if (rev === 'difficile_fin_mois' && (obj.includes('sortir_decouvert')||obj.includes('stabiliser_budget'))) s='survie_mois';
+  else if (obj.includes('financer_projet_court_terme')||obj.includes('acheter_logement')) s='projet_prochain_mois';
+  else if (obj.includes('investir_long_terme')||obj.includes('preparer_retraite')||obj.includes('preparer_transmission')) s='long_terme';
+  if (s) {
+    document.querySelectorAll('[data-q="q_urgence_principale"]').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-checked','false');});
+    const b = document.querySelector(`[data-q="q_urgence_principale"][data-val="${s}"]`);
+    if (b) { b.classList.add('selected'); b.setAttribute('aria-checked','true'); A.q_urgence_principale = s; }
+  }
+}
+
+// ─── CONDITIONAL DISPLAY ───────────────────────────────────────
+function show(id, v) {
+  const el = document.getElementById(id);
+  if (v) el.classList.add('visible'); else el.classList.remove('visible');
+}
+function resetQ(q) {
+  document.querySelectorAll(`[data-q="${q}"]`).forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-checked','false');});
+  if (Array.isArray(A[q])) A[q]=[];
+  else A[q] = null;
+}
+function applyConditionals() {
+  const age = A.q_age_group, dettes = A.q_dettes_types, obj = A.q_objectifs;
+  // Q5
+  const q5v = age && age !== '15_17';
+  show('cond-q5', q5v); if (!q5v) resetQ('q_logement_situation');
+  // Q6
+  const q6v = ['18_24','25_34','35_54'].includes(age);
+  show('cond-q6', q6v); if (!q6v) resetQ('q_logement_projet');
+  // Q10
+  const q10v = dettes.length > 0 && !dettes.every(v=>v==='aucun');
+  show('cond-q10', q10v); if (!q10v) resetQ('q_retards_paiement');
+  // Q11
+  const investObj = ['investir_long_terme','preparer_retraite','preparer_transmission','mieux_comprendre_contrats'];
+  const q11v = obj.some(o=>investObj.includes(o));
+  show('cond-q11', q11v); if (!q11v) { A.q_produits_detenu=[]; resetQ('q_produits_detenu'); }
+}
+
+// ─── VALIDATION ─────────────────────────────────────────────────
+function showErr(id) { document.getElementById(id).classList.add('show'); }
+function clearErr(q) {
+  const m = { q_age_group:'e-q1', q_status_pro:'e-q2', q_revenu_sentiment:'e-q3', q_stress_budget:'e-q4',
+    q_logement_situation:'e-q5', q_logement_projet:'e-q6', q_objectifs:'e-q7', q_urgence_principale:'e-q8',
+    q_dettes_types:'e-q9', q_retards_paiement:'e-q10', q_produits_detenu:'e-q11', q_confort_numerique:'e-q12', q_fraude_experience:'e-q13' };
+  if (m[q]) document.getElementById(m[q]).classList.remove('show');
+}
+function validate(n) {
+  let ok = true;
+  if (n===1) {
+    if (!A.q_age_group)  { showErr('e-q1'); ok=false; }
+    if (!A.q_status_pro) { showErr('e-q2'); ok=false; }
+  }
+  if (n===2) {
+    if (!A.q_revenu_sentiment) { showErr('e-q3'); ok=false; }
+    if (!A.q_stress_budget)    { showErr('e-q4'); ok=false; }
+    if (A.q_age_group !== '15_17' && !A.q_logement_situation) { showErr('e-q5'); ok=false; }
+    if (['18_24','25_34','35_54'].includes(A.q_age_group) && !A.q_logement_projet) { showErr('e-q6'); ok=false; }
+  }
+  if (n===3) {
+    if (!A.q_objectifs.length) { showErr('e-q7'); ok=false; }
+    if (!A.q_urgence_principale) { showErr('e-q8'); ok=false; }
+  }
+  if (n===4) {
+    if (!A.q_dettes_types.length) { showErr('e-q9'); ok=false; }
+    const hd = A.q_dettes_types.length>0 && !A.q_dettes_types.every(v=>v==='aucun');
+    if (hd && !A.q_retards_paiement) { showErr('e-q10'); ok=false; }
+  }
+  if (n===5) {
+    const inv = ['investir_long_terme','preparer_retraite','preparer_transmission','mieux_comprendre_contrats'];
+    if (A.q_objectifs.some(o=>inv.includes(o)) && !A.q_produits_detenu.length) { showErr('e-q11'); ok=false; }
+    if (!A.q_confort_numerique)  { showErr('e-q12'); ok=false; }
+    if (!A.q_fraude_experience)  { showErr('e-q13'); ok=false; }
+  }
+  return ok;
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────────
+function goNext(n) { if (!validate(n)) return; setStep(n+1); }
+function goBack(n) { setStep(n-1); }
+
+function setStep(n) {
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  const t = document.getElementById(`step-${n}`);
+  if (t) { t.classList.remove('active'); void t.offsetWidth; t.classList.add('active'); }
+  current = n; updateProgress(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress(n) {
+  [1,2,3,4,5].forEach(i => {
+    const d = document.getElementById(`d${i}`);
+    d.className = 'dot ' + (i < n ? 'done' : i === n ? 'active' : 'inactive');
+  });
+  document.getElementById('progress-label').textContent = `Étape ${n} sur 5`;
+}
+
+// ─── SUBMIT ──────────────────────────────────────────────────────
+// ─── Q11 MONTANTS : lecture des inputs inline ───────────────────────
+// Produits avec champ montant optionnel
+const PRODUITS_MONTANT = [
+  { val:'livrets_seuls',  rowId:'montant-row-livrets',      inputId:'montant-livrets',       liquide:true },
+  { val:'assurance_vie', rowId:'montant-row-assurance_vie', inputId:'montant-assurance_vie', liquide:false }
+];
+
+function getEpargneMontants() {
+  const montants = {};
+  let liquideTotal = 0;
+  try {
+    PRODUITS_MONTANT.forEach(pm => {
+      const inp = document.getElementById(pm.inputId);
+      const raw = inp ? inp.value.replace(/[^0-9]/g,'') : '';
+      const v = raw ? parseInt(raw) : null;
+      // Normalize key: montant-livrets → montant_livrets, montant-assurance_vie → montant_assurance_vie
+      const key = pm.inputId.replace(/^montant-/, 'montant_').replace(/-/g, '_');
+      montants[key] = v;
+      if (pm.liquide && v) liquideTotal += v;
+    });
+  } catch(e) {}
+  montants.epargne_liquide_total = liquideTotal > 0 ? liquideTotal : null;
+  return montants;
+}
+
+// Expansion handler — called after Q11 sel-item toggle
+function handleProduitExpansion(btn) {
+  const isSelected = btn.classList.contains('selected');
+  const pm = PRODUITS_MONTANT.find(p => p.val === btn.dataset.val);
+  if (!pm) {
+    const item = btn.closest('.produit-item');
+    if (item) item.classList.toggle('selected-prod', isSelected);
+    return;
+  }
+  const row = document.getElementById(pm.rowId);
+  if (row) {
+    row.classList.toggle('open', isSelected);
+    if (!isSelected) { const inp = row.querySelector('input'); if (inp) inp.value = ''; }
+  }
+  const item = btn.closest('.produit-item');
+  if (item) item.classList.toggle('selected-prod', isSelected);
+  // Show hint when any product with montant is selected
+  const anySelected = PRODUITS_MONTANT.some(p => {
+    const b = document.querySelector(`[data-val="${p.val}"][data-q="q_produits_detenu"]`);
+    return b && b.classList.contains('selected');
+  });
+  const hint = document.getElementById('hint-montant-optionnel');
+  if (hint) hint.classList.toggle('show', anySelected);
+}
+
+function submitQuiz() {
+  if (!validate(5)) return;
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('progress-wrapper').style.display = 'none';
+  const loader = document.getElementById('loader');
+  loader.classList.add('active');
+
+  // Build profile safely — wrap in try/catch so loader never hangs on exception
+  let briquesIds = [];
+  let profileOut = {};
+  try {
+    briquesIds = computeBriques();
+    const em = getEpargneMontants();
+    profileOut = {
+      age_group: A.q_age_group, status_pro: A.q_status_pro,
+      revenu_sentiment: A.q_revenu_sentiment, stress_budget: parseInt(A.q_stress_budget)||0,
+      logement_situation: A.q_logement_situation, logement_projet: A.q_logement_projet,
+      objectifs: A.q_objectifs || [], dettes_types: A.q_dettes_types || [],
+      retards_paiement: A.q_retards_paiement, produits_detenu: A.q_produits_detenu || [],
+      confort_numerique: A.q_confort_numerique, fraude_experience: A.q_fraude_experience,
+      urgence_principale: A.q_urgence_principale,
+      briques_recommandees: briquesIds,
+      montant_livrets: em.montant_livrets || null,
+      montant_assurance_vie: em.montant_assurance_vie || null,
+      epargne_liquide_total: em.epargne_liquide_total || null
+    };
+    saveToStorage('fund_profil', profileOut);
+    // Async save to Supabase (if user is logged in)
+    saveProfile(profileOut).catch(() => {});
+  } catch(e) {
+    console.error('submitQuiz error:', e);
+  }
+
+  setTimeout(() => {
+    loader.classList.remove('active');
+    try { renderResult(); } catch(e) { console.error('renderResult error:', e); }
+    document.getElementById('result').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, 1800);
+}
+
+// ─── ROUTING ENGINE ───────────────────────────────────────────────
+const BRIQUES = {
+  budget_base:              { icon:'📊', title:'Les bases d\'un budget sain', desc:'La méthode pour arrêter de subir ses dépenses.' },
+  gestion_decouvert:        { icon:'🚨', title:'Sortir du découvert', desc:'Plan d\'action immédiat pour repasser dans le vert.' },
+  paiements_fractionnes:    { icon:'💳', title:'Le piège du paiement fractionné', desc:'Comprendre et se libérer des mini-crédits.' },
+  fonds_urgence:            { icon:'🛡️', title:'Construire son fonds d\'urgence', desc:'Le matelas de sécurité indispensable.' },
+  droits_aides:             { icon:'🤝', title:'Optimiser ses aides', desc:'Ne passe pas à côté des dispositifs auxquels tu as droit.' },
+  plan_desendettement:      { icon:'📉', title:'Plan de désendettement', desc:'Stratégie boule de neige ou avalanche pour effacer tes dettes.' },
+  dispositifs_bdf:          { icon:'🏛️', title:'Dispositifs Banque de France', desc:'Dossier de surendettement et aide d\'urgence.' },
+  anti_arnaques:            { icon:'🔒', title:'Cybersécurité financière', desc:'Détecter et éviter les arnaques modernes.' },
+  premiers_pas_bancaires:   { icon:'🎓', title:'Premiers pas bancaires', desc:'Comprendre sa banque quand on débute.' },
+  emmenagement:             { icon:'📦', title:'Préparer son emménagement', desc:'Budget, caution, assurances : le guide complet.' },
+  plan_multi_objectifs:     { icon:'🎯', title:'Plan multi-objectifs', desc:'Prioriser et financer plusieurs projets en parallèle.' },
+  projet_immo:              { icon:'🏠', title:'Projet immobilier', desc:'De l\'apport au crédit, décrypter l\'achat immobilier.' },
+  treso_dirigeant:          { icon:'💼', title:'Trésorerie du dirigeant', desc:'Gérer la frontière entre finances perso et pro.' },
+  structuration_patrimoine: { icon:'🧱', title:'Structuration patrimoniale', desc:'Organiser et faire fructifier son patrimoine.' },
+  investissement_long_terme:{ icon:'🌱', title:'Investissement long terme', desc:'Les grands principes pour faire travailler son argent.' },
+  diversification_allocation:{ icon:'📐', title:'Diversification & allocation', desc:'Construire un portefeuille équilibré.' },
+  produits_complexes_vs_simples:{ icon:'⚖️', title:'Produits complexes vs simples', desc:'Comprendre les risques du trading et des cryptos.' },
+  fiscalite_epargne:        { icon:'📑', title:'Fiscalité de l\'épargne', desc:'Optimiser la fiscalité de ses placements.' },
+  retraite:                 { icon:'🌅', title:'Préparer sa retraite', desc:'Simuler et anticiper ses droits à la retraite.' },
+  transmission:             { icon:'🤲', title:'Transmission du patrimoine', desc:'Donation, succession : organiser la transmission.' },
+  clarification_contrats:   { icon:'🔍', title:'Clarifier ses contrats', desc:'Décrypter ses contrats d\'assurance-vie et PER.' }
+};
+const PRIORITY = ['budget_base','gestion_decouvert','paiements_fractionnes','fonds_urgence','droits_aides','plan_desendettement','dispositifs_bdf','anti_arnaques','premiers_pas_bancaires','emmenagement','plan_multi_objectifs','projet_immo','treso_dirigeant','structuration_patrimoine','investissement_long_terme','diversification_allocation','produits_complexes_vs_simples','fiscalite_epargne','retraite','transmission','clarification_contrats'];
+
+function computeBriques() {
+  const age=A.q_age_group, rev=A.q_revenu_sentiment, stress=parseInt(A.q_stress_budget)||0,
+    status=A.q_status_pro, obj=A.q_objectifs, dettes=A.q_dettes_types,
+    retards=A.q_retards_paiement, produits=A.q_produits_detenu,
+    confort=A.q_confort_numerique, fraude=A.q_fraude_experience, lp=A.q_logement_projet;
+  const s=new Set();
+  if (stress>=4||['difficile_fin_mois','juste_juste'].includes(rev)) s.add('budget_base');
+  if (obj.includes('sortir_decouvert')||obj.includes('stabiliser_budget')) s.add('budget_base');
+  if (dettes.includes('decouvert_regulier')) s.add('gestion_decouvert');
+  if (dettes.includes('paiement_fractionne_mini_credit')) s.add('paiements_fractionnes');
+  if (rev!=='a_l_aise'&&(stress>=3||obj.includes('stabiliser_budget'))) s.add('fonds_urgence');
+  if (rev==='difficile_fin_mois'||['chomeur_inactif','college_lycee'].includes(status)) s.add('droits_aides');
+  if ((dettes.includes('credit_conso')||dettes.includes('paiement_fractionne_mini_credit')||dettes.includes('decouvert_regulier'))&&(obj.includes('rembourser_dettes')||(retards&&retards!=='aucun'))) s.add('plan_desendettement');
+  if (retards==='frequent'&&rev==='difficile_fin_mois'&&dettes.filter(d=>d!=='aucun').length>=2) s.add('dispositifs_bdf');
+  if (['15_17','18_24','65_plus'].includes(age)||confort==='peu_a_l_aise'||fraude==='oui') s.add('anti_arnaques');
+  if (['15_17','18_24'].includes(age)&&['college_lycee','etudiant'].includes(status)) s.add('premiers_pas_bancaires');
+  if (['18_24','25_34'].includes(age)&&['je_vais_demenager','je_veux_acheter'].includes(lp)) s.add('emmenagement');
+  if (['financer_projet_court_terme','acheter_logement','preparer_retraite'].some(o=>obj.includes(o))&&rev!=='difficile_fin_mois') s.add('plan_multi_objectifs');
+  if (lp==='je_veux_acheter'||dettes.includes('credit_immo')) s.add('projet_immo');
+  if (status==='indep_tpe') s.add('treso_dirigeant');
+  if (rev==='a_l_aise'||['assurance_vie','pea','per','immo_locatif'].some(p=>produits.includes(p))) s.add('structuration_patrimoine');
+  if (obj.includes('investir_long_terme')) { s.add('investissement_long_terme'); s.add('diversification_allocation'); if (['pea','assurance_vie','per'].some(p=>produits.includes(p))) s.add('fiscalite_epargne'); }
+  if (['trading_neo_broker','crypto'].some(p=>produits.includes(p))) s.add('produits_complexes_vs_simples');
+  if (obj.includes('preparer_retraite')&&['35_54','55_64'].includes(age)) s.add('retraite');
+  if (obj.includes('preparer_transmission')||(['55_64','65_plus'].includes(age)&&['immo_locatif','assurance_vie'].some(p=>produits.includes(p)))) s.add('transmission');
+  if (['55_64','65_plus'].includes(age)&&['assurance_vie','per','immo_locatif'].some(p=>produits.includes(p))) s.add('clarification_contrats');
+  return PRIORITY.filter(b=>s.has(b));
+}
+
+function renderResult() {
+  const briques = computeBriques();
+  const list = document.getElementById('briques-list');
+  list.innerHTML = '';
+  const top = briques.slice(0, 6);
+  top.forEach((key, i) => {
+    const b = BRIQUES[key] || { icon:'✨', title: key, desc: '' };
+    const el = document.createElement('div');
+    el.className = 'brique-card'; el.setAttribute('role','listitem');
+    el.style.animationDelay = `${i*80}ms`;
+    el.innerHTML = `
+      <div class="brique-icon-wrap" aria-hidden="true">${b.icon}</div>
+      <div class="brique-text">
+        <div class="brique-title">${b.title}</div>
+        <div class="brique-desc">${b.desc}</div>
+      </div>`;
+    list.appendChild(el);
+  });
+  if (briques.length > 6) {
+    const more = document.createElement('p');
+    more.className = 'brique-more';
+    more.textContent = `+ ${briques.length - 6} autres modules dans ton espace personnel`;
+    list.appendChild(more);
+  }
+  const out = { ...Object.fromEntries(Object.entries(A)), briques_recommandees: briques };
+  document.getElementById('json-out').textContent = JSON.stringify(out, null, 2);
+}
+
+// ─── RESTART ─────────────────────────────────────────────────────
+function restart() {
+  Object.keys(A).forEach(k => A[k] = Array.isArray(A[k]) ? [] : null);
+  document.querySelectorAll('[data-q]').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-checked','false');});
+  document.querySelectorAll('.field-error').forEach(e=>e.classList.remove('show'));
+  document.getElementById('cnt-obj').textContent = '0';
+  document.getElementById('cnt-obj').classList.remove('full');
+  document.getElementById('result').classList.remove('active');
+  document.getElementById('progress-wrapper').style.display = '';
+  applyConditionals();
+  setStep(1);
+}
+
+// ─── NAVIGATE TO PLAN (encode profil in hash for storage-less envs) ────────
+function goToPlan() {
+  try {
+    const stored = loadFromStorage('fund_profil');
+    if (stored) {
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(stored))));
+      window.location.href = 'plan.html#p=' + encoded;
+      return;
+    }
+  } catch(e) {}
+  window.location.href = 'plan.html';
+}
+
+// Init
+applyConditionals();
+
+// Hydrate nav avec info user (async, non-bloquant)
+(async () => {
+  const user = await getCurrentUser();
+  if (!user) return;
+  // Si l'utilisateur a déjà un profil en base, pré-remplir si quizz non commencé
+  const profil = await loadProfile();
+  if (profil && profil.briques_recommandees && profil.briques_recommandees.length > 0) {
+    saveToStorage('fund_profil', profil);
+  }
+})();
+</script>
+<script src="feedback-widget.js"></script>
+</body>
+</html>

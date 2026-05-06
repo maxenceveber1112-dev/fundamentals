@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamental — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
+      --border:#252845;--border-hover:#363a68;
+      --text:#e2e4f0;--text-muted:#8b90b8;--text-faint:#444868;
+      --violet:#818cf8;--purple:#c084fc;--indigo:#6366f1;
+      --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
+      --violet-glow:rgba(129,140,248,0.10);
+      --green:#4ade80;--green-dim:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.3);
+      --orange:#fb923c;--orange-dim:rgba(251,146,60,0.12);--orange-border:rgba(251,146,60,0.3);
+      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
+      --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1.25rem;--r-xl:1.75rem;--r-full:9999px;
+      --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{-webkit-font-smoothing:antialiased;}
+    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;overflow-x:hidden;}
+    button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+    :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:var(--r-sm);}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+
+    #bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:rgba(11,13,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;}
+    .logo{display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+    .nav-right{display:flex;align-items:center;gap:1rem;}
+    .nav-link{font-size:0.8rem;color:var(--text-muted);text-decoration:none;padding:0.35rem 0.75rem;border-radius:var(--r-full);border:1px solid var(--border);transition:color var(--t),border-color var(--t);}
+    .nav-link:hover{color:var(--violet);border-color:var(--violet);}
+    .nav-link.active{background:var(--indigo-dim);color:#a5b4fc;border-color:rgba(99,102,241,0.3);}
+    .streak-badge{display:flex;align-items:center;gap:0.3rem;padding:0.3rem 0.65rem;border-radius:var(--r-full);background:var(--orange-dim);border:1px solid var(--orange-border);font-size:0.75rem;font-weight:700;color:var(--orange);}
+
+    /* LAYOUT */
+    main{position:relative;z-index:1;max-width:940px;margin:0 auto;padding:2.5rem 1.5rem 6rem;}
+    .page-grid{display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start;}
+
+    /* SECTION LABELS */
+    .section-label{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-faint);margin-bottom:0.875rem;}
+
+    @keyframes slideUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ═══════════════════════════════════════════════════════════════
+       ZONE 1 — SITUATION ACTUELLE
+    ═══════════════════════════════════════════════════════════════ */
+    .zone-situation{margin-bottom:1.5rem;animation:slideUp 0.35s var(--ease-out) both;}
+    .situation-card{
+      background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+      padding:1.25rem 1.5rem;
+      display:flex;align-items:center;gap:1.25rem;
+    }
+    .situation-icon{
+      width:44px;height:44px;border-radius:var(--r-md);
+      background:var(--surface-3);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.3rem;flex-shrink:0;
+    }
+    .situation-content{flex:1;min-width:0;}
+    .situation-sentence{font-size:0.9rem;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:0.5rem;}
+    .situation-metrics{display:flex;flex-wrap:wrap;gap:0.625rem;}
+    .sit-metric{
+      display:flex;align-items:center;gap:0.4rem;
+      padding:0.25rem 0.625rem;
+      background:var(--surface-2);border:1px solid var(--border);
+      border-radius:var(--r-full);font-size:0.75rem;color:var(--text-muted);
+    }
+    .sit-metric strong{color:var(--text);font-weight:700;}
+    .sit-metric.positive{border-color:var(--green-border);background:var(--green-dim);}
+    .sit-metric.positive strong{color:var(--green);}
+    .sit-metric.warning{border-color:var(--orange-border);background:var(--orange-dim);}
+    .sit-metric.warning strong{color:var(--orange);}
+    .situation-cta-link{
+      font-size:0.78rem;color:var(--violet);font-weight:600;
+      text-decoration:none;flex-shrink:0;
+      display:flex;align-items:center;gap:0.3rem;
+      transition:opacity var(--t);
+    }
+    .situation-cta-link:hover{opacity:0.75;}
+
+    /* ═══════════════════════════════════════════════════════════════
+       ZONE 2 — PROCHAINE ACTION (hero)
+    ═══════════════════════════════════════════════════════════════ */
+    .zone-action{margin-bottom:1.5rem;animation:slideUp 0.35s 0.06s var(--ease-out) both;}
+    .hero-card{
+      background:var(--surface);border:1.5px solid rgba(99,102,241,0.35);border-radius:var(--r-xl);
+      padding:1.75rem;position:relative;overflow:hidden;
+      box-shadow:0 0 40px rgba(99,102,241,0.08);
+    }
+    .hero-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.08),transparent 70%);pointer-events:none;}
+    .hero-card-top{display:flex;align-items:flex-start;gap:1rem;margin-bottom:1.25rem;}
+    .hero-icon-wrap{width:52px;height:52px;border-radius:var(--r-lg);background:var(--surface-3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.75rem;flex-shrink:0;}
+    .hero-meta{flex:1;}
+    .hero-pack{display:inline-block;padding:0.2rem 0.6rem;border-radius:var(--r-full);font-size:0.68rem;font-weight:700;margin-bottom:0.35rem;}
+    .hero-title{font-size:1.15rem;font-weight:800;color:#fff;line-height:1.3;margin-bottom:0.25rem;}
+    .hero-tagline{font-size:0.85rem;color:var(--text-muted);}
+    .hero-progress-wrap{margin-bottom:1.25rem;}
+    .progress-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;}
+    .progress-label-txt{font-size:0.78rem;color:var(--text-muted);}
+    .progress-pct{font-size:0.78rem;font-weight:700;color:var(--violet);}
+    .progress-track{height:6px;background:var(--surface-3);border-radius:var(--r-full);overflow:hidden;}
+    .progress-fill{height:100%;border-radius:var(--r-full);background:linear-gradient(90deg,var(--indigo),var(--purple));transition:width 0.8s var(--ease-out);}
+    .progress-fill.stripe{background:repeating-linear-gradient(90deg,var(--indigo) 0,var(--indigo) 8px,var(--purple) 8px,var(--purple) 16px);background-size:200% 100%;animation:stripe 1.5s linear infinite;}
+    @keyframes stripe{to{background-position:-200% 0;}}
+    .btn-resume{display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.875rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.9rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 24px rgba(99,102,241,0.3),0 4px 12px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);}
+    .btn-resume:hover{box-shadow:0 0 36px rgba(99,102,241,0.45);}
+    .btn-resume:active{transform:scale(0.98);}
+
+    /* Completed banner (dans zone 2) */
+    .completed-banner{text-align:center;padding:2rem;background:var(--green-dim);border:1.5px solid var(--green-border);border-radius:var(--r-xl);margin-bottom:1.5rem;display:none;}
+    .completed-banner.show{display:block;}
+    .completed-banner h2{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
+    .completed-banner p{font-size:0.875rem;color:var(--text-muted);}
+
+    /* ═══════════════════════════════════════════════════════════════
+       ZONE 3 — MES BRIQUES (liste unifiée)
+    ═══════════════════════════════════════════════════════════════ */
+    .zone-briques{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1.5rem;animation:slideUp 0.35s 0.10s var(--ease-out) both;}
+    .briques-subgroup{margin-bottom:1rem;}
+    .briques-subgroup:last-child{margin-bottom:0;}
+    .subgroup-label{font-size:0.65rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text-faint);margin-bottom:0.5rem;padding-left:0.25rem;}
+    .briques-list{display:flex;flex-direction:column;gap:0.3rem;}
+
+    /* Brique cards unifiées */
+    .bq-card{
+      display:flex;align-items:center;gap:0.75rem;
+      padding:0.75rem 0.875rem;
+      border-radius:var(--r-md);border:1px solid var(--border);background:var(--surface-2);
+      transition:border-color var(--t),background var(--t),transform 0.12s var(--ease-spring);
+      text-decoration:none;
+    }
+    .bq-card.clickable{cursor:pointer;}
+    .bq-card.clickable:hover{border-color:var(--border-hover);background:var(--surface-3);transform:translateX(2px);}
+    .bq-card.active-card{border-color:rgba(99,102,241,0.4);background:var(--indigo-dim);}
+    .bq-card.active-card:hover{border-color:rgba(99,102,241,0.55);}
+    .bq-card.done-card{opacity:0.6;}
+    .bq-card.soon-card{opacity:0.38;cursor:default;pointer-events:none;}
+    .bq-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .bq-dot.done{background:var(--green);}
+    .bq-dot.active{background:var(--violet);box-shadow:0 0 6px rgba(129,140,248,0.6);}
+    .bq-dot.todo{background:var(--border);}
+    .bq-dot.soon{background:var(--surface-3);border:1px solid var(--border);}
+    .bq-icon{font-size:1rem;flex-shrink:0;}
+    .bq-info{flex:1;min-width:0;}
+    .bq-name{font-size:0.82rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .bq-card.active-card .bq-name{color:#c7d2fe;}
+    .bq-card.soon-card .bq-name{color:var(--text-faint);}
+    .bq-pack{font-size:0.68rem;color:var(--text-faint);}
+    .bq-status{flex-shrink:0;display:flex;align-items:center;}
+    .bq-pct{font-size:0.72rem;color:var(--violet);font-weight:700;}
+    .bq-badge-done{font-size:0.7rem;color:var(--green);}
+    .bq-badge-soon{font-size:0.65rem;color:var(--text-faint);background:var(--surface-3);border:1px solid var(--border);padding:0.15rem 0.45rem;border-radius:var(--r-full);}
+
+    /* ═══════════════════════════════════════════════════════════════
+       ZONE 4 — EXPLORER (collapsible)
+    ═══════════════════════════════════════════════════════════════ */
+    .zone-explorer{animation:slideUp 0.35s 0.14s var(--ease-out) both;margin-bottom:1.5rem;}
+    .explorer-toggle{
+      display:flex;align-items:center;justify-content:space-between;width:100%;
+      padding:1rem 1.25rem;
+      background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+      transition:border-color var(--t),background var(--t);
+    }
+    .explorer-toggle:hover{border-color:var(--border-hover);background:var(--surface-2);}
+    .explorer-toggle.open{border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom-color:transparent;}
+    .explorer-toggle-left{display:flex;align-items:center;gap:0.75rem;}
+    .explorer-toggle-title{font-size:0.85rem;font-weight:700;color:var(--text);}
+    .explorer-toggle-count{font-size:0.72rem;color:var(--text-faint);background:var(--surface-3);padding:0.15rem 0.5rem;border-radius:var(--r-full);border:1px solid var(--border);}
+    .explorer-chevron{color:var(--text-faint);transition:transform var(--t);}
+    .explorer-chevron.open{transform:rotate(180deg);}
+    .explorer-body{
+      display:none;
+      background:var(--surface);border:1px solid var(--border);border-top:none;
+      border-bottom-left-radius:var(--r-lg);border-bottom-right-radius:var(--r-lg);
+      padding:0.75rem;
+    }
+    .explorer-body.open{display:flex;flex-direction:column;gap:0.375rem;}
+    .explore-card{
+      display:flex;align-items:center;gap:0.75rem;padding:0.75rem 0.875rem;
+      background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);
+      transition:border-color var(--t),background var(--t),transform 0.12s var(--ease-spring);
+    }
+    .explore-card:hover{border-color:var(--border-hover);background:var(--surface-3);transform:translateX(2px);}
+    .explore-icon{font-size:1rem;flex-shrink:0;}
+    .explore-text{flex:1;}
+    .explore-name{font-size:0.82rem;font-weight:600;color:var(--text);}
+    .explore-pack{font-size:0.68rem;color:var(--text-faint);}
+    .btn-add{font-size:0.72rem;padding:0.3rem 0.65rem;border-radius:var(--r-full);border:1px solid var(--border);color:var(--text-muted);flex-shrink:0;transition:border-color var(--t),color var(--t),background var(--t);}
+    .btn-add:hover{border-color:var(--violet);color:var(--violet);}
+    .btn-add.in-plan{background:var(--indigo-dim);border-color:rgba(99,102,241,0.3);color:#a5b4fc;cursor:default;}
+
+    /* ═══════════════════════════════════════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════════════════════════════════════ */
+    .sidebar{position:sticky;top:80px;display:flex;flex-direction:column;gap:1.25rem;}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;}
+    .stat-title{font-size:0.82rem;font-weight:700;color:var(--text);margin-bottom:1rem;}
+
+    /* 3 stats max */
+    .stats-row{display:flex;gap:0.625rem;}
+    .stat-box{flex:1;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);text-align:center;}
+    .stat-val{font-size:1.35rem;font-weight:800;color:#fff;line-height:1;}
+    .stat-lbl{font-size:0.65rem;color:var(--text-faint);margin-top:0.25rem;line-height:1.3;}
+
+    /* Plan mini dots */
+    .plan-mini{display:flex;flex-direction:column;gap:0.3rem;}
+    .pmi-item{display:flex;align-items:center;gap:0.625rem;padding:0.55rem 0.75rem;border-radius:var(--r-md);background:var(--surface-2);border:1px solid transparent;transition:border-color var(--t);}
+    .pmi-item.active{border-color:rgba(99,102,241,0.3);background:var(--indigo-dim);}
+    .pmi-item.done{opacity:0.55;}
+    .pmi-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .pmi-dot.done{background:var(--green);}
+    .pmi-dot.active{background:var(--violet);box-shadow:0 0 5px rgba(129,140,248,0.6);}
+    .pmi-dot.todo{background:var(--border);}
+    .pmi-name{font-size:0.75rem;flex:1;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pmi-item.active .pmi-name{color:#c7d2fe;font-weight:600;}
+    .pmi-icon{font-size:0.82rem;}
+
+    /* RESPONSIVE */
+    @media(max-width:720px){
+      .page-grid{grid-template-columns:1fr;}
+      .sidebar{position:static;}
+      nav{padding:0.875rem 1rem;}
+      main{padding:1.75rem 1rem 5rem;}
+      .situation-card{flex-direction:column;align-items:flex-start;gap:0.875rem;}
+      .situation-cta-link{align-self:flex-start;}
+    }
+  </style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo" aria-label="Fundamental">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
+      <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg)"/>
+      <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".25"/>
+    </svg>
+    Fundamental
+  </a>
+  <div class="nav-right">
+    <div class="streak-badge" id="streak-badge" aria-label="Streak">🔥 <span id="streak-count">0</span> jours</div>
+    <a href="index.html" class="nav-link">Questionnaire</a>
+    <a href="plan.html" class="nav-link">Mon plan</a>
+    <a href="dashboard.html" class="nav-link active">Dashboard</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- Completed banner -->
+  <div class="completed-banner" id="completed-banner">
+    <div style="font-size:2.5rem;margin-bottom:0.75rem;">🎉</div>
+    <h2>Bravo, tu as terminé ton plan !</h2>
+    <p>Tu as complété tous les modules de ton parcours Fundamentals. Explore de nouvelles briques ou recommence le questionnaire pour affiner ton profil.</p>
+  </div>
+
+  <div class="page-grid">
+    <!-- COL GAUCHE -->
+    <div class="left-col">
+
+      <!-- ══════════════════════════════════════════════════
+           ZONE 1 — SITUATION ACTUELLE
+      ══════════════════════════════════════════════════ -->
+      <div class="zone-situation">
+        <p class="section-label">Ta situation</p>
+        <div class="situation-card" id="situation-card">
+          <div class="situation-icon" id="sit-icon">📊</div>
+          <div class="situation-content">
+            <div class="situation-sentence" id="sit-sentence">—</div>
+            <div class="situation-metrics" id="sit-metrics"></div>
+          </div>
+          <a href="brique-budget-base.html" class="situation-cta-link" id="sit-cta" style="display:none;">
+            Commencer budget
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           ZONE 2 — PROCHAINE ACTION
+      ══════════════════════════════════════════════════ -->
+      <div class="zone-action">
+        <p class="section-label">Continuer là où tu t'es arrêté</p>
+        <div class="hero-card" id="hero-card">
+          <div class="hero-card-top">
+            <div class="hero-icon-wrap" id="hero-icon">📊</div>
+            <div class="hero-meta">
+              <div class="hero-pack" id="hero-pack">—</div>
+              <h2 class="hero-title" id="hero-title">—</h2>
+              <p class="hero-tagline" id="hero-tagline">—</p>
+            </div>
+          </div>
+          <div class="hero-progress-wrap">
+            <div class="progress-label-row">
+              <span class="progress-label-txt">Progression</span>
+              <span class="progress-pct" id="hero-pct">0%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill stripe" id="hero-bar" style="width:0%"></div></div>
+          </div>
+          <button class="btn-resume" onclick="resumeBrique()" id="btn-resume">
+            Commencer le module
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           ZONE 3 — MES BRIQUES (liste unifiée)
+      ══════════════════════════════════════════════════ -->
+      <div class="zone-briques" id="zone-briques">
+        <p class="section-label">Mes briques</p>
+        <div id="briques-en-cours"></div>
+        <div id="briques-a-faire"></div>
+        <div id="briques-terminees"></div>
+        <div id="briques-bientot"></div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════
+           ZONE 4 — EXPLORER (collapsible)
+      ══════════════════════════════════════════════════ -->
+      <div class="zone-explorer">
+        <button class="explorer-toggle" id="explorer-toggle" onclick="toggleExplorer()" aria-expanded="false">
+          <div class="explorer-toggle-left">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--violet)"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <span class="explorer-toggle-title">Explorer d'autres briques</span>
+            <span class="explorer-toggle-count" id="explorer-count">—</span>
+          </div>
+          <svg class="explorer-chevron" id="explorer-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="explorer-body" id="explorer-body" role="list"></div>
+      </div>
+
+    </div><!-- /.left-col -->
+
+    <!-- SIDEBAR DROITE -->
+    <aside class="sidebar">
+
+      <!-- 3 stats -->
+      <div class="stat-card">
+        <div class="stat-title">Tes stats</div>
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-val" id="stat-completed">0</div>
+            <div class="stat-lbl">modules terminés</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-total">0</div>
+            <div class="stat-lbl">dans le plan</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-pct">0%</div>
+            <div class="stat-lbl">avancement</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plan mini dots -->
+      <div class="stat-card">
+        <div class="stat-title">Mon plan</div>
+        <div class="plan-mini" id="plan-mini" role="list"></div>
+        <a href="plan.html" style="display:block;text-align:center;margin-top:0.875rem;font-size:0.75rem;color:var(--text-faint);text-decoration:underline;text-underline-offset:3px;transition:color var(--t);" onmouseover="this.style.color='var(--violet)'" onmouseout="this.style.color='var(--text-faint)'">Modifier mon plan</a>
+      </div>
+
+    </aside>
+  </div><!-- /.page-grid -->
+
+</main>
+
+<!-- ADD ENGAGEMENT MODAL (conservé pour briques qui l'utilisent) -->
+<div style="position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.2s;" id="eng-modal-overlay">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.75rem;width:100%;max-width:440px;transform:translateY(20px);transition:transform 0.3s var(--ease-out);" id="eng-modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <h3 style="font-size:1rem;font-weight:700;color:#fff;">Ajouter un engagement</h3>
+      <button style="width:28px;height:28px;border-radius:50%;background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--text-muted);" onclick="closeEngModal()">×</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.875rem;">
+      <div>
+        <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Type</label>
+        <select id="eng-type" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;">
+          <option value="fonds_urgence">Mini fonds d'urgence</option>
+          <option value="decouvert">Plafond de découvert</option>
+          <option value="remboursement">Remboursement mensuel</option>
+          <option value="epargne">Épargne mensuelle</option>
+          <option value="autre">Autre objectif</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Libellé</label>
+        <input id="eng-label" type="text" placeholder="Ex. : Ne pas dépasser –100 € ce mois-ci" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;"/>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div>
+          <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Cible (€)</label>
+          <input id="eng-cible" type="number" placeholder="300" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;"/>
+        </div>
+        <div>
+          <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Actuel (€)</label>
+          <input id="eng-actuel" type="number" placeholder="0" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;"/>
+        </div>
+      </div>
+      <button style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.875rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.9rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 20px rgba(99,102,241,0.3);" onclick="saveEngagement()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared.js"></script>
+<script src="supabase.js"></script>
+<script>
+  initBgCanvas('bg-canvas');
+
+  // ─── STATE ────────────────────────────────────────────────────
+  // Decode hash payload from plan.html (works when storage is blocked)
+  (function() {
+    try {
+      const m = window.location.hash.match(/[#&]d=([^&]+)/);
+      if (m) {
+        const payload = JSON.parse(decodeURIComponent(escape(atob(m[1]))));
+        if (payload.profil) saveToStorage('fund_profil', payload.profil);
+        if (payload.dash)   saveToStorage('fund_dashboard', payload.dash);
+      }
+    } catch(e) {}
+  })();
+  let dash = loadFromStorage('fund_dashboard') || getMockDashboard();
+  let profil = loadFromStorage('fund_profil') || getMockProfile();
+  const budget = loadFromStorage('fund_budget') || null;
+
+  // Async hydrate from Supabase and re-render if data is fresher
+  (async () => {
+    const user = await getCurrentUser();
+    if (!user) return;
+    const [dbProfil, dbDash] = await Promise.all([loadProfile(), loadDashboard()]);
+    let needsRender = false;
+    if (dbProfil && dbProfil.briques_recommandees) { profil = dbProfil; saveToStorage('fund_profil', profil); needsRender = true; }
+    if (dbDash && dbDash.briques && dbDash.briques.length > 0) { dash = dbDash; saveToStorage('fund_dashboard', dash); needsRender = true; }
+    if (needsRender) renderAll();
+  })();
+
+  function save() { saveToStorage('fund_dashboard', dash); saveDashboard(dash).catch(() => {}); }
+
+  // NAV streak
+  document.getElementById('streak-count').textContent = dash.streak || 0;
+
+  // Map brick IDs to their HTML files
+  const BRICK_FILES = {
+    budget_base: 'brique-budget-base.html',
+    gestion_decouvert: 'brique-gestion-decouvert.html',
+    paiements_fractionnes: 'brique-paiements-fractionnes.html',
+    fonds_urgence: 'brique-fonds-urgence.html',
+    premiers_pas_bancaires: 'brique-premiers-pas-bancaires.html'
+  };
+
+  const PACK_COLORS = {
+    'Survie & stabilité': '#f87171',
+    'Construction & projets': '#60a5fa',
+    'Investissement & long terme': '#a78bfa'
+  };
+
+  // ─── getSituationResume ────────────────────────────────────────
+  function getSituationResume(profil, dash, budget) {
+    const done = (dash.briques || []).filter(b => b.statut === 'terminee').length;
+    const total = (dash.briques || []).length;
+
+    // Si pas encore de brique budget faite → invite à commencer
+    const budgetDone = (dash.briques || []).find(b => b.id === 'budget_base' && b.statut === 'terminee');
+    if (!budgetDone) {
+      return {
+        icon: '🗺️',
+        sentence: 'Commence par la brique Budget pour voir ta situation réelle.',
+        metrics: [],
+        showCta: true
+      };
+    }
+
+    // Avec données budget
+    const result = { icon: '📊', sentence: '', metrics: [], showCta: false };
+
+    // Phrase principale depuis sentiment revenu
+    const revMap = {
+      difficile_fin_mois: 'Tu termines souvent le mois dans le rouge.',
+      juste_juste: "Tu t'en sors, mais sans grande marge.",
+      a_l_aise: 'Ta situation financière est confortable.'
+    };
+    result.sentence = revMap[profil.revenu_sentiment] || `${done} module${done > 1 ? 's' : ''} complété${done > 1 ? 's' : ''} sur ${total}.`;
+
+    // Métriques contextuelles
+    if (budget && budget.solde_mensuel !== undefined) {
+      const solde = budget.solde_mensuel;
+      result.metrics.push({
+        label: 'Solde mensuel',
+        value: formatEuro(solde),
+        cls: solde >= 0 ? 'positive' : 'warning'
+      });
+    }
+    if (profil.epargne_liquide_total > 0) {
+      result.metrics.push({
+        label: 'Épargne liquide',
+        value: formatEuro(profil.epargne_liquide_total),
+        cls: 'positive'
+      });
+    }
+    const dettes = (profil.dettes_types || []).filter(d => d !== 'aucun');
+    if (dettes.length > 0) {
+      result.metrics.push({ label: 'Crédits en cours', value: dettes.length, cls: 'warning' });
+    }
+    if (done > 0) {
+      result.metrics.push({ label: 'Briques terminées', value: `${done}/${total}`, cls: '' });
+    }
+
+    return result;
+  }
+
+  // ─── ZONE 1 — SITUATION ACTUELLE ──────────────────────────────
+  function renderSituation() {
+    const res = getSituationResume(profil, dash, budget);
+    document.getElementById('sit-icon').textContent = res.icon;
+    document.getElementById('sit-sentence').textContent = res.sentence;
+
+    const metricsEl = document.getElementById('sit-metrics');
+    metricsEl.innerHTML = '';
+    (res.metrics || []).forEach(m => {
+      const chip = document.createElement('div');
+      chip.className = 'sit-metric' + (m.cls ? ' ' + m.cls : '');
+      chip.innerHTML = `<strong>${m.value}</strong> ${m.label}`;
+      metricsEl.appendChild(chip);
+    });
+
+    const ctaEl = document.getElementById('sit-cta');
+    ctaEl.style.display = res.showCta ? 'flex' : 'none';
+  }
+
+  // ─── ZONE 2 — HERO BRIQUE ─────────────────────────────────────
+  function renderHero() {
+    const activeId = dash.brique_active_id || (dash.briques[0] && dash.briques[0].id);
+    const briqData = dash.briques.find(b => b.id === activeId)
+                  || dash.briques.find(b => b.statut !== 'terminee')
+                  || dash.briques[0];
+    if (!briqData) return;
+    const meta = BRIQUES_META[briqData.id];
+    if (!meta) return;
+
+    const pc = PACK_COLORS[meta.pack] || '#818cf8';
+    document.getElementById('hero-icon').textContent = meta.icon;
+    const packEl = document.getElementById('hero-pack');
+    packEl.textContent = meta.pack;
+    packEl.style.background = pc + '22';
+    packEl.style.color = pc;
+    packEl.style.border = `1px solid ${pc}44`;
+    document.getElementById('hero-title').textContent = meta.nom;
+    document.getElementById('hero-tagline').textContent = meta.tagline;
+
+    const pct = briqData.progression || 0;
+    document.getElementById('hero-pct').textContent = pct + '%';
+    const bar = document.getElementById('hero-bar');
+    bar.style.width = pct + '%';
+    if (pct > 0 && pct < 100) bar.classList.add('stripe'); else bar.classList.remove('stripe');
+
+    const btnLbl = briqData.statut === 'a_faire' ? 'Commencer le module' : 'Reprendre le module';
+    document.getElementById('btn-resume').childNodes[0].textContent = btnLbl + ' ';
+  }
+
+  function resumeBrique() {
+    const activeId = dash.brique_active_id || (dash.briques[0] && dash.briques[0].id);
+    if (BRICK_FILES[activeId]) {
+      window.location.href = BRICK_FILES[activeId];
+    } else {
+      const b = dash.briques.find(br => br.id === activeId) || dash.briques[0];
+      if (!b) return;
+      b.statut = 'en_cours';
+      b.progression = Math.min(100, (b.progression || 0) + 20);
+      if (b.progression >= 100) {
+        b.statut = 'terminee';
+        dash.modules_completes = (dash.modules_completes || 0) + 1;
+        advanceToNext();
+      }
+      save(); renderAll();
+    }
+  }
+
+  function advanceToNext() {
+    const next = dash.briques.find(b => b.statut === 'a_faire');
+    if (next) { next.statut = 'en_cours'; dash.brique_active_id = next.id; }
+  }
+
+  // ─── ZONE 3 — MES BRIQUES (liste unifiée) ─────────────────────
+  function renderBriques() {
+    const activeId = dash.brique_active_id;
+    const planIds = new Set(dash.briques.map(b => b.id));
+
+    // Classifier les briques du plan
+    const enCours   = dash.briques.filter(b => b.statut === 'en_cours' || b.id === activeId);
+    const aFaire    = dash.briques.filter(b => b.statut === 'a_faire' && b.id !== activeId);
+    const terminees = dash.briques.filter(b => b.statut === 'terminee');
+    // Briques pas dans le plan mais dans BRIQUES_META et sans fichier → "Bientôt"
+    const bientot   = Object.values(BRIQUES_META).filter(b => !planIds.has(b.id) && !BRICK_FILES[b.id]).slice(0, 4);
+
+    function buildBriquesGroup(containerId, label, items, isMeta) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      if (items.length === 0) return;
+      const group = document.createElement('div');
+      group.className = 'briques-subgroup';
+      group.innerHTML = `<div class="subgroup-label">${label}</div><div class="briques-list" role="list" id="${containerId}-list"></div>`;
+      container.appendChild(group);
+
+      const list = document.getElementById(containerId + '-list');
+      items.forEach(item => {
+        const b = isMeta ? item : dash.briques.find(br => br.id === item.id);
+        const meta = isMeta ? item : BRIQUES_META[item.id];
+        if (!meta) return;
+
+        const isDone   = !isMeta && b && b.statut === 'terminee';
+        const isActive = !isMeta && (b.id === activeId || b.statut === 'en_cours');
+        const isSoon   = isMeta; // bientôt group uses meta directly
+        const file     = BRICK_FILES[meta.id];
+        const hasPct   = !isMeta && b && b.progression > 0 && !isDone;
+
+        let cardClass = 'bq-card';
+        if (isDone)       cardClass += ' done-card';
+        else if (isActive) cardClass += ' active-card clickable';
+        else if (isSoon)  cardClass += ' soon-card';
+        else if (file)    cardClass += ' clickable';
+
+        const dotClass = isDone ? 'done' : isActive ? 'active' : isSoon ? 'soon' : 'todo';
+
+        let statusHtml = '';
+        if (isDone)       statusHtml = '<span class="bq-badge-done">✓</span>';
+        else if (hasPct)  statusHtml = `<span class="bq-pct">${b.progression}%</span>`;
+        else if (isSoon)  statusHtml = '<span class="bq-badge-soon">Bientôt</span>';
+
+        const el = document.createElement(file && !isSoon ? 'a' : 'div');
+        el.className = cardClass;
+        el.setAttribute('role', 'listitem');
+        if (file && !isSoon) { el.href = file; el.title = 'Ouvrir ' + meta.nom; }
+        el.innerHTML = `
+          <div class="bq-dot ${dotClass}"></div>
+          <span class="bq-icon" aria-hidden="true">${meta.icon}</span>
+          <div class="bq-info">
+            <div class="bq-name">${meta.nom}</div>
+            <div class="bq-pack">${meta.pack}</div>
+          </div>
+          <div class="bq-status">${statusHtml}</div>`;
+        list.appendChild(el);
+      });
+    }
+
+    buildBriquesGroup('briques-en-cours',  'En cours',  enCours,   false);
+    buildBriquesGroup('briques-a-faire',   'À faire',   aFaire,    false);
+    buildBriquesGroup('briques-terminees', 'Terminées', terminees, false);
+    buildBriquesGroup('briques-bientot',   'Bientôt',   bientot,   true);
+
+    // Cache zone si tout vide
+    const anyContent = enCours.length + aFaire.length + terminees.length + bientot.length > 0;
+    document.getElementById('zone-briques').style.display = anyContent ? '' : 'none';
+  }
+
+  // ─── ZONE 4 — EXPLORER (collapsible) ──────────────────────────
+  let explorerOpen = false;
+  function toggleExplorer() {
+    explorerOpen = !explorerOpen;
+    const btn = document.getElementById('explorer-toggle');
+    const body = document.getElementById('explorer-body');
+    const chevron = document.getElementById('explorer-chevron');
+    btn.classList.toggle('open', explorerOpen);
+    body.classList.toggle('open', explorerOpen);
+    chevron.classList.toggle('open', explorerOpen);
+    btn.setAttribute('aria-expanded', String(explorerOpen));
+  }
+
+  function renderExplorer() {
+    const planIds = new Set(dash.briques.map(b => b.id));
+    const body = document.getElementById('explorer-body');
+    body.innerHTML = '';
+
+    // Briques hors plan ET avec fichier (développées)
+    const available = Object.values(BRIQUES_META).filter(b => !planIds.has(b.id) && BRICK_FILES[b.id]);
+    document.getElementById('explorer-count').textContent = available.length;
+
+    if (available.length === 0) {
+      body.innerHTML = '<p style="font-size:0.8rem;color:var(--text-faint);padding:0.25rem;">Toutes les briques disponibles sont dans ton plan.</p>';
+      return;
+    }
+    available.forEach(b => {
+      const card = document.createElement('div');
+      card.className = 'explore-card';
+      card.setAttribute('role', 'listitem');
+      card.innerHTML = `
+        <span class="explore-icon" aria-hidden="true">${b.icon}</span>
+        <div class="explore-text">
+          <div class="explore-name">${b.nom}</div>
+          <div class="explore-pack">${b.pack}</div>
+        </div>
+        <button class="btn-add" onclick="addToPlan('${b.id}',this)">+ Ajouter</button>`;
+      body.appendChild(card);
+    });
+  }
+
+  function addToPlan(id, btn) {
+    if (dash.briques.find(b => b.id === id)) return;
+    dash.briques.push({ id, statut: 'a_faire', progression: 0 });
+    save();
+    btn.textContent = '✓ Ajouté'; btn.classList.add('in-plan'); btn.disabled = true;
+    renderBriques(); renderPlanMini(); renderStats();
+  }
+
+  // ─── SIDEBAR — PLAN MINI ──────────────────────────────────────
+  function renderPlanMini() {
+    const mini = document.getElementById('plan-mini');
+    mini.innerHTML = '';
+    const activeId = dash.brique_active_id;
+    dash.briques.forEach(b => {
+      const meta = BRIQUES_META[b.id];
+      const item = document.createElement('div');
+      item.className = 'pmi-item'
+        + (b.id === activeId ? ' active' : '')
+        + (b.statut === 'terminee' ? ' done' : '');
+      item.setAttribute('role', 'listitem');
+      item.innerHTML = `
+        <div class="pmi-dot ${b.statut === 'terminee' ? 'done' : b.id === activeId ? 'active' : 'todo'}"></div>
+        <span class="pmi-name">${meta ? meta.nom : b.id}</span>
+        <span class="pmi-icon">${meta ? meta.icon : ''}</span>`;
+      mini.appendChild(item);
+    });
+  }
+
+  function renderStats() {
+    const done  = dash.briques.filter(b => b.statut === 'terminee').length;
+    const total = dash.briques.length;
+    const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
+    document.getElementById('stat-completed').textContent = done;
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-pct').textContent = pct + '%';
+    // Completed banner
+    if (done === total && total > 0) document.getElementById('completed-banner').classList.add('show');
+    else document.getElementById('completed-banner').classList.remove('show');
+  }
+
+  // ─── ADD ENGAGEMENT (pour briques qui en ont besoin) ──────────
+  function addEngagement() {
+    const overlay = document.getElementById('eng-modal-overlay');
+    overlay.style.opacity = '1'; overlay.style.pointerEvents = 'all';
+    document.getElementById('eng-modal').style.transform = 'translateY(0)';
+  }
+  function closeEngModal() {
+    const overlay = document.getElementById('eng-modal-overlay');
+    overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
+    document.getElementById('eng-modal').style.transform = 'translateY(20px)';
+  }
+  document.getElementById('eng-modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeEngModal();
+  });
+  function saveEngagement() {
+    const type   = document.getElementById('eng-type').value;
+    const label  = document.getElementById('eng-label').value.trim() || 'Nouvel engagement';
+    const cible  = parseInt(document.getElementById('eng-cible').value) || null;
+    const actuel = parseInt(document.getElementById('eng-actuel').value) || 0;
+    const eng = { id: 'e' + Date.now(), type, label, detail: label, montant_cible: cible, montant_actuel: actuel, atteint: false, brique_id: dash.brique_active_id };
+    dash.engagements = dash.engagements || [];
+    dash.engagements.push(eng);
+    save(); closeEngModal();
+  }
+
+  // ─── RENDER ALL ───────────────────────────────────────────────
+  function renderAll() {
+    renderSituation();
+    renderHero();
+    renderBriques();
+    renderExplorer();
+    renderPlanMini();
+    renderStats();
+  }
+  renderAll();
+</script>
+<script src="feedback-widget.js"></script>
+</body>
+</html>

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamental — Fonds d'urgence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
+      --border:#252845;--border-hover:#363a68;
+      --text:#e2e4f0;--text-muted:#8b90b8;--text-faint:#444868;
+      --violet:#818cf8;--purple:#c084fc;--indigo:#6366f1;
+      --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
+      --violet-glow:rgba(129,140,248,0.10);
+      --green:#4ade80;--green-dim:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.3);
+      --orange:#fb923c;--orange-dim:rgba(251,146,60,0.12);--orange-border:rgba(251,146,60,0.3);
+      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
+      --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1.25rem;--r-xl:1.75rem;--r-full:9999px;
+      --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
+    }
+
+    /* ─── RESET ─── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{-webkit-font-smoothing:antialiased;}
+    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;overflow-x:hidden;}
+    button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+    :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:var(--r-sm);}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+    #bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;}
+
+    /* ─── NAV ─── */
+    nav{position:sticky;top:0;z-index:100;background:rgba(11,13,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;}
+    .logo{display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+    .nav-right{display:flex;align-items:center;gap:1rem;}
+    .nav-link{font-size:0.8rem;color:var(--text-muted);text-decoration:none;padding:0.35rem 0.75rem;border-radius:var(--r-full);border:1px solid var(--border);transition:color var(--t),border-color var(--t);}
+    .nav-link:hover{color:var(--violet);border-color:var(--violet);}
+
+    /* ─── LAYOUT ─── */
+    main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:2rem 1.5rem 6rem;}
+
+    /* ─── PROGRESS ─── */
+    .brick-progress{display:flex;gap:0.35rem;margin-bottom:2rem;}
+    .bp-dot{flex:1;height:4px;border-radius:var(--r-full);background:var(--surface-3);transition:background 0.3s var(--ease-out);}
+    .bp-dot.done{background:linear-gradient(90deg,var(--indigo),var(--purple));}
+    .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
+
+    /* ─── SCREEN ─── */
+    .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
+    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ─── CARD ─── */
+    .brick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;position:relative;overflow:hidden;}
+    .brick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
+
+    /* ─── TITLES ─── */
+    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.5rem;}
+    .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5;}
+
+    /* ─── REASSURANCE ─── */
+    .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-dim);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green);margin-bottom:1.25rem;}
+
+    /* ─── INPUTS ─── */
+    .field-group{margin-bottom:1.25rem;}
+    .field-label{font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.4rem;}
+    .field-help{font-size:0.75rem;color:var(--text-faint);margin-top:0.3rem;}
+    .field-input{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
+    .field-input:focus{border-color:var(--violet);outline:none;}
+    .field-input::placeholder{color:var(--text-faint);}
+
+    /* ─── EURO INPUT WRAPPER ─── */
+    .euro-wrap{position:relative;display:flex;align-items:center;}
+    .euro-wrap .field-input{padding-right:2.5rem;}
+    .euro-suffix{position:absolute;right:0.875rem;font-size:0.9rem;color:var(--text-muted);pointer-events:none;font-weight:600;}
+
+    /* ─── CHIPS ─── */
+    .chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+    .chip{padding:0.5rem 1rem;border-radius:var(--r-full);background:var(--surface-2);border:1.5px solid var(--border);font-size:0.85rem;color:var(--text-muted);cursor:pointer;transition:all var(--t);}
+    .chip:hover{border-color:var(--border-hover);color:var(--text);}
+    .chip.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);color:#a5b4fc;font-weight:600;}
+
+    /* ─── BUTTONS ─── */
+    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
+    .btn-primary:hover{box-shadow:0 0 40px rgba(99,102,241,0.5),0 6px 20px rgba(0,0,0,0.5);}
+    .btn-primary:active{transform:scale(0.98);}
+    .btn-primary:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+    .btn-secondary{display:flex;align-items:center;justify-content:center;gap:0.4rem;width:100%;padding:0.75rem;font-size:0.82rem;color:var(--text-faint);text-decoration:underline;text-underline-offset:3px;transition:color var(--t);margin-top:0.5rem;}
+    .btn-secondary:hover{color:var(--text-muted);}
+
+    /* ─── SLIDER ─── */
+    .range-wrap{position:relative;margin:0.75rem 0;}
+    .range-wrap input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:var(--surface-3);border-radius:var(--r-full);outline:none;}
+    .range-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:linear-gradient(135deg,var(--indigo),var(--purple));border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(99,102,241,0.4);}
+    .range-labels{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-faint);margin-top:0.25rem;}
+
+    /* ─── STICKY TOTAL ─── */
+    .sticky-total{position:sticky;bottom:0;background:rgba(11,13,23,0.92);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:0.875rem 1rem;display:flex;justify-content:space-between;align-items:center;margin:1.5rem -1.5rem -6rem;z-index:50;}
+    .sticky-label{font-size:0.82rem;color:var(--text-muted);}
+    .sticky-value{font-size:1.1rem;font-weight:800;color:#fff;transition:color 0.3s;}
+
+    /* ─── EXIT ─── */
+    .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
+    .exit-icon{font-size:2.5rem;margin-bottom:1rem;}
+    .exit-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
+    .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
+    .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
+    .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
+    .exit-item-icon{flex-shrink:0;margin-top:0.1em;}
+    .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
+    .exit-item-value{font-size:0.85rem;font-weight:700;color:var(--text);}
+    .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
+    .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
+    .exit-next-text{flex:1;}
+    .exit-next-label{font-size:0.7rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;}
+    .exit-next-name{font-size:0.9rem;font-weight:600;color:var(--text);}
+
+    /* ─── EXAMPLE CARDS (Screen 1) ─── */
+    .example-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1.25rem 0;}
+    .example-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem 0.875rem;display:flex;flex-direction:column;gap:0.35rem;transition:border-color var(--t);}
+    .example-card:hover{border-color:var(--border-hover);}
+    .example-card-icon{font-size:1.4rem;line-height:1;}
+    .example-card-text{font-size:0.82rem;font-weight:600;color:var(--text);}
+
+    /* ─── SUB-TEXT ─── */
+    .sub-text{font-size:0.85rem;color:var(--text-muted);line-height:1.5;margin-bottom:0.75rem;}
+    .nudge-text{font-size:0.82rem;color:var(--text-faint);font-style:italic;padding:0.75rem 1rem;border-left:3px solid var(--indigo-glow);border-radius:0 var(--r-sm) var(--r-sm) 0;background:var(--indigo-dim);line-height:1.5;margin-top:0.5rem;}
+
+    /* ─── BADGE ─── */
+    .badge{display:inline-flex;align-items:center;padding:0.2rem 0.55rem;border-radius:var(--r-full);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;}
+    .badge-essentiel{background:var(--orange-dim);border:1px solid var(--orange-border);color:var(--orange);}
+
+    /* ─── FIELD ROW WITH BADGE ─── */
+    .field-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;}
+    .field-row .field-label{margin-bottom:0;}
+
+    /* ─── TIP BOX ─── */
+    .tip-box{display:flex;align-items:flex-start;gap:0.5rem;padding:0.75rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:1.25rem;}
+    .tip-icon{font-size:0.9rem;flex-shrink:0;margin-top:0.1em;}
+    .tip-text{font-size:0.78rem;color:var(--text-muted);line-height:1.4;}
+
+    /* ─── TARGET CARD ─── */
+    .target-card{background:var(--indigo-dim);border:1.5px solid rgba(99,102,241,0.3);border-radius:var(--r-xl);padding:1.5rem;text-align:center;margin:1.25rem 0;}
+    .target-label{font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.35rem;}
+    .target-amount{font-size:clamp(2rem,8vw,3rem);font-weight:900;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+    .target-sublabel{font-size:0.8rem;color:var(--text-muted);margin-top:0.35rem;}
+
+    /* ─── PROJECTION ─── */
+    .projection-box{background:var(--surface-2);border:1px solid var(--green-border);border-radius:var(--r-lg);padding:1rem 1.125rem;margin:1rem 0;display:flex;align-items:center;gap:0.625rem;}
+    .projection-text{font-size:0.82rem;color:var(--green);line-height:1.45;flex:1;}
+    .micro-msg{font-size:0.8rem;color:var(--violet);font-weight:600;text-align:center;padding:0.5rem;margin-top:0.25rem;}
+
+    /* ─── SOURCE CARDS ─── */
+    .source-list{display:flex;flex-direction:column;gap:0.625rem;margin:1.25rem 0;}
+    .source-card{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:0.875rem 1rem;display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:all var(--t);}
+    .source-card:hover{border-color:var(--border-hover);background:var(--surface-3);}
+    .source-card.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);}
+    .source-card-icon{font-size:1.2rem;flex-shrink:0;}
+    .source-card-text{font-size:0.875rem;font-weight:600;color:var(--text);flex:1;}
+    .source-card-check{width:18px;height:18px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transition:opacity var(--t);}
+    .source-card.selected .source-card-check{opacity:1;}
+
+    /* ─── SUMMARY BLOCKS ─── */
+    .summary-blocks{display:flex;flex-direction:column;gap:0.75rem;margin:1.5rem 0;}
+    .summary-block{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;}
+    .summary-block-label{font-size:0.72rem;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;}
+    .summary-block-value{font-size:1.05rem;font-weight:700;color:var(--text);}
+
+    /* ─── ADJUST TARGET ─── */
+    .adjust-area{margin-top:0.75rem;padding:1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);display:none;}
+    .adjust-area.visible{display:block;}
+
+    /* ─── ERROR ─── */
+    .error-msg{font-size:0.78rem;color:var(--orange);background:var(--orange-dim);border:1px solid var(--orange-border);border-radius:var(--r-md);padding:0.5rem 0.875rem;margin-top:0.5rem;display:none;}
+    .error-msg.visible{display:block;}
+
+    /* ─── PRECARIOUS BANNER ─── */
+    .precarious-banner{background:var(--orange-dim);border:1px solid var(--orange-border);border-radius:var(--r-lg);padding:0.875rem 1rem;margin-bottom:1.25rem;font-size:0.82rem;color:var(--orange);line-height:1.5;display:none;}
+    .precarious-banner.visible{display:flex;gap:0.5rem;}
+
+    /* ─── RESPONSIVE ─── */
+    @media(max-width:520px){
+      nav{padding:0.875rem 1rem;}
+      main{padding:1.5rem 1rem 5rem;}
+      .brick-card{padding:1.5rem;}
+      .example-grid{grid-template-columns:1fr 1fr;}
+      .sticky-total{margin:1.5rem -1rem -5rem;}
+    }
+
+    @keyframes popIn{from{transform:scale(0.4);opacity:0;}to{transform:scale(1);opacity:1;}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  </style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo" aria-label="Fundamental">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
+      <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg)"/>
+      <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".25"/>
+    </svg>
+    Fundamental
+  </a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link">← Dashboard</a>
+  </div>
+</nav>
+
+<main>
+  <!-- PROGRESS BAR -->
+  <div class="brick-progress" id="progress-bar">
+    <div class="bp-dot active" id="dot-0"></div>
+    <div class="bp-dot" id="dot-1"></div>
+    <div class="bp-dot" id="dot-2"></div>
+    <div class="bp-dot" id="dot-3"></div>
+    <div class="bp-dot" id="dot-4"></div>
+    <div class="bp-dot" id="dot-5"></div>
+    <div class="bp-dot" id="dot-6"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 0 — Intro
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-0">
+    <div class="brick-card">
+      <div style="font-size:2.5rem;margin-bottom:1.25rem;line-height:1;">🛡️</div>
+      <h1 class="brick-title">Un imprévu n'a pas besoin de devenir une crise.</h1>
+      <p class="brick-subtitle">On va construire ton coussin de sécurité, petit à petit.</p>
+
+      <!-- Dynamic precarious banner -->
+      <div class="precarious-banner" id="precarious-banner-0">
+        <span>⚡</span>
+        <span>On ne vise pas 1 000 € tout de suite. On vise d'abord le prochain petit choc.</span>
+      </div>
+
+      <div class="reassurance" id="already-saving-msg" style="display:none;">
+        ✓ Tu épargnes déjà — vérifions si ton coussin est suffisant.
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0.625rem;margin:1.25rem 0;">
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);">
+          <span style="font-size:1.1rem;flex-shrink:0;">🎯</span>
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:0.15rem;">Un vrai objectif à portée de main</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);">Même 100 € de côté changent tout en cas de pépin.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);">
+          <span style="font-size:1.1rem;flex-shrink:0;">⏱️</span>
+          <div>
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:0.15rem;">~10 minutes</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);">Pour repartir avec un plan concret et réaliste.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="goToScreen(1)">
+        Définir mon coussin →
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 1 — À quoi ça sert
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-1" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">Le but n'est pas d'être "parfait". Le but, c'est d'éviter le prochain trou.</h1>
+      <p class="brick-subtitle" style="margin-bottom:0.5rem;">Le coussin d'urgence, c'est pour des moments comme ça :</p>
+
+      <div class="example-grid" id="example-grid-1">
+        <!-- Cards filled by JS based on profile -->
+      </div>
+
+      <p class="sub-text">Même 100 ou 300 € peuvent déjà changer beaucoup de choses.</p>
+
+      <div class="nudge-text">
+        L'idée n'est pas de constituer un gros matelas du premier coup. On commence par un <strong>mini fonds</strong> — juste assez pour encaisser le prochain imprévu sans tomber dans le rouge.
+      </div>
+
+      <button class="btn-primary" onclick="goToScreen(2)">Continuer →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 2 — Charges vitales
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-2" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">Commençons par le strict nécessaire.</h1>
+      <p class="brick-subtitle">Le coussin d'urgence protège d'abord tes dépenses vitales.</p>
+
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span class="tip-text">Pas besoin d'être exact. On cherche une base utile.</span>
+      </div>
+
+      <!-- Logement -->
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label" for="charge-logement">Logement</label>
+          <span class="badge badge-essentiel">essentiel</span>
+        </div>
+        <div class="euro-wrap">
+          <input type="number" id="charge-logement" class="field-input" placeholder="ex : 650" min="0" oninput="updateVitalTotal()" />
+          <span class="euro-suffix">€</span>
+        </div>
+        <div class="field-help">Loyer, charges, électricité, eau…</div>
+      </div>
+
+      <!-- Nourriture -->
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label" for="charge-nourriture">Nourriture</label>
+          <span class="badge badge-essentiel">essentiel</span>
+        </div>
+        <div class="euro-wrap">
+          <input type="number" id="charge-nourriture" class="field-input" placeholder="ex : 300" min="0" oninput="updateVitalTotal()" />
+          <span class="euro-suffix">€</span>
+        </div>
+        <div class="field-help">Courses, repas essentiels</div>
+      </div>
+
+      <!-- Transport -->
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label" for="charge-transport">Transport</label>
+          <span class="badge badge-essentiel">essentiel</span>
+        </div>
+        <div class="euro-wrap">
+          <input type="number" id="charge-transport" class="field-input" placeholder="ex : 80" min="0" oninput="updateVitalTotal()" />
+          <span class="euro-suffix">€</span>
+        </div>
+        <div class="field-help">Abonnement, carburant, entretien</div>
+      </div>
+
+      <!-- Santé -->
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label" for="charge-sante">Santé</label>
+          <span class="badge badge-essentiel">essentiel</span>
+        </div>
+        <div class="euro-wrap">
+          <input type="number" id="charge-sante" class="field-input" placeholder="ex : 30" min="0" oninput="updateVitalTotal()" />
+          <span class="euro-suffix">€</span>
+        </div>
+        <div class="field-help">Mutuelle, médicaments, soins réguliers</div>
+      </div>
+
+      <!-- Autres essentiels -->
+      <div class="field-group">
+        <div class="field-row">
+          <label class="field-label" for="charge-autres">Autres essentiels</label>
+          <span class="badge badge-essentiel">essentiel</span>
+        </div>
+        <div class="euro-wrap">
+          <input type="number" id="charge-autres" class="field-input" placeholder="ex : 50" min="0" oninput="updateVitalTotal()" />
+          <span class="euro-suffix">€</span>
+        </div>
+        <div class="field-help">Téléphone, internet, autres dépenses vitales</div>
+      </div>
+
+      <div class="error-msg" id="error-charges">Ajoute au moins une estimation. Même large.</div>
+
+      <button class="btn-primary" onclick="validateCharges()">Calculer ma cible →</button>
+
+      <!-- Sticky total -->
+      <div class="sticky-total">
+        <span class="sticky-label">Total charges vitales :</span>
+        <span class="sticky-value" id="vital-total">0 €/mois</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 3 — Target proposal
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-3" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">Voici une cible réaliste pour toi.</h1>
+
+      <div class="target-card" id="target-card">
+        <div class="target-label" id="target-label">Cible de départ recommandée</div>
+        <div class="target-amount" id="target-amount">500 €</div>
+        <div class="target-sublabel" id="target-sublabel">selon ton profil et tes charges vitales</div>
+      </div>
+
+      <p class="sub-text" id="target-angle-text">L'idée n'est pas de tout faire d'un coup. L'idée est de pouvoir encaisser le prochain imprévu.</p>
+
+      <div class="nudge-text" id="target-nudge">
+        Tu n'as pas besoin d'atteindre 3 mois de charges dès le départ. On commence par une étape réaliste — et on avance.
+      </div>
+
+      <button class="btn-primary" onclick="goToScreen(4)">Choisir mon rythme →</button>
+      <button class="btn-secondary" onclick="toggleAdjust()">Ajuster ma cible</button>
+
+      <div class="adjust-area" id="adjust-area">
+        <label class="field-label" for="custom-target" style="margin-bottom:0.5rem;">Définir une cible personnalisée</label>
+        <div class="euro-wrap">
+          <input type="number" id="custom-target" class="field-input" placeholder="ex : 400" min="0" oninput="applyCustomTarget()" />
+          <span class="euro-suffix">€</span>
+        </div>
+        <div class="field-help">Tu pourras toujours la revoir plus tard.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 4 — Rhythm choice
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-4" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">Quel rythme peux-tu vraiment tenir ?</h1>
+      <p class="brick-subtitle">Choisis un montant que tu es sûr(e) de mettre de côté, régulièrement.</p>
+
+      <p style="font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.75rem;">Suggestions</p>
+      <div class="chips" id="rhythm-chips">
+        <button class="chip" data-weekly="5" data-monthly="21" data-label="5 €/semaine" onclick="selectRhythmChip(this)">5 €/semaine</button>
+        <button class="chip" data-weekly="10" data-monthly="43" data-label="10 €/semaine" onclick="selectRhythmChip(this)">10 €/semaine</button>
+        <button class="chip" data-weekly="20" data-monthly="86" data-label="20 €/semaine" onclick="selectRhythmChip(this)">20 €/semaine</button>
+        <button class="chip" data-weekly="12" data-monthly="50" data-label="50 €/mois" onclick="selectRhythmChip(this)">50 €/mois</button>
+        <button class="chip" data-weekly="0" data-monthly="0" data-label="Autre" onclick="selectRhythmChip(this)">Autre</button>
+      </div>
+
+      <!-- Custom amount for "Autre" -->
+      <div class="field-group" id="custom-rhythm-wrap" style="display:none;">
+        <label class="field-label" for="custom-rhythm">Montant mensuel personnalisé</label>
+        <div class="euro-wrap">
+          <input type="number" id="custom-rhythm" class="field-input" placeholder="ex : 30" min="1" oninput="updateProjection()" />
+          <span class="euro-suffix">€/mois</span>
+        </div>
+      </div>
+
+      <!-- Slider -->
+      <div class="range-wrap" id="rhythm-slider-wrap">
+        <input type="range" id="rhythm-slider" min="5" max="200" step="5" value="21" oninput="onSliderChange(this.value)" />
+        <div class="range-labels"><span>5 €/mois</span><span>200 €/mois</span></div>
+      </div>
+
+      <p class="sub-text" style="margin-top:0.5rem;">Petit mais régulier &gt; ambitieux puis abandonné.</p>
+
+      <!-- Projection -->
+      <div class="projection-box" id="projection-box" style="display:none;">
+        <span>📅</span>
+        <span class="projection-text" id="projection-text">À ce rythme, ton coussin atteint <strong id="proj-amount"></strong> le <strong id="proj-date"></strong>.</span>
+      </div>
+
+      <!-- Micro message for small amounts -->
+      <div class="micro-msg" id="micro-msg" style="display:none;">✨ Oui, ça compte vraiment.</div>
+
+      <!-- Warning for overly ambitious rhythm -->
+      <div class="error-msg" id="error-rhythm" style="display:none;margin-top:0.5rem;">Ce rythme semble ambitieux au vu de ton mois. Veux-tu tester un montant plus léger ?</div>
+
+      <button class="btn-primary" id="btn-validate-rhythm" onclick="validateRhythm()" disabled>Valider ce rythme →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 5 — Where to find the money
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-5" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">On le prend où, concrètement ?</h1>
+      <p class="brick-subtitle">Choisis une source simple pour alimenter ton coussin.</p>
+
+      <div class="source-list">
+        <button class="source-card" data-source="marge_budget" onclick="selectSource(this)">
+          <span class="source-card-icon">🔍</span>
+          <span class="source-card-text">Une petite marge repérée dans ton budget</span>
+          <span class="source-card-check">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+        <button class="source-card" data-source="abonnement" onclick="selectSource(this)">
+          <span class="source-card-icon">✂️</span>
+          <span class="source-card-text">Un abonnement à revoir</span>
+          <span class="source-card-check">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+        <button class="source-card" data-source="virement_paie" onclick="selectSource(this)">
+          <span class="source-card-icon">🔄</span>
+          <span class="source-card-text">Un virement automatique le jour de la paie</span>
+          <span class="source-card-check">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+        <button class="source-card" data-source="reste_fin_mois" onclick="selectSource(this)">
+          <span class="source-card-icon">🌙</span>
+          <span class="source-card-text">Un reste de fin de mois</span>
+          <span class="source-card-check">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+      </div>
+
+      <button class="btn-primary" id="btn-create-plan" onclick="validateSource()" disabled>Créer mon plan →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 6 — Final engagement + Exit
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-6" style="display:none;">
+    <div class="exit-card">
+      <div class="exit-icon" style="animation:popIn 0.5s var(--ease-spring) both;">🛡️</div>
+      <h2 class="exit-title">Ton coussin est lancé.</h2>
+      <p class="exit-subtitle">Tu viens de sécuriser ton prochain imprévu.</p>
+
+      <!-- Summary -->
+      <div class="summary-blocks">
+        <div class="summary-block">
+          <div class="summary-block-label">🎯 Objectif</div>
+          <div class="summary-block-value" id="exit-objectif">—</div>
+        </div>
+        <div class="summary-block">
+          <div class="summary-block-label">⏱️ Rythme</div>
+          <div class="summary-block-value" id="exit-rythme">—</div>
+        </div>
+        <div class="summary-block">
+          <div class="summary-block-label">💡 Première source</div>
+          <div class="summary-block-value" id="exit-source">—</div>
+        </div>
+        <div class="summary-block" id="exit-projection-block" style="display:none;">
+          <div class="summary-block-label">📅 Date estimée</div>
+          <div class="summary-block-value" id="exit-projection-date">—</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="finalizeBrick()">Terminer ✓</button>
+
+      <!-- Exit navigation (shown after completeBrick) -->
+      <div id="exit-nav" style="display:none;margin-top:1rem;">
+        <button class="exit-next" id="btn-next-brick" style="display:none;" onclick="goToNextBrick()">
+          <span style="font-size:1.3rem;">🚀</span>
+          <div class="exit-next-text">
+            <div class="exit-next-label">Prochaine brique</div>
+            <div class="exit-next-name" id="next-brick-name">—</div>
+          </div>
+          <span style="color:var(--text-faint);">→</span>
+        </button>
+        <button class="exit-next" onclick="window.location.href='dashboard.html'">
+          <span style="font-size:1.3rem;">📊</span>
+          <div class="exit-next-text">
+            <div class="exit-next-label">Retour</div>
+            <div class="exit-next-name">Dashboard</div>
+          </div>
+          <span style="color:var(--text-faint);">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared.js"></script>
+<script src="supabase.js"></script>
+<script>
+// ════════════════════════════════════════════════════════════════
+// FONDS D'URGENCE BRICK
+// ════════════════════════════════════════════════════════════════
+
+const BRICK_ID = 'fonds_urgence';
+const TOTAL_SCREENS = 7;
+
+// ── State ──────────────────────────────────────────────────────
+let profil = loadFromStorage('profil') || getMockProfile();
+let currentScreen = 0;
+
+let state = {
+  vitalCharges: { logement: 0, nourriture: 0, transport: 0, sante: 0, autres: 0 },
+  totalVital: 0,
+  targetAmount: 500,
+  rhythmMonthly: 0,
+  rhythmLabel: '',
+  sourceKey: '',
+  sourceLabel: '',
+  isPrecarious: false,
+  isAlreadySaving: false,
+  projectionDate: null,
+  nextBrickMeta: null,
+};
+
+// ── Profile analysis ───────────────────────────────────────────
+function analyzeProfile() {
+  const age = profil?.age || 25;
+  const situation = profil?.situation || 'jeune_actif';
+  const revenus = profil?.revenus || 1500;
+  const charges_connues = profil?.charges || 0;
+  const disponible = revenus - charges_connues;
+
+  state.isPrecarious = (disponible < 200) || (revenus < 1000) || situation === 'etudiant';
+  state.isAlreadySaving = profil?.epargne_mensuelle > 0;
+
+  return { age, situation, revenus, disponible };
+}
+
+// ── Profile-based target ───────────────────────────────────────
+function computeDefaultTarget(vitalTotal) {
+  const { situation } = analyzeProfile();
+  const age = profil?.age || 25;
+
+  if (state.isPrecarious || situation === 'etudiant' || age < 22) {
+    return { min: 100, max: 300, label: 'Mini coussin recommandé', angle: 'éviter le prochain trou de trésorerie' };
+  }
+  if (situation === 'independant' || profil?.independant) {
+    const t = Math.round(vitalTotal * 1.5 / 50) * 50;
+    return { min: t || 1500, max: t * 2 || 3000, label: 'Cible de départ recommandée', angle: 'absorber les creux de revenus' };
+  }
+  if (situation === 'famille' || (profil?.personnes_foyer || 1) > 2) {
+    const t = Math.max(vitalTotal, 1000);
+    return { min: t, max: t, label: 'Cible de départ recommandée', angle: 'protéger le foyer d\'un choc' };
+  }
+  // Jeune actif default
+  const base = vitalTotal > 0 ? Math.min(Math.max(vitalTotal, 300), 800) : 500;
+  return { min: base, max: base, label: 'Cible de départ recommandée', angle: 'éviter découvert et stress de fin de mois' };
+}
+
+// ── Example cards by profile ───────────────────────────────────
+function getExampleCards() {
+  const age = profil?.age || 25;
+  const isYoung = age < 24 || profil?.situation === 'etudiant';
+
+  if (isYoung) {
+    return [
+      { icon: '🏠', text: 'Une caution à avancer' },
+      { icon: '🚂', text: 'Un billet de train urgent' },
+      { icon: '💻', text: 'Réparation d\'ordi' },
+      { icon: '🔑', text: 'Dépôt de garantie' },
+    ];
+  }
+  return [
+    { icon: '📋', text: 'Une facture imprévue' },
+    { icon: '📱', text: 'Un téléphone à remplacer' },
+    { icon: '😓', text: 'Une semaine compliquée' },
+    { icon: '🚗', text: 'Un déplacement urgent' },
+  ];
+}
+
+// ── Source labels ──────────────────────────────────────────────
+const SOURCE_LABELS = {
+  marge_budget: 'Une marge repérée dans ton budget',
+  abonnement: 'Un abonnement à revoir',
+  virement_paie: 'Virement automatique à la paie',
+  reste_fin_mois: 'Le reste de fin de mois',
+};
+
+// ── Screen navigation ──────────────────────────────────────────
+function goToScreen(n) {
+  const prev = document.getElementById('screen-' + currentScreen);
+  const next = document.getElementById('screen-' + n);
+  if (!next) return;
+
+  prev.style.display = 'none';
+  next.style.display = 'block';
+  // re-trigger animation
+  next.style.animation = 'none';
+  void next.offsetWidth;
+  next.style.animation = '';
+
+  currentScreen = n;
+  updateProgress(n);
+  screenViewed(BRICK_ID, n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress(n) {
+  for (let i = 0; i < TOTAL_SCREENS; i++) {
+    const dot = document.getElementById('dot-' + i);
+    if (!dot) continue;
+    dot.className = 'bp-dot';
+    if (i < n) dot.classList.add('done');
+    else if (i === n) dot.classList.add('active');
+  }
+}
+
+// ── Screen 1 — populate example cards ─────────────────────────
+function populateExampleCards() {
+  const grid = document.getElementById('example-grid-1');
+  const cards = getExampleCards();
+  grid.innerHTML = cards.map(c => `
+    <div class="example-card">
+      <span class="example-card-icon">${c.icon}</span>
+      <span class="example-card-text">${c.text}</span>
+    </div>
+  `).join('');
+}
+
+// ── Screen 2 — Live vital total ────────────────────────────────
+function updateVitalTotal() {
+  const fields = ['logement', 'nourriture', 'transport', 'sante', 'autres'];
+  let total = 0;
+  fields.forEach(f => {
+    const v = parseFloat(document.getElementById('charge-' + f).value) || 0;
+    state.vitalCharges[f] = v;
+    total += v;
+  });
+  state.totalVital = total;
+  const el = document.getElementById('vital-total');
+  el.textContent = formatEuro(total) + '/mois';
+  el.style.color = total > 0 ? 'var(--violet)' : '#fff';
+}
+
+function validateCharges() {
+  const err = document.getElementById('error-charges');
+  if (state.totalVital === 0) {
+    err.classList.add('visible');
+    return;
+  }
+  err.classList.remove('visible');
+  fieldCompleted(BRICK_ID, 'charges_vitales');
+  setupTargetScreen();
+  goToScreen(3);
+}
+
+// ── Screen 3 — Target setup ────────────────────────────────────
+function setupTargetScreen() {
+  const target = computeDefaultTarget(state.totalVital);
+  const chosenAmount = target.min === target.max ? target.min : Math.round((target.min + target.max) / 2 / 50) * 50;
+  state.targetAmount = Math.max(chosenAmount, 100);
+
+  document.getElementById('target-label').textContent = target.label;
+  document.getElementById('target-amount').textContent = formatEuro(state.targetAmount);
+  document.getElementById('target-sublabel').textContent =
+    state.totalVital > 0
+      ? `basé sur ${formatEuro(state.totalVital)} de charges vitales/mois`
+      : 'selon ton profil';
+  document.getElementById('target-angle-text').textContent =
+    'L\'idée n\'est pas de tout faire d\'un coup. L\'idée est de pouvoir encaisser le prochain imprévu.';
+
+  // Nudge by profile
+  const { situation } = analyzeProfile();
+  const nudges = {
+    etudiant: 'Pour toi, l\'objectif c\'est éviter le prochain trou de trésorerie. Même 150 ou 200 € changent déjà tout.',
+    independant: 'En tant qu\'indépendant, absorber les creux de revenus est essentiel. On vise 1 à 2 mois de charges vitales.',
+    famille: 'Pour protéger le foyer, on vise au moins un mois de charges vitales — un vrai filet de sécurité.',
+    jeune_actif: 'Pour éviter le découvert et le stress de fin de mois, 300 à 800 € est une bonne cible de départ.',
+  };
+  const nudge = nudges[situation] || nudges.jeune_actif;
+  document.getElementById('target-nudge').textContent = nudge;
+
+  resultViewed(BRICK_ID);
+}
+
+function toggleAdjust() {
+  const area = document.getElementById('adjust-area');
+  area.classList.toggle('visible');
+  if (area.classList.contains('visible')) {
+    document.getElementById('custom-target').value = state.targetAmount;
+    document.getElementById('custom-target').focus();
+  }
+}
+
+function applyCustomTarget() {
+  const val = parseInt(document.getElementById('custom-target').value) || 0;
+  if (val > 0) {
+    state.targetAmount = val;
+    document.getElementById('target-amount').textContent = formatEuro(val);
+    document.getElementById('target-sublabel').textContent = 'cible personnalisée';
+  }
+}
+
+// ── Screen 4 — Rhythm ──────────────────────────────────────────
+function selectRhythmChip(btn) {
+  document.querySelectorAll('#rhythm-chips .chip').forEach(c => c.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  const monthly = parseInt(btn.dataset.monthly) || 0;
+  const isAutre = btn.dataset.label === 'Autre';
+
+  document.getElementById('custom-rhythm-wrap').style.display = isAutre ? 'block' : 'none';
+
+  if (!isAutre && monthly > 0) {
+    state.rhythmMonthly = monthly;
+    state.rhythmLabel = btn.dataset.label;
+    document.getElementById('rhythm-slider').value = Math.min(monthly, 200);
+    updateProjection();
+  } else if (isAutre) {
+    state.rhythmMonthly = 0;
+    document.getElementById('projection-box').style.display = 'none';
+    document.getElementById('micro-msg').style.display = 'none';
+    document.getElementById('btn-validate-rhythm').disabled = true;
+  }
+}
+
+function onSliderChange(val) {
+  state.rhythmMonthly = parseInt(val);
+  state.rhythmLabel = formatEuro(val) + '/mois';
+  // Deselect chips
+  document.querySelectorAll('#rhythm-chips .chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('custom-rhythm-wrap').style.display = 'none';
+  updateProjection();
+}
+
+function updateProjection() {
+  const customInput = document.getElementById('custom-rhythm');
+  if (document.getElementById('custom-rhythm-wrap').style.display !== 'none') {
+    const customVal = parseInt(customInput.value) || 0;
+    state.rhythmMonthly = customVal;
+    state.rhythmLabel = customVal > 0 ? formatEuro(customVal) + '/mois' : '';
+  }
+
+  const monthly = state.rhythmMonthly;
+  const btnValidate = document.getElementById('btn-validate-rhythm');
+  const projBox = document.getElementById('projection-box');
+  const microMsg = document.getElementById('micro-msg');
+  const errRhythm = document.getElementById('error-rhythm');
+
+  if (monthly <= 0) {
+    projBox.style.display = 'none';
+    microMsg.style.display = 'none';
+    btnValidate.disabled = true;
+    return;
+  }
+
+  btnValidate.disabled = false;
+
+  // Projection date
+  const months = Math.ceil(state.targetAmount / monthly);
+  const d = new Date();
+  d.setMonth(d.getMonth() + months);
+  const opts = { month: 'long', year: 'numeric' };
+  const dateStr = d.toLocaleDateString('fr-FR', opts);
+  state.projectionDate = dateStr;
+
+  document.getElementById('proj-amount').textContent = formatEuro(state.targetAmount);
+  document.getElementById('proj-date').textContent = dateStr;
+  projBox.style.display = 'flex';
+
+  // Micro message for small amounts
+  microMsg.style.display = monthly <= 20 ? 'block' : 'none';
+
+  // Warning if rhythm > available margin
+  const disponible = (profil?.revenus || 1500) - state.totalVital;
+  if (monthly > disponible * 0.4 && disponible > 0) {
+    errRhythm.style.display = 'block';
+  } else {
+    errRhythm.style.display = 'none';
+  }
+}
+
+function validateRhythm() {
+  if (state.rhythmMonthly <= 0) return;
+  commitmentCreated(BRICK_ID, { type: 'rythme_epargne', montant: state.rhythmMonthly, label: state.rhythmLabel });
+  goToScreen(5);
+}
+
+// ── Screen 5 — Source ──────────────────────────────────────────
+function selectSource(btn) {
+  document.querySelectorAll('.source-card').forEach(c => c.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.sourceKey = btn.dataset.source;
+  state.sourceLabel = SOURCE_LABELS[state.sourceKey] || btn.querySelector('.source-card-text').textContent;
+  document.getElementById('btn-create-plan').disabled = false;
+}
+
+function validateSource() {
+  if (!state.sourceKey) return;
+  fieldCompleted(BRICK_ID, 'source_epargne');
+  populateExitScreen();
+  goToScreen(6);
+}
+
+// ── Screen 6 — Exit ────────────────────────────────────────────
+function populateExitScreen() {
+  document.getElementById('exit-objectif').textContent = formatEuro(state.targetAmount);
+  document.getElementById('exit-rythme').textContent = state.rhythmLabel || formatEuro(state.rhythmMonthly) + '/mois';
+  document.getElementById('exit-source').textContent = state.sourceLabel;
+
+  if (state.projectionDate) {
+    document.getElementById('exit-projection-block').style.display = 'block';
+    document.getElementById('exit-projection-date').textContent = state.projectionDate;
+  }
+}
+
+function finalizeBrick() {
+  const engagements = [
+    {
+      type: 'fonds_urgence',
+      montant_cible: state.targetAmount,
+      versement: state.rhythmMonthly,
+      rythme_label: state.rhythmLabel,
+      source: state.sourceKey,
+      source_label: state.sourceLabel,
+      date_cible: state.projectionDate,
+    }
+  ];
+
+  completeBrick(BRICK_ID, engagements);
+
+  // Show exit nav
+  document.getElementById('exit-nav').style.display = 'block';
+  const nextBrick = getNextBrick(BRICK_ID);
+  state.nextBrickMeta = nextBrick;
+  if (nextBrick) {
+    const btnNext = document.getElementById('btn-next-brick');
+    btnNext.style.display = 'flex';
+    document.getElementById('next-brick-name').textContent = nextBrick.nom;
+  }
+
+  // Disable Terminer button
+  const btn = document.querySelector('#screen-6 .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'Plan créé ✓'; }
+}
+
+function goToNextBrick() {
+  if (state.nextBrickMeta) {
+    // .file is set by getNextBrick() for the 5 priority bricks
+    window.location.href = state.nextBrickMeta.file || (state.nextBrickMeta.id.replace(/_/g, '-') + '.html');
+  } else {
+    window.location.href = 'dashboard.html';
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════
+(function init() {
+  initBgCanvas('bg-canvas');
+  brickStarted(BRICK_ID);
+  screenViewed(BRICK_ID, 0);
+
+  const { isPrecarious, isAlreadySaving } = state;
+  analyzeProfile();
+
+  // Screen 0 — precarious banner
+  if (state.isPrecarious) {
+    document.getElementById('precarious-banner-0').classList.add('visible');
+  }
+  if (state.isAlreadySaving) {
+    document.getElementById('already-saving-msg').style.display = 'inline-flex';
+  }
+
+  // Screen 1 — example cards
+  populateExampleCards();
+})();
+</script>
+<script src="feedback-widget.js"></script>
+</body>
+</html>

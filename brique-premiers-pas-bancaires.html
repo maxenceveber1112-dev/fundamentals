@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamental — Premiers pas bancaires</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
+      --border:#252845;--border-hover:#363a68;
+      --text:#e2e4f0;--text-muted:#8b90b8;--text-faint:#444868;
+      --violet:#818cf8;--purple:#c084fc;--indigo:#6366f1;
+      --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
+      --violet-glow:rgba(129,140,248,0.10);
+      --green:#4ade80;--green-dim:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.3);
+      --orange:#fb923c;--orange-dim:rgba(251,146,60,0.12);--orange-border:rgba(251,146,60,0.3);
+      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
+      --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1.25rem;--r-xl:1.75rem;--r-full:9999px;
+      --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
+    }
+
+    /* ── Base reset ── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{-webkit-font-smoothing:antialiased;}
+    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;overflow-x:hidden;}
+    button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+    :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:var(--r-sm);}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+    #bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;}
+
+    /* ── Nav ── */
+    nav{position:sticky;top:0;z-index:100;background:rgba(11,13,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;}
+    .logo{display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+    .nav-right{display:flex;align-items:center;gap:1rem;}
+    .nav-link{font-size:0.8rem;color:var(--text-muted);text-decoration:none;padding:0.35rem 0.75rem;border-radius:var(--r-full);border:1px solid var(--border);transition:color var(--t),border-color var(--t);}
+    .nav-link:hover{color:var(--violet);border-color:var(--violet);}
+
+    /* ── Brick layout ── */
+    main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:2rem 1.5rem 6rem;}
+
+    /* ── Progress bar ── */
+    .brick-progress{display:flex;gap:0.35rem;margin-bottom:2rem;}
+    .bp-dot{flex:1;height:4px;border-radius:var(--r-full);background:var(--surface-3);transition:background 0.3s var(--ease-out);}
+    .bp-dot.done{background:linear-gradient(90deg,var(--indigo),var(--purple));}
+    .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
+
+    /* ── Screen ── */
+    .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
+    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ── Card surface ── */
+    .brick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;position:relative;overflow:hidden;}
+    .brick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
+
+    /* ── Titles ── */
+    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.5rem;}
+    .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5;}
+
+    /* ── Reassurance bubble ── */
+    .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-dim);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green);margin-bottom:1.25rem;}
+
+    /* ── Buttons ── */
+    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
+    .btn-primary:hover{box-shadow:0 0 40px rgba(99,102,241,0.5),0 6px 20px rgba(0,0,0,0.5);}
+    .btn-primary:active{transform:scale(0.98);}
+    .btn-primary:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+    .btn-secondary{display:flex;align-items:center;justify-content:center;gap:0.4rem;width:100%;padding:0.75rem;font-size:0.82rem;color:var(--text-faint);text-decoration:underline;text-underline-offset:3px;transition:color var(--t);margin-top:0.5rem;}
+    .btn-secondary:hover{color:var(--text-muted);}
+
+    /* ── Chips ── */
+    .chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+    .chip{padding:0.5rem 1rem;border-radius:var(--r-full);background:var(--surface-2);border:1.5px solid var(--border);font-size:0.85rem;color:var(--text-muted);cursor:pointer;transition:all var(--t);}
+    .chip:hover{border-color:var(--border-hover);color:var(--text);}
+    .chip.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);color:#a5b4fc;font-weight:600;}
+
+    /* ── Exit screen ── */
+    .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
+    .exit-icon{font-size:2.5rem;margin-bottom:1rem;}
+    .exit-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
+    .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
+    .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
+    .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
+    .exit-item-icon{flex-shrink:0;margin-top:0.1em;}
+    .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
+    .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
+    .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
+    .exit-next-text{flex:1;}
+    .exit-next-label{font-size:0.7rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;}
+    .exit-next-name{font-size:0.9rem;font-weight:600;color:var(--text);}
+
+    /* ── Keyframes ── */
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes popIn{from{transform:scale(0.4);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+    /* ── Responsive ── */
+    @media(max-width:520px){
+      nav{padding:0.875rem 1rem;}
+      main{padding:1.5rem 1rem 5rem;}
+      .brick-card{padding:1.5rem;}
+    }
+
+    /* ───────────────────────────────────────────────
+       BRICK-SPECIFIC STYLES
+    ─────────────────────────────────────────────── */
+
+    /* ── Screen 0 Intro ── */
+    .intro-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.875rem;
+      border-radius: var(--r-full);
+      background: var(--indigo-dim);
+      border: 1px solid rgba(99,102,241,0.3);
+      font-size: 0.75rem;
+      color: var(--violet);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .intro-hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+    .intro-icon-ring {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, rgba(99,102,241,0.04) 70%);
+      border: 1.5px solid rgba(99,102,241,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    .intro-keywords {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0 1.5rem;
+    }
+    .intro-kw {
+      padding: 0.3rem 0.7rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-full);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .intro-time {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── Flip cards ── */
+    .flip-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .flip-card-wrap {
+      perspective: 600px;
+      height: 120px;
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.45s var(--ease-out);
+    }
+    .flip-card-wrap.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front,
+    .flip-card-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--r-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem;
+      border: 1.5px solid var(--border);
+      background: var(--surface-2);
+      text-align: center;
+    }
+    .flip-card-front:hover {
+      border-color: var(--border-hover);
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+      background: var(--indigo-dim);
+      border-color: rgba(99,102,241,0.3);
+    }
+    .flip-card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.3rem;
+    }
+    .flip-card-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .flip-card-back-text {
+      font-size: 0.75rem;
+      color: #a5b4fc;
+      line-height: 1.4;
+    }
+    .flip-hint {
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+
+    /* ── Quiz ── */
+    .quiz-block {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .quiz-question {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.875rem;
+    }
+    .quiz-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .quiz-choice {
+      padding: 0.7rem 1rem;
+      border-radius: var(--r-md);
+      background: var(--surface-3);
+      border: 1.5px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: left;
+      transition: all var(--t);
+    }
+    .quiz-choice:hover:not(:disabled) {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+    .quiz-choice.correct {
+      background: var(--green-dim);
+      border-color: var(--green-border);
+      color: var(--green);
+      font-weight: 600;
+    }
+    .quiz-choice.wrong {
+      background: rgba(248,113,113,0.08);
+      border-color: rgba(248,113,113,0.3);
+      color: var(--red);
+    }
+    .quiz-choice.highlight {
+      background: var(--green-dim);
+      border-color: var(--green-border);
+      color: var(--green);
+    }
+    .quiz-feedback {
+      margin-top: 0.875rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--r-md);
+      font-size: 0.82rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .quiz-feedback.visible { display: block; }
+    .quiz-feedback.success {
+      background: var(--green-dim);
+      border: 1px solid var(--green-border);
+      color: var(--green);
+    }
+    .quiz-feedback.error {
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: #fca5a5;
+    }
+
+    /* ── Info fiches ── */
+    .fiche-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      margin: 1.25rem 0;
+    }
+    .fiche {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.875rem 1rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      transition: border-color var(--t);
+    }
+    .fiche-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      width: 2rem;
+      text-align: center;
+    }
+    .fiche-content {}
+    .fiche-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .fiche-desc {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      margin-top: 0.1rem;
+    }
+
+    /* ── Matching game (tap-to-select) ── */
+    .matching-section {
+      margin: 1.25rem 0;
+    }
+    .matching-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+    .matching-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .matching-col-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 0.4rem;
+      text-align: center;
+    }
+    .matching-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .match-item {
+      padding: 0.65rem 0.75rem;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--t);
+      user-select: none;
+    }
+    .match-item:hover:not(.matched) {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+    .match-item.selected {
+      background: var(--indigo-dim);
+      border-color: rgba(99,102,241,0.5);
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+    .match-item.matched {
+      background: var(--green-dim);
+      border-color: var(--green-border);
+      color: var(--green);
+      font-weight: 600;
+      cursor: default;
+    }
+    .match-item.wrong-flash {
+      animation: wrongFlash 0.4s ease;
+    }
+    @keyframes wrongFlash {
+      0%,100% { border-color: var(--border); }
+      50% { border-color: var(--red); background: rgba(248,113,113,0.08); color: var(--red); }
+    }
+    .matching-feedback {
+      margin-top: 0.75rem;
+      padding: 0.625rem 0.875rem;
+      border-radius: var(--r-md);
+      font-size: 0.8rem;
+      text-align: center;
+      display: none;
+    }
+    .matching-feedback.visible { display: block; }
+    .matching-feedback.success {
+      background: var(--green-dim);
+      border: 1px solid var(--green-border);
+      color: var(--green);
+    }
+    .matching-score {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+
+    /* ── Scenario quiz ── */
+    .scenario-block {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 1.25rem;
+      margin: 1.25rem 0;
+    }
+    .scenario-context {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.75rem;
+      background: var(--surface-3);
+      border-radius: var(--r-md);
+      margin-bottom: 1rem;
+    }
+    .scenario-context-icon {
+      font-size: 1.1rem;
+    }
+    .scenario-context-text {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .scenario-question {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.875rem;
+    }
+
+    /* ── Checklist ── */
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      margin: 1.25rem 0;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.875rem 1rem;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      cursor: pointer;
+      transition: all var(--t);
+      user-select: none;
+    }
+    .check-item:hover {
+      border-color: var(--border-hover);
+    }
+    .check-item.checked {
+      background: var(--green-dim);
+      border-color: var(--green-border);
+    }
+    .check-box {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--border-hover);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--t);
+      background: var(--surface-3);
+    }
+    .check-item.checked .check-box {
+      background: var(--green);
+      border-color: var(--green);
+    }
+    .check-box-mark {
+      display: none;
+    }
+    .check-item.checked .check-box-mark {
+      display: block;
+    }
+    .check-text {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      transition: color var(--t);
+    }
+    .check-item.checked .check-text {
+      color: var(--green);
+      font-weight: 600;
+    }
+    .check-progress-text {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+
+    /* ── Setting cards ── */
+    .setting-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .setting-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-lg);
+      transition: border-color var(--t), background var(--t);
+    }
+    .setting-card-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      background: var(--indigo-dim);
+      border: 1px solid rgba(99,102,241,0.2);
+    }
+    .setting-card-content {}
+    .setting-card-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .setting-card-desc {
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      margin-top: 0.15rem;
+    }
+    .setting-card-num {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      background: var(--indigo-dim);
+      border: 1px solid rgba(99,102,241,0.3);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--violet);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── Summary checklist (exit) ── */
+    .summary-checks {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin: 1.25rem 0;
+      text-align: left;
+    }
+    .summary-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.625rem;
+      padding: 0.75rem;
+      background: var(--surface-2);
+      border: 1px solid var(--green-border);
+      border-radius: var(--r-md);
+    }
+    .summary-check-icon {
+      color: var(--green);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      margin-top: 0.1em;
+    }
+    .summary-check-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Failure helper ── */
+    .alt-explain-btn {
+      display: block;
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      border-radius: var(--r-md);
+      border: 1px dashed var(--border-hover);
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--t);
+    }
+    .alt-explain-btn:hover {
+      border-color: var(--violet);
+      color: var(--violet);
+    }
+    .alt-explain-panel {
+      display: none;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 0.875rem;
+      margin-top: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .alt-explain-panel.visible { display: block; }
+  </style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo" aria-label="Fundamental">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
+      <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg)"/>
+      <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".25"/>
+    </svg>
+    Fundamental
+  </a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link">← Dashboard</a>
+  </div>
+</nav>
+
+<main>
+  <!-- PROGRESS BAR -->
+  <div class="brick-progress" id="brick-progress" role="progressbar" aria-label="Progression">
+    <!-- dots injected by JS -->
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 0 — Intro
+  ═══════════════════════════════════════════ -->
+  <div class="screen" id="screen-0">
+    <div class="brick-card">
+      <div class="intro-badge">🏦 Bases bancaires</div>
+      <h1 class="brick-title">Les bases bancaires, sans jargon.</h1>
+      <p class="brick-subtitle">Compte, carte, RIB, virement, prélèvement, découvert : en 5 minutes, tu comprends ce qui sert à quoi.</p>
+
+      <div class="intro-hero">
+        <div class="intro-icon-ring">🏦</div>
+      </div>
+
+      <div class="intro-keywords">
+        <span class="intro-kw">Carte</span>
+        <span class="intro-kw">Virement</span>
+        <span class="intro-kw">Prélèvement</span>
+        <span class="intro-kw">RIB</span>
+        <span class="intro-kw">Découvert</span>
+        <span class="intro-kw">Abonnements</span>
+      </div>
+
+      <p class="intro-time">⏱ Environ 5 minutes</p>
+
+      <button class="btn-primary" onclick="goTo(1)">Commencer →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 1 — Account purposes
+  ═══════════════════════════════════════════ -->
+  <div class="screen" id="screen-1" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">Ton compte n'est pas juste "l'endroit où l'argent arrive".</h2>
+      <p class="brick-subtitle">C'est aussi l'endroit d'où partent des paiements, des abonnements et parfois des frais.</p>
+
+      <p class="flip-hint">Appuie sur chaque carte pour en savoir plus →</p>
+      <div class="flip-grid" id="flip-grid">
+        <!-- Flip card: Recevoir -->
+        <div class="flip-card-wrap" role="button" tabindex="0" aria-label="Recevoir — cliquer pour voir l'exemple" onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="flip-card-icon">⬇️</div>
+              <div class="flip-card-label">Recevoir</div>
+            </div>
+            <div class="flip-card-back">
+              <div class="flip-card-back-text">Salaire, virement d'un proche, remboursement : tout atterrit sur ton compte.</div>
+            </div>
+          </div>
+        </div>
+        <!-- Flip card: Payer -->
+        <div class="flip-card-wrap" role="button" tabindex="0" aria-label="Payer — cliquer pour voir l'exemple" onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="flip-card-icon">💳</div>
+              <div class="flip-card-label">Payer</div>
+            </div>
+            <div class="flip-card-back">
+              <div class="flip-card-back-text">Courses, loyer, achats en ligne : ta carte ou un virement sort de ton compte.</div>
+            </div>
+          </div>
+        </div>
+        <!-- Flip card: Suivre -->
+        <div class="flip-card-wrap" role="button" tabindex="0" aria-label="Suivre — cliquer pour voir l'exemple" onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="flip-card-icon">📊</div>
+              <div class="flip-card-label">Suivre</div>
+            </div>
+            <div class="flip-card-back">
+              <div class="flip-card-back-text">Ton historique de transactions te montre exactement où part ton argent chaque mois.</div>
+            </div>
+          </div>
+        </div>
+        <!-- Flip card: Automatiser -->
+        <div class="flip-card-wrap" role="button" tabindex="0" aria-label="Automatiser — cliquer pour voir l'exemple" onclick="flipCard(this)" onkeydown="if(event.key==='Enter'||event.key===' ')flipCard(this)">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <div class="flip-card-icon">🔄</div>
+              <div class="flip-card-label">Automatiser</div>
+            </div>
+            <div class="flip-card-back">
+              <div class="flip-card-back-text">Netflix, Spotify, assurance : des prélèvements automatiques partent sans que tu aies rien à faire.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Micro-quiz -->
+      <div class="quiz-block" id="quiz-s1">
+        <div class="quiz-question">Un abonnement prélève sur…</div>
+        <div class="quiz-choices">
+          <button class="quiz-choice" onclick="answerQuizS1(this, 'carte')">la carte</button>
+          <button class="quiz-choice" onclick="answerQuizS1(this, 'compte')">le compte</button>
+          <button class="quiz-choice" onclick="answerQuizS1(this, 'les_deux')">les deux selon le cas</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-s1-feedback"></div>
+        <button class="alt-explain-btn" id="s1-alt-btn" style="display:none;" onclick="showS1AltExplain()">Voir l'explication autrement</button>
+        <div class="alt-explain-panel" id="s1-alt-panel">
+          <strong>Astuce mnémotechnique :</strong> Un prélèvement passe toujours par le compte bancaire. La carte, elle, peut être liée à ce compte — mais ce qui sort, c'est le solde du compte. Pense à ton compte comme à un réservoir : la carte et les prélèvements puisent dedans.
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-s1-continue" onclick="goTo(2)" disabled>Continuer →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 2 — Carte / Virement / Prélèvement / RIB
+  ═══════════════════════════════════════════ -->
+  <div class="screen" id="screen-2" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">Qu'est-ce qui fait quoi ?</h2>
+      <p class="brick-subtitle">Retenons l'essentiel.</p>
+
+      <div class="fiche-list">
+        <div class="fiche">
+          <div class="fiche-icon">💳</div>
+          <div class="fiche-content">
+            <div class="fiche-title">Carte : payer ou retirer.</div>
+            <div class="fiche-desc">En magasin, en ligne, ou au distributeur.</div>
+          </div>
+        </div>
+        <div class="fiche">
+          <div class="fiche-icon">➡️</div>
+          <div class="fiche-content">
+            <div class="fiche-title">Virement : envoyer de l'argent.</div>
+            <div class="fiche-desc">D'un compte à un autre, toi vers quelqu'un d'autre.</div>
+          </div>
+        </div>
+        <div class="fiche">
+          <div class="fiche-icon">🔁</div>
+          <div class="fiche-content">
+            <div class="fiche-title">Prélèvement : autoriser une entreprise à prélever.</div>
+            <div class="fiche-desc">C'est l'entreprise qui "tire" l'argent de ton compte.</div>
+          </div>
+        </div>
+        <div class="fiche">
+          <div class="fiche-icon">🪪</div>
+          <div class="fiche-content">
+            <div class="fiche-title">RIB : ton identité bancaire.</div>
+            <div class="fiche-desc">IBAN + BIC — permet à d'autres de te virer ou prélever.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matching game -->
+      <div class="matching-section">
+        <div class="matching-title">Associe chaque outil à son usage ↓</div>
+        <div class="matching-cols">
+          <div>
+            <div class="matching-col-label">Outil</div>
+            <div class="matching-items" id="tools-col">
+              <button class="match-item" data-id="carte" onclick="selectTool(this)">💳 Carte</button>
+              <button class="match-item" data-id="virement" onclick="selectTool(this)">➡️ Virement</button>
+              <button class="match-item" data-id="prelevement" onclick="selectTool(this)">🔁 Prélèvement</button>
+              <button class="match-item" data-id="rib" onclick="selectTool(this)">🪪 RIB</button>
+            </div>
+          </div>
+          <div>
+            <div class="matching-col-label">Usage</div>
+            <div class="matching-items" id="usages-col">
+              <button class="match-item" data-id="payer_magasin" onclick="selectUsage(this)">Payer en magasin</button>
+              <button class="match-item" data-id="envoyer_ami" onclick="selectUsage(this)">Envoyer à un ami</button>
+              <button class="match-item" data-id="abonnement" onclick="selectUsage(this)">Abonnement mensuel</button>
+              <button class="match-item" data-id="donner_coordonnees" onclick="selectUsage(this)">Donner ses coordonnées bancaires</button>
+            </div>
+          </div>
+        </div>
+        <div class="matching-feedback" id="matching-feedback"></div>
+        <div class="matching-score" id="matching-score"></div>
+      </div>
+
+      <button class="btn-primary" id="btn-s2-continue" onclick="goTo(3)">Tester si c'est clair →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 3 — Overdraft
+  ═══════════════════════════════════════════ -->
+  <div class="screen" id="screen-3" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">Le découvert, ce n'est pas de l'argent "gratuit".</h2>
+      <p class="brick-subtitle">Ça peut dépanner, mais ça peut aussi coûter des frais.</p>
+
+      <div class="scenario-block" id="quiz-s3">
+        <div class="scenario-context">
+          <div class="scenario-context-icon">📱</div>
+          <div class="scenario-context-text">Tu as <strong>20 €</strong> sur ton compte. Un abonnement de <strong>30 €</strong> passe.</div>
+        </div>
+        <div class="scenario-question">Que peut-il se passer ?</div>
+        <div class="quiz-choices">
+          <button class="quiz-choice" onclick="answerQuizS3(this, 'rien')">Rien</button>
+          <button class="quiz-choice" onclick="answerQuizS3(this, 'sous_zero')">Le compte passe sous 0</button>
+          <button class="quiz-choice" onclick="answerQuizS3(this, 'refuse')">Le paiement peut être refusé</button>
+          <button class="quiz-choice" onclick="answerQuizS3(this, 'depend')">Ça dépend du découvert autorisé</button>
+        </div>
+        <div class="quiz-feedback" id="quiz-s3-feedback"></div>
+        <button class="alt-explain-btn" id="s3-alt-btn" style="display:none;" onclick="showS3AltExplain()">Voir l'explication autrement</button>
+        <div class="alt-explain-panel" id="s3-alt-panel">
+          Ton compte a un "plancher autorisé" par ta banque. Si elle t'accorde un découvert de −100 €, le paiement peut passer mais ton solde descend à −10 €. Sans découvert autorisé, le paiement est refusé et tu peux avoir des frais de rejet. Donc la vraie réponse dépend toujours de ce que ta banque autorise.
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-s3-continue" onclick="goTo(4)" disabled>Continuer →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 4 — Subscriptions checklist
+  ═══════════════════════════════════════════ -->
+  <div class="screen" id="screen-4" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">Le vrai piège, ce sont souvent les petites sorties invisibles.</h2>
+      <p class="brick-subtitle">Abonnements, renouvellements automatiques, essais gratuits : il faut les voir tôt.</p>
+
+      <div class="reassurance">✓ Aucun jugement — c'est arrivé à tout le monde</div>
+
+      <div class="checklist" id="checklist-s4">
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0"
+             onclick="toggleCheck(this, 's4')"
+             onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this,'s4')">
+          <div class="check-box">
+            <svg class="check-box-mark" width="12" height="10" viewBox="0 0 12 10" fill="none">
+              <path d="M1 5L4.5 8.5L11 1.5" stroke="#0b0d17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="check-text">Je sais où voir mes abonnements</span>
+        </div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0"
+             onclick="toggleCheck(this, 's4')"
+             onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this,'s4')">
+          <div class="check-box">
+            <svg class="check-box-mark" width="12" height="10" viewBox="0 0 12 10" fill="none">
+              <path d="M1 5L4.5 8.5L11 1.5" stroke="#0b0d17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="check-text">Je sais désactiver un renouvellement</span>
+        </div>
+        <div class="check-item" role="checkbox" aria-checked="false" tabindex="0"
+             onclick="toggleCheck(this, 's4')"
+             onkeydown="if(event.key==='Enter'||event.key===' ')toggleCheck(this,'s4')">
+          <div class="check-box">
+            <svg class="check-box-mark" width="12" height="10" viewBox="0 0 12 10" fill="none">
+              <path d="M1 5L4.5 8.5L11 1.5" stroke="#0b0d17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="check-text">Je reçois des notifications de paiement</span>
+        </div>
+      </div>
+      <div class="check-progress-text" id="check-s4-progress"></div>
+
+      <button class="btn-primary" onclick="goTo(5)">Configurer mes réflexes →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 5 — Settings
+  ═══════════════════════════════════════════ -->
+  <div class="screen" id="screen-5" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">3 réglages qui t'évitent beaucoup de galères.</h2>
+      <p class="brick-subtitle">Rapides à faire, et vraiment utiles pour garder le contrôle.</p>
+
+      <div class="setting-cards">
+        <div class="setting-card">
+          <div class="setting-card-num">1</div>
+          <div class="setting-card-icon">🔔</div>
+          <div class="setting-card-content">
+            <div class="setting-card-title">Activer les notifications de paiement</div>
+            <div class="setting-card-desc">Tu suis chaque sortie en temps réel, sans surprise en fin de mois.</div>
+          </div>
+        </div>
+        <div class="setting-card">
+          <div class="setting-card-num">2</div>
+          <div class="setting-card-icon">📏</div>
+          <div class="setting-card-content">
+            <div class="setting-card-title">Vérifier les plafonds de carte</div>
+            <div class="setting-card-desc">Plafond de paiement & retrait — utile avant un achat important.</div>
+          </div>
+        </div>
+        <div class="setting-card">
+          <div class="setting-card-num">3</div>
+          <div class="setting-card-icon">📋</div>
+          <div class="setting-card-content">
+            <div class="setting-card-title">Regarder les abonnements actifs</div>
+            <div class="setting-card-desc">Filtre les prélèvements récurrents dans ton historique bancaire.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="goTo(6)">J'ai compris →</button>
+      <button class="btn-secondary" onclick="goTo(6)">Je ferai ça plus tard</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 6 — Mini validation + Exit
+  ═══════════════════════════════════════════ -->
+  <div class="screen" id="screen-6" style="display:none;">
+    <div class="exit-card">
+      <div class="exit-icon">🎯</div>
+      <h2 class="exit-title">Tu as les bases.</h2>
+      <p class="exit-subtitle">Pas besoin d'être expert. Le plus important, c'est d'éviter les erreurs de départ.</p>
+
+      <div class="summary-checks">
+        <div class="summary-check">
+          <div class="summary-check-icon">✓</div>
+          <div class="summary-check-text">Tu sais différencier carte / virement / prélèvement</div>
+        </div>
+        <div class="summary-check">
+          <div class="summary-check-icon">✓</div>
+          <div class="summary-check-text">Tu comprends le principe du découvert</div>
+        </div>
+        <div class="summary-check">
+          <div class="summary-check-icon">✓</div>
+          <div class="summary-check-text">Tu connais 3 réglages utiles</div>
+        </div>
+      </div>
+
+      <!-- Next brick + dashboard CTAs injected by JS -->
+      <div id="exit-actions"></div>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared.js"></script>
+<script src="supabase.js"></script>
+<script>
+  /* ────────────────────────────────────────────
+     INIT
+  ──────────────────────────────────────────── */
+  initBgCanvas('bg-canvas');
+
+  const BRICK_ID = 'premiers_pas_bancaires';
+  const TOTAL_SCREENS = 7; // 0-6
+
+  let profil = loadFromStorage('profil') || getMockProfile();
+  brickStarted(BRICK_ID);
+
+  let currentScreen = 0;
+
+  // State
+  let s1QuizAttempts = 0;
+  let s1QuizDone = false;
+  let s3QuizAttempts = 0;
+  let s3QuizDone = false;
+
+  // Matching game state
+  const CORRECT_PAIRS = {
+    carte: 'payer_magasin',
+    virement: 'envoyer_ami',
+    prelevement: 'abonnement',
+    rib: 'donner_coordonnees'
+  };
+  let selectedTool = null;
+  let matchedCount = 0;
+
+  /* ────────────────────────────────────────────
+     PROGRESS BAR
+  ──────────────────────────────────────────── */
+  function renderProgress(active) {
+    const bar = document.getElementById('brick-progress');
+    bar.innerHTML = '';
+    for (let i = 0; i < TOTAL_SCREENS; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'bp-dot' + (i < active ? ' done' : i === active ? ' active' : '');
+      bar.appendChild(dot);
+    }
+  }
+
+  /* ────────────────────────────────────────────
+     NAVIGATION
+  ──────────────────────────────────────────── */
+  function goTo(idx) {
+    if (idx === currentScreen) return;
+
+    const prev = document.getElementById('screen-' + currentScreen);
+    const next = document.getElementById('screen-' + idx);
+    if (!next) return;
+
+    if (prev) prev.style.display = 'none';
+
+    next.style.display = 'block';
+    // Re-trigger animation
+    next.classList.remove('screen');
+    void next.offsetWidth;
+    next.classList.add('screen');
+
+    currentScreen = idx;
+    renderProgress(idx);
+    screenViewed(BRICK_ID, idx);
+
+    // Screen 6 — complete brick
+    if (idx === 6) {
+      completeBrick(BRICK_ID, []);
+      renderExitActions();
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ────────────────────────────────────────────
+     FLIP CARDS (Screen 1)
+  ──────────────────────────────────────────── */
+  function flipCard(el) {
+    el.classList.toggle('flipped');
+    const isFlipped = el.classList.contains('flipped');
+    el.setAttribute('aria-expanded', isFlipped);
+  }
+
+  /* ────────────────────────────────────────────
+     QUIZ SCREEN 1
+  ──────────────────────────────────────────── */
+  function answerQuizS1(btn, answer) {
+    if (s1QuizDone) return;
+    s1QuizAttempts++;
+
+    const choices = document.querySelectorAll('#quiz-s1 .quiz-choice');
+    choices.forEach(c => c.disabled = true);
+
+    const feedback = document.getElementById('quiz-s1-feedback');
+    feedback.classList.add('visible');
+
+    // Correct answer: 'compte' (un prélèvement passe toujours par le compte)
+    const isCorrect = answer === 'compte';
+
+    btn.classList.add(isCorrect ? 'correct' : 'wrong');
+
+    if (isCorrect) {
+      feedback.classList.add('success');
+      feedback.textContent = 'Exact ! Un prélèvement est toujours rattaché au compte bancaire, pas directement à la carte.';
+      s1QuizDone = true;
+      document.getElementById('btn-s1-continue').disabled = false;
+      fieldCompleted(BRICK_ID, 'quiz_compte');
+    } else {
+      feedback.classList.add('error');
+      // Highlight the correct answer
+      choices.forEach(c => {
+        if (c.textContent.trim() === 'le compte') c.classList.add('highlight');
+      });
+
+      if (answer === 'carte') {
+        feedback.textContent = 'Pas tout à fait. La carte débite le compte — mais ce qui sort directement, c\'est le solde du compte bancaire.';
+      } else {
+        feedback.textContent = 'Pas tout à fait. Un prélèvement part toujours du compte, pas de la carte. C\'est pour ça que tu donnes ton RIB, pas ton numéro de carte, pour un abonnement.';
+      }
+
+      if (s1QuizAttempts >= 2) {
+        document.getElementById('s1-alt-btn').style.display = 'block';
+      }
+
+      // Allow retry after 1.5s
+      setTimeout(() => {
+        choices.forEach(c => {
+          c.disabled = false;
+          c.classList.remove('wrong', 'correct', 'highlight');
+        });
+        feedback.classList.remove('visible', 'success', 'error');
+      }, 1800);
+    }
+  }
+
+  function showS1AltExplain() {
+    document.getElementById('s1-alt-panel').classList.toggle('visible');
+    helpClicked(BRICK_ID, 'quiz_s1_alt_explain');
+  }
+
+  /* ────────────────────────────────────────────
+     MATCHING GAME (Screen 2)
+  ──────────────────────────────────────────── */
+  function selectTool(btn) {
+    if (btn.classList.contains('matched')) return;
+
+    // Deselect previous tool
+    document.querySelectorAll('#tools-col .match-item.selected').forEach(el => el.classList.remove('selected'));
+
+    if (selectedTool === btn.dataset.id) {
+      selectedTool = null;
+      return;
+    }
+
+    selectedTool = btn.dataset.id;
+    btn.classList.add('selected');
+  }
+
+  function selectUsage(btn) {
+    if (btn.classList.contains('matched')) return;
+    if (!selectedTool) return;
+
+    const usageId = btn.dataset.id;
+    const correct = CORRECT_PAIRS[selectedTool] === usageId;
+
+    if (correct) {
+      // Mark both as matched
+      const toolBtn = document.querySelector('#tools-col .match-item[data-id="' + selectedTool + '"]');
+      toolBtn.classList.remove('selected');
+      toolBtn.classList.add('matched');
+      btn.classList.add('matched');
+      matchedCount++;
+      selectedTool = null;
+
+      const score = document.getElementById('matching-score');
+      score.textContent = matchedCount + '/4 associés';
+
+      const fb = document.getElementById('matching-feedback');
+      if (matchedCount === 4) {
+        fb.classList.add('visible', 'success');
+        fb.textContent = 'Parfait ! Tu maîtrises les 4 outils bancaires de base.';
+        fieldCompleted(BRICK_ID, 'matching_complet');
+      }
+    } else {
+      // Wrong flash
+      const toolBtn = document.querySelector('#tools-col .match-item[data-id="' + selectedTool + '"]');
+      toolBtn.classList.remove('selected');
+      toolBtn.classList.add('wrong-flash');
+      btn.classList.add('wrong-flash');
+      selectedTool = null;
+      setTimeout(() => {
+        toolBtn.classList.remove('wrong-flash');
+        btn.classList.remove('wrong-flash');
+      }, 500);
+    }
+  }
+
+  /* ────────────────────────────────────────────
+     QUIZ SCREEN 3 — Overdraft
+  ──────────────────────────────────────────── */
+  function answerQuizS3(btn, answer) {
+    if (s3QuizDone) return;
+    s3QuizAttempts++;
+
+    const choices = document.querySelectorAll('#quiz-s3 .quiz-choice');
+    choices.forEach(c => c.disabled = true);
+
+    const feedback = document.getElementById('quiz-s3-feedback');
+    feedback.classList.add('visible');
+
+    // Best answer: 'depend' — but 'sous_zero' and 'refuse' are also partially correct
+    const isCorrect = answer === 'depend';
+    const isPartial = answer === 'sous_zero' || answer === 'refuse';
+
+    btn.classList.add(isCorrect ? 'correct' : isPartial ? 'correct' : 'wrong');
+
+    if (isCorrect) {
+      feedback.classList.add('success');
+      feedback.textContent = '✓ Exactement ! Si tu as un découvert autorisé, le compte passe sous 0 (et des agios peuvent s'appliquer). Sinon, le paiement est refusé — et tu peux avoir des frais de rejet.';
+      s3QuizDone = true;
+      document.getElementById('btn-s3-continue').disabled = false;
+      fieldCompleted(BRICK_ID, 'quiz_decouvert');
+    } else if (isPartial) {
+      feedback.classList.add('success');
+      feedback.textContent = 'C\'est une partie de la réponse — bien vu ! Mais en réalité, ça dépend du découvert autorisé par ta banque. Les deux scénarios peuvent arriver.';
+      // Highlight the correct answer too
+      choices.forEach(c => { if (c.textContent.includes('Ça dépend')) c.classList.add('highlight'); });
+      s3QuizDone = true;
+      document.getElementById('btn-s3-continue').disabled = false;
+      fieldCompleted(BRICK_ID, 'quiz_decouvert');
+    } else {
+      // answer === 'rien'
+      feedback.classList.add('error');
+      feedback.textContent = 'Pas tout à fait. Quand le solde est insuffisant, il se passe toujours quelque chose — soit le compte plonge dans le négatif, soit le paiement est refusé.';
+
+      choices.forEach(c => { if (c.textContent.includes('Ça dépend')) c.classList.add('highlight'); });
+
+      if (s3QuizAttempts >= 2) {
+        document.getElementById('s3-alt-btn').style.display = 'block';
+      }
+
+      setTimeout(() => {
+        choices.forEach(c => {
+          c.disabled = false;
+          c.classList.remove('wrong', 'correct', 'highlight');
+        });
+        feedback.classList.remove('visible', 'success', 'error');
+      }, 1800);
+    }
+  }
+
+  function showS3AltExplain() {
+    document.getElementById('s3-alt-panel').classList.toggle('visible');
+    helpClicked(BRICK_ID, 'quiz_s3_alt_explain');
+  }
+
+  /* ────────────────────────────────────────────
+     CHECKLIST (Screen 4)
+  ──────────────────────────────────────────── */
+  function toggleCheck(item, screen) {
+    const wasChecked = item.classList.contains('checked');
+    item.classList.toggle('checked');
+    item.setAttribute('aria-checked', !wasChecked);
+    updateCheckProgress(screen);
+  }
+
+  function updateCheckProgress(screen) {
+    const items = document.querySelectorAll('#checklist-' + screen + ' .check-item');
+    const checked = document.querySelectorAll('#checklist-' + screen + ' .check-item.checked').length;
+    const el = document.getElementById('check-' + screen + '-progress');
+    if (!el) return;
+    if (checked === 0) {
+      el.textContent = '';
+    } else if (checked < items.length) {
+      el.textContent = checked + '/' + items.length + ' coché' + (checked > 1 ? 's' : '');
+    } else {
+      el.textContent = 'Tout est coché — parfait !';
+    }
+  }
+
+  /* ────────────────────────────────────────────
+     EXIT ACTIONS (Screen 6)
+  ──────────────────────────────────────────── */
+  function renderExitActions() {
+    resultViewed(BRICK_ID);
+    const container = document.getElementById('exit-actions');
+    const nextBrick = getNextBrick(BRICK_ID);
+
+    let html = '';
+    if (nextBrick) {
+      html += `
+        <button class="exit-next" onclick="location.href='${nextBrick.file || 'dashboard.html'}'">
+          <div class="exit-next-text">
+            <div class="exit-next-label">Brique suivante</div>
+            <div class="exit-next-name">${nextBrick.nom || nextBrick.name || 'Continuer'}</div>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>`;
+    }
+
+    html += `
+      <button class="btn-primary" style="margin-top:0.75rem;" onclick="location.href='dashboard.html'">
+        Terminer →
+      </button>
+      <button class="btn-secondary" onclick="location.href='dashboard.html'">Retour au dashboard</button>`;
+
+    container.innerHTML = html;
+  }
+
+  /* ────────────────────────────────────────────
+     BOOT
+  ──────────────────────────────────────────── */
+  renderProgress(0);
+  screenViewed(BRICK_ID, 0);
+</script>
+<script src="feedback-widget.js"></script>
+</body>
+</html>

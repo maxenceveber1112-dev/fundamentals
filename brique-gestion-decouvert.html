@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamental — Gestion du découvert</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
+      --border:#252845;--border-hover:#363a68;
+      --text:#e2e4f0;--text-muted:#8b90b8;--text-faint:#444868;
+      --violet:#818cf8;--purple:#c084fc;--indigo:#6366f1;
+      --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
+      --violet-glow:rgba(129,140,248,0.10);
+      --green:#4ade80;--green-dim:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.3);
+      --orange:#fb923c;--orange-dim:rgba(251,146,60,0.12);--orange-border:rgba(251,146,60,0.3);
+      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
+      --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1.25rem;--r-xl:1.75rem;--r-full:9999px;
+      --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{-webkit-font-smoothing:antialiased;}
+    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;overflow-x:hidden;}
+    button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+    a{color:inherit;text-decoration:none;}
+    :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:var(--r-sm);}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+    #bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:rgba(11,13,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;}
+    .logo{display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+    .nav-right{display:flex;align-items:center;gap:1rem;}
+    .nav-link{font-size:0.8rem;color:var(--text-muted);text-decoration:none;padding:0.35rem 0.75rem;border-radius:var(--r-full);border:1px solid var(--border);transition:color var(--t),border-color var(--t);}
+    .nav-link:hover{color:var(--violet);border-color:var(--violet);}
+
+    /* LAYOUT */
+    main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:2rem 1.5rem 6rem;}
+
+    /* PROGRESS BAR */
+    .brick-progress{display:flex;gap:0.35rem;margin-bottom:2rem;}
+    .bp-dot{flex:1;height:4px;border-radius:var(--r-full);background:var(--surface-3);transition:background 0.3s var(--ease-out);}
+    .bp-dot.done{background:linear-gradient(90deg,var(--indigo),var(--purple));}
+    .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
+
+    /* SCREEN */
+    .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
+    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+    /* CARD */
+    .brick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;position:relative;overflow:hidden;}
+    .brick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
+
+    /* TITLES */
+    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.5rem;}
+    .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5;}
+
+    /* REASSURANCE */
+    .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-dim);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green);margin-bottom:1.25rem;}
+
+    /* FIELDS */
+    .field-group{margin-bottom:1.25rem;}
+    .field-label{font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.4rem;}
+    .field-help{font-size:0.75rem;color:var(--text-faint);margin-top:0.3rem;}
+    .field-input{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
+    .field-input:focus{border-color:var(--violet);outline:none;}
+    .field-input::placeholder{color:var(--text-faint);}
+    .field-error{font-size:0.75rem;color:var(--red);margin-top:0.3rem;display:none;}
+    .field-input.error{border-color:var(--red);}
+
+    /* CHIPS */
+    .chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+    .chip{padding:0.5rem 1rem;border-radius:var(--r-full);background:var(--surface-2);border:1.5px solid var(--border);font-size:0.85rem;color:var(--text-muted);cursor:pointer;transition:all var(--t);}
+    .chip:hover{border-color:var(--border-hover);color:var(--text);}
+    .chip.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);color:#a5b4fc;font-weight:600;}
+
+    /* BUTTONS */
+    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
+    .btn-primary:hover{box-shadow:0 0 40px rgba(99,102,241,0.5),0 6px 20px rgba(0,0,0,0.5);}
+    .btn-primary:active{transform:scale(0.98);}
+    .btn-primary:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+    .btn-secondary{display:flex;align-items:center;justify-content:center;gap:0.4rem;width:100%;padding:0.75rem;font-size:0.82rem;color:var(--text-faint);text-decoration:underline;text-underline-offset:3px;transition:color var(--t);margin-top:0.5rem;}
+    .btn-secondary:hover{color:var(--text-muted);}
+
+    /* SLIDER */
+    .range-wrap{position:relative;margin:0.75rem 0;}
+    .range-wrap input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:var(--surface-3);border-radius:var(--r-full);outline:none;}
+    .range-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:linear-gradient(135deg,var(--indigo),var(--purple));border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(99,102,241,0.4);}
+    .range-wrap input[type=range]::-moz-range-thumb{width:20px;height:20px;background:linear-gradient(135deg,var(--indigo),var(--purple));border-radius:50%;cursor:pointer;border:none;box-shadow:0 0 10px rgba(99,102,241,0.4);}
+    .range-labels{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-faint);margin-top:0.25rem;}
+    .range-value{text-align:center;font-size:1.2rem;font-weight:800;color:var(--violet);margin-top:0.5rem;}
+
+    /* SOFT MESSAGE */
+    .soft-msg{padding:0.75rem 1rem;background:var(--orange-dim);border:1px solid var(--orange-border);border-radius:var(--r-md);font-size:0.82rem;color:var(--orange);margin-top:0.75rem;display:none;}
+
+    /* CALENDAR */
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:1rem 0;}
+    .cal-day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:600;cursor:default;position:relative;transition:transform 0.15s var(--ease-spring);}
+    .cal-day:hover{transform:scale(1.15);z-index:10;}
+    .cal-day.green{background:rgba(74,222,128,0.15);color:var(--green);}
+    .cal-day.orange{background:rgba(251,146,60,0.15);color:var(--orange);}
+    .cal-day.red{background:rgba(248,113,113,0.20);color:#fca5a5;}
+    .cal-day.empty{opacity:0;}
+    .cal-legend{display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.75rem;}
+    .cal-legend-item{display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);}
+    .cal-legend-dot{width:10px;height:10px;border-radius:3px;}
+    .cal-legend-dot.green{background:rgba(74,222,128,0.4);}
+    .cal-legend-dot.orange{background:rgba(251,146,60,0.35);}
+    .cal-legend-dot.red{background:rgba(248,113,113,0.35);}
+
+    /* TOOLTIP */
+    .cal-tooltip{position:fixed;background:var(--surface-3);border:1px solid var(--border-hover);border-radius:var(--r-md);padding:0.4rem 0.7rem;font-size:0.75rem;color:var(--text);pointer-events:none;z-index:200;white-space:nowrap;opacity:0;transition:opacity 0.15s;}
+    .cal-tooltip.visible{opacity:1;}
+
+    /* COST BLOCKS */
+    .cost-block{padding:1.25rem 1.5rem;border-radius:var(--r-lg);margin-bottom:0.75rem;display:flex;justify-content:space-between;align-items:center;}
+    .cost-block.monthly{background:var(--surface-2);border:1px solid var(--border);}
+    .cost-block.annual{background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.3);}
+    .cost-label{font-size:0.85rem;color:var(--text-muted);}
+    .cost-value{font-size:1.1rem;font-weight:800;color:#fff;}
+    .cost-block.annual .cost-value{font-size:1.4rem;color:#a5b4fc;}
+    .mental-box{padding:1rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--violet);border-radius:var(--r-md);font-size:0.875rem;color:var(--text-muted);font-style:italic;margin-top:0.75rem;}
+
+    /* TRAJECTORY CARDS */
+    .traj-cards{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1.25rem 0;}
+    .traj-card{padding:1.25rem;border:2px solid var(--border);border-radius:var(--r-lg);cursor:pointer;transition:all var(--t);position:relative;}
+    .traj-card:hover{border-color:var(--border-hover);background:var(--surface-2);}
+    .traj-card.selected{border-color:rgba(99,102,241,0.5);background:var(--indigo-dim);}
+    .traj-card-title{font-size:0.95rem;font-weight:700;color:#fff;margin-bottom:0.35rem;}
+    .traj-card-desc{font-size:0.78rem;color:var(--text-muted);line-height:1.45;}
+    .traj-timeline{font-size:0.8rem;font-weight:700;color:var(--violet);margin-top:0.625rem;display:none;}
+    .traj-card.selected .traj-timeline{display:block;}
+    .traj-badge{position:absolute;top:-8px;right:10px;padding:0.2rem 0.6rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--green),#16a34a);font-size:0.68rem;font-weight:700;color:#fff;display:none;}
+    .traj-badge.show{display:block;}
+    .traj-neutral{font-size:0.8rem;color:var(--text-faint);text-align:center;margin-top:0.5rem;}
+
+    /* CHECKLIST */
+    .checklist{display:flex;flex-direction:column;gap:0.625rem;margin:1rem 0;}
+    .check-item{display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:border-color var(--t),background var(--t);}
+    .check-item:hover{border-color:var(--border-hover);}
+    .check-item.checked{background:var(--green-dim);border-color:var(--green-border);}
+    .check-box{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all var(--t);}
+    .check-item.checked .check-box{background:var(--green);border-color:var(--green);}
+    .check-text{font-size:0.875rem;color:var(--text-muted);line-height:1.4;}
+    .check-item.checked .check-text{color:var(--text);}
+
+    /* ENGAGEMENT FIELD */
+    .engagement-wrap{margin-top:1.5rem;padding:1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);}
+    .engagement-label{font-size:0.82rem;color:var(--text-muted);margin-bottom:0.5rem;}
+    .engagement-inline{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;}
+    .engagement-text{font-size:0.95rem;color:var(--text);}
+    .engagement-input{width:60px;padding:0.35rem 0.5rem;background:var(--surface-3);border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:1rem;font-weight:700;text-align:center;font-family:inherit;}
+    .engagement-input:focus{border-color:var(--violet);outline:none;}
+
+    /* EXIT SCREEN */
+    .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
+    .exit-icon{font-size:2.5rem;margin-bottom:1rem;}
+    .exit-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
+    .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
+    .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
+    .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
+    .exit-item-icon{flex-shrink:0;margin-top:0.1em;}
+    .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
+    .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
+    .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
+    .exit-next-text{flex:1;}
+    .exit-next-label{font-size:0.7rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;}
+    .exit-next-name{font-size:0.9rem;font-weight:600;color:var(--text);}
+
+    /* SPECIAL STATES */
+    .special-state{padding:1rem 1.25rem;background:var(--surface-2);border:1px solid var(--orange-border);border-radius:var(--r-md);font-size:0.85rem;color:var(--text-muted);margin-top:1rem;display:none;}
+
+    /* MICRO-PEDAGOGY */
+    .micro-peda{padding:0.75rem 1rem;background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.2);border-radius:var(--r-md);font-size:0.78rem;color:#a5b4fc;margin-bottom:1rem;display:none;}
+
+    /* ESTIMATION MODE */
+    .estimation-scenarios{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.75rem;}
+    .scenario-btn{padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);font-size:0.85rem;color:var(--text-muted);cursor:pointer;text-align:left;transition:all var(--t);}
+    .scenario-btn:hover{border-color:var(--border-hover);color:var(--text);}
+    .scenario-btn.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);color:#a5b4fc;}
+
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes popIn{from{transform:scale(0.4);opacity:0;}to{transform:scale(1);opacity:1;}}
+    @keyframes calReveal{from{opacity:0;transform:scale(0.7);}to{opacity:1;transform:scale(1);}}
+
+    @media(max-width:520px){
+      nav{padding:0.875rem 1rem;}
+      main{padding:1.5rem 1rem 5rem;}
+      .brick-card{padding:1.5rem;}
+      .traj-cards{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a href="index.html" class="logo" aria-label="Fundamental">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
+      <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg)"/>
+      <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".25"/>
+    </svg>
+    Fundamental
+  </a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link">← Dashboard</a>
+  </div>
+</nav>
+
+<main>
+  <!-- PROGRESS BAR -->
+  <div class="brick-progress" id="brick-progress" role="progressbar" aria-label="Progression"></div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 0 — INTRO
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-0">
+    <div class="brick-card">
+      <div id="micro-peda-0" class="micro-peda">
+        Un découvert, ce n'est pas "de l'argent en plus". C'est une avance qui peut coûter cher.
+      </div>
+      <p class="brick-title">Le découvert peut dépanner. Il ne doit pas piloter ton mois.</p>
+      <p class="brick-subtitle" id="intro-subtitle">On va voir combien il pèse vraiment, puis construire une sortie réaliste.</p>
+
+      <div class="reassurance">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v4M8 11h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Ce bilan est privé et sans jugement.
+      </div>
+
+      <div id="permanent-overdraft-msg" class="special-state" style="display:none;">
+        Là, le découvert semble être devenu une partie du budget. On va t'aider à casser ce cercle, étape par étape.
+      </div>
+
+      <button class="btn-primary" id="btn-s0">
+        Voir ma zone rouge
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 1 — DIAGNOSTIC RAPIDE
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-1" style="display:none;">
+    <div class="brick-card">
+      <p class="brick-title">Comment ça se passe, concrètement ?</p>
+      <p class="brick-subtitle">Quelques questions rapides pour mieux cerner ta situation.</p>
+
+      <!-- Q1: jours dans le rouge -->
+      <div class="field-group">
+        <label class="field-label" for="slider-jours">En général, tu passes dans le rouge combien de jours par mois ?</label>
+        <div class="range-wrap">
+          <input type="range" id="slider-jours" min="0" max="31" value="5" aria-label="Jours dans le rouge" />
+        </div>
+        <div class="range-labels"><span>0 jour</span><span>31 jours</span></div>
+        <div class="range-value" id="slider-jours-val" aria-live="polite">5 jours</div>
+        <div id="jours-zero-msg" class="field-help" style="display:none;color:var(--text-muted);">Tu sembles ne pas utiliser de découvert actuellement. Veux-tu revenir à ton plan ?</div>
+      </div>
+
+      <!-- Q2: montant -->
+      <div class="field-group">
+        <label class="field-label" for="input-montant">À peu près, tu descends jusqu'à combien ?</label>
+        <input type="text" id="input-montant" class="field-input" placeholder="Ex. -200 €" inputmode="numeric" autocomplete="off" />
+        <div class="field-help">Même une estimation suffit pour construire ton plan.</div>
+        <div class="field-error" id="montant-error">Vérifie le montant saisi.</div>
+        <div id="estimation-toggle" style="margin-top:0.75rem;display:none;">
+          <p style="font-size:0.78rem;color:var(--text-faint);margin-bottom:0.5rem;">Pas sûr·e du montant ? Choisis un scénario :</p>
+          <div class="estimation-scenarios">
+            <button class="scenario-btn" data-val="-100">Faible — environ -100 €</button>
+            <button class="scenario-btn" data-val="-300">Moyen — environ -300 €</button>
+            <button class="scenario-btn" data-val="-600">Élevé — environ -600 €</button>
+          </div>
+        </div>
+        <button class="btn-secondary" id="btn-no-idea" style="margin-top:0.5rem;font-size:0.78rem;">Je n'ai pas d'idée précise</button>
+      </div>
+
+      <!-- Q3: frais / rejets -->
+      <div class="field-group">
+        <label class="field-label">Tu as déjà eu des frais ou des rejets ?</label>
+        <div class="chips" id="chips-frais" role="group" aria-label="Fréquence des frais">
+          <button class="chip" data-val="jamais">Jamais</button>
+          <button class="chip" data-val="quelques">Quelques fois</button>
+          <button class="chip" data-val="souvent">Souvent</button>
+          <button class="chip" data-val="presque">Presque tout le temps</button>
+        </div>
+        <div class="soft-msg" id="soft-frais">Merci, c'est déjà utile de le voir clairement.</div>
+      </div>
+
+      <button class="btn-primary" id="btn-s1">
+        Voir l'impact
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 2 — CALENDRIER
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-2" style="display:none;">
+    <div class="brick-card">
+      <p class="brick-title">Voici à quoi ressemble ton mois quand le découvert revient souvent.</p>
+      <p class="brick-subtitle">Plus il dure, plus il mange ta marge et ton calme.</p>
+
+      <div class="calendar-grid" id="calendar-grid" role="img" aria-label="Calendrier du mois avec zones colorées"></div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-legend-dot green"></div><span>Vert = au-dessus de 0</span></div>
+        <div class="cal-legend-item"><div class="cal-legend-dot orange"></div><span>Orange = zone fragile</span></div>
+        <div class="cal-legend-item"><div class="cal-legend-dot red"></div><span>Rouge = découvert</span></div>
+      </div>
+
+      <button class="btn-primary" id="btn-s2">
+        Calculer ce que ça me coûte
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- tooltip -->
+  <div class="cal-tooltip" id="cal-tooltip"></div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 3 — COÛT
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-3" style="display:none;">
+    <div class="brick-card">
+      <p class="brick-title">Même "petit", le découvert peut coûter cher.</p>
+      <p class="brick-subtitle">On parle ici d'un ordre de grandeur pour te donner une base concrète.</p>
+
+      <div class="cost-block monthly">
+        <span class="cost-label">Coût estimé par mois</span>
+        <span class="cost-value" id="cost-monthly">—</span>
+      </div>
+      <div class="cost-block annual">
+        <span class="cost-label">Coût estimé par an</span>
+        <span class="cost-value" id="cost-annual">—</span>
+      </div>
+      <div class="mental-box">Ce n'est pas juste de l'argent. C'est aussi de la charge mentale.</div>
+
+      <button class="btn-primary" id="btn-s3">
+        Choisir mon plan de sortie
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 4 — TRAJECTOIRE
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-4" style="display:none;">
+    <div class="brick-card">
+      <p class="brick-title">Tu préfères quelle trajectoire ?</p>
+
+      <div class="traj-cards" role="group" aria-label="Choix de trajectoire">
+        <div class="traj-card" id="traj-rapide" tabindex="0" role="button" aria-pressed="false" aria-label="Sortie rapide">
+          <div class="traj-badge" id="badge-rapide">plus réaliste</div>
+          <div class="traj-card-title">⚡ Sortie rapide</div>
+          <div class="traj-card-desc">Plus d'effort maintenant, plus de respiration plus vite.</div>
+          <div class="traj-timeline" id="timeline-rapide">Objectif atteint en 2 mois</div>
+        </div>
+        <div class="traj-card" id="traj-progressive" tabindex="0" role="button" aria-pressed="false" aria-label="Sortie progressive">
+          <div class="traj-badge" id="badge-progressive">plus réaliste</div>
+          <div class="traj-card-title">🌿 Sortie progressive</div>
+          <div class="traj-card-desc">Moins d'effort chaque mois, mais plus long.</div>
+          <div class="traj-timeline" id="timeline-progressive">Objectif atteint en 5 mois</div>
+        </div>
+      </div>
+
+      <p class="traj-neutral">Il n'y a pas de bonne réponse universelle. Le meilleur plan est celui que tu peux tenir.</p>
+
+      <button class="btn-primary" id="btn-s4" disabled>
+        Continuer avec ce plan
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 5 — MICRO-PLAN
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-5" style="display:none;">
+    <div class="brick-card">
+      <p class="brick-title">Ton plan de sortie, très concret.</p>
+      <p class="brick-subtitle">On vise moins de jours dans le rouge et une baisse progressive du montant.</p>
+
+      <div class="checklist" id="checklist" role="list">
+        <div class="check-item" role="listitem" tabindex="0" data-idx="0" aria-pressed="false">
+          <div class="check-box">
+            <svg width="12" height="10" viewBox="0 0 12 10" fill="none" class="check-icon" style="display:none;" aria-hidden="true"><path d="M1 5l3.5 3.5L11 1" stroke="#0b0d17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="check-text">Décaler si possible un prélèvement important</span>
+        </div>
+        <div class="check-item" role="listitem" tabindex="0" data-idx="1" aria-pressed="false">
+          <div class="check-box">
+            <svg width="12" height="10" viewBox="0 0 12 10" fill="none" class="check-icon" style="display:none;" aria-hidden="true"><path d="M1 5l3.5 3.5L11 1" stroke="#0b0d17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="check-text">Créer un petit coussin à la paie</span>
+        </div>
+        <div class="check-item" role="listitem" tabindex="0" data-idx="2" aria-pressed="false">
+          <div class="check-box">
+            <svg width="12" height="10" viewBox="0 0 12 10" fill="none" class="check-icon" style="display:none;" aria-hidden="true"><path d="M1 5l3.5 3.5L11 1" stroke="#0b0d17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="check-text" id="check-text-alerte">Activer une alerte quand ton compte passe sous X €</span>
+        </div>
+        <div class="check-item" role="listitem" tabindex="0" data-idx="3" aria-pressed="false">
+          <div class="check-box">
+            <svg width="12" height="10" viewBox="0 0 12 10" fill="none" class="check-icon" style="display:none;" aria-hidden="true"><path d="M1 5l3.5 3.5L11 1" stroke="#0b0d17" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="check-text" id="check-text-limite">Limiter les dépenses variables sur les 7 jours rouges</span>
+        </div>
+      </div>
+
+      <div class="engagement-wrap">
+        <p class="engagement-label">Ton engagement pour le mois prochain :</p>
+        <div class="engagement-inline">
+          <span class="engagement-text">Je vise au maximum</span>
+          <input type="number" class="engagement-input" id="engagement-days" min="0" max="31" aria-label="Objectif jours dans le rouge" />
+          <span class="engagement-text">jours dans le rouge.</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-s5">
+        Valider mon plan
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 6 — EXIT
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-6" style="display:none;">
+    <div class="exit-card">
+      <div class="exit-icon">🎯</div>
+      <h1 class="exit-title">Tu as maintenant un plan pour reprendre de l'air.</h1>
+      <p class="exit-subtitle">Voici ce que tu as mis en place :</p>
+
+      <div class="exit-summary" id="exit-summary">
+        <div class="exit-item">
+          <span class="exit-item-icon">📅</span>
+          <span class="exit-item-text" id="exit-obj-jours">Objectif : moins de X jours dans le rouge</span>
+        </div>
+        <div class="exit-item">
+          <span class="exit-item-icon">🔔</span>
+          <span class="exit-item-text" id="exit-alerte">Action de sécurité : alerte à Y €</span>
+        </div>
+        <div class="exit-item">
+          <span class="exit-item-icon">➡️</span>
+          <span class="exit-item-text" id="exit-next-brick-text">Prochaine brique recommandée : Fonds d'urgence</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:0.625rem;">
+        <button class="exit-next" id="btn-next-brick" style="display:none;">
+          <span style="font-size:1.25rem;">→</span>
+          <span class="exit-next-text">
+            <span class="exit-next-label">Prochaine étape</span>
+            <span class="exit-next-name" id="next-brick-name">Fonds d'urgence</span>
+          </span>
+        </button>
+        <button class="btn-primary" onclick="window.location.href='dashboard.html'">
+          Retour au dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared.js"></script>
+<script src="supabase.js"></script>
+<script>
+  // ── Init ──────────────────────────────────────────────────────────────
+  const BRICK_ID = 'gestion_decouvert';
+  let profil = {};
+  try { profil = loadFromStorage('profil') || getMockProfile(); } catch(e) { profil = {}; }
+
+  if (typeof initBgCanvas === 'function') initBgCanvas('bg-canvas');
+  if (typeof brickStarted === 'function') brickStarted(BRICK_ID);
+
+  // ── State ─────────────────────────────────────────────────────────────
+  const state = {
+    currentScreen: 0,
+    totalScreens: 7,
+    joursRouge: 5,
+    montantDecouvert: -200,
+    fraisChip: null,
+    trajChoix: null,
+    engagementDays: 3,
+    alerteAmount: 0,
+  };
+
+  // ── Progress bar ──────────────────────────────────────────────────────
+  function renderProgress() {
+    const bar = document.getElementById('brick-progress');
+    bar.innerHTML = '';
+    for (let i = 0; i < state.totalScreens; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'bp-dot' + (i < state.currentScreen ? ' done' : i === state.currentScreen ? ' active' : '');
+      bar.appendChild(dot);
+    }
+  }
+
+  // ── Screen navigation ─────────────────────────────────────────────────
+  function goTo(n) {
+    const prev = document.getElementById('screen-' + state.currentScreen);
+    const next = document.getElementById('screen-' + n);
+    if (prev) prev.style.display = 'none';
+    state.currentScreen = n;
+    if (next) {
+      next.style.display = 'block';
+      // Re-trigger animation
+      next.style.animation = 'none';
+      next.offsetHeight;
+      next.style.animation = '';
+    }
+    renderProgress();
+    if (typeof screenViewed === 'function') screenViewed(BRICK_ID, n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Profile variants ──────────────────────────────────────────────────
+  function applyProfileVariants() {
+    const tags = profil.tags || [];
+    const subtitles = {
+      etudiant: 'On va éviter que ton mois se joue sur les derniers jours.',
+      jeune_actif: 'On va remettre ton salaire au centre de ton mois.',
+      famille: 'On va réduire la place que le rouge prend dans ton quotidien.',
+      independant: 'On va limiter les semaines où la trésorerie perso dérape.',
+    };
+    let variant = null;
+    if (tags.includes('etudiant')) variant = 'etudiant';
+    else if (tags.includes('independant') || tags.includes('freelance')) variant = 'independant';
+    else if (tags.includes('famille') || tags.includes('parent')) variant = 'famille';
+    else if (tags.includes('jeune_actif') || tags.includes('actif')) variant = 'jeune_actif';
+
+    if (variant && subtitles[variant]) {
+      document.getElementById('intro-subtitle').textContent = subtitles[variant];
+    }
+
+    // Micro-pedagogy for young/student
+    if (tags.includes('etudiant') || tags.includes('mineur') || (profil.age && profil.age < 22)) {
+      document.getElementById('micro-peda-0').style.display = 'flex';
+    }
+  }
+  applyProfileVariants();
+
+  // ── Screen 1 — Diagnostic ─────────────────────────────────────────────
+  const sliderJours = document.getElementById('slider-jours');
+  const sliderVal = document.getElementById('slider-jours-val');
+  const joursZeroMsg = document.getElementById('jours-zero-msg');
+
+  sliderJours.addEventListener('input', () => {
+    const v = parseInt(sliderJours.value, 10);
+    state.joursRouge = v;
+    sliderVal.textContent = v === 0 ? '0 jour' : v === 1 ? '1 jour' : v + ' jours';
+    joursZeroMsg.style.display = v === 0 ? 'block' : 'none';
+    if (v >= 25) {
+      document.getElementById('permanent-overdraft-msg').style.display = 'block';
+    }
+  });
+
+  const inputMontant = document.getElementById('input-montant');
+  const montantError = document.getElementById('montant-error');
+  const estimationToggle = document.getElementById('estimation-toggle');
+
+  inputMontant.addEventListener('blur', () => validateMontant());
+  inputMontant.addEventListener('input', () => {
+    inputMontant.classList.remove('error');
+    montantError.style.display = 'none';
+  });
+
+  function validateMontant() {
+    const raw = inputMontant.value.replace(/[^0-9.-]/g, '');
+    const val = parseFloat(raw);
+    if (inputMontant.value.trim() !== '' && (!isNaN(val))) {
+      const abs = Math.abs(val);
+      if (abs > 10000) {
+        inputMontant.classList.add('error');
+        montantError.style.display = 'block';
+        return false;
+      }
+      state.montantDecouvert = val < 0 ? val : -abs;
+      inputMontant.classList.remove('error');
+      montantError.style.display = 'none';
+      if (typeof fieldCompleted === 'function') fieldCompleted(BRICK_ID, 'montant_decouvert');
+      return true;
+    }
+    return true; // empty is ok — will use estimation
+  }
+
+  document.getElementById('btn-no-idea').addEventListener('click', () => {
+    estimationToggle.style.display = 'block';
+    if (typeof fieldSkipped === 'function') fieldSkipped(BRICK_ID, 'montant_decouvert');
+  });
+
+  document.querySelectorAll('.scenario-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.montantDecouvert = parseInt(btn.dataset.val, 10);
+      inputMontant.value = btn.dataset.val + ' €';
+      estimationToggle.style.display = 'none';
+      if (typeof estimateUsed === 'function') estimateUsed(BRICK_ID, 'montant_decouvert');
+    });
+  });
+
+  // Chips — frais
+  document.querySelectorAll('#chips-frais .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#chips-frais .chip').forEach(c => {
+        c.classList.remove('selected');
+        c.setAttribute('aria-pressed', 'false');
+      });
+      chip.classList.add('selected');
+      chip.setAttribute('aria-pressed', 'true');
+      state.fraisChip = chip.dataset.val;
+      const softMsg = document.getElementById('soft-frais');
+      softMsg.style.display = ['souvent','presque'].includes(state.fraisChip) ? 'block' : 'none';
+      if (typeof fieldCompleted === 'function') fieldCompleted(BRICK_ID, 'frais_rejets');
+    });
+  });
+
+  document.getElementById('btn-s1').addEventListener('click', () => {
+    if (!validateMontant()) return;
+    if (state.montantDecouvert === -200 && inputMontant.value.trim() === '' && estimationToggle.style.display === 'none') {
+      estimationToggle.style.display = 'block';
+      return;
+    }
+    if (typeof fieldCompleted === 'function') fieldCompleted(BRICK_ID, 'jours_rouge');
+    buildCalendar();
+    goTo(2);
+  });
+
+  // ── Screen 0 ──────────────────────────────────────────────────────────
+  document.getElementById('btn-s0').addEventListener('click', () => goTo(1));
+
+  // ── Screen 2 — Calendar ──────────────────────────────────────────────
+  function buildCalendar() {
+    const grid = document.getElementById('calendar-grid');
+    grid.innerHTML = '';
+    const jours = state.joursRouge;
+    const total = 30;
+    const montant = Math.abs(state.montantDecouvert);
+
+    // Simple model: last N days are red, 2 days before are orange, rest are green
+    const fragileStart = Math.max(0, total - jours - 2);
+    const rougeStart = total - jours;
+
+    for (let d = 1; d <= total; d++) {
+      const cell = document.createElement('div');
+      let zone;
+      if (d > rougeStart) {
+        zone = 'red';
+        cell.className = 'cal-day red';
+      } else if (d > fragileStart) {
+        zone = 'orange';
+        cell.className = 'cal-day orange';
+      } else {
+        zone = 'green';
+        cell.className = 'cal-day green';
+      }
+
+      cell.textContent = d;
+      cell.setAttribute('role', 'img');
+
+      // Tooltip
+      const estAmt = zone === 'red'
+        ? '−' + Math.round(montant * (1 - (d - rougeStart - 1) / Math.max(jours, 1) * 0.3)) + ' €'
+        : zone === 'orange' ? '~0 €' : '+';
+      cell.setAttribute('aria-label', 'Jour ' + d + ' : ' + (zone === 'red' ? 'découvert estimé à ' + estAmt : zone === 'orange' ? 'zone fragile' : 'positif'));
+
+      cell.addEventListener('mouseenter', (e) => showTooltip(e, 'Jour ' + d + ' : tu es estimé à ' + (zone === 'red' ? '−' + Math.round(montant) + ' €' : zone === 'orange' ? '~0 €' : '+ quelques €'), zone));
+      cell.addEventListener('mouseleave', hideTooltip);
+      cell.addEventListener('touchstart', (e) => showTooltip(e, 'Jour ' + d + ' : tu es estimé à ' + (zone === 'red' ? '−' + Math.round(montant) + ' €' : zone === 'orange' ? '~0 €' : '+ quelques €'), zone), {passive:true});
+      cell.addEventListener('touchend', hideTooltip);
+
+      // Animate in staggered
+      cell.style.animation = `calReveal 0.25s var(--ease-out) ${(d-1)*0.02}s both`;
+      grid.appendChild(cell);
+    }
+  }
+
+  const tooltip = document.getElementById('cal-tooltip');
+  function showTooltip(e, text, zone) {
+    tooltip.textContent = text;
+    tooltip.classList.add('visible');
+    positionTooltip(e);
+  }
+  function hideTooltip() { tooltip.classList.remove('visible'); }
+  function positionTooltip(e) {
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    tooltip.style.left = Math.min(x + 12, window.innerWidth - 160) + 'px';
+    tooltip.style.top = (y - 40) + 'px';
+  }
+  document.addEventListener('mousemove', (e) => {
+    if (tooltip.classList.contains('visible')) positionTooltip(e);
+  });
+
+  document.getElementById('btn-s2').addEventListener('click', () => {
+    computeCost();
+    if (typeof resultViewed === 'function') resultViewed(BRICK_ID);
+    goTo(3);
+  });
+
+  // ── Screen 3 — Cost ──────────────────────────────────────────────────
+  function computeCost() {
+    const montant = Math.abs(state.montantDecouvert);
+    const jours = Math.max(state.joursRouge, 1);
+    const annualRate = 0.16;
+    const monthly = +(montant * (jours / 30) * annualRate / 12).toFixed(2);
+    const annual = +(monthly * 12).toFixed(2);
+
+    const fmt = (v) => v < 1 ? '< 1 €' : Math.round(v) + ' €';
+    document.getElementById('cost-monthly').textContent = fmt(monthly);
+    document.getElementById('cost-annual').textContent = fmt(annual);
+
+    // Compute alert level (20% above current overdraft as fragile threshold)
+    state.alerteAmount = Math.round(montant * 0.25 / 10) * 10;
+  }
+
+  document.getElementById('btn-s3').addEventListener('click', () => {
+    setBadge();
+    goTo(4);
+  });
+
+  // ── Screen 4 — Trajectory ─────────────────────────────────────────────
+  function setBadge() {
+    // "Plus réaliste" badge: progressive if jours > 15 (heavy overdraft), rapide otherwise
+    const isTightBudget = Math.abs(state.montantDecouvert) > 400 || state.joursRouge > 15;
+    document.getElementById('badge-progressive').classList.toggle('show', isTightBudget);
+    document.getElementById('badge-rapide').classList.toggle('show', !isTightBudget);
+  }
+
+  function selectTraj(which) {
+    const rapide = document.getElementById('traj-rapide');
+    const progressive = document.getElementById('traj-progressive');
+    rapide.classList.toggle('selected', which === 'rapide');
+    rapide.setAttribute('aria-pressed', which === 'rapide' ? 'true' : 'false');
+    progressive.classList.toggle('selected', which === 'progressive');
+    progressive.setAttribute('aria-pressed', which === 'progressive' ? 'true' : 'false');
+    state.trajChoix = which;
+    document.getElementById('btn-s4').removeAttribute('disabled');
+  }
+
+  document.getElementById('traj-rapide').addEventListener('click', () => selectTraj('rapide'));
+  document.getElementById('traj-progressive').addEventListener('click', () => selectTraj('progressive'));
+  document.getElementById('traj-rapide').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTraj('rapide'); }});
+  document.getElementById('traj-progressive').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTraj('progressive'); }});
+
+  document.getElementById('btn-s4').addEventListener('click', () => {
+    prepareMicroPlan();
+    goTo(5);
+  });
+
+  // ── Screen 5 — Micro-plan ─────────────────────────────────────────────
+  function prepareMicroPlan() {
+    // Pre-fill engagement days
+    const target = Math.max(0, state.joursRouge - (state.trajChoix === 'rapide' ? 4 : 2));
+    state.engagementDays = target;
+    document.getElementById('engagement-days').value = target;
+
+    // Update alert text with actual value
+    const alertAmt = state.alerteAmount > 0 ? state.alerteAmount : 50;
+    document.getElementById('check-text-alerte').textContent = 'Activer une alerte quand ton compte passe sous ' + alertAmt + ' €';
+
+    // Update red days in checklist
+    const rougeLabel = state.joursRouge > 0 ? 'sur les ' + state.joursRouge + ' jours rouges' : 'sur les jours rouges';
+    document.getElementById('check-text-limite').textContent = 'Limiter les dépenses variables ' + rougeLabel;
+  }
+
+  // Checklist interaction
+  document.querySelectorAll('.check-item').forEach(item => {
+    function toggleCheck() {
+      item.classList.toggle('checked');
+      const isChecked = item.classList.contains('checked');
+      item.setAttribute('aria-pressed', isChecked ? 'true' : 'false');
+      const icon = item.querySelector('.check-icon');
+      if (icon) icon.style.display = isChecked ? 'block' : 'none';
+    }
+    item.addEventListener('click', toggleCheck);
+    item.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCheck(); }});
+  });
+
+  // Engagement input
+  document.getElementById('engagement-days').addEventListener('input', () => {
+    const v = parseInt(document.getElementById('engagement-days').value, 10);
+    if (!isNaN(v)) state.engagementDays = Math.min(Math.max(v, 0), 31);
+  });
+
+  document.getElementById('btn-s5').addEventListener('click', () => {
+    const days = document.getElementById('engagement-days').value;
+    const engagement = {
+      type: 'jours_rouge_objectif',
+      valeur: state.engagementDays,
+      label: 'Max ' + state.engagementDays + ' jours dans le rouge',
+      trajectoire: state.trajChoix,
+    };
+    if (typeof commitmentCreated === 'function') commitmentCreated(BRICK_ID, engagement);
+
+    // Prepare exit screen
+    const alertAmt = state.alerteAmount > 0 ? state.alerteAmount : 50;
+    document.getElementById('exit-obj-jours').textContent = 'Objectif : moins de ' + state.engagementDays + ' jours dans le rouge';
+    document.getElementById('exit-alerte').textContent = 'Action de sécurité : alerte à ' + alertAmt + ' €';
+
+    // Next brick
+    let nextBrick = null;
+    try { nextBrick = getNextBrick(BRICK_ID); } catch(e) {}
+
+    if (nextBrick) {
+      const nextName = nextBrick.nom || nextBrick.name || 'Fonds d\'urgence';
+      document.getElementById('exit-next-brick-text').textContent = 'Prochaine brique recommandée : ' + nextName;
+      document.getElementById('next-brick-name').textContent = nextName;
+      const btnNext = document.getElementById('btn-next-brick');
+      btnNext.style.display = 'flex';
+      btnNext.addEventListener('click', () => {
+        // .file is set by getNextBrick() for priority bricks
+        window.location.href = nextBrick.file || (nextBrick.id.replace(/_/g, '-') + '.html');
+      });
+    } else {
+      // Default recommendation
+      document.getElementById('exit-next-brick-text').textContent = 'Prochaine brique recommandée : Fonds d\'urgence';
+    }
+
+    // Complete brick
+    try { completeBrick(BRICK_ID, [engagement]); } catch(e) {}
+
+    goTo(6);
+  });
+
+  // ── Initial render ────────────────────────────────────────────────────
+  renderProgress();
+  if (typeof screenViewed === 'function') screenViewed(BRICK_ID, 0);
+</script>
+<script src="feedback-widget.js"></script>
+</body>
+</html>

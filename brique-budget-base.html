@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamental — Budget de base</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
+      --border:#252845;--border-hover:#363a68;
+      --text:#e2e4f0;--text-muted:#8b90b8;--text-faint:#444868;
+      --violet:#818cf8;--purple:#c084fc;--indigo:#6366f1;
+      --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
+      --violet-glow:rgba(129,140,248,0.10);
+      --green:#4ade80;--green-dim:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.3);
+      --orange:#fb923c;--orange-dim:rgba(251,146,60,0.12);--orange-border:rgba(251,146,60,0.3);
+      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
+      --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1.25rem;--r-xl:1.75rem;--r-full:9999px;
+      --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
+    }
+
+    /* ── Reset ── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{-webkit-font-smoothing:antialiased;}
+    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;overflow-x:hidden;}
+    button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+    a{color:inherit;text-decoration:none;}
+    input,textarea{font:inherit;}
+    :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:var(--r-sm);}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+
+    /* ── Background canvas ── */
+    #bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;}
+
+    /* ── Nav ── */
+    nav{position:sticky;top:0;z-index:100;background:rgba(11,13,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;}
+    .logo{display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+    .nav-right{display:flex;align-items:center;gap:1rem;}
+    .nav-link{font-size:0.8rem;color:var(--text-muted);text-decoration:none;padding:0.35rem 0.75rem;border-radius:var(--r-full);border:1px solid var(--border);transition:color var(--t),border-color var(--t);}
+    .nav-link:hover{color:var(--violet);border-color:var(--violet);}
+
+    /* ── Main layout ── */
+    main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:2rem 1.5rem 6rem;}
+
+    /* ── Progress bar ── */
+    .brick-progress{display:flex;gap:0.35rem;margin-bottom:2rem;}
+    .bp-dot{flex:1;height:4px;border-radius:var(--r-full);background:var(--surface-3);transition:background 0.3s var(--ease-out);}
+    .bp-dot.done{background:linear-gradient(90deg,var(--indigo),var(--purple));}
+    .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
+
+    /* ── Screen ── */
+    .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
+    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ── Card ── */
+    .brick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;position:relative;overflow:hidden;}
+    .brick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
+
+    /* ── Typography ── */
+    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.5rem;}
+    .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5;}
+
+    /* ── Reassurance bubble ── */
+    .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-dim);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green);margin-bottom:1.25rem;}
+
+    /* ── Inputs ── */
+    .field-group{margin-bottom:1.25rem;}
+    .field-label{font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.4rem;}
+    .field-help{font-size:0.75rem;color:var(--text-faint);margin-top:0.3rem;}
+    .field-input{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
+    .field-input:focus{border-color:var(--violet);outline:none;}
+    .field-input::placeholder{color:var(--text-faint);}
+    .field-error{font-size:0.75rem;color:var(--orange);margin-top:0.3rem;}
+
+    /* ── Chips ── */
+    .chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
+    .chip{padding:0.5rem 1rem;border-radius:var(--r-full);background:var(--surface-2);border:1.5px solid var(--border);font-size:0.85rem;color:var(--text-muted);cursor:pointer;transition:all var(--t);}
+    .chip:hover{border-color:var(--border-hover);color:var(--text);}
+    .chip.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);color:#a5b4fc;font-weight:600;}
+
+    /* ── Buttons ── */
+    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
+    .btn-primary:hover{box-shadow:0 0 40px rgba(99,102,241,0.5),0 6px 20px rgba(0,0,0,0.5);}
+    .btn-primary:active{transform:scale(0.98);}
+    .btn-primary:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+    .btn-secondary{display:flex;align-items:center;justify-content:center;gap:0.4rem;width:100%;padding:0.75rem;font-size:0.82rem;color:var(--text-faint);text-decoration:underline;text-underline-offset:3px;transition:color var(--t);margin-top:0.5rem;}
+    .btn-secondary:hover{color:var(--text-muted);}
+    .text-link{font-size:0.8rem;color:var(--violet);cursor:pointer;text-decoration:underline;text-underline-offset:3px;background:none;border:none;padding:0;transition:color var(--t);}
+    .text-link:hover{color:var(--purple);}
+
+    /* ── Sticky total bar ── */
+    .sticky-total{position:sticky;bottom:0;background:rgba(11,13,23,0.92);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:0.875rem 1rem;display:flex;justify-content:space-between;align-items:center;margin:1.5rem -1.5rem -6rem;z-index:50;}
+    .sticky-label{font-size:0.82rem;color:var(--text-muted);}
+    .sticky-value{font-size:1.1rem;font-weight:800;color:#fff;transition:color 0.3s;}
+    .sticky-value.flash{color:var(--violet);}
+
+    /* ── Accordion ── */
+    .accordion{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin-bottom:0.625rem;}
+    .accordion-header{display:flex;align-items:center;justify-content:space-between;padding:0.875rem 1rem;background:var(--surface-2);cursor:pointer;transition:background var(--t);}
+    .accordion-header:hover{background:var(--surface-3);}
+    .accordion-title{font-size:0.875rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:0.5rem;}
+    .accordion-arrow{transition:transform 0.2s;color:var(--text-faint);}
+    .accordion.open .accordion-arrow{transform:rotate(180deg);}
+    .accordion-body{max-height:0;overflow:hidden;transition:max-height 0.35s var(--ease-out);padding:0 1rem;}
+    .accordion.open .accordion-body{max-height:600px;padding:1rem;}
+    .accordion-amount{font-size:0.8rem;color:var(--text-muted);font-weight:500;}
+    .badge{font-size:0.65rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:var(--r-full);background:var(--orange-dim);border:1px solid var(--orange-border);color:var(--orange);text-transform:uppercase;letter-spacing:0.04em;}
+
+    /* ── Slider ── */
+    .range-wrap{position:relative;margin:0.75rem 0;}
+    .range-wrap input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:var(--surface-3);border-radius:var(--r-full);outline:none;cursor:pointer;}
+    .range-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:linear-gradient(135deg,var(--indigo),var(--purple));border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(99,102,241,0.4);}
+    .range-wrap input[type=range]::-moz-range-thumb{width:20px;height:20px;background:linear-gradient(135deg,var(--indigo),var(--purple));border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(99,102,241,0.4);border:none;}
+    .range-labels{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-faint);margin-top:0.25rem;}
+    .range-value{font-size:0.8rem;font-weight:600;color:var(--violet);margin-top:0.35rem;}
+
+    /* ── Variable category row ── */
+    .var-category{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;margin-bottom:0.625rem;transition:border-color var(--t);}
+    .var-category.filled{border-color:rgba(99,102,241,0.3);}
+    .var-cat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;}
+    .var-cat-name{font-size:0.875rem;font-weight:600;color:var(--text);}
+    .var-cat-amount{font-size:0.85rem;font-weight:700;color:var(--text-muted);}
+    .var-cat-amount.has-value{color:var(--violet);}
+
+    /* ── Completion indicator ── */
+    .completion-bar{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;font-size:0.8rem;color:var(--text-muted);}
+    .completion-track{flex:1;height:4px;background:var(--surface-3);border-radius:var(--r-full);overflow:hidden;}
+    .completion-fill{height:100%;background:linear-gradient(90deg,var(--indigo),var(--purple));border-radius:var(--r-full);transition:width 0.4s var(--ease-out);}
+
+    /* ── Banner ── */
+    .banner{display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1rem;border-radius:var(--r-md);background:var(--orange-dim);border:1px solid var(--orange-border);font-size:0.82rem;color:var(--orange);margin-bottom:1rem;}
+    .banner-info{display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1rem;border-radius:var(--r-md);background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;}
+
+    /* ── Synthesis ── */
+    .synth-donut{display:flex;justify-content:center;margin:1.5rem 0;}
+    .synth-blocks{display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;margin-bottom:1.25rem;}
+    .synth-block{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:0.875rem;}
+    .synth-block.full{grid-column:1/-1;}
+    .synth-block-label{font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;margin-bottom:0.25rem;}
+    .synth-block-value{font-size:1.2rem;font-weight:800;color:#fff;}
+    .synth-block-value.positive{color:var(--green);}
+    .synth-block-value.neutral{color:var(--orange);}
+    .synth-block-value.negative{color:var(--orange);}
+    .synth-msg{padding:1rem;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--border);font-size:0.875rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.5;}
+    .synth-msg.positive{border-color:var(--green-border);color:var(--green);}
+    .synth-msg.tight{border-color:var(--orange-border);color:var(--orange);}
+
+    /* ── Lever cards ── */
+    .lever-cards{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.25rem;}
+    .lever-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;cursor:default;transition:border-color var(--t),background var(--t);position:relative;}
+    .lever-card:hover{border-color:var(--border-hover);background:var(--surface-3);}
+    .lever-card-label{font-size:0.875rem;font-weight:600;color:var(--text);}
+    .lever-card-annual{font-size:0.75rem;color:var(--text-faint);margin-top:0.25rem;transition:color var(--t);}
+    .lever-card:hover .lever-card-annual{color:var(--violet);}
+
+    /* ── Engagement chips (screen 5) ── */
+    .engagement-options{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem;}
+    .eng-option{display:flex;align-items:center;gap:0.875rem;padding:1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:all var(--t);}
+    .eng-option:hover{border-color:var(--border-hover);}
+    .eng-option.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);}
+    .eng-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color var(--t);}
+    .eng-option.selected .eng-radio{border-color:var(--violet);}
+    .eng-radio-dot{width:8px;height:8px;border-radius:50%;background:var(--violet);opacity:0;transition:opacity var(--t);}
+    .eng-option.selected .eng-radio-dot{opacity:1;}
+    .eng-text{font-size:0.875rem;color:var(--text);flex:1;}
+    .eng-amount{display:inline-block;font-weight:700;color:var(--violet);}
+
+    /* ── Inline amount input in engagement ── */
+    .eng-inline-input{width:3.5rem;background:transparent;border:none;border-bottom:1.5px solid var(--violet);color:var(--violet);font-weight:700;font-size:0.875rem;text-align:center;padding:0 0.25rem;outline:none;}
+
+    /* ── Bottom sheet overlay ── */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.25s;display:flex;align-items:flex-end;}
+    .overlay.visible{opacity:1;pointer-events:all;}
+    .sheet{background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;border:1px solid var(--border);border-bottom:none;padding:1.5rem 1.5rem 2rem;width:100%;max-width:640px;margin:0 auto;transform:translateY(100%);transition:transform 0.35s var(--ease-out);}
+    .overlay.visible .sheet{transform:translateY(0);}
+    .sheet-handle{width:2.5rem;height:4px;background:var(--border-hover);border-radius:var(--r-full);margin:0 auto 1.25rem;}
+    .sheet-title{font-size:1rem;font-weight:700;color:#fff;margin-bottom:1rem;}
+    .sheet-table{width:100%;border-collapse:collapse;}
+    .sheet-table td{padding:0.625rem 0;font-size:0.875rem;border-bottom:1px solid var(--border);}
+    .sheet-table td:last-child{text-align:right;font-weight:600;color:#fff;}
+    .sheet-table tr:last-child td{border-bottom:none;font-weight:700;color:var(--green);}
+    .sheet-close{margin-top:1.25rem;width:100%;padding:0.75rem;border-radius:var(--r-full);background:var(--surface-2);border:1px solid var(--border);font-size:0.875rem;color:var(--text-muted);cursor:pointer;transition:all var(--t);}
+    .sheet-close:hover{border-color:var(--border-hover);color:var(--text);}
+
+    /* ── Sub items inside accordion ── */
+    .sub-field-group{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;margin-bottom:0.625rem;}
+    .sub-field-label{font-size:0.82rem;color:var(--text-muted);flex:1;}
+    .sub-field-input{width:7rem;padding:0.5rem 0.75rem;background:var(--surface-3);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.85rem;text-align:right;transition:border-color var(--t);}
+    .sub-field-input:focus{border-color:var(--violet);outline:none;}
+
+    /* ── Exit card ── */
+    .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
+    .exit-icon{font-size:2.5rem;margin-bottom:1rem;}
+    .exit-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
+    .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
+    .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
+    .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
+    .exit-item-icon{flex-shrink:0;margin-top:0.1em;}
+    .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
+    .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
+    .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
+    .exit-next-text{flex:1;}
+    .exit-next-label{font-size:0.7rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;}
+    .exit-next-name{font-size:0.9rem;font-weight:600;color:var(--text);}
+
+    /* ── Nudge ── */
+    .nudge{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem 1rem;border-radius:var(--r-md);background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.2);font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem;animation:fadeSlideUp 0.3s var(--ease-out);}
+
+    /* ── Tip ── */
+    .tip{font-size:0.78rem;color:var(--text-faint);font-style:italic;margin-bottom:1rem;padding:0.625rem 0.875rem;border-left:2px solid var(--border-hover);}
+
+    /* ── Orientation card ── */
+    .orientation-card{background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);border-radius:var(--r-md);padding:1rem;margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);}
+    .orientation-card strong{color:var(--violet);}
+
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes popIn{from{transform:scale(0.4);opacity:0;}to{transform:scale(1);opacity:1;};}
+
+    @media(max-width:520px){
+      nav{padding:0.875rem 1rem;}
+      main{padding:1.5rem 1rem 5rem;}
+      .brick-card{padding:1.5rem;}
+      .synth-blocks{grid-template-columns:1fr;}
+      .synth-block.full{grid-column:1;}
+    }
+  </style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo" aria-label="Fundamental">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
+      <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg)"/>
+      <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".25"/>
+    </svg>
+    Fundamental
+  </a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link">← Dashboard</a>
+  </div>
+</nav>
+
+<main>
+  <!-- PROGRESS BAR -->
+  <div class="brick-progress" id="brick-progress">
+    <div class="bp-dot active" data-idx="0"></div>
+    <div class="bp-dot" data-idx="1"></div>
+    <div class="bp-dot" data-idx="2"></div>
+    <div class="bp-dot" data-idx="3"></div>
+    <div class="bp-dot" data-idx="4"></div>
+    <div class="bp-dot" data-idx="5"></div>
+  </div>
+
+  <!-- ── SCREEN 0 — Entry card ── -->
+  <div class="screen" id="screen-0">
+    <div class="brick-card">
+      <p class="brick-subtitle" style="font-size:0.72rem;color:var(--text-faint);letter-spacing:0.06em;text-transform:uppercase;font-weight:700;margin-bottom:0.75rem;">Budget de base</p>
+      <h1 class="brick-title" id="s0-title">On va poser ton mois, sans jugement.</h1>
+      <p class="brick-subtitle" id="s0-subtitle">En 5 minutes, tu vas voir d'où vient ton argent, où il part, et quel levier peut vraiment te soulager.</p>
+      <div class="reassurance">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Tu peux donner des montants approximatifs.
+      </div>
+      <button class="btn-primary" id="s0-cta">Commencer</button>
+      <button class="btn-secondary" id="s0-example">Voir un exemple</button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 1 — Ce qui rentre ── -->
+  <div class="screen" id="screen-1" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">D'abord, ce qui rentre.</h2>
+      <p class="brick-subtitle">Même une estimation suffit pour commencer.</p>
+
+      <div class="field-group" id="s1-revenu-group">
+        <label class="field-label" for="s1-revenu">Revenu principal par mois</label>
+        <input class="field-input" id="s1-revenu" type="text" inputmode="numeric" placeholder="Ex. 1 450 €" autocomplete="off" />
+        <p id="s1-revenu-error" class="field-error" style="display:none;"></p>
+      </div>
+
+      <div id="s1-fourchette-wrap" style="display:none;margin-bottom:1.25rem;">
+        <p class="field-label" style="margin-bottom:0.5rem;">Choisir une fourchette</p>
+        <div class="chips" id="s1-fourchette-chips">
+          <button class="chip" data-val="250">0 – 500 €</button>
+          <button class="chip" data-val="750">500 – 1 000 €</button>
+          <button class="chip" data-val="1250">1 000 – 1 500 €</button>
+          <button class="chip" data-val="2000">1 500 – 2 500 €</button>
+          <button class="chip" data-val="3000">2 500 € +</button>
+        </div>
+      </div>
+
+      <button class="text-link" id="s1-toggle-fourchette" style="margin-bottom:1.25rem;">Je préfère donner une fourchette</button>
+
+      <div class="field-group">
+        <label class="field-label" for="s1-aides">Aides, soutien familial ou autres entrées</label>
+        <input class="field-input" id="s1-aides" type="text" inputmode="numeric" placeholder="Ex. 200 €" autocomplete="off" />
+        <p class="field-help">Pense aux aides, jobs, pensions, virements réguliers ou argent envoyé par tes proches.</p>
+      </div>
+
+      <button class="btn-primary" id="s1-cta">Continuer</button>
+      <button class="btn-secondary" id="s1-skip">Je ne sais pas exactement</button>
+
+      <!-- Sticky total -->
+      <div class="sticky-total">
+        <span class="sticky-label">Total estimé qui rentre ce mois-ci :</span>
+        <span class="sticky-value" id="s1-total">0 €</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 2 — Charges fixes ── -->
+  <div class="screen" id="screen-2" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">Ce qui tombe presque automatiquement.</h2>
+      <p class="brick-subtitle">Loyer, forfaits, crédits, abonnements : tout ce qui part chaque mois.</p>
+      <p class="field-help" style="margin-bottom:1rem;">Tu peux laisser vide ce que tu n'as pas.</p>
+
+      <div id="s2-tight-banner" class="banner" style="display:none;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px;"><path d="M8 2L14 13H2L8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>Ton mois semble très serré. On continue pour trouver les marges réelles.</span>
+      </div>
+
+      <div id="s2-nudge-logement" style="display:none;">
+        <div class="nudge">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Tu as indiqué être locataire pendant l'onboarding. Tu veux ajouter ton loyer ?
+        </div>
+      </div>
+
+      <!-- Accordions -->
+      <div id="s2-accordions">
+
+        <!-- Logement -->
+        <div class="accordion" data-cat="logement">
+          <div class="accordion-header">
+            <span class="accordion-title">🏠 Logement</span>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="accordion-amount" id="acc-logement-amount">—</span>
+              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="accordion-body">
+            <div class="field-group">
+              <label class="field-label" for="s2-loyer">Loyer ou charges</label>
+              <input class="field-input sub-field-input" id="s2-loyer" type="text" inputmode="numeric" placeholder="Ex. 650 €" autocomplete="off" style="width:100%;" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="s2-charges-loc">Charges copropriété / eau</label>
+              <input class="field-input sub-field-input" id="s2-charges-loc" type="text" inputmode="numeric" placeholder="Ex. 50 €" autocomplete="off" style="width:100%;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Transport -->
+        <div class="accordion" data-cat="transport">
+          <div class="accordion-header">
+            <span class="accordion-title">🚌 Transport</span>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="accordion-amount" id="acc-transport-amount">—</span>
+              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="accordion-body">
+            <div class="field-group">
+              <label class="field-label" for="s2-navigo">Abonnement transport (Navigo, etc.)</label>
+              <input class="field-input sub-field-input" id="s2-navigo" type="text" inputmode="numeric" placeholder="Ex. 86 €" autocomplete="off" style="width:100%;" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="s2-voiture">Assurance voiture / leasing</label>
+              <input class="field-input sub-field-input" id="s2-voiture" type="text" inputmode="numeric" placeholder="Ex. 120 €" autocomplete="off" style="width:100%;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Téléphone / internet -->
+        <div class="accordion" data-cat="tel">
+          <div class="accordion-header">
+            <span class="accordion-title">📱 Téléphone / internet</span>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="accordion-amount" id="acc-tel-amount">—</span>
+              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="accordion-body">
+            <div class="field-group">
+              <label class="field-label" for="s2-forfait">Forfait mobile</label>
+              <input class="field-input sub-field-input" id="s2-forfait" type="text" inputmode="numeric" placeholder="Ex. 20 €" autocomplete="off" style="width:100%;" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="s2-internet">Box internet</label>
+              <input class="field-input sub-field-input" id="s2-internet" type="text" inputmode="numeric" placeholder="Ex. 35 €" autocomplete="off" style="width:100%;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Crédits -->
+        <div class="accordion" data-cat="credits">
+          <div class="accordion-header">
+            <span class="accordion-title">💳 Crédits</span>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="accordion-amount" id="acc-credits-amount">—</span>
+              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="accordion-body">
+            <div class="field-group">
+              <label class="field-label" for="s2-credit-conso">Crédit conso / personnel</label>
+              <input class="field-input sub-field-input" id="s2-credit-conso" type="text" inputmode="numeric" placeholder="Ex. 150 €" autocomplete="off" style="width:100%;" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="s2-credit-immo">Crédit immobilier</label>
+              <input class="field-input sub-field-input" id="s2-credit-immo" type="text" inputmode="numeric" placeholder="Ex. 700 €" autocomplete="off" style="width:100%;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Abonnements (badge "Souvent oublié") -->
+        <div class="accordion" data-cat="abonnements">
+          <div class="accordion-header">
+            <span class="accordion-title">
+              🎬 Abonnements
+              <span class="badge">Souvent oublié</span>
+            </span>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="accordion-amount" id="acc-abonnements-amount">—</span>
+              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="accordion-body">
+            <div id="s2-abo-rows">
+              <!-- Sub-categories pre-filled -->
+              <div class="sub-field-group"><label class="sub-field-label">Netflix</label><input class="sub-field-input" data-abo="netflix" type="text" inputmode="numeric" placeholder="Ex. 14 €" /></div>
+              <div class="sub-field-group"><label class="sub-field-label">Spotify / Musique</label><input class="sub-field-input" data-abo="spotify" type="text" inputmode="numeric" placeholder="Ex. 10 €" /></div>
+              <div class="sub-field-group"><label class="sub-field-label">Salle de sport</label><input class="sub-field-input" data-abo="salle" type="text" inputmode="numeric" placeholder="Ex. 30 €" /></div>
+              <div class="sub-field-group"><label class="sub-field-label">Stockage cloud</label><input class="sub-field-input" data-abo="cloud" type="text" inputmode="numeric" placeholder="Ex. 3 €" /></div>
+              <div class="sub-field-group"><label class="sub-field-label">Jeux vidéo / gaming</label><input class="sub-field-input" data-abo="jeux" type="text" inputmode="numeric" placeholder="Ex. 15 €" /></div>
+              <div class="sub-field-group"><label class="sub-field-label">Autre abonnement</label><input class="sub-field-input" data-abo="autre_abo" type="text" inputmode="numeric" placeholder="Ex. 8 €" /></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Autres charges fixes -->
+        <div class="accordion" data-cat="autres_fixes">
+          <div class="accordion-header">
+            <span class="accordion-title">📦 Autres charges fixes</span>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <span class="accordion-amount" id="acc-autres_fixes-amount">—</span>
+              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="accordion-body">
+            <div class="field-group">
+              <label class="field-label" for="s2-assurances">Assurances (habitation, santé...)</label>
+              <input class="field-input sub-field-input" id="s2-assurances" type="text" inputmode="numeric" placeholder="Ex. 40 €" autocomplete="off" style="width:100%;" />
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="s2-autres-fixes-autre">Autre (mutuelle, garde enfants…)</label>
+              <input class="field-input sub-field-input" id="s2-autres-fixes-autre" type="text" inputmode="numeric" placeholder="Ex. 80 €" autocomplete="off" style="width:100%;" />
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /s2-accordions -->
+
+      <button class="btn-primary" id="s2-cta">Continuer</button>
+
+      <!-- Sticky total fixed charges -->
+      <div class="sticky-total">
+        <span class="sticky-label">Total charges fixes :</span>
+        <span class="sticky-value" id="s2-total">0 €</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 3 — Dépenses variables ── -->
+  <div class="screen" id="screen-3" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">Ton argent part surtout où, au quotidien ?</h2>
+      <p class="brick-subtitle">Choisis un montant ou une fourchette. Le but est de voir les ordres de grandeur.</p>
+
+      <div class="completion-bar">
+        <span id="s3-completion-text">0/7 catégories renseignées</span>
+        <div class="completion-track"><div class="completion-fill" id="s3-completion-fill" style="width:0%;"></div></div>
+      </div>
+
+      <div class="tip">Tu peux aller vite : si tu hésites, prends la fourchette qui te ressemble le plus.</div>
+
+      <div id="s3-categories"></div>
+
+      <button class="btn-primary" id="s3-cta">Voir ma synthèse</button>
+
+      <!-- Sticky total variable -->
+      <div class="sticky-total">
+        <span class="sticky-label">Total dépenses variables :</span>
+        <span class="sticky-value" id="s3-total">0 €</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 4 — Synthesis ── -->
+  <div class="screen" id="screen-4" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">Voilà ton mois, en version claire.</h2>
+      <p class="brick-subtitle">Ce n'est pas une note. C'est une base pour reprendre la main.</p>
+
+      <!-- Donut SVG -->
+      <div class="synth-donut">
+        <svg id="synth-donut-svg" width="180" height="180" viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--surface-3)" stroke-width="22"/>
+          <!-- Segments will be drawn by JS -->
+          <circle id="donut-charges" cx="90" cy="90" r="70" fill="none" stroke="var(--indigo)" stroke-width="22"
+            stroke-dasharray="0 440" stroke-dashoffset="0" stroke-linecap="butt" style="transition:stroke-dasharray 0.6s var(--ease-out);" transform="rotate(-90 90 90)"/>
+          <circle id="donut-variable" cx="90" cy="90" r="70" fill="none" stroke="var(--purple)" stroke-width="22"
+            stroke-dasharray="0 440" stroke-dashoffset="0" stroke-linecap="butt" style="transition:stroke-dasharray 0.6s var(--ease-out);" transform="rotate(-90 90 90)"/>
+          <!-- Legend text in center -->
+          <text id="donut-center-label" x="90" y="86" text-anchor="middle" fill="var(--text-muted)" font-size="11" font-family="Inter,sans-serif">Reste</text>
+          <text id="donut-center-val" x="90" y="103" text-anchor="middle" fill="white" font-size="15" font-weight="800" font-family="Inter,sans-serif">—</text>
+        </svg>
+      </div>
+      <!-- Legend -->
+      <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:1.25rem;flex-wrap:wrap;">
+        <span style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:50%;background:var(--surface-3);display:inline-block;"></span>Revenus</span>
+        <span style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:50%;background:var(--indigo);display:inline-block;"></span>Charges fixes</span>
+        <span style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:50%;background:var(--purple);display:inline-block;"></span>Dép. variables</span>
+      </div>
+
+      <!-- Blocks -->
+      <div class="synth-blocks">
+        <div class="synth-block">
+          <div class="synth-block-label">Ce qui rentre</div>
+          <div class="synth-block-value" id="synth-revenus">—</div>
+        </div>
+        <div class="synth-block">
+          <div class="synth-block-label">Charges fixes</div>
+          <div class="synth-block-value" id="synth-charges">—</div>
+        </div>
+        <div class="synth-block">
+          <div class="synth-block-label">Dépenses variables</div>
+          <div class="synth-block-value" id="synth-variable">—</div>
+        </div>
+        <div class="synth-block">
+          <div class="synth-block-label">Reste à vivre</div>
+          <div class="synth-block-value" id="synth-reste">—</div>
+        </div>
+      </div>
+
+      <!-- Conditional message -->
+      <div class="synth-msg" id="synth-msg"></div>
+
+      <!-- Orientation card for negative balance -->
+      <div id="synth-orientation" style="display:none;">
+        <div class="orientation-card">
+          <strong>Tu n'es pas seul·e dans cette situation.</strong> On te suggère de regarder la brique <strong>Découvert & BNPL</strong> après celle-ci pour trouver les leviers immédiats.
+        </div>
+      </div>
+
+      <!-- Lever cards -->
+      <div class="lever-cards" id="synth-levers">
+        <div class="lever-card">
+          <div class="lever-card-label" id="lever-1-label">Réduire les abonnements de 15 €/mois</div>
+          <div class="lever-card-annual" id="lever-1-annual">Soit 180 € de récupérés sur l'année</div>
+        </div>
+        <div class="lever-card">
+          <div class="lever-card-label">Suivre les dépenses sorties pendant 2 semaines</div>
+          <div class="lever-card-annual">Visualiser pour reprendre le contrôle</div>
+        </div>
+        <div class="lever-card">
+          <div class="lever-card-label" id="lever-3-label">Mettre 20 € de côté à la paie</div>
+          <div class="lever-card-annual" id="lever-3-annual">Soit 240 € épargnés sur l'année</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="s4-cta">Choisir mon premier levier</button>
+      <button class="btn-secondary" id="s4-back">Modifier mes montants</button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 5 — Engagement ── -->
+  <div class="screen" id="screen-5" style="display:none;">
+    <div class="brick-card">
+      <h2 class="brick-title">Choisis une seule action pour ce mois-ci.</h2>
+      <p class="brick-subtitle">Pas besoin d'en faire dix. Une seule action bien tenue vaut mieux qu'un grand plan abandonné.</p>
+
+      <div class="engagement-options" id="s5-options">
+
+        <label class="eng-option" data-idx="0">
+          <div class="eng-radio"><div class="eng-radio-dot"></div></div>
+          <div class="eng-text">
+            Je veux réduire mes abonnements de
+            <input class="eng-inline-input" id="eng-abo-amount" type="text" inputmode="numeric" value="15" />
+            €/mois
+          </div>
+        </label>
+
+        <label class="eng-option" data-idx="1">
+          <div class="eng-radio"><div class="eng-radio-dot"></div></div>
+          <div class="eng-text">Je veux surveiller mes sorties pendant 14 jours</div>
+        </label>
+
+        <label class="eng-option" data-idx="2">
+          <div class="eng-radio"><div class="eng-radio-dot"></div></div>
+          <div class="eng-text">
+            Je veux viser au moins
+            <input class="eng-inline-input" id="eng-marge-amount" type="text" inputmode="numeric" value="50" />
+            € de marge en fin de mois
+          </div>
+        </label>
+
+        <label class="eng-option" data-idx="3">
+          <div class="eng-radio"><div class="eng-radio-dot"></div></div>
+          <div class="eng-text">
+            Je veux mettre
+            <input class="eng-inline-input" id="eng-epargne-amount" type="text" inputmode="numeric" value="20" />
+            € de côté
+          </div>
+        </label>
+
+      </div>
+
+      <button class="btn-primary" id="s5-cta" disabled>Valider mon objectif</button>
+    </div>
+  </div>
+
+  <!-- ── EXIT SCREEN ── -->
+  <div class="screen" id="screen-exit" style="display:none;">
+    <div class="exit-card">
+      <div class="exit-icon">✅</div>
+      <h2 class="exit-title">C'est noté.</h2>
+      <p class="exit-subtitle">On te rappellera ce point dans ton dashboard.</p>
+
+      <div class="exit-summary" id="exit-summary">
+        <!-- filled by JS -->
+      </div>
+
+      <div id="exit-btns"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── BOTTOM SHEET — Exemple de budget ── -->
+<div class="overlay" id="example-overlay" role="dialog" aria-modal="true" aria-label="Exemple de budget">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 class="sheet-title">Exemple de budget type</h3>
+    <table class="sheet-table">
+      <tr><td>💰 Revenus</td><td>1 450 €</td></tr>
+      <tr><td>🏠 Charges fixes</td><td>– 780 €</td></tr>
+      <tr><td>🛒 Dépenses variables</td><td>– 350 €</td></tr>
+      <tr><td><strong>✨ Reste à vivre</strong></td><td>320 €</td></tr>
+    </table>
+    <button class="sheet-close" id="example-close">Fermer</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared.js"></script>
+<script src="supabase.js"></script>
+<script>
+  /* ── Init ── */
+  initBgCanvas('bg-canvas');
+  const BRICK_ID = 'budget_base';
+  let profil = loadFromStorage('profil') || getMockProfile();
+  brickStarted(BRICK_ID);
+
+  /* ── State ── */
+  let currentScreen = 0;
+  const totalScreens = 6; // 0-5 + exit
+  const budgetData = {
+    revenus: 0,
+    aides: 0,
+    revenuFourchette: null,
+    chargesFixes: {},
+    variable: {},
+  };
+  let selectedEngagement = null;
+
+  /* ── Customize screen 0 based on profile ── */
+  (function applyProfileVariant() {
+    if (typeof getBudgetIntroVariant === 'function') {
+      const variant = getBudgetIntroVariant(profil);
+      if (variant && variant.subtitle) {
+        document.getElementById('s0-subtitle').textContent = variant.subtitle;
+      }
+      if (variant && variant.title) {
+        document.getElementById('s0-title').textContent = variant.title;
+      }
+    }
+  })();
+
+  /* ── Progress bar update ── */
+  function updateProgress(screenIdx) {
+    const dots = document.querySelectorAll('.bp-dot');
+    dots.forEach((dot, i) => {
+      dot.classList.remove('done', 'active');
+      if (i < screenIdx) dot.classList.add('done');
+      else if (i === screenIdx) dot.classList.add('active');
+    });
+  }
+
+  /* ── Navigate to screen ── */
+  function showScreen(idx) {
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(s => { s.style.display = 'none'; });
+
+    let targetId;
+    if (idx === 'exit') {
+      targetId = 'screen-exit';
+    } else {
+      targetId = 'screen-' + idx;
+    }
+
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.style.display = 'block';
+      // Trigger animation re-flow
+      target.style.animation = 'none';
+      requestAnimationFrame(() => { target.style.animation = ''; });
+    }
+
+    if (typeof idx === 'number') {
+      currentScreen = idx;
+      updateProgress(idx);
+      screenViewed(BRICK_ID, idx);
+    } else {
+      updateProgress(totalScreens);
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ── Format euro helpers ── */
+  function parseEuro(val) {
+    if (!val) return 0;
+    const cleaned = String(val).replace(/[^\d,.-]/g, '').replace(',', '.');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? 0 : Math.max(0, n);
+  }
+  function fmt(n) {
+    if (!n && n !== 0) return '—';
+    return Math.round(n).toLocaleString('fr-FR') + ' €';
+  }
+
+  /* ── Animate sticky total ── */
+  function flashTotal(elId, value) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    el.textContent = fmt(value);
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+    setTimeout(() => el.classList.remove('flash'), 600);
+  }
+
+  /* ─────────────────── SCREEN 0 ─────────────────── */
+  document.getElementById('s0-cta').addEventListener('click', () => {
+    showScreen(1);
+  });
+
+  // Example sheet
+  document.getElementById('s0-example').addEventListener('click', () => {
+    helpClicked(BRICK_ID, 'example_budget');
+    document.getElementById('example-overlay').classList.add('visible');
+  });
+  document.getElementById('example-close').addEventListener('click', () => {
+    document.getElementById('example-overlay').classList.remove('visible');
+  });
+  document.getElementById('example-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      e.currentTarget.classList.remove('visible');
+    }
+  });
+
+  /* ─────────────────── SCREEN 1 ─────────────────── */
+  const s1Revenu = document.getElementById('s1-revenu');
+  const s1Aides = document.getElementById('s1-aides');
+  const s1FourchetteWrap = document.getElementById('s1-fourchette-wrap');
+  const s1ToggleFourchette = document.getElementById('s1-toggle-fourchette');
+  let s1ShowingFourchette = false;
+  let s1SelectedFourchette = null;
+
+  function calcS1Total() {
+    const rev = s1SelectedFourchette !== null ? s1SelectedFourchette : parseEuro(s1Revenu.value);
+    const aides = parseEuro(s1Aides.value);
+    return rev + aides;
+  }
+
+  function updateS1Total() {
+    flashTotal('s1-total', calcS1Total());
+  }
+
+  s1Revenu.addEventListener('input', () => {
+    s1SelectedFourchette = null;
+    document.querySelectorAll('#s1-fourchette-chips .chip').forEach(c => c.classList.remove('selected'));
+    updateS1Total();
+    fieldCompleted(BRICK_ID, 'revenu_principal');
+  });
+  s1Aides.addEventListener('input', () => {
+    updateS1Total();
+    fieldCompleted(BRICK_ID, 'aides');
+  });
+
+  s1ToggleFourchette.addEventListener('click', () => {
+    s1ShowingFourchette = !s1ShowingFourchette;
+    s1FourchetteWrap.style.display = s1ShowingFourchette ? 'block' : 'none';
+    s1ToggleFourchette.textContent = s1ShowingFourchette ? 'Saisir un montant exact' : 'Je préfère donner une fourchette';
+    helpClicked(BRICK_ID, 'fourchette_toggle');
+  });
+
+  document.querySelectorAll('#s1-fourchette-chips .chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#s1-fourchette-chips .chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      s1SelectedFourchette = parseInt(chip.dataset.val, 10);
+      s1Revenu.value = '';
+      estimateUsed(BRICK_ID, 'revenu_fourchette');
+      updateS1Total();
+    });
+  });
+
+  document.getElementById('s1-cta').addEventListener('click', () => {
+    const rev = s1SelectedFourchette !== null ? s1SelectedFourchette : parseEuro(s1Revenu.value);
+    const aides = parseEuro(s1Aides.value);
+
+    // Soft validation
+    if (rev < 0) {
+      const errEl = document.getElementById('s1-revenu-error');
+      errEl.textContent = 'Le montant ne peut pas être négatif.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    budgetData.revenus = rev;
+    budgetData.aides = aides;
+    budgetData.revenuFourchette = s1SelectedFourchette;
+
+    showScreen(2);
+    checkLogementNudge();
+  });
+
+  document.getElementById('s1-skip').addEventListener('click', () => {
+    // Use mid-range estimate
+    s1SelectedFourchette = 1250;
+    s1Revenu.value = '';
+    document.querySelectorAll('#s1-fourchette-chips .chip').forEach(c => {
+      c.classList.toggle('selected', c.dataset.val === '1250');
+    });
+    updateS1Total();
+    fieldSkipped(BRICK_ID, 'revenu_principal');
+    estimateUsed(BRICK_ID, 'revenu_principal_skip');
+
+    budgetData.revenus = 1250;
+    budgetData.aides = parseEuro(s1Aides.value);
+    showScreen(2);
+    checkLogementNudge();
+  });
+
+  /* ─────────────────── SCREEN 2 ─────────────────── */
+  // Accordion open/close
+  document.querySelectorAll('.accordion-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const acc = header.closest('.accordion');
+      acc.classList.toggle('open');
+    });
+  });
+
+  // Map of all s2 inputs to their category
+  const s2CatInputs = {
+    logement: ['s2-loyer', 's2-charges-loc'],
+    transport: ['s2-navigo', 's2-voiture'],
+    tel: ['s2-forfait', 's2-internet'],
+    credits: ['s2-credit-conso', 's2-credit-immo'],
+    abonnements: [], // dynamic — handled separately
+    autres_fixes: ['s2-assurances', 's2-autres-fixes-autre'],
+  };
+
+  function calcCatTotal(cat) {
+    let sum = 0;
+    if (cat === 'abonnements') {
+      document.querySelectorAll('#s2-abo-rows .sub-field-input').forEach(inp => {
+        sum += parseEuro(inp.value);
+      });
+    } else {
+      (s2CatInputs[cat] || []).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) sum += parseEuro(el.value);
+      });
+    }
+    return sum;
+  }
+
+  function calcS2Total() {
+    return Object.keys(s2CatInputs).reduce((acc, cat) => acc + calcCatTotal(cat), 0);
+  }
+
+  function updateS2CatAmounts() {
+    Object.keys(s2CatInputs).forEach(cat => {
+      const amtEl = document.getElementById('acc-' + cat + '-amount');
+      if (!amtEl) return;
+      const total = calcCatTotal(cat);
+      amtEl.textContent = total > 0 ? fmt(total) : '—';
+    });
+    const total = calcS2Total();
+    flashTotal('s2-total', total);
+
+    // Tight banner check
+    const totalIn = budgetData.revenus + budgetData.aides;
+    const banner = document.getElementById('s2-tight-banner');
+    if (totalIn > 0 && total > totalIn * 0.9) {
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
+  // Listen on all s2 inputs
+  document.querySelectorAll('#screen-2 .field-input, #screen-2 .sub-field-input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      updateS2CatAmounts();
+      fieldCompleted(BRICK_ID, 'charges_fixes');
+    });
+  });
+
+  function checkLogementNudge() {
+    const nudge = document.getElementById('s2-nudge-logement');
+    if (profil && profil.logement_situation === 'locataire') {
+      const loyerVal = document.getElementById('s2-loyer').value;
+      if (!loyerVal || parseEuro(loyerVal) === 0) {
+        nudge.style.display = 'block';
+      }
+    }
+  }
+
+  document.getElementById('s2-loyer').addEventListener('input', () => {
+    const nudge = document.getElementById('s2-nudge-logement');
+    if (parseEuro(document.getElementById('s2-loyer').value) > 0) {
+      nudge.style.display = 'none';
+    }
+    updateS2CatAmounts();
+  });
+
+  document.getElementById('s2-cta').addEventListener('click', () => {
+    // Collect all fixed charges data
+    budgetData.chargesFixes = {};
+    Object.keys(s2CatInputs).forEach(cat => {
+      budgetData.chargesFixes[cat] = calcCatTotal(cat);
+    });
+    budgetData.totalFixes = calcS2Total();
+    showScreen(3);
+    initScreen3();
+  });
+
+  /* ─────────────────── SCREEN 3 ─────────────────── */
+  const varCategories = [
+    { id: 'courses', label: '🛒 Courses', emoji: '🛒' },
+    { id: 'repas', label: '🍕 Repas / cafés', emoji: '🍕' },
+    { id: 'sorties', label: '🎉 Sorties', emoji: '🎉' },
+    { id: 'shopping', label: '🛍 Shopping', emoji: '🛍' },
+    { id: 'sante', label: '💊 Santé', emoji: '💊' },
+    { id: 'transport_var', label: '🚗 Transport variable', emoji: '🚗' },
+    { id: 'autres_var', label: '📎 Autres', emoji: '📎' },
+  ];
+
+  // Qualitative paliers → euro ranges
+  // Fallback if getSpendingPaliers not available
+  function getPaliers(catId) {
+    if (typeof getSpendingPaliers === 'function') {
+      const paliers = getSpendingPaliers(profil && profil.age_group);
+      if (paliers && paliers[catId]) return paliers[catId];
+    }
+    // Default paliers
+    const defaults = {
+      courses:       [30, 100, 200, 350],
+      repas:         [20, 60, 120, 200],
+      sorties:       [10, 40, 80, 150],
+      shopping:      [10, 40, 100, 200],
+      sante:         [5, 20, 50, 100],
+      transport_var: [10, 30, 70, 150],
+      autres_var:    [10, 30, 70, 150],
+    };
+    return defaults[catId] || [10, 30, 70, 150];
+  }
+
+  const palierLabels = ['Très peu', 'Un peu', 'Assez souvent', 'Beaucoup'];
+  let s3FilledCount = 0;
+
+  function getS3ExactId(catId) { return 's3-exact-' + catId; }
+  function getS3RangeId(catId) { return 's3-range-' + catId; }
+  function getS3ValId(catId)   { return 's3-val-' + catId; }
+
+  function initScreen3() {
+    const container = document.getElementById('s3-categories');
+    container.innerHTML = '';
+    s3FilledCount = 0;
+
+    varCategories.forEach(cat => {
+      const paliers = getPaliers(cat.id);
+      const div = document.createElement('div');
+      div.className = 'var-category';
+      div.id = 'varcat-' + cat.id;
+      div.innerHTML = `
+        <div class="var-cat-header">
+          <span class="var-cat-name">${cat.label}</span>
+          <span class="var-cat-amount" id="${getS3ValId(cat.id)}">—</span>
+        </div>
+        <div class="range-wrap">
+          <input type="range" id="${getS3RangeId(cat.id)}" min="0" max="3" step="1" value="-1" style="--val:-1;" />
+          <div class="range-labels">
+            ${palierLabels.map((l, i) => `<span>${l}</span>`).join('')}
+          </div>
+        </div>
+        <div class="range-value" id="${getS3ValId(cat.id)}-display" style="display:none;"></div>
+        <div style="margin-top:0.5rem;">
+          <button class="text-link" data-exact-for="${cat.id}">ou saisir un montant exact</button>
+          <div style="display:none;margin-top:0.5rem;" id="s3-exact-wrap-${cat.id}">
+            <input class="field-input" id="${getS3ExactId(cat.id)}" type="text" inputmode="numeric" placeholder="Ex. 80 €" style="max-width:160px;" />
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+
+      // Slider events
+      const slider = div.querySelector('#' + getS3RangeId(cat.id));
+
+      // Initialize slider at -1 (not selected) — visually to 0
+      slider.value = 0;
+      let sliderTouched = false;
+
+      slider.addEventListener('input', () => {
+        sliderTouched = true;
+        const idx = parseInt(slider.value, 10);
+        const val = paliers[idx];
+        budgetData.variable[cat.id] = val;
+        updateVarCatDisplay(cat.id, val, palierLabels[idx]);
+        updateS3Completion();
+        updateS3Total();
+        fieldCompleted(BRICK_ID, 'variable_' + cat.id);
+        estimateUsed(BRICK_ID, 'variable_' + cat.id + '_slider');
+      });
+
+      // Exact input
+      const exactToggle = div.querySelector('[data-exact-for]');
+      exactToggle.addEventListener('click', () => {
+        const wrap = document.getElementById('s3-exact-wrap-' + cat.id);
+        const isVisible = wrap.style.display !== 'none';
+        wrap.style.display = isVisible ? 'none' : 'block';
+        exactToggle.textContent = isVisible ? 'ou saisir un montant exact' : 'utiliser le curseur';
+        helpClicked(BRICK_ID, 'exact_amount_' + cat.id);
+      });
+
+      const exactInput = div.querySelector('#' + getS3ExactId(cat.id));
+      exactInput.addEventListener('input', () => {
+        const val = parseEuro(exactInput.value);
+        budgetData.variable[cat.id] = val;
+        updateVarCatDisplay(cat.id, val, null);
+        updateS3Completion();
+        updateS3Total();
+        fieldCompleted(BRICK_ID, 'variable_' + cat.id + '_exact');
+      });
+    });
+
+    updateS3Completion();
+    updateS3Total();
+  }
+
+  function updateVarCatDisplay(catId, val, palierLabel) {
+    const catDiv = document.getElementById('varcat-' + catId);
+    if (!catDiv) return;
+    const amtEl = document.getElementById(getS3ValId(catId));
+    const display = document.getElementById(getS3ValId(catId) + '-display');
+
+    if (val > 0) {
+      amtEl.textContent = fmt(val);
+      amtEl.classList.add('has-value');
+      catDiv.classList.add('filled');
+      if (palierLabel) {
+        display.style.display = 'block';
+        display.textContent = palierLabel + ' → ' + fmt(val);
+      }
+    } else {
+      amtEl.textContent = '—';
+      amtEl.classList.remove('has-value');
+      catDiv.classList.remove('filled');
+      if (display) display.style.display = 'none';
+    }
+  }
+
+  function updateS3Completion() {
+    const filled = varCategories.filter(cat => (budgetData.variable[cat.id] || 0) > 0).length;
+    const total = varCategories.length;
+    const pct = Math.round((filled / total) * 100);
+    document.getElementById('s3-completion-text').textContent = filled + '/' + total + ' catégories renseignées';
+    document.getElementById('s3-completion-fill').style.width = pct + '%';
+  }
+
+  function calcS3Total() {
+    return varCategories.reduce((acc, cat) => acc + (budgetData.variable[cat.id] || 0), 0);
+  }
+
+  function updateS3Total() {
+    flashTotal('s3-total', calcS3Total());
+  }
+
+  document.getElementById('s3-cta').addEventListener('click', () => {
+    budgetData.totalVariable = calcS3Total();
+    resultViewed(BRICK_ID);
+    showScreen(4);
+    renderSynthesis();
+  });
+
+  /* ─────────────────── SCREEN 4 — Synthesis ─────────────────── */
+  function renderSynthesis() {
+    const totalIn = budgetData.revenus + budgetData.aides;
+    const totalFixes = budgetData.totalFixes || 0;
+    const totalVar = budgetData.totalVariable || 0;
+    const reste = totalIn - totalFixes - totalVar;
+
+    document.getElementById('synth-revenus').textContent = fmt(totalIn);
+    document.getElementById('synth-charges').textContent = fmt(totalFixes);
+    document.getElementById('synth-variable').textContent = fmt(totalVar);
+
+    const resteEl = document.getElementById('synth-reste');
+    resteEl.textContent = fmt(Math.abs(reste)) + (reste < 0 ? ' (déficit)' : '');
+    resteEl.className = 'synth-block-value ' + (reste > 50 ? 'positive' : reste < 0 ? 'negative' : 'neutral');
+
+    // Donut
+    renderDonut(totalIn, totalFixes, totalVar, reste);
+
+    // Center text
+    document.getElementById('donut-center-val').textContent = fmt(reste);
+    document.getElementById('donut-center-label').textContent = reste >= 0 ? 'Reste' : 'Déficit';
+
+    // Conditional message
+    const msgEl = document.getElementById('synth-msg');
+    const orientEl = document.getElementById('synth-orientation');
+    if (reste > 50) {
+      msgEl.textContent = 'Tu as une marge. L\'enjeu est de la protéger.';
+      msgEl.className = 'synth-msg positive';
+      orientEl.style.display = 'none';
+    } else if (reste >= -50 && reste <= 50) {
+      msgEl.textContent = 'Ton mois semble très tendu. On va chercher le levier le plus simple.';
+      msgEl.className = 'synth-msg tight';
+      orientEl.style.display = 'none';
+    } else {
+      msgEl.textContent = 'Aujourd\'hui, ton mois semble déséquilibré. Ce n\'est pas rare. On commence petit.';
+      msgEl.className = 'synth-msg tight';
+      orientEl.style.display = 'block';
+    }
+
+    // Pre-fill lever cards & engagement amounts
+    const aboTotal = budgetData.chargesFixes && budgetData.chargesFixes.abonnements || 0;
+    const aboSave = Math.min(aboTotal > 0 ? Math.round(aboTotal * 0.2) : 15, 50);
+    const epargne = Math.max(10, Math.round(Math.max(reste, 0) * 0.15));
+    const margeTarget = Math.max(50, Math.round(Math.max(reste, 0) * 1.2));
+
+    document.getElementById('lever-1-label').textContent = 'Réduire les abonnements de ' + aboSave + ' €/mois';
+    document.getElementById('lever-1-annual').textContent = 'Soit ' + (aboSave * 12) + ' € récupérés sur l\'année';
+    document.getElementById('lever-3-label').textContent = 'Mettre ' + epargne + ' € de côté à la paie';
+    document.getElementById('lever-3-annual').textContent = 'Soit ' + (epargne * 12) + ' € épargnés sur l\'année';
+
+    // Pre-fill engagement inputs
+    document.getElementById('eng-abo-amount').value = aboSave;
+    document.getElementById('eng-marge-amount').value = margeTarget;
+    document.getElementById('eng-epargne-amount').value = epargne;
+  }
+
+  // Inline SVG donut rendering
+  function renderDonut(totalIn, totalFixes, totalVar, reste) {
+    const circumference = 2 * Math.PI * 70; // ≈ 440
+    const chargesEl = document.getElementById('donut-charges');
+    const variableEl = document.getElementById('donut-variable');
+
+    if (totalIn <= 0) {
+      chargesEl.setAttribute('stroke-dasharray', '0 ' + circumference);
+      variableEl.setAttribute('stroke-dasharray', '0 ' + circumference);
+      return;
+    }
+
+    const chargesFrac = Math.min(totalFixes / totalIn, 1);
+    const varFrac = Math.min(totalVar / totalIn, 1 - chargesFrac);
+    const chargesLen = chargesFrac * circumference;
+    const varLen = varFrac * circumference;
+
+    chargesEl.setAttribute('stroke-dasharray', chargesLen + ' ' + (circumference - chargesLen));
+    chargesEl.setAttribute('stroke-dashoffset', '0');
+
+    // Variable starts after charges
+    variableEl.setAttribute('stroke-dasharray', varLen + ' ' + (circumference - varLen));
+    // Offset so it starts after the charges segment
+    const varOffset = -chargesLen;
+    variableEl.setAttribute('stroke-dashoffset', varOffset);
+  }
+
+  document.getElementById('s4-cta').addEventListener('click', () => {
+    showScreen(5);
+  });
+  document.getElementById('s4-back').addEventListener('click', () => {
+    showScreen(1);
+  });
+
+  /* ─────────────────── SCREEN 5 — Engagement ─────────────────── */
+  const engOptions = document.querySelectorAll('.eng-option');
+
+  engOptions.forEach((opt, i) => {
+    opt.addEventListener('click', (e) => {
+      // Don't toggle if clicking on inline input
+      if (e.target.classList.contains('eng-inline-input')) return;
+      engOptions.forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      selectedEngagement = parseInt(opt.dataset.idx, 10);
+      document.getElementById('s5-cta').disabled = false;
+    });
+  });
+
+  // Allow inline inputs to not deselect option
+  document.querySelectorAll('.eng-inline-input').forEach(inp => {
+    inp.addEventListener('click', e => e.stopPropagation());
+    inp.addEventListener('focus', (e) => {
+      const opt = inp.closest('.eng-option');
+      if (opt) {
+        engOptions.forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        selectedEngagement = parseInt(opt.dataset.idx, 10);
+        document.getElementById('s5-cta').disabled = false;
+      }
+    });
+  });
+
+  document.getElementById('s5-cta').addEventListener('click', () => {
+    if (selectedEngagement === null) return;
+
+    let engText = '';
+    switch (selectedEngagement) {
+      case 0:
+        engText = 'Réduire les abonnements de ' + (document.getElementById('eng-abo-amount').value || '15') + ' €/mois';
+        break;
+      case 1:
+        engText = 'Surveiller les dépenses sorties pendant 14 jours';
+        break;
+      case 2:
+        engText = 'Viser ' + (document.getElementById('eng-marge-amount').value || '50') + ' € de marge en fin de mois';
+        break;
+      case 3:
+        engText = 'Mettre ' + (document.getElementById('eng-epargne-amount').value || '20') + ' € de côté';
+        break;
+    }
+
+    const engagement = { label: engText, type: 'budget_engagement', idx: selectedEngagement };
+    commitmentCreated(BRICK_ID, engagement);
+    completeBrick(BRICK_ID, [engagement]);
+
+    buildExitScreen(engagement);
+    showScreen('exit');
+  });
+
+  /* ─────────────────── EXIT SCREEN ─────────────────── */
+  function buildExitScreen(engagement) {
+    const totalIn = budgetData.revenus + budgetData.aides;
+    const totalFixes = budgetData.totalFixes || 0;
+    const totalVar = budgetData.totalVariable || 0;
+    const reste = totalIn - totalFixes - totalVar;
+
+    const summaryEl = document.getElementById('exit-summary');
+    summaryEl.innerHTML = `
+      <div class="exit-item">
+        <span class="exit-item-icon">💰</span>
+        <span class="exit-item-text">Revenus estimés : <strong>${fmt(totalIn)}</strong></span>
+      </div>
+      <div class="exit-item">
+        <span class="exit-item-icon">🏠</span>
+        <span class="exit-item-text">Charges fixes : <strong>${fmt(totalFixes)}</strong></span>
+      </div>
+      <div class="exit-item">
+        <span class="exit-item-icon">🛒</span>
+        <span class="exit-item-text">Dépenses variables : <strong>${fmt(totalVar)}</strong></span>
+      </div>
+      <div class="exit-item">
+        <span class="exit-item-icon">${reste >= 0 ? '✨' : '⚡'}</span>
+        <span class="exit-item-text">Reste à vivre : <strong>${fmt(reste)}</strong></span>
+      </div>
+      <div class="exit-item" style="border-color:rgba(99,102,241,0.3);background:var(--indigo-dim);">
+        <span class="exit-item-icon">🎯</span>
+        <span class="exit-item-text">Ton engagement : <strong>${engagement.label}</strong></span>
+      </div>
+    `;
+
+    const btnsEl = document.getElementById('exit-btns');
+    const nextBrick = typeof getNextBrick === 'function' ? getNextBrick(BRICK_ID) : null;
+
+    let btnsHtml = '';
+    if (nextBrick) {
+      btnsHtml += `
+        <button class="exit-next" id="exit-next-btn">
+          <div class="exit-next-text">
+            <div class="exit-next-label">Prochaine étape</div>
+            <div class="exit-next-name">${nextBrick.nom || nextBrick.name || 'Brique suivante'} →</div>
+          </div>
+        </button>
+      `;
+    }
+    btnsHtml += `
+      <button class="btn-secondary" style="margin-top:0.625rem;" id="exit-dashboard-btn">Retour au dashboard</button>
+    `;
+    btnsEl.innerHTML = btnsHtml;
+
+    if (nextBrick) {
+      document.getElementById('exit-next-btn').addEventListener('click', () => {
+        window.location.href = nextBrick.file || 'dashboard.html';
+      });
+    }
+    document.getElementById('exit-dashboard-btn').addEventListener('click', () => {
+      window.location.href = 'dashboard.html';
+    });
+  }
+
+  /* ── Init first screen ── */
+  updateProgress(0);
+  screenViewed(BRICK_ID, 0);
+</script>
+<script src="feedback-widget.js"></script>
+</body>
+</html>

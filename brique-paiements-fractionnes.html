@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamental — Paiements fractionnés</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
+      --border:#252845;--border-hover:#363a68;
+      --text:#e2e4f0;--text-muted:#8b90b8;--text-faint:#444868;
+      --violet:#818cf8;--purple:#c084fc;--indigo:#6366f1;
+      --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
+      --violet-glow:rgba(129,140,248,0.10);
+      --green:#4ade80;--green-dim:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.3);
+      --orange:#fb923c;--orange-dim:rgba(251,146,60,0.12);--orange-border:rgba(251,146,60,0.3);
+      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
+      --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1.25rem;--r-xl:1.75rem;--r-full:9999px;
+      --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
+    }
+
+    /* ── Base reset ── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{-webkit-font-smoothing:antialiased;}
+    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;overflow-x:hidden;}
+    button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+    :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:var(--r-sm);}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+    #bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;}
+
+    /* ── Nav ── */
+    nav{position:sticky;top:0;z-index:100;background:rgba(11,13,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;}
+    .logo{display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+    .nav-right{display:flex;align-items:center;gap:1rem;}
+    .nav-link{font-size:0.8rem;color:var(--text-muted);text-decoration:none;padding:0.35rem 0.75rem;border-radius:var(--r-full);border:1px solid var(--border);transition:color var(--t),border-color var(--t);}
+    .nav-link:hover{color:var(--violet);border-color:var(--violet);}
+
+    /* ── Brick layout ── */
+    main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:2rem 1.5rem 6rem;}
+
+    /* ── Progress bar ── */
+    .brick-progress{display:flex;gap:0.35rem;margin-bottom:2rem;}
+    .bp-dot{flex:1;height:4px;border-radius:var(--r-full);background:var(--surface-3);transition:background 0.3s var(--ease-out);}
+    .bp-dot.done{background:linear-gradient(90deg,var(--indigo),var(--purple));}
+    .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
+
+    /* ── Screen container ── */
+    .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
+    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ── Card surface ── */
+    .brick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;position:relative;overflow:hidden;}
+    .brick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
+
+    /* ── Titles ── */
+    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.5rem;}
+    .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5;}
+
+    /* ── Reassurance ── */
+    .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-dim);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green);margin-bottom:1.25rem;}
+
+    /* ── Input fields ── */
+    .field-group{margin-bottom:1.25rem;}
+    .field-label{font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.4rem;}
+    .field-help{font-size:0.75rem;color:var(--text-faint);margin-top:0.3rem;}
+    .field-error{font-size:0.75rem;color:var(--orange);margin-top:0.3rem;display:none;}
+    .field-input{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
+    .field-input:focus{border-color:var(--violet);outline:none;}
+    .field-input::placeholder{color:var(--text-faint);}
+    .field-input.error{border-color:var(--orange);}
+    select.field-input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b90b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.75rem center;padding-right:2.5rem;}
+
+    /* ── Amount input with euro sign ── */
+    .input-euro-wrap{position:relative;}
+    .input-euro-wrap .field-input{padding-right:2.25rem;}
+    .input-euro-sign{position:absolute;right:0.875rem;top:50%;transform:translateY(-50%);font-size:0.9rem;color:var(--text-muted);pointer-events:none;}
+
+    /* ── Buttons ── */
+    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
+    .btn-primary:hover{box-shadow:0 0 40px rgba(99,102,241,0.5),0 6px 20px rgba(0,0,0,0.5);}
+    .btn-primary:active{transform:scale(0.98);}
+    .btn-primary:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+    .btn-secondary{display:flex;align-items:center;justify-content:center;gap:0.4rem;width:100%;padding:0.75rem;font-size:0.82rem;color:var(--text-faint);text-decoration:underline;text-underline-offset:3px;transition:color var(--t);margin-top:0.5rem;}
+    .btn-secondary:hover{color:var(--text-muted);}
+    .btn-add{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:0.75rem 1rem;border-radius:var(--r-md);background:var(--surface-2);border:1.5px dashed var(--border);font-size:0.875rem;font-weight:600;color:var(--text-muted);transition:border-color var(--t),color var(--t),background var(--t);margin-top:0.75rem;}
+    .btn-add:hover{border-color:var(--violet);color:var(--violet);background:var(--indigo-dim);}
+
+    /* ── Payment card (repeatable) ── */
+    .payment-list{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1rem;}
+    .payment-card{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:border-color var(--t);}
+    .payment-card.expanded{border-color:var(--border-hover);}
+    .payment-card-header{display:flex;align-items:center;justify-content:space-between;padding:0.875rem 1rem;cursor:pointer;}
+    .payment-card-header:hover{background:var(--surface-3);}
+    .payment-card-summary{display:flex;align-items:center;gap:0.625rem;flex:1;min-width:0;}
+    .payment-card-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .payment-card-label{font-size:0.875rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .payment-card-meta{font-size:0.78rem;color:var(--text-muted);white-space:nowrap;}
+    .payment-card-actions{display:flex;align-items:center;gap:0.5rem;flex-shrink:0;}
+    .payment-card-toggle{color:var(--text-faint);padding:0.25rem;transition:transform 0.2s,color var(--t);}
+    .payment-card-toggle:hover{color:var(--text-muted);}
+    .payment-card.expanded .payment-card-toggle{transform:rotate(180deg);}
+    .payment-card-delete{color:var(--text-faint);padding:0.25rem;font-size:0.85rem;transition:color var(--t);}
+    .payment-card-delete:hover{color:var(--red);}
+    .payment-card-body{max-height:0;overflow:hidden;transition:max-height 0.35s var(--ease-out);}
+    .payment-card.expanded .payment-card-body{max-height:600px;}
+    .payment-card-form{padding:1rem;border-top:1px solid var(--border);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+
+    /* ── Info banner ── */
+    .info-banner{padding:0.875rem 1rem;background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);border-radius:var(--r-md);font-size:0.83rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.5;}
+    .info-banner strong{color:var(--violet);}
+
+    /* ── Stats blocks (screen 2) ── */
+    .stats-grid{display:grid;grid-template-columns:1fr;gap:0.75rem;margin-bottom:1.5rem;}
+    .stat-block{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;}
+    .stat-block-label{font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.375rem;}
+    .stat-block-value{font-size:1.4rem;font-weight:800;color:#fff;}
+    .stat-block-sub{font-size:0.78rem;color:var(--text-faint);margin-top:0.2rem;}
+    .stat-block.highlight{background:var(--indigo-dim);border-color:rgba(99,102,241,0.3);}
+    .stat-block.highlight .stat-block-value{background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .stat-block.liberation{background:var(--green-dim);border-color:var(--green-border);}
+    .stat-block.liberation .stat-block-label{color:var(--green);}
+    .stat-block.liberation .stat-block-value{color:var(--green);}
+
+    /* ── Bar chart ── */
+    .chart-wrap{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem;}
+    .chart-title{font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:1rem;}
+    .chart-bars{display:flex;flex-direction:column;gap:0.625rem;}
+    .chart-bar-row{display:flex;align-items:center;gap:0.75rem;}
+    .chart-bar-label{font-size:0.78rem;color:var(--text-muted);width:80px;flex-shrink:0;text-align:right;}
+    .chart-bar-track{flex:1;height:20px;background:var(--surface-3);border-radius:var(--r-full);overflow:hidden;}
+    .chart-bar-fill{height:100%;border-radius:var(--r-full);transition:width 0.6s var(--ease-out);}
+    .chart-bar-amount{font-size:0.78rem;font-weight:600;color:var(--text);width:50px;flex-shrink:0;}
+
+    /* ── Timeline ── */
+    .timeline-wrap{margin-bottom:1.5rem;}
+    .timeline-title{font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.75rem;}
+    .timeline-items{display:flex;flex-direction:column;gap:0.5rem;}
+    .timeline-item{display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.875rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
+    .timeline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .timeline-name{font-size:0.85rem;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .timeline-end{font-size:0.78rem;color:var(--text-muted);white-space:nowrap;}
+
+    /* ── Strategy cards (screen 3) ── */
+    .strategy-cards{display:flex;flex-direction:column;gap:0.875rem;margin-bottom:1.5rem;}
+    .strategy-card{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;cursor:pointer;transition:border-color var(--t),background var(--t);position:relative;}
+    .strategy-card:hover{border-color:var(--border-hover);background:var(--surface-3);}
+    .strategy-card.selected{border-color:var(--indigo);background:var(--indigo-dim);}
+    .strategy-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-bottom:0.5rem;}
+    .strategy-card-title{font-size:0.9rem;font-weight:700;color:#fff;line-height:1.3;}
+    .strategy-badge{flex-shrink:0;font-size:0.68rem;font-weight:700;padding:0.25rem 0.625rem;border-radius:var(--r-full);text-transform:uppercase;letter-spacing:0.06em;}
+    .badge-rapide{background:var(--orange-dim);border:1px solid var(--orange-border);color:var(--orange);}
+    .badge-durable{background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.3);color:var(--violet);}
+    .strategy-card-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:0.75rem;}
+    .strategy-card-impact{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;font-weight:600;}
+    .impact-before{color:var(--text-faint);text-decoration:line-through;}
+    .impact-arrow{color:var(--green);}
+    .impact-after{color:var(--green);}
+    .strategy-radio{position:absolute;top:1.25rem;right:1.25rem;width:18px;height:18px;border-radius:50%;border:2px solid var(--border-hover);background:var(--surface);transition:border-color var(--t),background var(--t);flex-shrink:0;}
+    .strategy-card.selected .strategy-radio{border-color:var(--indigo);background:var(--indigo);}
+
+    /* ── Pedagogy cards (screen 4) ── */
+    .peda-cards{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem;}
+    .peda-card{display:flex;align-items:flex-start;gap:1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;}
+    .peda-icon{font-size:1.5rem;flex-shrink:0;margin-top:0.1rem;}
+    .peda-text{font-size:0.875rem;color:var(--text);font-weight:600;line-height:1.4;}
+
+    /* ── Engagement options (screen 5) ── */
+    .engagement-options{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem;}
+    .engagement-option{display:flex;align-items:flex-start;gap:0.875rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.125rem;cursor:pointer;transition:border-color var(--t),background var(--t);}
+    .engagement-option:hover{border-color:var(--border-hover);background:var(--surface-3);}
+    .engagement-option.selected{border-color:var(--indigo);background:var(--indigo-dim);}
+    .engagement-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border-hover);background:var(--surface);flex-shrink:0;margin-top:0.15rem;transition:border-color var(--t),background var(--t);}
+    .engagement-option.selected .engagement-radio{border-color:var(--indigo);background:var(--indigo);}
+    .engagement-label{font-size:0.875rem;color:var(--text);line-height:1.4;flex:1;}
+    .engagement-label .inline-input{background:transparent;border:none;border-bottom:1.5px solid var(--border-hover);color:var(--violet);font:inherit;font-size:inherit;width:160px;padding:0 0.125rem;outline:none;transition:border-color var(--t);}
+    .engagement-label .inline-input:focus{border-color:var(--violet);}
+
+    /* ── Confirmation msg ── */
+    .confirm-msg{display:none;text-align:center;padding:1.5rem;background:var(--green-dim);border:1px solid var(--green-border);border-radius:var(--r-lg);margin-top:1rem;font-size:0.9rem;color:var(--green);font-weight:600;animation:fadeSlideUp 0.35s var(--ease-out) both;}
+
+    /* ── Exit screen ── */
+    .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
+    .exit-icon{font-size:2.5rem;margin-bottom:1rem;}
+    .exit-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
+    .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
+    .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
+    .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
+    .exit-item-icon{flex-shrink:0;margin-top:0.1em;}
+    .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
+    .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
+    .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
+    .exit-next-text{flex:1;}
+    .exit-next-label{font-size:0.7rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;}
+    .exit-next-name{font-size:0.9rem;font-weight:600;color:var(--text);}
+
+    /* ── Nudge/tip ── */
+    .nudge{display:flex;align-items:flex-start;gap:0.625rem;padding:0.875rem 1rem;background:var(--orange-dim);border:1px solid var(--orange-border);border-radius:var(--r-md);font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:1rem;}
+    .nudge strong{color:var(--orange);}
+
+    /* ── Skip help message ── */
+    .skip-msg{display:none;font-size:0.82rem;color:var(--text-muted);text-align:center;padding:0.75rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);margin-top:0.5rem;line-height:1.5;animation:fadeSlideUp 0.25s var(--ease-out) both;}
+
+    /* ── Profile variant tag ── */
+    .profile-variant{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.2);font-size:0.78rem;color:var(--violet);margin-bottom:1.25rem;font-style:italic;}
+
+    @keyframes popIn{from{transform:scale(0.4);opacity:0;}to{transform:scale(1);opacity:1);}}
+    @keyframes countUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ── Responsive ── */
+    @media(max-width:520px){
+      nav{padding:0.875rem 1rem;}
+      main{padding:1.5rem 1rem 5rem;}
+      .brick-card{padding:1.5rem;}
+      .form-row{grid-template-columns:1fr;}
+      .chart-bar-label{width:60px;font-size:0.72rem;}
+    }
+  </style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <a href="index.html" class="logo" aria-label="Fundamental">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
+      <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg)"/>
+      <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
+      <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".25"/>
+    </svg>
+    Fundamental
+  </a>
+  <div class="nav-right">
+    <a href="dashboard.html" class="nav-link">← Dashboard</a>
+  </div>
+</nav>
+
+<main>
+  <!-- Progress bar: 6 dots -->
+  <div class="brick-progress" id="brick-progress">
+    <div class="bp-dot active" data-idx="0"></div>
+    <div class="bp-dot" data-idx="1"></div>
+    <div class="bp-dot" data-idx="2"></div>
+    <div class="bp-dot" data-idx="3"></div>
+    <div class="bp-dot" data-idx="4"></div>
+    <div class="bp-dot" data-idx="5"></div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 0 — Intro
+  ──────────────────────────────────────────────── -->
+  <div class="screen" id="screen-0">
+    <div class="brick-card">
+      <div class="reassurance">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Aucune donnée envoyée — tout reste ici
+      </div>
+      <h1 class="brick-title" id="s0-title">Pris un par un, ça paraît léger. Ensemble, ça peut étouffer un mois.</h1>
+      <p class="brick-subtitle">On va regrouper tes paiements en plusieurs fois pour voir leur vrai poids.</p>
+      <div class="profile-variant" id="s0-profile-variant" style="display:none;"></div>
+      <button class="btn-primary" id="btn-s0-next">
+        Lister mes paiements
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 1 — Guided inventory
+  ──────────────────────────────────────────────── -->
+  <div class="screen" id="screen-1" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">Qu'est-ce qui est encore en cours&nbsp;?</h1>
+      <p class="brick-subtitle">Ajoute seulement ce dont tu te souviens. On peut compléter plus tard.</p>
+
+      <div id="special-state-banner" style="display:none;"></div>
+
+      <div class="payment-list" id="payment-list"></div>
+
+      <button class="btn-add" id="btn-add-payment">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Ajouter un autre paiement
+      </button>
+
+      <button class="btn-primary" id="btn-s1-next" style="margin-top:1.25rem;">
+        Voir le total
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <button class="btn-secondary" id="btn-s1-skip">Je ne connais pas tout</button>
+      <div class="skip-msg" id="skip-msg">Ajoute au moins les 2 ou 3 plus présents dans ton mois.</div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 2 — Consolidated view
+  ──────────────────────────────────────────────── -->
+  <div class="screen" id="screen-2" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">Voilà ce que ces paiements prennent ensemble.</h1>
+      <p class="brick-subtitle">C'est souvent ça qui rend le mois flou.</p>
+
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-block highlight">
+          <div class="stat-block-label">Charge BNPL / crédits légers ce mois-ci</div>
+          <div class="stat-block-value" id="stat-total-monthly"></div>
+          <div class="stat-block-sub">mensualités en cours</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-block-label">Engagements en cours</div>
+          <div class="stat-block-value" id="stat-count"></div>
+          <div class="stat-block-sub" id="stat-count-sub"></div>
+        </div>
+        <div class="stat-block liberation">
+          <div class="stat-block-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;margin-right:0.25rem;"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Date de libération estimée
+          </div>
+          <div class="stat-block-value" id="stat-liberation-date"></div>
+          <div class="stat-block-sub">si tu n'ajoutes aucun nouveau paiement fractionné</div>
+        </div>
+      </div>
+
+      <div class="chart-wrap" id="chart-wrap">
+        <div class="chart-title">Répartition par type</div>
+        <div class="chart-bars" id="chart-bars"></div>
+      </div>
+
+      <div class="timeline-wrap">
+        <div class="timeline-title">Calendrier de fin</div>
+        <div class="timeline-items" id="timeline-items"></div>
+      </div>
+
+      <div class="nudge" id="nudge-liberation">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:0.1rem;color:var(--orange)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span></span>
+      </div>
+
+      <button class="btn-primary" id="btn-s2-next">
+        Tester une stratégie
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 3 — Priority simulator
+  ──────────────────────────────────────────────── -->
+  <div class="screen" id="screen-3" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">Lequel te libère le plus vite&nbsp;?</h1>
+      <p class="brick-subtitle">On cherche un premier allègement crédible, pas une solution parfaite.</p>
+
+      <div class="strategy-cards" id="strategy-cards"></div>
+
+      <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.125rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+        <span style="font-size:0.82rem;color:var(--text-muted);">Impact sur ta mensualité</span>
+        <span style="font-size:1.1rem;font-weight:800;" id="impact-display">—</span>
+      </div>
+
+      <button class="btn-primary" id="btn-s3-next" disabled>
+        Choisir ma stratégie
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 4 — Short pedagogy
+  ──────────────────────────────────────────────── -->
+  <div class="screen" id="screen-4" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">Le vrai piège, ce n'est pas un paiement. C'est l'accumulation.</h1>
+      <p class="brick-subtitle">Le "ça va" répété 4 fois finit souvent par manger tout le reste-à-vivre.</p>
+
+      <div class="peda-cards">
+        <div class="peda-card">
+          <div class="peda-icon">💡</div>
+          <div class="peda-text">Petit montant ≠ petite conséquence</div>
+        </div>
+        <div class="peda-card">
+          <div class="peda-icon">🌫</div>
+          <div class="peda-text">Plus il y en a, moins ton mois est lisible</div>
+        </div>
+        <div class="peda-card">
+          <div class="peda-icon">🔑</div>
+          <div class="peda-text">Le meilleur levier est souvent d'arrêter d'en ajouter</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-s4-next">
+        Passer à mon engagement
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN 5 — Engagement
+  ──────────────────────────────────────────────── -->
+  <div class="screen" id="screen-5" style="display:none;">
+    <div class="brick-card">
+      <h1 class="brick-title">Ton prochain pas.</h1>
+      <p class="brick-subtitle">Choisis ce qui te semble le plus accessible maintenant.</p>
+
+      <div class="engagement-options" id="engagement-options">
+        <div class="engagement-option" data-idx="0" tabindex="0" role="radio" aria-checked="false">
+          <div class="engagement-radio"></div>
+          <div class="engagement-label">Je n'ajoute aucun nouveau paiement fractionné pendant 30 jours</div>
+        </div>
+        <div class="engagement-option" data-idx="1" tabindex="0" role="radio" aria-checked="false">
+          <div class="engagement-radio"></div>
+          <div class="engagement-label">
+            Je solde en priorité&nbsp;:
+            <input type="text" class="inline-input" id="priority-input" placeholder="Nom du paiement" />
+          </div>
+        </div>
+        <div class="engagement-option" data-idx="2" tabindex="0" role="radio" aria-checked="false">
+          <div class="engagement-radio"></div>
+          <div class="engagement-label">Je note tous mes paiements restants dans mon dashboard</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-s5-validate" disabled>
+        Valider
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+      </button>
+      <div class="confirm-msg" id="confirm-msg">
+        Parfait. On va s'appuyer là-dessus pour alléger ton mois.
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────
+       SCREEN EXIT
+  ──────────────────────────────────────────────── -->
+  <div class="screen" id="screen-exit" style="display:none;">
+    <div class="exit-card">
+      <div class="exit-icon">✅</div>
+      <div class="exit-title">Paiements fractionnés — fait !</div>
+      <div class="exit-subtitle" id="exit-subtitle">Tu as fait le point sur tes engagements en cours.</div>
+      <div class="exit-summary" id="exit-summary"></div>
+      <button class="btn-primary" id="btn-exit-next" style="margin-top:0;">
+        <span id="btn-exit-next-label">Continuer</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <a href="dashboard.html" class="btn-secondary" style="margin-top:0.75rem;">Retour au dashboard</a>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="shared.js"></script>
+<script src="supabase.js"></script>
+<script>
+/* ══════════════════════════════════════════════
+   BRICK: paiements_fractionnes
+   Screens: 0 → 1 → 2 → 3 → 4 → 5 → exit
+══════════════════════════════════════════════ */
+initBgCanvas('bg-canvas');
+
+const BRICK_ID = 'paiements_fractionnes';
+const TOTAL_SCREENS = 6; // 0-5 (exit is separate)
+
+let profil = loadFromStorage('profil') || getMockProfile();
+brickStarted(BRICK_ID);
+
+/* ── State ── */
+let currentScreen = 0;
+let payments = []; // {id, name, amount, months, type}
+let selectedStrategy = null;
+let selectedEngagement = null;
+let engagementText = '';
+
+/* ── Type config (colors + labels) ── */
+const TYPE_CONFIG = {
+  'fractione': { label: 'Paiement 3x/4x',  color: '#818cf8' },
+  'carte':     { label: 'Carte magasin',    color: '#c084fc' },
+  'mini':      { label: 'Mini crédit',      color: '#60a5fa' },
+  'conso':     { label: 'Crédit conso',     color: '#4ade80' },
+};
+const TYPE_COLORS = Object.values(TYPE_CONFIG).map(c => c.color);
+
+/* ══════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════ */
+function showScreen(idx) {
+  // Hide all
+  document.querySelectorAll('.screen').forEach(s => { s.style.display = 'none'; });
+
+  const isExit = idx === 'exit';
+  const targetId = isExit ? 'screen-exit' : `screen-${idx}`;
+  const el = document.getElementById(targetId);
+  if (el) {
+    el.style.display = 'block';
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = '';
+  }
+
+  if (!isExit) {
+    currentScreen = idx;
+    updateProgress(idx);
+    screenViewed(BRICK_ID, idx);
+    // Screen-specific setup
+    if (idx === 1) setupScreen1();
+    if (idx === 2) setupScreen2();
+    if (idx === 3) setupScreen3();
+    if (idx === 5) setupScreen5();
+  }
+}
+
+function updateProgress(idx) {
+  const dots = document.querySelectorAll('.bp-dot');
+  dots.forEach((dot, i) => {
+    dot.classList.remove('done', 'active');
+    if (i < idx) dot.classList.add('done');
+    else if (i === idx) dot.classList.add('active');
+  });
+}
+
+/* ══════════════════════════════════════════════
+   SCREEN 0 — Intro
+══════════════════════════════════════════════ */
+(function initScreen0() {
+  // Profile variant
+  const tags = profil && profil.tags ? profil.tags : [];
+  let variantText = null;
+  if (tags.includes('etudiant') || tags.includes('18-24')) {
+    variantText = 'Le 3x sans douleur peut finir par grignoter tout ton mois.';
+  } else if (tags.includes('jeune-actif') || tags.includes('jeune_actif')) {
+    variantText = 'Ce qui paraît pratique aujourd\'hui peut te bloquer tout le mois prochain.';
+  } else if (tags.includes('csp-modeste') || tags.includes('csp_modeste') || tags.includes('modeste')) {
+    variantText = 'On va rendre visibles les petites mensualités qui te prennent de l\'air.';
+  } else if (tags.includes('aise') || tags.includes('a_laise') || tags.includes('csp+')) {
+    variantText = 'Le sujet n\'est pas seulement le coût, c\'est la perte de contrôle sur ton flux mensuel.';
+  }
+  if (variantText) {
+    const el = document.getElementById('s0-profile-variant');
+    el.textContent = variantText;
+    el.style.display = 'inline-flex';
+  }
+
+  document.getElementById('btn-s0-next').addEventListener('click', () => {
+    // Initialize with one empty payment card
+    if (payments.length === 0) addNewPayment();
+    showScreen(1);
+  });
+})();
+
+/* ══════════════════════════════════════════════
+   SCREEN 1 — Guided inventory
+══════════════════════════════════════════════ */
+let paymentIdCounter = 0;
+
+function addNewPayment() {
+  const id = ++paymentIdCounter;
+  payments.push({ id, name: '', amount: '', months: '', type: 'fractione' });
+  renderPaymentList();
+  // Expand last card
+  setTimeout(() => {
+    const card = document.querySelector(`.payment-card[data-id="${id}"]`);
+    if (card) expandCard(card);
+  }, 50);
+}
+
+function renderPaymentList() {
+  const list = document.getElementById('payment-list');
+  list.innerHTML = '';
+  payments.forEach((p, idx) => {
+    const card = createPaymentCard(p, idx);
+    list.appendChild(card);
+  });
+  checkSpecialState();
+}
+
+function createPaymentCard(p, idx) {
+  const div = document.createElement('div');
+  div.className = 'payment-card';
+  div.dataset.id = p.id;
+
+  const dot = getColorForType(p.type);
+  const summaryLabel = p.name || `Paiement ${idx + 1}`;
+  const summaryMeta = (p.amount ? formatEuro(parseFloat(p.amount)) + '/mois' : '—') +
+    (p.months ? ` — ${p.months} mois restants` : '');
+
+  div.innerHTML = `
+    <div class="payment-card-header" role="button" tabindex="0" aria-expanded="false">
+      <div class="payment-card-summary">
+        <div class="payment-card-dot" style="background:${dot}"></div>
+        <div class="payment-card-label">${escHtml(summaryLabel)}</div>
+        <div class="payment-card-meta">${escHtml(summaryMeta)}</div>
+      </div>
+      <div class="payment-card-actions">
+        <button class="payment-card-delete" title="Supprimer" aria-label="Supprimer ce paiement">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <span class="payment-card-toggle" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </span>
+      </div>
+    </div>
+    <div class="payment-card-body">
+      <div class="payment-card-form">
+        <div class="field-group">
+          <label class="field-label">Nom de l'achat ou du crédit</label>
+          <input type="text" class="field-input" name="name" placeholder="ex: chaussures, téléphone, canapé…" value="${escAttr(p.name)}" autocomplete="off" />
+        </div>
+        <div class="form-row">
+          <div class="field-group">
+            <label class="field-label">Mensualité</label>
+            <div class="input-euro-wrap">
+              <input type="number" class="field-input" name="amount" placeholder="25" min="1" value="${escAttr(p.amount)}" inputmode="decimal" />
+              <span class="input-euro-sign">€</span>
+            </div>
+            <div class="field-error" data-field="amount">Ajoute une estimation&nbsp;: 10 €, 20 €, 30 €…</div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Mois restants</label>
+            <input type="number" class="field-input" name="months" placeholder="3" min="1" value="${escAttr(p.months)}" inputmode="numeric" />
+            <div class="field-error" data-field="months">Si c'est terminé, tu peux l'enlever.</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Type</label>
+          <select class="field-input" name="type">
+            <option value="fractione" ${p.type === 'fractione' ? 'selected' : ''}>Paiement en 3x/4x</option>
+            <option value="carte"     ${p.type === 'carte'     ? 'selected' : ''}>Carte magasin</option>
+            <option value="mini"      ${p.type === 'mini'      ? 'selected' : ''}>Mini crédit</option>
+            <option value="conso"     ${p.type === 'conso'     ? 'selected' : ''}>Crédit conso</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Toggle expand/collapse
+  const header = div.querySelector('.payment-card-header');
+  header.addEventListener('click', (e) => {
+    if (e.target.closest('.payment-card-delete')) return;
+    toggleCard(div);
+  });
+  header.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCard(div); }
+  });
+
+  // Delete
+  div.querySelector('.payment-card-delete').addEventListener('click', (e) => {
+    e.stopPropagation();
+    payments = payments.filter(pp => pp.id !== p.id);
+    renderPaymentList();
+  });
+
+  // Field changes
+  div.querySelector('input[name="name"]').addEventListener('input', (e) => {
+    updatePayment(p.id, 'name', e.target.value);
+    div.querySelector('.payment-card-label').textContent = e.target.value || `Paiement ${idx + 1}`;
+  });
+  div.querySelector('input[name="amount"]').addEventListener('input', (e) => {
+    updatePayment(p.id, 'amount', e.target.value);
+    validateAmountField(div, e.target.value);
+    updateCardMeta(div, p.id);
+  });
+  div.querySelector('input[name="months"]').addEventListener('input', (e) => {
+    updatePayment(p.id, 'months', e.target.value);
+    validateMonthsField(div, e.target.value);
+    updateCardMeta(div, p.id);
+  });
+  div.querySelector('select[name="type"]').addEventListener('change', (e) => {
+    updatePayment(p.id, 'type', e.target.value);
+    div.querySelector('.payment-card-dot').style.background = getColorForType(e.target.value);
+  });
+
+  return div;
+}
+
+function expandCard(card) {
+  card.classList.add('expanded');
+  card.querySelector('.payment-card-header').setAttribute('aria-expanded', 'true');
+}
+function collapseCard(card) {
+  card.classList.remove('expanded');
+  card.querySelector('.payment-card-header').setAttribute('aria-expanded', 'false');
+}
+function toggleCard(card) {
+  card.classList.contains('expanded') ? collapseCard(card) : expandCard(card);
+}
+
+function updatePayment(id, field, value) {
+  const p = payments.find(pp => pp.id === id);
+  if (p) p[field] = value;
+}
+
+function updateCardMeta(card, id) {
+  const p = payments.find(pp => pp.id === id);
+  if (!p) return;
+  const meta = card.querySelector('.payment-card-meta');
+  meta.textContent = (p.amount ? formatEuro(parseFloat(p.amount)) + '/mois' : '—') +
+    (p.months ? ` — ${p.months} mois restants` : '');
+}
+
+function validateAmountField(card, value) {
+  const errEl = card.querySelector('.field-error[data-field="amount"]');
+  const inp = card.querySelector('input[name="amount"]');
+  const show = value !== '' && (isNaN(parseFloat(value)) || parseFloat(value) <= 0);
+  errEl.style.display = show ? 'block' : 'none';
+  inp.classList.toggle('error', show);
+}
+
+function validateMonthsField(card, value) {
+  const errEl = card.querySelector('.field-error[data-field="months"]');
+  const inp = card.querySelector('input[name="months"]');
+  const show = value !== '' && (parseInt(value) === 0);
+  errEl.style.display = show ? 'block' : 'none';
+  inp.classList.toggle('error', show);
+}
+
+function getColorForType(type) {
+  return TYPE_CONFIG[type] ? TYPE_CONFIG[type].color : '#818cf8';
+}
+
+function checkSpecialState() {
+  const banner = document.getElementById('special-state-banner');
+  const valid = payments.filter(p => p.amount && parseFloat(p.amount) > 0);
+  if (valid.length === 1 && parseFloat(valid[0].amount) < 50) {
+    banner.style.display = 'block';
+    banner.innerHTML = '<div class="info-banner">Un seul paiement en cours n\'est pas forcément un problème. On vérifie juste qu\'il ne s\'ajoute pas au reste.</div>';
+  } else if (payments.length >= 5) {
+    banner.style.display = 'block';
+    banner.innerHTML = '<div class="info-banner"><strong>L\'objectif n\'est pas d\'être exhaustif dès maintenant.</strong> Commence par ceux qui pèsent le plus.</div>';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function setupScreen1() {
+  // Already initialized
+}
+
+document.getElementById('btn-add-payment').addEventListener('click', () => {
+  addNewPayment();
+});
+
+document.getElementById('btn-s1-next').addEventListener('click', () => {
+  const valid = payments.filter(p => p.amount && parseFloat(p.amount) > 0);
+  if (valid.length === 0) {
+    addNewPayment();
+    return;
+  }
+  fieldCompleted(BRICK_ID, 'payments_list');
+  showScreen(2);
+});
+
+document.getElementById('btn-s1-skip').addEventListener('click', () => {
+  const msg = document.getElementById('skip-msg');
+  msg.style.display = 'block';
+  helpClicked(BRICK_ID, 'je_ne_connais_pas_tout');
+});
+
+/* ══════════════════════════════════════════════
+   SCREEN 2 — Consolidated view
+══════════════════════════════════════════════ */
+function getValidPayments() {
+  return payments.filter(p => p.amount && parseFloat(p.amount) > 0 && p.months && parseInt(p.months) > 0);
+}
+
+function getTotalMonthly() {
+  return getValidPayments().reduce((s, p) => s + parseFloat(p.amount), 0);
+}
+
+function getMaxMonths() {
+  const vp = getValidPayments();
+  if (!vp.length) return 0;
+  return Math.max(...vp.map(p => parseInt(p.months)));
+}
+
+function getLiberationDate() {
+  const maxMonths = getMaxMonths();
+  if (!maxMonths) return '—';
+  const d = new Date();
+  d.setMonth(d.getMonth() + maxMonths);
+  return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+}
+
+function getTypeBreakdown() {
+  const breakdown = {};
+  getValidPayments().forEach(p => {
+    const t = p.type || 'fractione';
+    breakdown[t] = (breakdown[t] || 0) + parseFloat(p.amount);
+  });
+  return breakdown;
+}
+
+function setupScreen2() {
+  resultViewed(BRICK_ID);
+  const vp = getValidPayments();
+  const total = getTotalMonthly();
+
+  document.getElementById('stat-total-monthly').textContent = formatEuro(total);
+  document.getElementById('stat-count').textContent = vp.length;
+  document.getElementById('stat-count-sub').textContent =
+    vp.length === 1 ? 'engagement actif' : 'engagements actifs';
+  document.getElementById('stat-liberation-date').textContent = getLiberationDate();
+
+  // Bar chart by type
+  const breakdown = getTypeBreakdown();
+  const chartBars = document.getElementById('chart-bars');
+  chartBars.innerHTML = '';
+  const maxAmt = Math.max(...Object.values(breakdown), 1);
+  Object.entries(breakdown).forEach(([type, amt]) => {
+    const cfg = TYPE_CONFIG[type] || { label: type, color: '#818cf8' };
+    const pct = Math.round((amt / maxAmt) * 100);
+    const row = document.createElement('div');
+    row.className = 'chart-bar-row';
+    row.innerHTML = `
+      <div class="chart-bar-label">${cfg.label}</div>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="width:0%;background:${cfg.color};" data-pct="${pct}"></div>
+      </div>
+      <div class="chart-bar-amount">${formatEuro(amt)}</div>
+    `;
+    chartBars.appendChild(row);
+  });
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.chart-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.pct + '%';
+    });
+  }, 100);
+
+  // Timeline
+  const timeline = document.getElementById('timeline-items');
+  timeline.innerHTML = '';
+  const sorted = [...vp].sort((a, b) => parseInt(a.months) - parseInt(b.months));
+  sorted.forEach(p => {
+    const d = new Date();
+    d.setMonth(d.getMonth() + parseInt(p.months));
+    const dateStr = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
+    item.innerHTML = `
+      <div class="timeline-dot" style="background:${getColorForType(p.type)}"></div>
+      <div class="timeline-name">${escHtml(p.name || 'Paiement')}</div>
+      <div class="timeline-end">${formatEuro(parseFloat(p.amount))}/mois · fin ${dateStr}</div>
+    `;
+    timeline.appendChild(item);
+  });
+
+  // Nudge
+  const nudgeSpan = document.querySelector('#nudge-liberation span');
+  nudgeSpan.innerHTML = `<strong>Date de libération&nbsp;:</strong> si tu n'ajoutes aucun nouveau paiement fractionné, ton budget sera allégé de <strong>${formatEuro(total)}/mois</strong> à partir de ${getLiberationDate()}.`;
+}
+
+document.getElementById('btn-s2-next').addEventListener('click', () => showScreen(3));
+
+/* ══════════════════════════════════════════════
+   SCREEN 3 — Priority simulator
+══════════════════════════════════════════════ */
+function setupScreen3() {
+  const vp = getValidPayments();
+  const total = getTotalMonthly();
+  const cards = document.getElementById('strategy-cards');
+  cards.innerHTML = '';
+  selectedStrategy = null;
+  document.getElementById('btn-s3-next').disabled = true;
+  document.getElementById('impact-display').textContent = '—';
+
+  // Build strategies
+  const strategies = [];
+
+  // Strategy 1: smallest payment first
+  if (vp.length > 0) {
+    const smallest = [...vp].sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount))[0];
+    const saving = parseFloat(smallest.amount);
+    strategies.push({
+      id: 's1',
+      title: 'Solder le plus petit d\'abord',
+      desc: `Commencer par <strong>${escHtml(smallest.name || 'le plus petit')}</strong> (${formatEuro(parseFloat(smallest.amount))}/mois sur ${smallest.months} mois). C'est souvent le plus rapide à solder.`,
+      badge: 'rapide',
+      before: total,
+      after: total - saving,
+      saving,
+    });
+  }
+
+  // Strategy 2: one that ends soonest (closest to finish)
+  if (vp.length > 0) {
+    const soonest = [...vp].sort((a, b) => parseInt(a.months) - parseInt(b.months))[0];
+    const saving = parseFloat(soonest.amount);
+    strategies.push({
+      id: 's2',
+      title: 'Solder celui qui finit presque',
+      desc: `<strong>${escHtml(soonest.name || 'Ce paiement')}</strong> se termine dans ${soonest.months} mois (${formatEuro(parseFloat(soonest.amount))}/mois). Il est presque fini — autant en finir maintenant.`,
+      badge: 'rapide',
+      before: total,
+      after: total - saving,
+      saving,
+    });
+  }
+
+  // Strategy 3: stop adding new ones until liberation date
+  const libDate = getLiberationDate();
+  strategies.push({
+    id: 's3',
+    title: `Ne plus en ajouter jusqu'au ${libDate}`,
+    desc: `Sans nouveaux engagements fractionnés, tu retrouves <strong>${formatEuro(total)}/mois</strong> de marge à partir de ${libDate}.`,
+    badge: 'durable',
+    before: total,
+    after: 0,
+    saving: total,
+    isFuture: true,
+  });
+
+  strategies.forEach((s, idx) => {
+    const card = document.createElement('div');
+    card.className = 'strategy-card';
+    card.dataset.strategy = idx;
+
+    const badgeClass = s.badge === 'rapide' ? 'badge-rapide' : 'badge-durable';
+    const badgeLabel = s.badge === 'rapide' ? 'Impact rapide' : 'Impact durable';
+
+    card.innerHTML = `
+      <div class="strategy-radio"></div>
+      <div class="strategy-card-header">
+        <div class="strategy-card-title">${s.title}</div>
+        <div class="strategy-badge ${badgeClass}">${badgeLabel}</div>
+      </div>
+      <div class="strategy-card-desc">${s.desc}</div>
+      <div class="strategy-card-impact">
+        <span class="impact-before">${formatEuro(s.before)}/mois</span>
+        <span class="impact-arrow">→</span>
+        <span class="impact-after">${s.isFuture ? formatEuro(0) : formatEuro(s.after)}/mois libéré</span>
+      </div>
+    `;
+
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.strategy-card').forEach(c => {
+        c.classList.remove('selected');
+        c.setAttribute('aria-checked', 'false');
+      });
+      card.classList.add('selected');
+      card.setAttribute('aria-checked', 'true');
+      selectedStrategy = { idx, ...s };
+
+      // Animate impact display
+      animateImpact(s.before, s.after, s.isFuture);
+      document.getElementById('btn-s3-next').disabled = false;
+
+      // Pre-fill engagement option 2 with the strategy
+      const priorityInput = document.getElementById('priority-input');
+      if (priorityInput) {
+        if (s.id !== 's3') {
+          const item = s.id === 's1'
+            ? [...vp].sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount))[0]
+            : [...vp].sort((a, b) => parseInt(a.months) - parseInt(b.months))[0];
+          priorityInput.value = item ? (item.name || 'ce paiement') : '';
+        }
+      }
+    });
+
+    cards.appendChild(card);
+  });
+}
+
+function animateImpact(from, to, isFuture) {
+  const el = document.getElementById('impact-display');
+  const saving = from - to;
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = 'countUp 0.3s ease-out both';
+  if (isFuture) {
+    el.textContent = `${formatEuro(from)}/mois libéré à terme`;
+    el.style.color = 'var(--green)';
+  } else {
+    el.textContent = `${formatEuro(from)} → ${formatEuro(to)}/mois`;
+    el.style.color = 'var(--green)';
+  }
+}
+
+document.getElementById('btn-s3-next').addEventListener('click', () => showScreen(4));
+
+/* ══════════════════════════════════════════════
+   SCREEN 4 — Pedagogy
+══════════════════════════════════════════════ */
+document.getElementById('btn-s4-next').addEventListener('click', () => showScreen(5));
+
+/* ══════════════════════════════════════════════
+   SCREEN 5 — Engagement
+══════════════════════════════════════════════ */
+function setupScreen5() {
+  selectedEngagement = null;
+  document.getElementById('btn-s5-validate').disabled = true;
+  document.getElementById('confirm-msg').style.display = 'none';
+
+  // Pre-fill priority input if strategy chosen
+  if (selectedStrategy && selectedStrategy.id !== 's3') {
+    const vp = getValidPayments();
+    let item;
+    if (selectedStrategy.id === 's1') {
+      item = [...vp].sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount))[0];
+    } else {
+      item = [...vp].sort((a, b) => parseInt(a.months) - parseInt(b.months))[0];
+    }
+    if (item) {
+      const inp = document.getElementById('priority-input');
+      if (inp) inp.value = item.name || 'ce paiement';
+    }
+  }
+
+  const options = document.querySelectorAll('.engagement-option');
+  options.forEach(opt => {
+    opt.classList.remove('selected');
+    opt.setAttribute('aria-checked', 'false');
+    // Remove old listeners by cloning
+    const clone = opt.cloneNode(true);
+    opt.parentNode.replaceChild(clone, opt);
+  });
+
+  document.querySelectorAll('.engagement-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.engagement-option').forEach(o => {
+        o.classList.remove('selected');
+        o.setAttribute('aria-checked', 'false');
+      });
+      opt.classList.add('selected');
+      opt.setAttribute('aria-checked', 'true');
+      selectedEngagement = parseInt(opt.dataset.idx);
+      document.getElementById('btn-s5-validate').disabled = false;
+    });
+    opt.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); opt.click(); }
+    });
+  });
+}
+
+document.getElementById('btn-s5-validate').addEventListener('click', () => {
+  if (selectedEngagement === null) return;
+
+  const engOptions = [
+    'Je n\'ajoute aucun nouveau paiement fractionné pendant 30 jours',
+    'Je solde en priorité : ' + (document.getElementById('priority-input')?.value || 'ce paiement'),
+    'Je note tous mes paiements restants dans mon dashboard',
+  ];
+  engagementText = engOptions[selectedEngagement] || engOptions[0];
+
+  commitmentCreated(BRICK_ID, engagementText);
+
+  // Show confirm msg
+  const confirmMsg = document.getElementById('confirm-msg');
+  confirmMsg.style.display = 'block';
+  document.getElementById('btn-s5-validate').disabled = true;
+
+  // Build engagements array for completeBrick
+  const engagements = [
+    {
+      type: 'paiements_fractionnes',
+      label: engagementText,
+      details: {
+        totalMonthly: getTotalMonthly(),
+        paymentsCount: getValidPayments().length,
+        liberationDate: getLiberationDate(),
+        strategy: selectedStrategy ? selectedStrategy.title : null,
+      },
+    }
+  ];
+
+  setTimeout(() => {
+    completeBrick(BRICK_ID, engagements);
+    setupExitScreen(engagementText);
+    showScreen('exit');
+  }, 1400);
+});
+
+/* ══════════════════════════════════════════════
+   EXIT SCREEN
+══════════════════════════════════════════════ */
+function setupExitScreen(eng) {
+  const total = getTotalMonthly();
+  const count = getValidPayments().length;
+  const libDate = getLiberationDate();
+
+  document.getElementById('exit-subtitle').textContent =
+    `${count} paiement${count > 1 ? 's' : ''} recensé${count > 1 ? 's' : ''} · ${formatEuro(total)}/mois ce mois-ci.`;
+
+  const summary = document.getElementById('exit-summary');
+  summary.innerHTML = `
+    <div class="exit-item">
+      <span class="exit-item-icon">📋</span>
+      <span class="exit-item-text">${count} engagement${count > 1 ? 's' : ''} en cours — ${formatEuro(total)}/mois au total</span>
+    </div>
+    <div class="exit-item">
+      <span class="exit-item-icon">📅</span>
+      <span class="exit-item-text">Date de libération estimée : ${libDate}</span>
+    </div>
+    <div class="exit-item">
+      <span class="exit-item-icon">🎯</span>
+      <span class="exit-item-text">${escHtml(eng)}</span>
+    </div>
+  `;
+
+  const nextBrick = getNextBrick(BRICK_ID);
+  const btnNext = document.getElementById('btn-exit-next');
+  if (nextBrick) {
+    document.getElementById('btn-exit-next-label').textContent = `Continuer vers ${nextBrick.nom || nextBrick.name || 'brique suivante'}`;
+    btnNext.addEventListener('click', () => { window.location.href = nextBrick.file; });
+  } else {
+    document.getElementById('btn-exit-next-label').textContent = 'Retour au dashboard';
+    btnNext.addEventListener('click', () => { window.location.href = 'dashboard.html'; });
+  }
+}
+
+/* ══════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════ */
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function escAttr(str) {
+  if (!str) return '';
+  return String(str).replace(/"/g, '&quot;');
+}
+</script>
+<script src="feedback-widget.js"></script>
+</body>
+</html>
