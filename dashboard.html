@@ -568,20 +568,12 @@
   (async () => {
     currentUser = await requireAuth();
     if (!currentUser) return;
-    // Render immédiat avec données mock (affiche déjà les briques catalogue)
-    renderAll();
-    // Puis charge les vraies données et re-render
     await loadData();
   })();
 
   async function loadData() {
     try {
       const [dbProfil, dbDash] = await Promise.all([loadProfile(), loadDashboard()]);
-
-      // DIAGNOSTIC — à retirer en prod
-      console.log('[FUND:loadData] dbProfil:', dbProfil);
-      console.log('[FUND:loadData] dbDash:', dbDash);
-      console.log('[FUND:loadData] dash.briques at start:', dash.briques?.length);
 
       if (dbProfil && dbProfil.briques_recommandees && dbProfil.briques_recommandees.length > 0) {
         profil = dbProfil;
@@ -606,13 +598,16 @@
         }
         saveToStorage('fund_dashboard', dash);
       } else if (profil.briques_recommandees && profil.briques_recommandees.length > 0) {
-        // Premier accès : construire dash depuis profil
-        dash.briques = profil.briques_recommandees.map((id, i) => ({
-          id, statut: i === 0 ? 'en_cours' : 'a_faire', progression: 0
-        }));
-        dash.brique_active_id = profil.briques_recommandees[0];
-        saveDashboard(dash).catch(() => {});
-        saveToStorage('fund_dashboard', dash);
+        // Premier accès : construire dash depuis profil (filtrer sur IDs valides)
+        const validIds = profil.briques_recommandees.filter(id => BRIQUES_META[id]);
+        if (validIds.length > 0) {
+          dash.briques = validIds.map((id, i) => ({
+            id, statut: i === 0 ? 'en_cours' : 'a_faire', progression: 0
+          }));
+          dash.brique_active_id = validIds[0];
+          saveDashboard(dash).catch(() => {});
+          saveToStorage('fund_dashboard', dash);
+        }
       }
       // Re-render avec données réelles
       renderAll();
@@ -693,13 +688,14 @@
     document.getElementById('completed-banner').classList.remove('show');
     document.getElementById('zone-hero').style.display = '';
 
-    const activeId  = dash.brique_active_id || (dash.briques[0] && dash.briques[0].id);
-    const briqData  = dash.briques.find(b => b.id === activeId)
-                   || dash.briques.find(b => b.statut !== 'terminee')
-                   || dash.briques[0];
+    // Trouver la brique active (en_cours en priorité, sinon premier a_faire, sinon premier)
+    const briqData = dash.briques.find(b => b.statut === 'en_cours')
+                  || dash.briques.find(b => b.statut === 'a_faire')
+                  || dash.briques[0];
     if (!briqData) return;
     const meta = BRIQUES_META[briqData.id];
     if (!meta) return;
+    const activeId = briqData.id;
 
     const isFirst   = briqData.statut === 'a_faire';
     const isEnCours  = briqData.statut === 'en_cours';
@@ -793,8 +789,6 @@
     container.innerHTML = '';
     const activeId = dash.brique_active_id;
     const planIds  = new Set((dash.briques || []).map(b => b.id));
-    console.log('[FUND:renderBriquesGrid] dash.briques:', dash.briques?.length, '| planIds:', [...planIds]);
-    console.log('[FUND:renderBriquesGrid] BRIQUES_META keys:', Object.keys(BRIQUES_META).length);
 
     // Catégorie 1 : Disponibles (dans le plan, non terminées)
     const disponibles = (dash.briques || []).filter(b => b.statut !== 'terminee');
