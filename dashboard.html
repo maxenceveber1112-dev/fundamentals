@@ -511,37 +511,38 @@
     }
 
     .insight-card {
-      background:var(--bg-elevated);
-      border:1px solid var(--border-subtle);
+      background:#FFFFFF;
+      border:1px solid rgba(28,25,23,0.08);
       border-radius:1rem;
-      padding:1.75rem 2rem;
-      box-shadow:var(--shadow-card);
+      padding:1.875rem 2rem;
+      box-shadow:0 1px 3px rgba(20,20,30,0.04), 0 4px 16px rgba(20,20,30,0.04);
       transition: background 0.3s ease, border-color 0.3s ease;
     }
     html.dark .insight-card {
-      background:var(--surface);
+      background:rgba(255,255,255,0.04);
+      border-color:rgba(255,255,255,0.07);
       backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
     }
 
     .insight-kicker {
       font-size:0.6875rem; font-weight:600;
-      letter-spacing:0.12em; text-transform:uppercase;
-      color:var(--accent-strong);
-      margin-bottom:0.875rem;
+      letter-spacing:0.14em; text-transform:uppercase;
+      color:#5B21B6;
+      margin-bottom:1rem;
     }
     html.dark .insight-kicker { color:#A78BFA; }
 
-    /* Texte principal serif (corps romain + chiffres en italic) */
+    /* Texte principal serif italic — corps romain, chiffres/durées en italic */
     .insight-figure {
       font-family:'Fraunces',serif;
-      font-size:clamp(1.125rem, 2vw, 1.3125rem);
-      font-weight:400; line-height:1.5;
-      color:var(--text); margin-bottom:0.625rem;
+      font-size:clamp(1.0625rem, 2vw, 1.25rem);
+      font-weight:400; line-height:1.55;
+      color:var(--text); margin-bottom:0.75rem;
     }
     .insight-figure em {
       font-style:italic; font-weight:300;
     }
-    /* Pas de gradient sur le texte — sobre comme l'image */
     .insight-figure strong {
       font-style:italic; font-weight:300;
       color:var(--text);
@@ -549,13 +550,14 @@
 
     .insight-sub {
       font-size:0.8125rem; color:var(--text-muted);
-      line-height:1.6; margin-bottom:1rem;
+      line-height:1.65; margin-bottom:1rem;
     }
     .insight-link {
       font-size:0.8125rem; font-weight:500;
-      color:var(--accent-strong);
+      color:#5B21B6;
       display:inline-flex; align-items:center; gap:0.3rem;
       transition:opacity var(--t);
+      text-decoration:none;
     }
     html.dark .insight-link { color:#A78BFA; }
     .insight-link:hover { opacity:0.7; }
@@ -1104,13 +1106,17 @@
     const toShow = briquesExpanded ? disponibles : disponibles.slice(0, MAX_BRIQUES_VISIBLE);
     const hasMore = disponibles.length > MAX_BRIQUES_VISIBLE;
 
-    /* Action "Voir tout" dans le header */
+    /* Action "Voir tout" dans le header — toujours visible si bientôt existe */
     const actionEl = document.getElementById('briques-voir-tout-action');
     if (actionEl) {
-      actionEl.style.display = hasMore ? '' : 'none';
-      actionEl.textContent = briquesExpanded
-        ? 'Réduire ↑'
-        : `Voir tout (${disponibles.length}) →`;
+      const hasMoreOrSoon = hasMore || bientot.length > 0;
+      actionEl.style.display = hasMoreOrSoon ? '' : 'none';
+      if (briquesExpanded) {
+        actionEl.textContent = 'Réduire ↑';
+      } else {
+        const totalVisible = disponibles.length + bientot.length;
+        actionEl.textContent = `Voir tout (${totalVisible}) →`;
+      }
     }
 
     /* Grid disponibles */
@@ -1138,8 +1144,8 @@
       container.appendChild(grid);
     }
 
-    /* Bientôt disponibles — grayed */
-    if (bientot.length > 0) {
+    /* Bientôt disponibles — grayed (visible uniquement si briquesExpanded) */
+    if (briquesExpanded && bientot.length > 0) {
       const hdr = document.createElement('p');
       hdr.className = 'soon-header'; hdr.textContent = 'Bientôt disponibles';
       container.appendChild(hdr);
