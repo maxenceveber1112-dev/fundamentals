@@ -232,8 +232,33 @@
        ZONE 1 — HERO (next best action)
     ══════════════════════════════════════════════════════════════ */
     .zone-hero {
-      padding-top:3.5rem; padding-bottom:0;
+      padding-top:3.5rem;
       animation:slideUp 0.3s var(--ease-out) both;
+    }
+
+    /* Card crème hero (style moodboard fermé) */
+    .hero-cream {
+      background: var(--cream-grad);
+      border: 1px solid var(--cream-border);
+      border-radius: 1.375rem;
+      padding: 2.75rem 3rem 2.5rem;
+      position: relative; overflow: hidden;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    html.dark .hero-cream {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    /* Glyphe décoratif discret */
+    .hero-cream::after {
+      content: 'f';
+      font-family: 'Instrument Serif', 'Fraunces', Georgia, serif;
+      font-style: italic; font-weight: 300;
+      position: absolute; right: -0.25rem; bottom: -1.5rem;
+      font-size: 14rem; line-height: 1;
+      color: var(--hero-glyph, rgba(196,181,253,0.18));
+      pointer-events: none; select: none;
+      user-select: none;
     }
 
     .greeting-line {
@@ -372,20 +397,21 @@
     /* ══════════════════════════════════════════════════════════════
        ZONE 2 — MES BRIQUES (cartes compactes)
     ══════════════════════════════════════════════════════════════ */
+    /* ── Briques grid — 2 colonnes cartes larges ── */
     .briques-grid {
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
-      gap:0.5rem;
+      grid-template-columns:repeat(2, 1fr);
+      gap:0.625rem;
     }
 
     .bq-card {
-      display:flex; align-items:center; gap:0.875rem;
-      padding:0.875rem 1rem;
+      padding:1.25rem 1.375rem 1rem;
       border-radius:1rem;
       border:1px solid var(--border-subtle);
       background:var(--bg-elevated);
       box-shadow:var(--shadow-card);
       text-decoration:none; cursor:pointer;
+      display:flex; flex-direction:column; gap:0;
       transition: border-color var(--t), background var(--t), transform 0.15s ease, box-shadow 0.15s ease;
       position:relative; overflow:hidden;
     }
@@ -402,46 +428,60 @@
       background:rgba(255,255,255,0.06);
       border-color:rgba(255,255,255,0.12);
     }
-    .bq-card.active-card {
-      border-color:rgba(196,181,253,0.45);
-    }
+    .bq-card.active-card { border-color:rgba(196,181,253,0.45); }
     html.dark .bq-card.active-card { border-color:rgba(167,139,250,0.4); }
-    .bq-card.active-card::before {
-      content:''; position:absolute; left:0; top:0; bottom:0;
-      width:3px;
-      background:var(--accent-fill);
-    }
-    .bq-card.done-card { opacity:0.6; }
-    .bq-card.soon-card { opacity:0.38; pointer-events:none; filter:grayscale(0.4); }
+    .bq-card.done-card { opacity:0.55; }
+    .bq-card.soon-card { opacity:0.35; pointer-events:none; filter:grayscale(0.4); }
 
-    /* Point catégorie 8px */
-    .bq-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    /* Ligne du haut : icône + dot catégorie */
+    .bq-top {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      margin-bottom:0.875rem;
+    }
+    .bq-icon { font-size:1.625rem; line-height:1; }
+    .bq-cat {
+      display:flex; align-items:center; gap:0.35rem;
+    }
+    /* Point catégorie 6px */
+    .bq-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:1px; }
     .bq-dot.survie    { background:var(--dot-survie); }
     .bq-dot.construct { background:var(--dot-construction); }
     .bq-dot.invest    { background:var(--dot-invest); }
     .bq-dot.done-dot  { background:var(--green); }
     .bq-dot.todo-dot  { background:var(--border-mid); }
+    .bq-cat-label { font-size:0.6875rem; color:var(--text-faint); }
 
-    .bq-icon { font-size:1.125rem; flex-shrink:0; }
-    .bq-info { flex:1; min-width:0; }
+    /* Corps */
     .bq-name {
-      font-size:0.8125rem; font-weight:600; color:var(--text);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      line-height:1.3;
+      font-size:0.875rem; font-weight:600; color:var(--text);
+      line-height:1.3; margin-bottom:0.25rem;
     }
-    .bq-pack {
-      font-size:0.6875rem; color:var(--text-faint);
-      margin-top:0.125rem;
+    .bq-status-text {
+      font-size:0.75rem; color:var(--text-faint);
+      margin-bottom:0.875rem;
     }
-    .bq-status { flex-shrink:0; }
-    .bq-pct { font-size:0.6875rem; color:var(--accent-strong); font-weight:600; }
+
+    /* Barre progression en bas */
+    .bq-progress {
+      display:flex; align-items:center; gap:0.5rem;
+      margin-top:auto;
+    }
+    .bq-track {
+      flex:1; height:2px; background:var(--track); border-radius:9999px; overflow:hidden;
+    }
+    .bq-fill {
+      height:100%; background:var(--accent-fill); border-radius:9999px;
+      transition:width 0.6s ease;
+    }
+    .bq-pct { font-size:0.6875rem; color:var(--accent-strong); font-weight:600; flex-shrink:0; }
     html.dark .bq-pct { color:#A78BFA; }
-    .bq-badge-done { font-size:0.6875rem; color:var(--green); font-weight:600; }
-    .bq-badge-soon {
-      font-size:0.625rem; color:var(--text-faint);
-      border:1px solid var(--border-subtle);
-      padding:0.125rem 0.4rem; border-radius:9999px;
-    }
+    .bq-dash { font-size:0.6875rem; color:var(--text-faint); flex-shrink:0; }
+
+    /* Compat legacy (non utilisé mais évite erreur) */
+    .bq-info { display:none; }
+    .bq-badge-done { display:none; }
+    .bq-badge-soon { display:none; }
+    .bq-pack { display:none; }
 
     /* Sous-section "Bientôt" */
     .soon-header {
@@ -463,43 +503,53 @@
     .voir-tout-btn:hover { border-color:var(--border-hover); color:var(--text); background:var(--surface-2); }
 
     /* ══════════════════════════════════════════════════════════════
-       ZONE 3 — INSIGHT ÉDITORIAL (sans card)
+       ZONE 3 — INSIGHT CARD (style image-4)
     ══════════════════════════════════════════════════════════════ */
     .zone-insight {
       margin-top:5rem;
       animation:slideUp 0.35s 0.12s var(--ease-out) both;
     }
+
+    .insight-card {
+      background:var(--bg-elevated);
+      border:1px solid var(--border-subtle);
+      border-radius:1rem;
+      padding:1.75rem 2rem;
+      box-shadow:var(--shadow-card);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    html.dark .insight-card {
+      background:var(--surface);
+      backdrop-filter:blur(12px);
+    }
+
     .insight-kicker {
       font-size:0.6875rem; font-weight:600;
-      letter-spacing:0.14em; text-transform:uppercase;
-      color:var(--accent-strong); margin-bottom:0.875rem;
+      letter-spacing:0.12em; text-transform:uppercase;
+      color:var(--accent-strong);
+      margin-bottom:0.875rem;
     }
-    html.dark .insight-kicker { color:#A5B4FC; }
+    html.dark .insight-kicker { color:#A78BFA; }
 
+    /* Texte principal serif (corps romain + chiffres en italic) */
     .insight-figure {
       font-family:'Fraunces',serif;
-      font-size:clamp(1.25rem, 2.5vw, 1.5rem);
-      font-weight:300; font-style:italic;
-      line-height:1.45;
-      color:var(--text); max-width:640px;
-      margin-bottom:0.625rem;
+      font-size:clamp(1.125rem, 2vw, 1.3125rem);
+      font-weight:400; line-height:1.5;
+      color:var(--text); margin-bottom:0.625rem;
     }
-    html.dark .insight-figure {
-      background:linear-gradient(90deg,#A78BFA,#60A5FA);
-      -webkit-background-clip:text; background-clip:text;
-      color:transparent; font-style:normal; font-weight:600;
+    .insight-figure em {
+      font-style:italic; font-weight:300;
     }
+    /* Pas de gradient sur le texte — sobre comme l'image */
     .insight-figure strong {
-      font-style:normal;
-      background:linear-gradient(90deg, var(--accent-strong), #7C3AED);
-      -webkit-background-clip:text; background-clip:text;
-      color:transparent;
+      font-style:italic; font-weight:300;
+      color:var(--text);
     }
-    html.dark .insight-figure strong { background:none; color:inherit; }
 
     .insight-sub {
-      font-size:0.8125rem; color:var(--text-muted); max-width:520px;
-      line-height:1.6; margin-bottom:0.875rem;
+      font-size:0.8125rem; color:var(--text-muted);
+      line-height:1.6; margin-bottom:1rem;
     }
     .insight-link {
       font-size:0.8125rem; font-weight:500;
@@ -507,12 +557,8 @@
       display:inline-flex; align-items:center; gap:0.3rem;
       transition:opacity var(--t);
     }
-    html.dark .insight-link {
-      background:linear-gradient(90deg,#A78BFA,#60A5FA);
-      -webkit-background-clip:text; background-clip:text;
-      color:transparent;
-    }
-    .insight-link:hover { opacity:0.75; }
+    html.dark .insight-link { color:#A78BFA; }
+    .insight-link:hover { opacity:0.7; }
 
     /* ══════════════════════════════════════════════════════════════
        ZONE 4 — EXPLORER (3 colonnes intelligentes)
@@ -691,6 +737,7 @@
        ZONE 1 — HERO NEXT BEST ACTION
   ════════════════════════════════════════════════════════════ -->
   <div class="zone-hero" id="zone-hero">
+    <div class="hero-cream">
     <!-- Salutation discrète -->
     <div class="greeting-line" id="greeting-line">Bonjour.</div>
 
@@ -724,7 +771,7 @@
         Commencer
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
-      <a href="plan.html" class="btn-hero-secondary">Voir mon plan →</a>
+      <a href="plan.html" class="btn-hero-secondary">Plus tard</a>
     </div>
   </div>
 
@@ -744,13 +791,14 @@
        ZONE 3 — INSIGHT ÉDITORIAL
   ════════════════════════════════════════════════════════════ -->
   <div class="zone-insight" id="zone-insight" style="display:none;">
-    <div class="insight-kicker" id="insight-kicker">UN INSIGHT POUR TOI</div>
-    <div class="insight-figure" id="insight-text">—</div>
-    <p class="insight-sub" id="insight-sub" style="display:none;"></p>
-    <a href="#" class="insight-link" id="insight-cta" style="display:none;">
-      <span id="insight-cta-text">En savoir plus</span>
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
+    <div class="insight-card">
+      <div class="insight-kicker" id="insight-kicker">INSIGHT PERSONNALISÉ</div>
+      <div class="insight-figure" id="insight-text">—</div>
+      <p class="insight-sub" id="insight-sub" style="display:none;"></p>
+      <a href="#" class="insight-link" id="insight-cta" style="display:none;">
+        <span id="insight-cta-text">Voir le plan détaillé</span> →
+      </a>
+    </div>
   </div>
 
   <!-- ════════════════════════════════════════════════════════════
@@ -992,32 +1040,43 @@
     else if (isActive) cls += ' active-card';
     else if (isSoon)   cls += ' soon-card';
 
-    const dotCat  = PACK_DOT[meta.pack] || 'todo-dot';
+    const dotCat   = PACK_DOT[meta.pack] || 'todo-dot';
     const dotClass = isDone ? 'done-dot' : (isSoon ? 'todo-dot' : dotCat);
 
-    let statusHtml = '';
-    if (isDone)
-      statusHtml = '<span class="bq-badge-done">✓</span>';
-    else if (item.progression > 0)
-      statusHtml = `<span class="bq-pct">${item.progression}%</span>`;
-    else if (isSoon)
-      statusHtml = '<span class="bq-badge-soon">Bientôt</span>';
+    // Statut texte (style image-3)
+    let statusTxt = '';
+    if (isDone)                       statusTxt = 'Terminée';
+    else if (item.statut === 'en_cours' && item.progression > 0) statusTxt = 'Brique en cours';
+    else if (item.statut === 'en_cours') statusTxt = 'Brique en cours';
+    else if (isSoon)                  statusTxt = 'Bientôt';
+    else                              statusTxt = 'Non commencée';
+
+    // Barre progression
+    const pct = item.progression || 0;
+    const progressHtml = `
+      <div class="bq-progress">
+        <div class="bq-track"><div class="bq-fill" style="width:${pct}%"></div></div>
+        ${pct > 0 ? `<span class="bq-pct">${pct}%</span>` : `<span class="bq-dash">—</span>`}
+      </div>`;
 
     const el = document.createElement(file && !isSoon ? 'a' : 'div');
     el.className = cls;
     el.setAttribute('role', 'listitem');
     if (file && !isSoon) {
       el.href = file;
-      el.setAttribute('aria-label', `${briqData_ariaLabel(item, meta)}`);
+      el.setAttribute('aria-label', briqData_ariaLabel(item, meta));
     }
     el.innerHTML = `
-      <div class="bq-dot ${dotClass}"></div>
-      <span class="bq-icon" aria-hidden="true">${meta.icon}</span>
-      <div class="bq-info">
-        <div class="bq-name">${meta.nom}</div>
-        <div class="bq-pack">${meta.pack}</div>
+      <div class="bq-top">
+        <span class="bq-icon" aria-hidden="true">${meta.icon}</span>
+        <div class="bq-cat">
+          <span class="bq-dot ${dotClass}"></span>
+          <span class="bq-cat-label">${meta.pack}</span>
+        </div>
       </div>
-      <div class="bq-status">${statusHtml}</div>`;
+      <div class="bq-name">${meta.nom}</div>
+      <div class="bq-status-text">${statusTxt}</div>
+      ${progressHtml}`;
     return el;
   }
 
@@ -1152,7 +1211,7 @@
     const zone = document.getElementById('zone-insight');
     if (!match) { zone.style.display = 'none'; return; }
     zone.style.display = '';
-    document.getElementById('insight-kicker').textContent = match.kicker;
+    document.getElementById('insight-kicker').textContent = 'INSIGHT PERSONNALISÉ';
     document.getElementById('insight-text').innerHTML = match.text;
     const subEl = document.getElementById('insight-sub');
     if (match.sub) { subEl.textContent = match.sub; subEl.style.display = ''; }
