@@ -4,40 +4,72 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fundamental — Construisons ton parcours</title>
+  <script>
+  (function() {
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark) document.documentElement.classList.add('dark');
+  })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <style>
-    /* ─── TOKENS ────────────────────────────────────────────────── */
+    /* ─── DESIGN SYSTEM TOKENS ────────────────────────────────── */
     :root {
-      --bg:          #0b0d17;
-      --surface:     #111320;
-      --surface-2:   #171a2e;
-      --surface-3:   #1d2038;
-      --border:      #252845;
-      --border-hover:#363a68;
-      --text:        #e2e4f0;
-      --text-muted:  #8b90b8;
-      --text-faint:  #444868;
-      --violet:      #818cf8;
-      --purple:      #c084fc;
-      --indigo:      #6366f1;
-      --indigo-dim:  rgba(99,102,241,0.14);
-      --indigo-glow: rgba(99,102,241,0.22);
-      --violet-glow: rgba(129,140,248,0.10);
-      --green:       #4ade80;
-      --green-dim:   rgba(74,222,128,0.10);
-      --red:         #f87171;
-
-      --r-sm: 0.5rem;
-      --r-md: 0.875rem;
-      --r-lg: 1.125rem;
-      --r-xl: 1.5rem;
-      --r-full: 9999px;
-
+      --bg: #FAF8F5;
+      --bg-elevated: #FFFFFF;
+      --nav-bg: rgba(250,248,245,0.88);
+      --nav-border: rgba(28,25,23,0.07);
+      --border-subtle: rgba(28,25,23,0.07);
+      --border-mid: rgba(28,25,23,0.11);
+      --border-hover: rgba(28,25,23,0.18);
+      --text: #1C1917;
+      --text-secondary: #57534E;
+      --text-muted: #78716C;
+      --text-faint: #A8A29E;
+      --accent: #C4B5FD;
+      --accent-strong: #5B21B6;
+      --accent-fill: #C4B5FD;
+      --accent-soft: rgba(196,181,253,0.22);
+      --accent-pill-text: #2E1065;
+      --track: #E7E5E4;
+      --shadow-card: 0 1px 2px rgba(20,20,30,0.04), 0 4px 16px rgba(20,20,30,0.04);
+      --shadow-hover: 0 4px 20px rgba(20,20,30,0.10);
+      --green: #22C55E;
+      --red: #f87171;
+      --surface: #FFFFFF;
+      --surface-2: #F5F5F4;
+      --surface-3: #EDEBE8;
+      --border: rgba(28,25,23,0.07);
+      --r-sm: 0.5rem; --r-md: 0.875rem; --r-lg: 1rem; --r-xl: 1.5rem; --r-full: 9999px;
+      --ease-out: cubic-bezier(0.16,1,0.3,1);
       --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
-      --ease-out:    cubic-bezier(0.16,1,0.3,1);
-      --t:           180ms;
+      --t: 180ms;
+    }
+    html.dark {
+      --bg: #0B0B1A;
+      --bg-elevated: #161824;
+      --nav-bg: rgba(11,11,26,0.82);
+      --nav-border: rgba(255,255,255,0.05);
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-mid: rgba(255,255,255,0.10);
+      --border-hover: rgba(255,255,255,0.16);
+      --text: #F5F5F4;
+      --text-secondary: #D4D4D8;
+      --text-muted: #A1A1AA;
+      --text-faint: #71717A;
+      --accent-strong: #A78BFA;
+      --accent-fill: linear-gradient(90deg, #A78BFA, #60A5FA);
+      --accent-soft: rgba(167,139,250,0.14);
+      --accent-pill-text: #FFFFFF;
+      --track: rgba(255,255,255,0.08);
+      --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 4px 24px rgba(0,0,0,0.20);
+      --surface: rgba(255,255,255,0.04);
+      --surface-2: rgba(255,255,255,0.06);
+      --surface-3: rgba(255,255,255,0.09);
+      --border: rgba(255,255,255,0.06);
+      --green: #22C55E;
+      --red: #f87171;
     }
 
     /* ─── BASE ──────────────────────────────────────────────────── */
@@ -53,20 +85,28 @@
       overflow-x: hidden;
     }
     button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
-    :focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; border-radius: var(--r-sm); }
+    :focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; border-radius: var(--r-sm); }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
     }
 
-    /* ─── CANVAS BG ─────────────────────────────────────────────── */
-    #bg-canvas {
-      position: fixed; inset: 0; width: 100%; height: 100%;
-      z-index: 0; pointer-events: none; opacity: 0.25;
+    /* ─── SERIF ─────────────────────────────────────────────────── */
+    .serif { font-family: 'Fraunces', 'Instrument Serif', Georgia, serif; }
+
+    /* ─── WORDMARK ──────────────────────────────────────────────── */
+    .wordmark { display:inline-flex; align-items:center; gap:8px; text-decoration:none; }
+    .wordmark .mark {
+      width:22px; height:22px; border-radius:6px;
+      background: var(--accent-fill);
+      color: var(--accent-pill-text);
+      display:inline-flex; align-items:center; justify-content:center;
+      font-family:'Fraunces',serif; font-style:italic; font-weight:500; font-size:14px;
     }
+    html.dark .wordmark .mark { background: linear-gradient(135deg, #8B5CF6, #3B82F6); color:#fff; }
+    .wordmark .name { font-size:15px; font-weight:600; letter-spacing:-.01em; color:var(--text); }
 
     /* ─── LAYOUT ────────────────────────────────────────────────── */
     #app {
-      position: relative; z-index: 1;
       min-height: 100dvh;
       display: flex; flex-direction: column; align-items: center;
       padding: 0 1rem 4rem;
@@ -75,54 +115,46 @@
     /* ─── HEADER ────────────────────────────────────────────────── */
     header {
       width: 100%; max-width: 680px;
+      height: 64px;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1.5rem 0 2rem;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 2rem;
     }
-    .logo {
-      display: flex; align-items: center; gap: 0.5rem;
-      font-weight: 800; font-size: 1.05rem;
-      background: linear-gradient(135deg, var(--violet), var(--purple));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      text-decoration: none;
-    }
+    /* Avatar placeholder on right (managed by nav-avatar.js) */
+    #header-avatar { display:flex; align-items:center; }
 
-    /* ─── CARD WRAPPER ──────────────────────────────────────────── */
-    .quiz-card {
+    /* ─── PROGRESS ──────────────────────────────────────────────── */
+    .progress-area {
       width: 100%; max-width: 680px;
-      background: rgba(17,19,32,0.85);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
-      border-radius: var(--r-xl);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 24px 64px rgba(0,0,0,0.6), 0 0 40px var(--violet-glow);
-      overflow: hidden;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
     }
-
-    /* ─── PROGRESS (dots + bar) ─────────────────────────────────── */
-    .progress-top {
-      padding: 1.5rem 2rem 0;
-      display: flex; flex-direction: column; gap: 0.75rem;
-    }
-    .dots {
-      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-    }
-    .dot {
-      height: 4px; border-radius: var(--r-full);
-      background: var(--border);
-      transition: width var(--t) var(--ease-out), background var(--t);
-    }
-    .dot.active   { background: linear-gradient(90deg, var(--violet), var(--purple)); width: 2rem; }
-    .dot.done     { background: var(--indigo); width: 1.5rem; }
-    .dot.inactive { width: 1rem; }
     .progress-label {
-      text-align: center; font-size: 0.7rem; font-weight: 600;
-      letter-spacing: 0.1em; text-transform: uppercase;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--text-faint);
     }
+    .progress-track {
+      width: 100%; max-width: 240px; height: 1px;
+      background: var(--track);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent-strong);
+      border-radius: 999px;
+      transition: width 400ms ease;
+    }
+    html.dark .progress-bar-fill {
+      background: linear-gradient(90deg, #A78BFA, #60A5FA);
+    }
 
-    /* ─── STEP CONTENT ──────────────────────────────────────────── */
+    /* ─── STEP ───────────────────────────────────────────────────── */
     .step {
-      padding: 2rem;
-      display: none; flex-direction: column; gap: 1.75rem;
+      width: 100%; max-width: 680px;
+      display: none; flex-direction: column; gap: 2rem;
     }
     .step.active { display: flex; }
 
@@ -134,28 +166,18 @@
 
     /* ─── STEP HEADER ───────────────────────────────────────────── */
     .step-header { display: flex; flex-direction: column; gap: 0.5rem; text-align: center; }
-    .step-badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      gap: 0.4rem;
-      align-self: center;
-      padding: 0.25rem 0.85rem;
-      border-radius: var(--r-full);
-      background: var(--indigo-dim);
-      border: 1px solid rgba(99,102,241,0.25);
-      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
-      text-transform: uppercase; color: #a5b4fc;
+    .step-kicker {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-faint);
+      margin-bottom: 0.25rem;
     }
-    .step-badge .dot-live {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--violet);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.85); } }
     .step-title {
-      font-size: clamp(1.2rem, 3vw, 1.5rem);
-      font-weight: 800; color: #fff; line-height: 1.25;
+      font-size: clamp(1.6rem, 3vw, 2rem);
+      font-family: 'Fraunces', 'Instrument Serif', Georgia, serif;
+      font-style: italic; font-weight: 400;
+      color: var(--text); line-height: 1.2;
     }
-    .step-sub { font-size: 0.875rem; color: var(--text-muted); }
+    .step-sub { font-size: 15px; color: var(--text-muted); }
 
     /* ─── QUESTION BLOCK ────────────────────────────────────────── */
     .q-block { display: flex; flex-direction: column; gap: 0.75rem; }
@@ -166,7 +188,7 @@
     .q-label .req { color: var(--red); font-size: 0.75rem; }
     .q-hint { font-size: 0.78rem; color: var(--text-muted); margin-top: -0.25rem; }
 
-    /* ─── GRID PILLS (âge, logement, etc.) ──────────────────────── */
+    /* ─── GRIDS ─────────────────────────────────────────────────── */
     .pill-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -175,38 +197,38 @@
     .pill-grid.col2 { grid-template-columns: repeat(2, 1fr); }
     .pill-grid.col3 { grid-template-columns: repeat(3, 1fr); }
 
-    /* Universal selectable item */
+    /* ─── CHIP (sel-item) ────────────────────────────────────────── */
     .sel-item {
       position: relative;
       display: flex; align-items: center; justify-content: space-between;
       gap: 0.625rem;
-      padding: 0.875rem 1rem;
-      background: rgba(255,255,255,0.03);
-      border: 1.5px solid var(--border);
-      border-radius: var(--r-md);
-      font-size: 0.875rem; font-weight: 500; color: var(--text-muted);
+      padding: 12px 20px;
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      font-size: 14px; font-weight: 500; color: var(--text-secondary);
       text-align: left;
       cursor: pointer;
       transition:
         border-color var(--t) var(--ease-out),
         background var(--t) var(--ease-out),
         color var(--t) var(--ease-out),
-        box-shadow var(--t) var(--ease-out),
         transform 0.12s var(--ease-spring);
       user-select: none;
       -webkit-user-select: none;
     }
     .sel-item:hover:not(.selected) {
-      border-color: var(--border-hover);
+      border-color: var(--border-mid);
       color: var(--text);
-      background: rgba(255,255,255,0.05);
+      background: var(--bg-elevated);
+      transform: translateY(-1px);
     }
     .sel-item:active { transform: scale(0.975); }
     .sel-item.selected {
-      border-color: var(--indigo);
-      background: var(--indigo-dim);
-      color: #fff;
-      box-shadow: 0 0 0 3px var(--indigo-glow), inset 0 1px 0 rgba(255,255,255,0.06);
+      border-color: var(--accent-strong);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-weight: 500;
     }
 
     /* Check icon inside sel-item */
@@ -220,10 +242,14 @@
       opacity: 0;
     }
     .sel-item.selected .sel-check {
-      border-color: var(--violet);
-      background: var(--violet);
+      border-color: var(--accent-strong);
+      background: var(--accent-strong);
       transform: scale(1);
       opacity: 1;
+    }
+    html.dark .sel-item.selected .sel-check {
+      border-color: var(--accent-strong);
+      background: var(--accent-strong);
     }
     .sel-check svg { width: 9px; height: 9px; }
 
@@ -233,22 +259,26 @@
       gap: 0.4rem;
       padding: 0.6rem 1rem;
       border-radius: var(--r-full);
-      border: 1.5px solid var(--border);
-      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-subtle);
+      background: transparent;
       font-size: 0.825rem; font-weight: 500; color: var(--text-muted);
       cursor: pointer;
       transition:
         border-color var(--t), background var(--t), color var(--t),
-        box-shadow var(--t), transform 0.12s var(--ease-spring);
+        transform 0.12s var(--ease-spring);
       user-select: none;
     }
-    .pill:hover:not(.selected) { border-color: var(--border-hover); color: var(--text); background: rgba(255,255,255,0.05); }
+    .pill:hover:not(.selected) {
+      border-color: var(--border-mid);
+      color: var(--text);
+      background: var(--bg-elevated);
+    }
     .pill:active { transform: scale(0.96); }
     .pill.selected {
-      border-color: var(--violet);
-      background: rgba(129,140,248,0.12);
-      color: #c7d2fe;
-      box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
+      border-color: var(--accent-strong);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-weight: 500;
     }
     .pill-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 
@@ -260,24 +290,27 @@
       gap: 0.4rem;
       padding: 0.875rem 0.25rem;
       border-radius: var(--r-md);
-      border: 1.5px solid var(--border);
-      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-subtle);
+      background: transparent;
       color: var(--text-faint);
       font-size: 0.78rem; font-weight: 600;
       cursor: pointer;
       transition:
         border-color var(--t), background var(--t), color var(--t),
-        box-shadow var(--t), transform 0.12s var(--ease-spring);
+        transform 0.12s var(--ease-spring);
       user-select: none;
     }
     .likert-btn .lk-emoji { font-size: 1.4rem; line-height: 1; }
-    .likert-btn:hover:not(.selected) { border-color: var(--border-hover); color: var(--text-muted); }
+    .likert-btn:hover:not(.selected) {
+      border-color: var(--border-mid);
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+    }
     .likert-btn:active { transform: scale(0.96) translateY(-1px); }
     .likert-btn.selected {
-      border-color: var(--indigo);
-      background: var(--indigo-dim);
-      color: #c7d2fe;
-      box-shadow: 0 0 0 3px var(--indigo-glow);
+      border-color: var(--accent-strong);
+      background: var(--accent-soft);
+      color: var(--accent-strong);
       transform: translateY(-3px);
     }
     .likert-caption {
@@ -288,7 +321,7 @@
 
     /* ─── DIVIDER ────────────────────────────────────────────────── */
     .divider {
-      height: 1px; background: var(--border); border: none;
+      height: 1px; background: var(--border-subtle); border: none;
       margin: 0.25rem 0;
     }
 
@@ -301,11 +334,11 @@
       display: inline-flex; align-items: center; justify-content: center;
       min-width: 18px; height: 18px; padding: 0 4px;
       border-radius: var(--r-full);
-      background: var(--indigo-dim); border: 1px solid rgba(99,102,241,0.3);
-      color: #a5b4fc; font-weight: 700; font-size: 0.7rem;
+      background: var(--accent-soft); border: 1px solid var(--border-mid);
+      color: var(--accent-strong); font-weight: 700; font-size: 0.7rem;
       transition: background var(--t), color var(--t);
     }
-    .max-badge-count.full { background: var(--indigo); color: #fff; }
+    .max-badge-count.full { background: var(--accent-strong); color: var(--accent-pill-text); }
 
     /* ─── CONDITIONAL ────────────────────────────────────────────── */
     .cond { overflow: hidden; max-height: 0; opacity: 0;
@@ -323,42 +356,50 @@
     .nav-row {
       display: flex; align-items: center; gap: 0.75rem;
       padding-top: 0.5rem;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border-subtle);
     }
     .btn-back {
       display: flex; align-items: center; gap: 0.4rem;
-      padding: 0.7rem 1.1rem;
-      border-radius: var(--r-full);
-      border: 1.5px solid var(--border);
-      font-size: 0.85rem; font-weight: 500; color: var(--text-muted);
-      transition: border-color var(--t), color var(--t), background var(--t);
+      font-size: 14px; font-weight: 500; color: var(--text-muted);
+      transition: color var(--t);
+      padding: 0.5rem 0;
     }
-    .btn-back:hover { border-color: var(--border-hover); color: var(--text); background: rgba(255,255,255,0.04); }
-    .btn-back:active { transform: scale(0.97); }
+    .btn-back:hover { color: var(--text); }
     .btn-next {
-      flex: 1;
-      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-      padding: 0.875rem 1.5rem;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.875rem 2rem;
       border-radius: var(--r-full);
-      background: linear-gradient(135deg, var(--indigo) 0%, var(--purple) 100%);
-      font-size: 0.9rem; font-weight: 700; color: #fff;
+      background: var(--accent-fill);
+      font-size: 0.9rem; font-weight: 600; color: var(--accent-pill-text);
       border: none;
-      box-shadow: 0 0 24px rgba(99,102,241,0.3), 0 4px 12px rgba(0,0,0,0.4);
-      transition: box-shadow var(--t), transform 0.12s var(--ease-spring), opacity var(--t);
+      transition: transform 0.15s var(--ease-out), box-shadow var(--t);
     }
-    .btn-next:hover { box-shadow: 0 0 36px rgba(99,102,241,0.45), 0 6px 20px rgba(0,0,0,0.5); }
+    html.dark .btn-next { background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%); color: #fff; }
+    .btn-next:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
     .btn-next:active { transform: scale(0.98); }
+
+    /* ─── BACK LINK (step 1 hidden) ──────────────────────────────── */
+    .btn-back-hidden { visibility: hidden; pointer-events: none; }
+
+    /* ─── FOOTNOTE ───────────────────────────────────────────────── */
+    .step-footnote {
+      text-align: center;
+      font-size: 12px; font-style: italic;
+      color: var(--text-faint);
+      margin-top: 0.5rem;
+    }
 
     /* ─── LOADER SCREEN ──────────────────────────────────────────── */
     #loader {
       display: none; flex-direction: column; align-items: center;
       gap: 1.5rem; padding: 3rem 2rem; text-align: center;
+      width: 100%; max-width: 680px;
     }
     #loader.active { display: flex; }
     .loader-ring {
       width: 56px; height: 56px;
-      border: 3px solid var(--border);
-      border-top-color: var(--violet);
+      border: 3px solid var(--border-subtle);
+      border-top-color: var(--accent-strong);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -368,20 +409,23 @@
 
     /* ─── RESULT SCREEN ──────────────────────────────────────────── */
     #result {
-      display: none; flex-direction: column; gap: 1.75rem; padding: 2rem;
+      display: none; flex-direction: column; gap: 1.75rem;
+      width: 100%; max-width: 680px;
     }
     #result.active { display: flex; animation: slideInUp 0.4s var(--ease-out) both; }
 
     .result-hero { display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
     .result-icon {
       width: 64px; height: 64px; border-radius: 50%;
-      background: var(--green-dim); border: 2px solid var(--green);
+      background: rgba(34,197,94,0.12);
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 0 28px rgba(74,222,128,0.15);
       animation: popIn 0.5s 0.05s var(--ease-spring) both;
     }
     @keyframes popIn { from { transform:scale(0.4); opacity:0; } to { transform:scale(1); opacity:1; } }
-    .result-title { font-size: 1.5rem; font-weight: 800; color: #fff; }
+    .result-title {
+      font-size: 1.5rem; font-weight: 600; color: var(--text);
+      font-family: 'Fraunces', serif; font-style: italic;
+    }
     .result-sub { font-size: 0.875rem; color: var(--text-muted); max-width: 40ch; }
 
     /* Brique cards */
@@ -393,18 +437,19 @@
     .brique-card {
       display: flex; align-items: center; gap: 1rem;
       padding: 1rem 1.125rem;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--r-lg);
       transition: border-color var(--t), background var(--t), transform 0.12s var(--ease-spring);
       animation: slideInUp 0.35s var(--ease-out) both;
+      box-shadow: var(--shadow-card);
     }
-    .brique-card:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.05); transform: translateY(-1px); }
+    .brique-card:hover { border-color: var(--border-mid); transform: translateY(-1px); }
     .brique-icon-wrap {
       width: 44px; height: 44px; flex-shrink: 0;
       border-radius: var(--r-md);
-      background: var(--surface-3);
-      border: 1px solid var(--border);
+      background: var(--surface-2);
+      border: 1px solid var(--border-subtle);
       display: flex; align-items: center; justify-content: center;
       font-size: 1.4rem; line-height: 1;
     }
@@ -415,7 +460,7 @@
 
     /* JSON details */
     .json-details {
-      background: var(--surface-2); border: 1px solid var(--border);
+      background: var(--surface-2); border: 1px solid var(--border-subtle);
       border-radius: var(--r-lg); overflow: hidden;
     }
     .json-details summary {
@@ -427,7 +472,7 @@
     .json-details summary::-webkit-details-marker { display: none; }
     .json-details pre {
       padding: 0 1rem 1rem;
-      font-size: 0.7rem; color: var(--violet);
+      font-size: 0.7rem; color: var(--accent-strong);
       white-space: pre-wrap; word-break: break-word;
       font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
       max-height: 220px; overflow-y: auto;
@@ -438,23 +483,22 @@
       align-self: center;
       padding: 0.6rem 1.25rem;
       border-radius: var(--r-full);
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border-mid);
       font-size: 0.825rem; font-weight: 500; color: var(--text-muted);
       transition: border-color var(--t), color var(--t);
     }
-    .btn-restart:hover { border-color: var(--violet); color: var(--violet); }
+    .btn-restart:hover { border-color: var(--accent-strong); color: var(--accent-strong); }
 
-    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
-    /* ── Q11 produit expand inline ── */
+    /* ─── Q11 produit expand ─────────────────────────────────────── */
     .produit-item {
       display: flex;
       flex-direction: column;
-      border: 1.5px solid var(--border);
-      border-radius: var(--r-md);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
       overflow: hidden;
       transition: border-color var(--t);
     }
-    .produit-item.selected-prod { border-color: rgba(99,102,241,0.4); }
+    .produit-item.selected-prod { border-color: var(--accent-strong); }
     .produit-item .sel-item {
       border: none;
       border-radius: 0;
@@ -476,7 +520,7 @@
       align-items: center;
       gap: 0.625rem;
       padding: 0.5rem 0.875rem 0.625rem;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--border-subtle);
     }
     .produit-montant-label {
       font-size: 0.78rem;
@@ -487,14 +531,15 @@
       flex: 1;
       padding: 0.35rem 0.625rem;
       background: var(--surface-3);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-subtle);
       border-radius: var(--r-sm);
       color: var(--text);
       font-size: 0.85rem;
       font-family: inherit;
       transition: border-color var(--t);
+      outline: none;
     }
-    .produit-montant-input:focus { border-color: var(--violet); outline: none; }
+    .produit-montant-input:focus { border-color: var(--accent-strong); }
     .produit-montant-input::placeholder { color: var(--text-faint); }
     .produit-montant-suffix {
       font-size: 0.82rem;
@@ -508,7 +553,6 @@
       display: none;
     }
     .q-hint-amount.show { display: block; }
-    /* layout: produits en 1 col, pleine largeur */
     .produit-grid {
       display: flex;
       flex-direction: column;
@@ -516,9 +560,7 @@
     }
 
     @media (max-width: 520px) {
-      .step { padding: 1.5rem; }
-      .progress-top { padding: 1.25rem 1.5rem 0; }
-      #result, #loader { padding: 1.5rem; }
+      .step { gap: 1.5rem; }
       .likert-row { gap: 0.3rem; }
       .likert-btn { padding: 0.7rem 0.15rem; font-size: 0.7rem; }
       .likert-btn .lk-emoji { font-size: 1.1rem; }
@@ -527,490 +569,473 @@
   </style>
 </head>
 <body>
-<canvas id="bg-canvas"></canvas>
 
 <div id="app">
   <header>
-    <a href="#" class="logo" aria-label="Fundamental">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/>
-          </linearGradient>
-        </defs>
-        <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg)"/>
-        <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg)" opacity=".55"/>
-        <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".55"/>
-        <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".25"/>
-      </svg>
-      Fundamental
+    <a href="dashboard.html" class="wordmark" aria-label="Fundamental">
+      <span class="mark">f</span>
+      <span class="name">Fundamental</span>
     </a>
+    <div id="header-avatar"></div>
   </header>
 
-  <div class="quiz-card">
-    <!-- PROGRESS -->
-    <div class="progress-top" id="progress-wrapper">
-      <div class="dots" id="dots" aria-hidden="true">
-        <div class="dot active" id="d1"></div>
-        <div class="dot inactive" id="d2"></div>
-        <div class="dot inactive" id="d3"></div>
-        <div class="dot inactive" id="d4"></div>
-        <div class="dot inactive" id="d5"></div>
-      </div>
-      <p class="progress-label" id="progress-label">Étape 1 sur 5</p>
+  <!-- PROGRESS -->
+  <div class="progress-area" id="progress-wrapper">
+    <p class="progress-label" id="progress-label">ÉTAPE 1 SUR 5</p>
+    <div class="progress-track" aria-hidden="true">
+      <div class="progress-bar-fill" id="progress-bar-fill" style="width:20%"></div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 1 — Identité ════════════════════════════════════ -->
+  <div class="step active" id="step-1" aria-label="Étape 1">
+    <div class="step-header">
+      <p class="step-kicker">Profil de départ</p>
+      <h1 class="step-title">Pour commencer, parlons un peu de toi.</h1>
+      <p class="step-sub">Deux questions pour calibrer ton parcours.</p>
     </div>
 
-    <!-- ═══ STEP 1 — Identité ════════════════════════════════════ -->
-    <div class="step active" id="step-1" aria-label="Étape 1">
-      <div class="step-header">
-        <span class="step-badge"><span class="dot-live"></span>Profil de départ</span>
-        <h1 class="step-title">Pour commencer, parlons un peu de toi</h1>
-        <p class="step-sub">Deux questions pour calibrer ton parcours.</p>
+    <!-- Q1 -->
+    <div class="q-block">
+      <p class="q-label">Quel âge as-tu ?<span class="req">*</span></p>
+      <div class="pill-grid col3" role="radiogroup" aria-label="Tranche d'âge">
+        <button class="sel-item" data-q="q_age_group" data-val="15_17" role="radio" aria-checked="false"><span>15–17 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_age_group" data-val="18_24" role="radio" aria-checked="false"><span>18–24 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_age_group" data-val="25_34" role="radio" aria-checked="false"><span>25–34 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_age_group" data-val="35_54" role="radio" aria-checked="false"><span>35–54 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_age_group" data-val="55_64" role="radio" aria-checked="false"><span>55–64 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_age_group" data-val="65_plus" role="radio" aria-checked="false"><span>65 ans ou plus</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       </div>
-
-      <!-- Q1 -->
-      <div class="q-block">
-        <p class="q-label">Quel âge as-tu ?<span class="req">*</span></p>
-        <div class="pill-grid col3" role="radiogroup" aria-label="Tranche d'âge">
-          <button class="sel-item" data-q="q_age_group" data-val="15_17" role="radio" aria-checked="false"><span>15–17 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_age_group" data-val="18_24" role="radio" aria-checked="false"><span>18–24 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_age_group" data-val="25_34" role="radio" aria-checked="false"><span>25–34 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_age_group" data-val="35_54" role="radio" aria-checked="false"><span>35–54 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_age_group" data-val="55_64" role="radio" aria-checked="false"><span>55–64 ans</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_age_group" data-val="65_plus" role="radio" aria-checked="false"><span>65 ans ou plus</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-        </div>
-        <span class="field-error" id="e-q1" role="alert">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Choisis ta tranche d'âge pour continuer.
-        </span>
-      </div>
-
-      <!-- Q2 -->
-      <div class="q-block">
-        <p class="q-label">Quelle est ta situation actuelle ?<span class="req">*</span></p>
-        <div class="pill-grid col2" role="radiogroup" aria-label="Situation professionnelle">
-          <button class="sel-item" data-q="q_status_pro" data-val="college_lycee" role="radio" aria-checked="false"><span>Collégien / Lycéen</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_status_pro" data-val="etudiant" role="radio" aria-checked="false"><span>Étudiant</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_status_pro" data-val="sal_ouvrier_employe" role="radio" aria-checked="false"><span>Salarié ouvrier / employé</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_status_pro" data-val="sal_prof_inter" role="radio" aria-checked="false"><span>Salarié prof. interméd.</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_status_pro" data-val="cadre_prof_lib" role="radio" aria-checked="false"><span>Cadre / Prof. libérale</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_status_pro" data-val="indep_tpe" role="radio" aria-checked="false"><span>Indépendant / TPE</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_status_pro" data-val="chomeur_inactif" role="radio" aria-checked="false"><span>En recherche d'emploi</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_status_pro" data-val="retraite" role="radio" aria-checked="false"><span>Retraité</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_status_pro" data-val="autre" role="radio" aria-checked="false"><span>Autre</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-        </div>
-        <span class="field-error" id="e-q2" role="alert">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Sélectionne ta situation.
-        </span>
-      </div>
-
-      <div class="nav-row">
-        <button class="btn-next" onclick="goNext(1)">
-          Continuer
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-      </div>
+      <span class="field-error" id="e-q1" role="alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Choisis ta tranche d'âge pour continuer.
+      </span>
     </div>
 
-    <!-- ═══ STEP 2 — Budget & Logement ══════════════════════════ -->
-    <div class="step" id="step-2" aria-label="Étape 2">
-      <div class="step-header">
-        <span class="step-badge"><span class="dot-live"></span>Ressenti financier</span>
-        <h2 class="step-title">Comment vis-tu ton argent aujourd'hui ?</h2>
+    <!-- Q2 -->
+    <div class="q-block">
+      <p class="q-label">Quelle est ta situation actuelle ?<span class="req">*</span></p>
+      <div class="pill-grid col2" role="radiogroup" aria-label="Situation professionnelle">
+        <button class="sel-item" data-q="q_status_pro" data-val="college_lycee" role="radio" aria-checked="false"><span>Collégien / Lycéen</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_status_pro" data-val="etudiant" role="radio" aria-checked="false"><span>Étudiant</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_status_pro" data-val="sal_ouvrier_employe" role="radio" aria-checked="false"><span>Salarié ouvrier / employé</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_status_pro" data-val="sal_prof_inter" role="radio" aria-checked="false"><span>Salarié prof. interméd.</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_status_pro" data-val="cadre_prof_lib" role="radio" aria-checked="false"><span>Cadre / Prof. libérale</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_status_pro" data-val="indep_tpe" role="radio" aria-checked="false"><span>Indépendant / TPE</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_status_pro" data-val="chomeur_inactif" role="radio" aria-checked="false"><span>En recherche d'emploi</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_status_pro" data-val="retraite" role="radio" aria-checked="false"><span>Retraité</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_status_pro" data-val="autre" role="radio" aria-checked="false"><span>Autre</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
       </div>
+      <span class="field-error" id="e-q2" role="alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Sélectionne ta situation.
+      </span>
+    </div>
 
-      <!-- Q3 -->
-      <div class="q-block">
-        <p class="q-label">Comment te sens-tu en fin de mois ?<span class="req">*</span></p>
-        <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Sentiment de revenu">
-          <button class="sel-item" data-q="q_revenu_sentiment" data-val="difficile_fin_mois" role="radio" aria-checked="false">
-            <span>😟 J'ai du mal à finir le mois</span>
-            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <button class="sel-item" data-q="q_revenu_sentiment" data-val="juste_juste" role="radio" aria-checked="false">
-            <span>😐 Ça passe tout juste</span>
-            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <button class="sel-item" data-q="q_revenu_sentiment" data-val="a_l_aise" role="radio" aria-checked="false">
-            <span>😌 Je suis plutôt à l'aise</span>
-            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-        </div>
-        <span class="field-error" id="e-q3" role="alert">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Choisis une option.
-        </span>
-      </div>
+    <div class="nav-row">
+      <button class="btn-back btn-back-hidden" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Retour
+      </button>
+      <button class="btn-next" onclick="goNext(1)">
+        Continuer
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <p class="step-footnote">Tes réponses sont privées et sauvegardées en temps réel.</p>
+  </div>
 
-      <!-- Q4 Likert -->
-      <div class="q-block">
-        <p class="q-label">Ton budget est une source de stress ?<span class="req">*</span></p>
-        <div class="likert-row" role="radiogroup" aria-label="Niveau de stress budgétaire">
-          <button class="likert-btn" data-q="q_stress_budget" data-val="1" role="radio" aria-checked="false" aria-label="1 — Pas du tout"><span class="lk-emoji">😌</span><span>Pas du tout</span></button>
-          <button class="likert-btn" data-q="q_stress_budget" data-val="2" role="radio" aria-checked="false" aria-label="2 — Un peu"><span class="lk-emoji">😐</span><span>Un peu</span></button>
-          <button class="likert-btn" data-q="q_stress_budget" data-val="3" role="radio" aria-checked="false" aria-label="3 — Moyen"><span class="lk-emoji">😕</span><span>Moyen</span></button>
-          <button class="likert-btn" data-q="q_stress_budget" data-val="4" role="radio" aria-checked="false" aria-label="4 — Souvent"><span class="lk-emoji">😟</span><span>Souvent</span></button>
-          <button class="likert-btn" data-q="q_stress_budget" data-val="5" role="radio" aria-checked="false" aria-label="5 — Tous les jours"><span class="lk-emoji">😫</span><span>Tous les jours</span></button>
-        </div>
-        <span class="field-error" id="e-q4" role="alert">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Indique ton niveau de stress.
-        </span>
-      </div>
+  <!-- ═══ STEP 2 — Budget & Logement ══════════════════════════ -->
+  <div class="step" id="step-2" aria-label="Étape 2">
+    <div class="step-header">
+      <p class="step-kicker">Ressenti financier</p>
+      <h2 class="step-title">Comment vis-tu ton argent aujourd'hui ?</h2>
+    </div>
 
-      <!-- Q5 conditional -->
-      <div class="cond" id="cond-q5">
-        <div class="q-block">
-          <p class="q-label">Où habites-tu en ce moment ?<span class="req">*</span></p>
-          <div class="pill-grid col2" role="radiogroup" aria-label="Situation de logement">
-            <button class="sel-item" data-q="q_logement_situation" data-val="chez_parents" role="radio" aria-checked="false"><span>Chez mes parents / famille</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-            <button class="sel-item" data-q="q_logement_situation" data-val="colocation" role="radio" aria-checked="false"><span>En colocation</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-            <button class="sel-item" data-q="q_logement_situation" data-val="locataire" role="radio" aria-checked="false"><span>Locataire</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-            <button class="sel-item" data-q="q_logement_situation" data-val="proprietaire" role="radio" aria-checked="false"><span>Propriétaire</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-            <button class="sel-item" data-q="q_logement_situation" data-val="heberge_autre" role="radio" aria-checked="false"><span>Hébergé / autre</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          </div>
-          <span class="field-error" id="e-q5" role="alert">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Indique ta situation de logement.
-          </span>
-        </div>
-      </div>
-
-      <!-- Q6 conditional -->
-      <div class="cond" id="cond-q6">
-        <div class="q-block">
-          <p class="q-label">Un projet de logement dans les 12 mois ?<span class="req">*</span></p>
-          <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Projet logement">
-            <button class="sel-item" data-q="q_logement_projet" data-val="aucun" role="radio" aria-checked="false"><span>Non, pas spécialement</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-            <button class="sel-item" data-q="q_logement_projet" data-val="je_vais_demenager" role="radio" aria-checked="false"><span>Oui, je vais déménager</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-            <button class="sel-item" data-q="q_logement_projet" data-val="je_veux_acheter" role="radio" aria-checked="false"><span>Oui, je veux acheter ma résidence principale</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          </div>
-          <span class="field-error" id="e-q6" role="alert">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Indique ton projet de logement.
-          </span>
-        </div>
-      </div>
-
-      <div class="nav-row">
-        <button class="btn-back" onclick="goBack(2)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Retour
+    <!-- Q3 -->
+    <div class="q-block">
+      <p class="q-label">Comment te sens-tu en fin de mois ?<span class="req">*</span></p>
+      <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Sentiment de revenu">
+        <button class="sel-item" data-q="q_revenu_sentiment" data-val="difficile_fin_mois" role="radio" aria-checked="false">
+          <span>😟 J'ai du mal à finir le mois</span>
+          <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </button>
-        <button class="btn-next" onclick="goNext(2)">
-          Continuer
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <button class="sel-item" data-q="q_revenu_sentiment" data-val="juste_juste" role="radio" aria-checked="false">
+          <span>😐 Ça passe tout juste</span>
+          <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         </button>
+        <button class="sel-item" data-q="q_revenu_sentiment" data-val="a_l_aise" role="radio" aria-checked="false">
+          <span>😌 Je suis plutôt à l'aise</span>
+          <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+      <span class="field-error" id="e-q3" role="alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Choisis une option.
+      </span>
+    </div>
+
+    <!-- Q4 Likert -->
+    <div class="q-block">
+      <p class="q-label">Ton budget est une source de stress ?<span class="req">*</span></p>
+      <div class="likert-row" role="radiogroup" aria-label="Niveau de stress budgétaire">
+        <button class="likert-btn" data-q="q_stress_budget" data-val="1" role="radio" aria-checked="false" aria-label="1 — Pas du tout"><span class="lk-emoji">😌</span><span>Pas du tout</span></button>
+        <button class="likert-btn" data-q="q_stress_budget" data-val="2" role="radio" aria-checked="false" aria-label="2 — Un peu"><span class="lk-emoji">😐</span><span>Un peu</span></button>
+        <button class="likert-btn" data-q="q_stress_budget" data-val="3" role="radio" aria-checked="false" aria-label="3 — Moyen"><span class="lk-emoji">😕</span><span>Moyen</span></button>
+        <button class="likert-btn" data-q="q_stress_budget" data-val="4" role="radio" aria-checked="false" aria-label="4 — Souvent"><span class="lk-emoji">😟</span><span>Souvent</span></button>
+        <button class="likert-btn" data-q="q_stress_budget" data-val="5" role="radio" aria-checked="false" aria-label="5 — Tous les jours"><span class="lk-emoji">😫</span><span>Tous les jours</span></button>
+      </div>
+      <span class="field-error" id="e-q4" role="alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Indique ton niveau de stress.
+      </span>
+    </div>
+
+    <!-- Q5 conditional -->
+    <div class="cond" id="cond-q5">
+      <div class="q-block">
+        <p class="q-label">Où habites-tu en ce moment ?<span class="req">*</span></p>
+        <div class="pill-grid col2" role="radiogroup" aria-label="Situation de logement">
+          <button class="sel-item" data-q="q_logement_situation" data-val="chez_parents" role="radio" aria-checked="false"><span>Chez mes parents / famille</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_logement_situation" data-val="colocation" role="radio" aria-checked="false"><span>En colocation</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_logement_situation" data-val="locataire" role="radio" aria-checked="false"><span>Locataire</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_logement_situation" data-val="proprietaire" role="radio" aria-checked="false"><span>Propriétaire</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_logement_situation" data-val="heberge_autre" role="radio" aria-checked="false"><span>Hébergé / autre</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </div>
+        <span class="field-error" id="e-q5" role="alert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Indique ta situation de logement.
+        </span>
       </div>
     </div>
 
-    <!-- ═══ STEP 3 — Objectifs ═══════════════════════════════════ -->
-    <div class="step" id="step-3" aria-label="Étape 3">
-      <div class="step-header">
-        <span class="step-badge"><span class="dot-live"></span>Tes priorités</span>
-        <h2 class="step-title">Qu'est-ce que tu veux changer en priorité ?</h2>
-      </div>
-
-      <!-- Q7 multi max 2 -->
+    <!-- Q6 conditional -->
+    <div class="cond" id="cond-q6">
       <div class="q-block">
-        <p class="q-label">Tes objectifs prioritaires<span class="req">*</span></p>
-        <div class="max-badge">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-          Sélectionne jusqu'à <span class="max-badge-count" id="cnt-obj">0</span> / 2
+        <p class="q-label">Un projet de logement dans les 12 mois ?<span class="req">*</span></p>
+        <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Projet logement">
+          <button class="sel-item" data-q="q_logement_projet" data-val="aucun" role="radio" aria-checked="false"><span>Non, pas spécialement</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_logement_projet" data-val="je_vais_demenager" role="radio" aria-checked="false"><span>Oui, je vais déménager</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_logement_projet" data-val="je_veux_acheter" role="radio" aria-checked="false"><span>Oui, je veux acheter ma résidence principale</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
-        <div class="pill-grid col2" role="group" aria-label="Objectifs">
-          <button class="sel-item" data-q="q_objectifs" data-val="sortir_decouvert" role="checkbox" aria-checked="false" data-excl="false"><span>Sortir du découvert</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_objectifs" data-val="stabiliser_budget" role="checkbox" aria-checked="false" data-excl="false"><span>Stabiliser mon budget</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_objectifs" data-val="rembourser_dettes" role="checkbox" aria-checked="false" data-excl="false"><span>Rembourser mes dettes</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_objectifs" data-val="financer_projet_court_terme" role="checkbox" aria-checked="false" data-excl="false"><span>Financer un projet court terme</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_objectifs" data-val="acheter_logement" role="checkbox" aria-checked="false" data-excl="false"><span>Acheter un logement</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_objectifs" data-val="preparer_retraite" role="checkbox" aria-checked="false" data-excl="false"><span>Préparer ma retraite</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_objectifs" data-val="investir_long_terme" role="checkbox" aria-checked="false" data-excl="false"><span>Investir intelligemment</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_objectifs" data-val="mieux_comprendre_contrats" role="checkbox" aria-checked="false" data-excl="false"><span>Comprendre mes contrats</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_objectifs" data-val="preparer_transmission" role="checkbox" aria-checked="false" data-excl="false"><span>Préparer ma transmission</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_objectifs" data-val="se_reperer" role="checkbox" aria-checked="false" data-excl="false"><span>Juste m'y retrouver</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-        </div>
-        <span class="field-error" id="e-q7" role="alert">
+        <span class="field-error" id="e-q6" role="alert">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Sélectionne au moins un objectif.
+          Indique ton projet de logement.
         </span>
       </div>
+    </div>
 
+    <div class="nav-row">
+      <button class="btn-back" onclick="goBack(2)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Retour
+      </button>
+      <button class="btn-next" onclick="goNext(2)">
+        Continuer
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <p class="step-footnote">Tes réponses sont privées et sauvegardées en temps réel.</p>
+  </div>
+
+  <!-- ═══ STEP 3 — Objectifs ═══════════════════════════════════ -->
+  <div class="step" id="step-3" aria-label="Étape 3">
+    <div class="step-header">
+      <p class="step-kicker">Tes priorités</p>
+      <h2 class="step-title">Qu'est-ce que tu veux changer en priorité ?</h2>
+    </div>
+
+    <!-- Q7 multi max 2 -->
+    <div class="q-block">
+      <p class="q-label">Tes objectifs prioritaires<span class="req">*</span></p>
+      <div class="max-badge">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Sélectionne jusqu'à <span class="max-badge-count" id="cnt-obj">0</span> / 2
+      </div>
+      <div class="pill-grid col2" role="group" aria-label="Objectifs">
+        <button class="sel-item" data-q="q_objectifs" data-val="sortir_decouvert" role="checkbox" aria-checked="false" data-excl="false"><span>Sortir du découvert</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_objectifs" data-val="stabiliser_budget" role="checkbox" aria-checked="false" data-excl="false"><span>Stabiliser mon budget</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_objectifs" data-val="rembourser_dettes" role="checkbox" aria-checked="false" data-excl="false"><span>Rembourser mes dettes</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_objectifs" data-val="financer_projet_court_terme" role="checkbox" aria-checked="false" data-excl="false"><span>Financer un projet court terme</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_objectifs" data-val="acheter_logement" role="checkbox" aria-checked="false" data-excl="false"><span>Acheter un logement</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_objectifs" data-val="preparer_retraite" role="checkbox" aria-checked="false" data-excl="false"><span>Préparer ma retraite</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_objectifs" data-val="investir_long_terme" role="checkbox" aria-checked="false" data-excl="false"><span>Investir intelligemment</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_objectifs" data-val="mieux_comprendre_contrats" role="checkbox" aria-checked="false" data-excl="false"><span>Comprendre mes contrats</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_objectifs" data-val="preparer_transmission" role="checkbox" aria-checked="false" data-excl="false"><span>Préparer ma transmission</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_objectifs" data-val="se_reperer" role="checkbox" aria-checked="false" data-excl="false"><span>Juste m'y retrouver</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      </div>
+      <span class="field-error" id="e-q7" role="alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Sélectionne au moins un objectif.
+      </span>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Q8 urgence -->
+    <div class="q-block">
+      <p class="q-label">Qu'est-ce qui est le plus urgent pour toi ?<span class="req">*</span></p>
+      <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Urgence principale">
+        <button class="sel-item" data-q="q_urgence_principale" data-val="survie_mois" role="radio" aria-checked="false">
+          <span>🚨 M'en sortir ce mois-ci — découvert, factures, dettes</span>
+          <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="sel-item" data-q="q_urgence_principale" data-val="projet_prochain_mois" role="radio" aria-checked="false">
+          <span>📅 Préparer un projet dans les prochains mois</span>
+          <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+        <button class="sel-item" data-q="q_urgence_principale" data-val="long_terme" role="radio" aria-checked="false">
+          <span>🌱 Construire quelque chose sur le long terme</span>
+          <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+      <span class="field-error" id="e-q8" role="alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Choisis le niveau d'urgence.
+      </span>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn-back" onclick="goBack(3)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Retour
+      </button>
+      <button class="btn-next" onclick="goNext(3)">
+        Continuer
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <p class="step-footnote">Tes réponses sont privées et sauvegardées en temps réel.</p>
+  </div>
+
+  <!-- ═══ STEP 4 — Dettes ══════════════════════════════════════ -->
+  <div class="step" id="step-4" aria-label="Étape 4">
+    <div class="step-header">
+      <p class="step-kicker">Crédits &amp; dettes</p>
+      <h2 class="step-title">Tes crédits et paiements en cours.</h2>
+    </div>
+
+    <!-- Q9 multi -->
+    <div class="q-block">
+      <p class="q-label">As-tu actuellement l'un de ces éléments ?<span class="req">*</span></p>
+      <p class="q-hint">Plusieurs choix possibles</p>
+      <div class="pill-grid" style="grid-template-columns:1fr" role="group" aria-label="Types de dettes">
+        <button class="sel-item" data-q="q_dettes_types" data-val="decouvert_regulier" role="checkbox" aria-checked="false" data-excl="false"><span>💳 Découvert bancaire utilisé souvent</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_dettes_types" data-val="paiement_fractionne_mini_credit" role="checkbox" aria-checked="false" data-excl="false"><span>🛒 Paiements en plusieurs fois / cartes de magasin</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_dettes_types" data-val="credit_conso" role="checkbox" aria-checked="false" data-excl="false"><span>📝 Crédit(s) à la consommation</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_dettes_types" data-val="credit_immo" role="checkbox" aria-checked="false" data-excl="false"><span>🏠 Crédit immobilier</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_dettes_types" data-val="autre_credit" role="checkbox" aria-checked="false" data-excl="false"><span>📋 Un autre type de crédit</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        <button class="sel-item" data-q="q_dettes_types" data-val="aucun" role="checkbox" aria-checked="false" data-excl="true"><span>✅ Aucun de tout ça</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+      </div>
+      <span class="field-error" id="e-q9" role="alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Sélectionne au moins une option.
+      </span>
+    </div>
+
+    <!-- Q10 conditional -->
+    <div class="cond" id="cond-q10">
       <hr class="divider">
-
-      <!-- Q8 urgence -->
-      <div class="q-block">
-        <p class="q-label">Qu'est-ce qui est le plus urgent pour toi ?<span class="req">*</span></p>
-        <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Urgence principale">
-          <button class="sel-item" data-q="q_urgence_principale" data-val="survie_mois" role="radio" aria-checked="false">
-            <span>🚨 M'en sortir ce mois-ci — découvert, factures, dettes</span>
-            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <button class="sel-item" data-q="q_urgence_principale" data-val="projet_prochain_mois" role="radio" aria-checked="false">
-            <span>📅 Préparer un projet dans les prochains mois</span>
-            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
-          <button class="sel-item" data-q="q_urgence_principale" data-val="long_terme" role="radio" aria-checked="false">
-            <span>🌱 Construire quelque chose sur le long terme</span>
-            <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          </button>
+      <div class="q-block" style="margin-top:0.75rem">
+        <p class="q-label">Des retards de paiement sur factures, loyers ou crédits ?<span class="req">*</span></p>
+        <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Retards de paiement">
+          <button class="sel-item" data-q="q_retards_paiement" data-val="aucun" role="radio" aria-checked="false"><span>✅ Non, jamais</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_retards_paiement" data-val="occasionnel" role="radio" aria-checked="false"><span>⚠️ Oui, de temps en temps</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          <button class="sel-item" data-q="q_retards_paiement" data-val="frequent" role="radio" aria-checked="false"><span>🔴 Oui, souvent / en ce moment</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
         </div>
-        <span class="field-error" id="e-q8" role="alert">
+        <span class="field-error" id="e-q10" role="alert">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Choisis le niveau d'urgence.
+          Indique si tu as eu des retards.
         </span>
-      </div>
-
-      <div class="nav-row">
-        <button class="btn-back" onclick="goBack(3)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Retour
-        </button>
-        <button class="btn-next" onclick="goNext(3)">
-          Continuer
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
       </div>
     </div>
 
-    <!-- ═══ STEP 4 — Dettes ══════════════════════════════════════ -->
-    <div class="step" id="step-4" aria-label="Étape 4">
-      <div class="step-header">
-        <span class="step-badge"><span class="dot-live"></span>Crédits & dettes</span>
-        <h2 class="step-title">Tes crédits et paiements en cours</h2>
-      </div>
+    <div class="nav-row">
+      <button class="btn-back" onclick="goBack(4)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Retour
+      </button>
+      <button class="btn-next" onclick="goNext(4)">
+        Continuer
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <p class="step-footnote">Tes réponses sont privées et sauvegardées en temps réel.</p>
+  </div>
 
-      <!-- Q9 multi -->
+  <!-- ═══ STEP 5 — Épargne & Sécurité ═════════════════════════ -->
+  <div class="step" id="step-5" aria-label="Étape 5">
+    <div class="step-header">
+      <p class="step-kicker">Dernière étape</p>
+      <h2 class="step-title">Ton épargne, tes placements &amp; ta sécurité.</h2>
+      <p class="step-sub">Promis, c'est la dernière.</p>
+    </div>
+
+    <!-- Q11 conditional -->
+    <div class="cond" id="cond-q11">
       <div class="q-block">
-        <p class="q-label">As-tu actuellement l'un de ces éléments ?<span class="req">*</span></p>
+        <p class="q-label">Quels produits d'épargne ou d'investissement possèdes-tu ?<span class="req">*</span></p>
         <p class="q-hint">Plusieurs choix possibles</p>
-        <div class="pill-grid" style="grid-template-columns:1fr" role="group" aria-label="Types de dettes">
-          <button class="sel-item" data-q="q_dettes_types" data-val="decouvert_regulier" role="checkbox" aria-checked="false" data-excl="false"><span>💳 Découvert bancaire utilisé souvent</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_dettes_types" data-val="paiement_fractionne_mini_credit" role="checkbox" aria-checked="false" data-excl="false"><span>🛒 Paiements en plusieurs fois / cartes de magasin</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_dettes_types" data-val="credit_conso" role="checkbox" aria-checked="false" data-excl="false"><span>📝 Crédit(s) à la consommation</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_dettes_types" data-val="credit_immo" role="checkbox" aria-checked="false" data-excl="false"><span>🏠 Crédit immobilier</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_dettes_types" data-val="autre_credit" role="checkbox" aria-checked="false" data-excl="false"><span>📋 Un autre type de crédit</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          <button class="sel-item" data-q="q_dettes_types" data-val="aucun" role="checkbox" aria-checked="false" data-excl="true"><span>✅ Aucun de tout ça</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-        </div>
-        <span class="field-error" id="e-q9" role="alert">
+
+        <div class="produit-grid" role="group" aria-label="Produits détenus" id="produit-grid">
+
+          <div class="produit-item" id="prod-aucun">
+            <button class="sel-item" data-q="q_produits_detenu" data-val="aucun_ou_je_sais_pas" role="checkbox" aria-checked="false" data-excl="true">
+              <span>❓ Aucun / je ne sais pas</span>
+              <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+          </div>
+
+          <div class="produit-item" id="prod-livrets">
+            <button class="sel-item" data-q="q_produits_detenu" data-val="livrets_seuls" role="checkbox" aria-checked="false" data-excl="false" data-has-montant="true" data-montant-key="montant_livrets">
+              <span>💰 Livrets (Livret A, LDDS, LEP…)</span>
+              <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+            <div class="produit-montant-row" id="montant-row-livrets">
+              <div class="produit-montant-inner">
+                <span class="produit-montant-label">Total sur livrets :</span>
+                <input class="produit-montant-input" id="montant-livrets" type="text" inputmode="numeric" placeholder="Ex. 1 500" autocomplete="off" />
+                <span class="produit-montant-suffix">€</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="produit-item" id="prod-av">
+            <button class="sel-item" data-q="q_produits_detenu" data-val="assurance_vie" role="checkbox" aria-checked="false" data-excl="false" data-has-montant="true" data-montant-key="montant_assurance_vie">
+              <span>📄 Assurance-vie</span>
+              <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+            <div class="produit-montant-row" id="montant-row-assurance_vie">
+              <div class="produit-montant-inner">
+                <span class="produit-montant-label">Valeur estimée :</span>
+                <input class="produit-montant-input" id="montant-assurance_vie" type="text" inputmode="numeric" placeholder="Ex. 5 000" autocomplete="off" />
+                <span class="produit-montant-suffix">€</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="produit-item" id="prod-pea">
+            <button class="sel-item" data-q="q_produits_detenu" data-val="pea" role="checkbox" aria-checked="false" data-excl="false">
+              <span>📈 PEA</span>
+              <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+          </div>
+
+          <div class="produit-item" id="prod-per">
+            <button class="sel-item" data-q="q_produits_detenu" data-val="per" role="checkbox" aria-checked="false" data-excl="false">
+              <span>🏦 PER (retraite)</span>
+              <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+          </div>
+
+          <div class="produit-item" id="prod-immo">
+            <button class="sel-item" data-q="q_produits_detenu" data-val="immo_locatif" role="checkbox" aria-checked="false" data-excl="false">
+              <span>🏘️ Immobilier locatif</span>
+              <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+          </div>
+
+          <div class="produit-item" id="prod-trading">
+            <button class="sel-item" data-q="q_produits_detenu" data-val="trading_neo_broker" role="checkbox" aria-checked="false" data-excl="false">
+              <span>💹 Trading / néo-broker</span>
+              <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+          </div>
+
+          <div class="produit-item" id="prod-crypto">
+            <button class="sel-item" data-q="q_produits_detenu" data-val="crypto" role="checkbox" aria-checked="false" data-excl="false">
+              <span>🪙 Crypto-actifs</span>
+              <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </button>
+          </div>
+
+        </div><!-- /.produit-grid -->
+
+        <p class="q-hint-amount" id="hint-montant-optionnel">Si tu veux, tu peux renseigner les montants — ça nous aide à calibrer ton matelas de sécurité. C'est complètement optionnel.</p>
+
+        <span class="field-error" id="e-q11" role="alert">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           Sélectionne au moins une option.
         </span>
       </div>
-
-      <!-- Q10 conditional -->
-      <div class="cond" id="cond-q10">
-        <hr class="divider">
-        <div class="q-block" style="margin-top:0.75rem">
-          <p class="q-label">Des retards de paiement sur factures, loyers ou crédits ?<span class="req">*</span></p>
-          <div class="pill-grid" style="grid-template-columns:1fr" role="radiogroup" aria-label="Retards de paiement">
-            <button class="sel-item" data-q="q_retards_paiement" data-val="aucun" role="radio" aria-checked="false"><span>✅ Non, jamais</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-            <button class="sel-item" data-q="q_retards_paiement" data-val="occasionnel" role="radio" aria-checked="false"><span>⚠️ Oui, de temps en temps</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-            <button class="sel-item" data-q="q_retards_paiement" data-val="frequent" role="radio" aria-checked="false"><span>🔴 Oui, souvent / en ce moment</span><span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
-          </div>
-          <span class="field-error" id="e-q10" role="alert">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Indique si tu as eu des retards.
-          </span>
-        </div>
-      </div>
-
-      <div class="nav-row">
-        <button class="btn-back" onclick="goBack(4)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Retour
-        </button>
-        <button class="btn-next" onclick="goNext(4)">
-          Continuer
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-      </div>
+      <hr class="divider" style="margin:0.75rem 0">
     </div>
 
-    <!-- ═══ STEP 5 — Épargne & Sécurité ═════════════════════════ -->
-    <div class="step" id="step-5" aria-label="Étape 5">
-      <div class="step-header">
-        <span class="step-badge"><span class="dot-live"></span>Dernière étape</span>
-        <h2 class="step-title">Ton épargne, tes placements & ta sécurité</h2>
-        <p class="step-sub">Promis, c'est la dernière.</p>
+    <!-- Q12 -->
+    <div class="q-block">
+      <p class="q-label">À l'aise avec les démarches en ligne ?<span class="req">*</span></p>
+      <div class="pill-wrap" role="radiogroup" aria-label="Confort numérique">
+        <button class="pill" data-q="q_confort_numerique" data-val="a_l_aise" role="radio" aria-checked="false">💻 Oui, très à l'aise</button>
+        <button class="pill" data-q="q_confort_numerique" data-val="moyen" role="radio" aria-checked="false">🙂 Ça va, sans plus</button>
+        <button class="pill" data-q="q_confort_numerique" data-val="peu_a_l_aise" role="radio" aria-checked="false">😬 Pas vraiment</button>
       </div>
-
-      <!-- Q11 conditional -->
-      <div class="cond" id="cond-q11">
-        <div class="q-block">
-          <p class="q-label">Quels produits d'épargne ou d'investissement possèdes-tu ?<span class="req">*</span></p>
-          <p class="q-hint">Plusieurs choix possibles</p>
-
-          <!-- Produits avec expansion montant inline -->
-          <div class="produit-grid" role="group" aria-label="Produits détenus" id="produit-grid">
-
-            <!-- Item: Aucun (exclusif, pas de montant) -->
-            <div class="produit-item" id="prod-aucun">
-              <button class="sel-item" data-q="q_produits_detenu" data-val="aucun_ou_je_sais_pas" role="checkbox" aria-checked="false" data-excl="true">
-                <span>❓ Aucun / je ne sais pas</span>
-                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              </button>
-            </div>
-
-            <!-- Livrets — montant liquide utile pour matelas -->
-            <div class="produit-item" id="prod-livrets">
-              <button class="sel-item" data-q="q_produits_detenu" data-val="livrets_seuls" role="checkbox" aria-checked="false" data-excl="false" data-has-montant="true" data-montant-key="montant_livrets">
-                <span>💰 Livrets (Livret A, LDDS, LEP…)</span>
-                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              </button>
-              <div class="produit-montant-row" id="montant-row-livrets">
-                <div class="produit-montant-inner">
-                  <span class="produit-montant-label">Total sur livrets :</span>
-                  <input class="produit-montant-input" id="montant-livrets" type="text" inputmode="numeric" placeholder="Ex. 1 500" autocomplete="off" />
-                  <span class="produit-montant-suffix">€</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Assurance-vie — montant optionnel (moins liquide) -->
-            <div class="produit-item" id="prod-av">
-              <button class="sel-item" data-q="q_produits_detenu" data-val="assurance_vie" role="checkbox" aria-checked="false" data-excl="false" data-has-montant="true" data-montant-key="montant_assurance_vie">
-                <span>📄 Assurance-vie</span>
-                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              </button>
-              <div class="produit-montant-row" id="montant-row-assurance_vie">
-                <div class="produit-montant-inner">
-                  <span class="produit-montant-label">Valeur estimée :</span>
-                  <input class="produit-montant-input" id="montant-assurance_vie" type="text" inputmode="numeric" placeholder="Ex. 5 000" autocomplete="off" />
-                  <span class="produit-montant-suffix">€</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- PEA — pas de montant (non liquide, hors scope matelas) -->
-            <div class="produit-item" id="prod-pea">
-              <button class="sel-item" data-q="q_produits_detenu" data-val="pea" role="checkbox" aria-checked="false" data-excl="false">
-                <span>📈 PEA</span>
-                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              </button>
-            </div>
-
-            <!-- PER — pas de montant (non liquide) -->
-            <div class="produit-item" id="prod-per">
-              <button class="sel-item" data-q="q_produits_detenu" data-val="per" role="checkbox" aria-checked="false" data-excl="false">
-                <span>🏦 PER (retraite)</span>
-                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              </button>
-            </div>
-
-            <!-- Immobilier locatif — pas de montant -->
-            <div class="produit-item" id="prod-immo">
-              <button class="sel-item" data-q="q_produits_detenu" data-val="immo_locatif" role="checkbox" aria-checked="false" data-excl="false">
-                <span>🏘️ Immobilier locatif</span>
-                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              </button>
-            </div>
-
-            <!-- Trading / néo-broker — pas de montant -->
-            <div class="produit-item" id="prod-trading">
-              <button class="sel-item" data-q="q_produits_detenu" data-val="trading_neo_broker" role="checkbox" aria-checked="false" data-excl="false">
-                <span>💹 Trading / néo-broker</span>
-                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              </button>
-            </div>
-
-            <!-- Crypto — pas de montant -->
-            <div class="produit-item" id="prod-crypto">
-              <button class="sel-item" data-q="q_produits_detenu" data-val="crypto" role="checkbox" aria-checked="false" data-excl="false">
-                <span>🪙 Crypto-actifs</span>
-                <span class="sel-check"><svg viewBox="0 0 9 9" fill="none"><polyline points="1,4.5 3.5,7 8,2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              </button>
-            </div>
-
-          </div><!-- /.produit-grid -->
-
-          <!-- Hint d'aide affiché dès qu'un produit avec montant est sélectionné -->
-          <p class="q-hint-amount" id="hint-montant-optionnel">Si tu veux, tu peux renseigner les montants — ça nous aide à calibrer ton matelas de sécurité. C'est complètement optionnel.</p>
-
-          <span class="field-error" id="e-q11" role="alert">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Sélectionne au moins une option.
-          </span>
-        </div>
-        <hr class="divider" style="margin:0.75rem 0">
-      </div>
-
-      <!-- Q12 -->
-      <div class="q-block">
-        <p class="q-label">À l'aise avec les démarches en ligne ?<span class="req">*</span></p>
-        <div class="pill-wrap" role="radiogroup" aria-label="Confort numérique">
-          <button class="pill" data-q="q_confort_numerique" data-val="a_l_aise" role="radio" aria-checked="false">💻 Oui, très à l'aise</button>
-          <button class="pill" data-q="q_confort_numerique" data-val="moyen" role="radio" aria-checked="false">🙂 Ça va, sans plus</button>
-          <button class="pill" data-q="q_confort_numerique" data-val="peu_a_l_aise" role="radio" aria-checked="false">😬 Pas vraiment</button>
-        </div>
-        <span class="field-error" id="e-q12" role="alert">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Indique ton confort numérique.
-        </span>
-      </div>
-
-      <!-- Q13 -->
-      <div class="q-block">
-        <p class="q-label">Déjà victime d'une arnaque liée à l'argent ?<span class="req">*</span></p>
-        <div class="pill-wrap" role="radiogroup" aria-label="Expérience de fraude">
-          <button class="pill" data-q="q_fraude_experience" data-val="oui" role="radio" aria-checked="false">Oui</button>
-          <button class="pill" data-q="q_fraude_experience" data-val="non" role="radio" aria-checked="false">Non</button>
-          <button class="pill" data-q="q_fraude_experience" data-val="incertain" role="radio" aria-checked="false">Pas sûr</button>
-        </div>
-        <span class="field-error" id="e-q13" role="alert">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Réponds à cette question pour finaliser.
-        </span>
-      </div>
-
-      <div class="nav-row">
-        <button class="btn-back" onclick="goBack(5)">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Retour
-        </button>
-        <button class="btn-next" onclick="submitQuiz()">
-          Voir mon parcours ✨
-        </button>
-      </div>
+      <span class="field-error" id="e-q12" role="alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Indique ton confort numérique.
+      </span>
     </div>
 
-    <!-- LOADER -->
-    <div id="loader">
-      <div class="loader-ring"></div>
-      <p class="loader-text">Fundy analyse ton profil…</p>
-      <p class="loader-sub">Génération de ton parcours personnalisé</p>
+    <!-- Q13 -->
+    <div class="q-block">
+      <p class="q-label">Déjà victime d'une arnaque liée à l'argent ?<span class="req">*</span></p>
+      <div class="pill-wrap" role="radiogroup" aria-label="Expérience de fraude">
+        <button class="pill" data-q="q_fraude_experience" data-val="oui" role="radio" aria-checked="false">Oui</button>
+        <button class="pill" data-q="q_fraude_experience" data-val="non" role="radio" aria-checked="false">Non</button>
+        <button class="pill" data-q="q_fraude_experience" data-val="incertain" role="radio" aria-checked="false">Pas sûr</button>
+      </div>
+      <span class="field-error" id="e-q13" role="alert">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Réponds à cette question pour finaliser.
+      </span>
     </div>
 
-    <!-- RESULT -->
-    <div id="result" role="region" aria-label="Résultats">
-      <div class="result-hero">
-        <div class="result-icon" aria-hidden="true">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <h2 class="result-title">Ton parcours est prêt&nbsp;!</h2>
-        <p class="result-sub">Voici les modules sélectionnés pour toi, dans l'ordre de priorité.</p>
-      </div>
-      <span class="result-label">Briques recommandées</span>
-      <div class="briques-list" id="briques-list" role="list"></div>
-      <details class="json-details">
-        <summary>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          Voir le profil JSON complet
-        </summary>
-        <pre id="json-out"></pre>
-      </details>
-      <button onclick="goToPlan()" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:1rem 1.75rem;border-radius:9999px;background:linear-gradient(135deg,#6366f1,#c084fc);font-size:0.9rem;font-weight:700;color:#fff;border:none;cursor:pointer;box-shadow:0 0 28px rgba(99,102,241,0.35);margin-top:0.25rem;">
-        Voir mon plan complet
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    <div class="nav-row">
+      <button class="btn-back" onclick="goBack(5)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Retour
       </button>
-      <button class="btn-restart" onclick="restart()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-        Recommencer
+      <button class="btn-next" onclick="submitQuiz()">
+        Voir mon parcours ✨
       </button>
     </div>
+    <p class="step-footnote">Tes réponses sont privées et sauvegardées en temps réel.</p>
+  </div>
 
-  </div><!-- /.quiz-card -->
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-ring"></div>
+    <p class="loader-text">Fundy analyse ton profil…</p>
+    <p class="loader-sub">Génération de ton parcours personnalisé</p>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result" role="region" aria-label="Résultats">
+    <div class="result-hero">
+      <div class="result-icon" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 class="result-title">Ton parcours est prêt&nbsp;!</h2>
+      <p class="result-sub">Voici les modules sélectionnés pour toi, dans l'ordre de priorité.</p>
+    </div>
+    <span class="result-label">Briques recommandées</span>
+    <div class="briques-list" id="briques-list" role="list"></div>
+    <details class="json-details">
+      <summary>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Voir le profil JSON complet
+      </summary>
+      <pre id="json-out"></pre>
+    </details>
+    <button onclick="goToPlan()" style="display:inline-flex;align-self:center;align-items:center;justify-content:center;gap:0.5rem;padding:1rem 2rem;border-radius:9999px;background:var(--accent-fill);font-size:0.9rem;font-weight:600;color:var(--accent-pill-text);border:none;cursor:pointer;transition:transform 0.15s;">
+      Voir mon plan complet
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+    <button class="btn-restart" onclick="restart()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      Recommencer
+    </button>
+  </div>
+
 </div><!-- /#app -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1018,36 +1043,6 @@
 <script src="supabase.js"></script>
 <script src="nav-avatar.js"></script>
 <script>
-// ─── CANVAS PARTICLES ──────────────────────────────────────────
-(function() {
-  const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, particles = [];
-  const resize = () => { W = canvas.width = innerWidth; H = canvas.height = innerHeight; };
-  window.addEventListener('resize', resize); resize();
-  class P {
-    constructor() { this.reset(); }
-    reset() {
-      this.x = Math.random() * W; this.y = H + 10;
-      this.vy = -(Math.random() * 0.4 + 0.15);
-      this.vx = (Math.random() - 0.5) * 0.3;
-      this.r  = Math.random() * 1.8 + 0.4;
-      this.a  = Math.random() * 0.5 + 0.1;
-    }
-    tick() {
-      this.x += this.vx; this.y += this.vy;
-      if (this.y < -10) this.reset();
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(139,92,246,${this.a})`;
-      ctx.fill();
-    }
-  }
-  for (let i=0; i<40; i++) { const p = new P(); p.y = Math.random()*H; particles.push(p); }
-  const loop = () => { ctx.clearRect(0,0,W,H); particles.forEach(p=>p.tick()); requestAnimationFrame(loop); };
-  loop();
-})();
-
 // ─── STATE ─────────────────────────────────────────────────────
 const A = {
   q_age_group: null, q_status_pro: null,
@@ -1208,16 +1203,12 @@ function setStep(n) {
 }
 
 function updateProgress(n) {
-  [1,2,3,4,5].forEach(i => {
-    const d = document.getElementById(`d${i}`);
-    d.className = 'dot ' + (i < n ? 'done' : i === n ? 'active' : 'inactive');
-  });
-  document.getElementById('progress-label').textContent = `Étape ${n} sur 5`;
+  document.getElementById('progress-label').textContent = `ÉTAPE ${n} SUR 5`;
+  document.getElementById('progress-bar-fill').style.width = `${(n / 5) * 100}%`;
 }
 
 // ─── SUBMIT ──────────────────────────────────────────────────────
 // ─── Q11 MONTANTS : lecture des inputs inline ───────────────────────
-// Produits avec champ montant optionnel
 const PRODUITS_MONTANT = [
   { val:'livrets_seuls',  rowId:'montant-row-livrets',      inputId:'montant-livrets',       liquide:true },
   { val:'assurance_vie', rowId:'montant-row-assurance_vie', inputId:'montant-assurance_vie', liquide:false }
@@ -1402,7 +1393,7 @@ function restart() {
   setStep(1);
 }
 
-// ─── NAVIGATE TO PLAN (encode profil in hash for storage-less envs) ────────
+// ─── NAVIGATE TO PLAN ────────────────────────────────────────────
 function goToPlan() {
   window.location.href = 'plan.html';
 }

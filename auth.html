@@ -4,188 +4,253 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fundamental — Connexion</title>
+  <script>
+  (function() {
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark) document.documentElement.classList.add('dark');
+  })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <style>
+    /* ── DESIGN SYSTEM TOKENS ── */
     :root {
-      --bg:#0b0d17; --surface:#111320; --surface-2:#171a2e; --surface-3:#1d2038;
-      --border:#252845; --border-hover:#363a68;
-      --text:#e2e4f0; --text-muted:#8b90b8; --text-faint:#444868;
-      --violet:#818cf8; --purple:#c084fc; --indigo:#6366f1;
-      --indigo-dim:rgba(99,102,241,0.14); --indigo-glow:rgba(99,102,241,0.22);
-      --green:#4ade80; --green-dim:rgba(74,222,128,0.10);
-      --red:#f87171;
-      --r-sm:0.5rem; --r-md:0.875rem; --r-lg:1.25rem; --r-xl:1.75rem; --r-full:9999px;
-      --ease-spring:cubic-bezier(0.34,1.56,0.64,1); --ease-out:cubic-bezier(0.16,1,0.3,1); --t:180ms;
+      --bg: #FAF8F5;
+      --bg-elevated: #FFFFFF;
+      --nav-bg: rgba(250,248,245,0.88);
+      --nav-border: rgba(28,25,23,0.07);
+      --border-subtle: rgba(28,25,23,0.07);
+      --border-mid: rgba(28,25,23,0.11);
+      --border-hover: rgba(28,25,23,0.18);
+      --text: #1C1917;
+      --text-secondary: #57534E;
+      --text-muted: #78716C;
+      --text-faint: #A8A29E;
+      --accent: #C4B5FD;
+      --accent-strong: #5B21B6;
+      --accent-fill: #C4B5FD;
+      --accent-soft: rgba(196,181,253,0.22);
+      --accent-pill-text: #2E1065;
+      --track: #E7E5E4;
+      --shadow-card: 0 1px 2px rgba(20,20,30,0.04), 0 4px 16px rgba(20,20,30,0.04);
+      --shadow-hover: 0 4px 20px rgba(20,20,30,0.10);
+      --green: #22C55E;
+      --red: #f87171;
+      --surface: #FFFFFF;
+      --surface-2: #F5F5F4;
+      --surface-3: #EDEBE8;
+      --border: rgba(28,25,23,0.07);
+      --r-sm: 0.5rem; --r-md: 0.875rem; --r-lg: 1rem; --r-xl: 1.5rem; --r-full: 9999px;
+      --ease-out: cubic-bezier(0.16,1,0.3,1); --t: 180ms;
     }
+    html.dark {
+      --bg: #0B0B1A;
+      --bg-elevated: #161824;
+      --nav-bg: rgba(11,11,26,0.82);
+      --nav-border: rgba(255,255,255,0.05);
+      --border-subtle: rgba(255,255,255,0.06);
+      --border-mid: rgba(255,255,255,0.10);
+      --border-hover: rgba(255,255,255,0.16);
+      --text: #F5F5F4;
+      --text-secondary: #D4D4D8;
+      --text-muted: #A1A1AA;
+      --text-faint: #71717A;
+      --accent-strong: #A78BFA;
+      --accent-fill: linear-gradient(90deg, #A78BFA, #60A5FA);
+      --accent-soft: rgba(167,139,250,0.14);
+      --accent-pill-text: #FFFFFF;
+      --track: rgba(255,255,255,0.08);
+      --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 4px 24px rgba(0,0,0,0.20);
+      --surface: rgba(255,255,255,0.04);
+      --surface-2: rgba(255,255,255,0.06);
+      --surface-3: rgba(255,255,255,0.09);
+      --border: rgba(255,255,255,0.06);
+      --green: #22C55E;
+      --red: #f87171;
+    }
+
     *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
     html { -webkit-font-smoothing:antialiased; height:100%; }
-    body { min-height:100dvh; background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; overflow-x:hidden; }
+    body {
+      min-height:100dvh;
+      background:var(--bg);
+      color:var(--text);
+      font-family:'Inter',sans-serif;
+      overflow-x:hidden;
+      /* Subtle radial background */
+      background-image: radial-gradient(900px 600px at 0% 0%, rgba(196,181,253,0.15) 0%, transparent 55%);
+    }
+    html.dark body {
+      background-image: radial-gradient(1200px 700px at 0% 0%, rgba(30,27,75,0.6) 0%, transparent 55%);
+    }
     button { cursor:pointer; background:none; border:none; font:inherit; color:inherit; }
-    :focus-visible { outline:2px solid var(--violet); outline-offset:3px; border-radius:var(--r-sm); }
+    :focus-visible { outline:2px solid var(--accent-strong); outline-offset:3px; border-radius:var(--r-sm); }
     @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms!important; transition-duration:0.01ms!important; } }
 
-    /* ── CANVAS ── */
-    #bg-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.18; }
+    /* ── SERIF ── */
+    .serif { font-family:'Fraunces','Instrument Serif',Georgia,serif; }
 
-    /* ── LAYOUT SPLIT ── */
+    /* ── WORDMARK ── */
+    .wordmark { display:inline-flex; align-items:center; gap:8px; text-decoration:none; }
+    .wordmark .mark {
+      width:22px; height:22px; border-radius:6px;
+      background: var(--accent-fill);
+      color: var(--accent-pill-text);
+      display:inline-flex; align-items:center; justify-content:center;
+      font-family:'Fraunces',serif; font-style:italic; font-weight:500; font-size:14px;
+    }
+    html.dark .wordmark .mark { background: linear-gradient(135deg, #8B5CF6, #3B82F6); color:#fff; }
+    .wordmark .name { font-size:15px; font-weight:600; letter-spacing:-.01em; color:var(--text); }
+
+    /* ── LAYOUT ── */
     .auth-layout {
-      position:relative; z-index:1;
       min-height:100dvh;
       display:grid;
       grid-template-columns:1fr 1px 1fr;
     }
 
-    /* ── PANNEAU GAUCHE — illustration / branding ── */
+    /* ── LEFT PANEL ── */
     .auth-left {
-      position:relative;
       display:flex; flex-direction:column;
       justify-content:center;
       padding:3rem;
       overflow:hidden;
     }
-    .auth-left::before {
-      content:'';
-      position:absolute; inset:0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 30%, rgba(99,102,241,0.12), transparent 60%),
-        radial-gradient(ellipse 60% 60% at 80% 70%, rgba(192,132,252,0.10), transparent 60%);
-      pointer-events:none;
-    }
-    .auth-left-content { position:relative; z-index:1; }
+    .auth-left-content {}
 
-    /* Logo */
-    .auth-logo {
-      display:inline-flex; align-items:center; gap:0.625rem;
-      font-weight:900; font-size:1.2rem;
-      background:linear-gradient(135deg,var(--violet),var(--purple));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      text-decoration:none; margin-bottom:3rem;
-    }
-
-    /* Headline */
-    .auth-headline {
-      font-size:clamp(1.8rem, 3vw, 2.6rem);
-      font-weight:900; color:#fff; line-height:1.15;
-      margin-bottom:1.25rem;
-      letter-spacing:-0.02em;
-    }
-    .auth-headline span {
-      background:linear-gradient(135deg,var(--violet),var(--purple));
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    }
-    .auth-sub {
-      font-size:1rem; color:var(--text-muted); max-width:38ch; line-height:1.65;
-      margin-bottom:2.5rem;
-    }
-
-    /* Features list */
-    .auth-features { display:flex; flex-direction:column; gap:0.875rem; }
-    .auth-feat {
-      display:flex; align-items:center; gap:0.875rem;
-    }
-    .auth-feat-icon {
-      width:34px; height:34px; border-radius:0.625rem; flex-shrink:0;
-      background:var(--indigo-dim); border:1px solid rgba(99,102,241,0.2);
-      display:flex; align-items:center; justify-content:center;
-    }
-    .auth-feat-text { font-size:0.82rem; color:var(--text-muted); line-height:1.4; }
-    .auth-feat-text strong { color:var(--text); font-weight:600; }
-
-    /* Divider vertical */
+    /* ── DIVIDER ── */
     .auth-divider-v {
       width:1px;
-      background:linear-gradient(to bottom, transparent, var(--border) 30%, var(--border) 70%, transparent);
+      background:linear-gradient(to bottom, transparent, var(--border-subtle) 20%, var(--border-subtle) 80%, transparent);
       align-self:stretch; margin:3rem 0;
     }
 
-    /* ── PANNEAU DROIT — formulaire ── */
+    /* ── RIGHT PANEL ── */
     .auth-right {
       display:flex; flex-direction:column; align-items:center; justify-content:center;
-      padding:3rem 3rem 3rem 3rem;
+      padding:3rem;
     }
     .auth-card {
       width:100%; max-width:400px;
       display:flex; flex-direction:column; gap:1.5rem;
+      background:var(--bg-elevated);
+      border:1px solid var(--border-subtle);
+      border-radius:var(--r-xl);
+      padding:2.25rem;
+      box-shadow:var(--shadow-card);
       animation:slideInUp 0.4s var(--ease-out) both;
+    }
+    html.dark .auth-card {
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
     }
     @keyframes slideInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 
-    /* Card title */
-    .auth-card-title { font-size:1.4rem; font-weight:800; color:#fff; }
-    .auth-card-sub { font-size:0.875rem; color:var(--text-muted); margin-top:0.25rem; }
+    /* ── LEFT HEADLINE ── */
+    .auth-kicker {
+      font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500;
+      color:var(--text-muted); margin-bottom:1.25rem;
+    }
+    .auth-headline {
+      font-size:clamp(2rem, 3.5vw, 2.8rem);
+      font-family:'Fraunces','Instrument Serif',Georgia,serif;
+      font-style:italic; font-weight:400;
+      color:var(--text); line-height:1.1;
+      margin-bottom:1.25rem;
+    }
+    .auth-sub {
+      font-size:15px; color:var(--text-secondary); max-width:38ch; line-height:1.65;
+      margin-bottom:2.5rem;
+    }
+    .auth-features { display:flex; flex-direction:column; gap:1rem; margin-top:auto; }
+    .auth-feat { display:flex; align-items:flex-start; gap:0.875rem; }
+    .auth-feat-icon {
+      width:34px; height:34px; border-radius:0.625rem; flex-shrink:0;
+      background:var(--accent-soft); border:1px solid var(--border-mid);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .auth-feat-text { font-size:13px; color:var(--text-muted); line-height:1.4; padding-top:1px; }
+    .auth-feat-text strong { color:var(--text); font-weight:600; display:block; margin-bottom:1px; }
 
-    /* Tabs */
-    .tabs { display:flex; background:var(--surface-2); border-radius:var(--r-full); padding:0.25rem; gap:0.25rem; }
-    .tab { flex:1; padding:0.5rem; border-radius:var(--r-full); font-size:0.82rem; font-weight:600; color:var(--text-muted); text-align:center; cursor:pointer; border:none; background:none; font-family:inherit; transition:background var(--t),color var(--t); }
-    .tab.active { background:var(--surface-3); color:#fff; border:1px solid var(--border); }
+    /* ── CARD TITLE ── */
+    .auth-card-title { font-size:22px; font-weight:600; color:var(--text); letter-spacing:-.015em; }
+    .auth-card-sub { font-size:13.5px; color:var(--text-muted); margin-top:0.2rem; }
 
-    /* Social buttons */
+    /* ── TABS ── */
+    .tab-controls { display:flex; gap:1.5rem; border-bottom:1px solid var(--border-subtle); }
+    .tab-underline { padding:10px 2px; font-size:14px; font-weight:500; color:var(--text-muted); cursor:pointer; position:relative; border:none; background:none; font-family:inherit; transition:color .2s; }
+    .tab-underline.active { color:var(--text); }
+    .tab-underline.active::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--accent-strong); border-radius:999px; }
+    html.dark .tab-underline.active::after { background:linear-gradient(90deg, #A78BFA, #60A5FA); }
+
+    /* ── SOCIAL BUTTONS ── */
     .social-btns { display:flex; flex-direction:column; gap:0.625rem; }
-
     .btn-social {
       display:flex; align-items:center; gap:0.75rem;
       padding:0.8rem 1.25rem;
       border-radius:var(--r-full);
-      font-size:0.875rem; font-weight:600; color:var(--text);
+      font-size:0.875rem; font-weight:500; color:var(--text);
       cursor:pointer; font-family:inherit; width:100%;
-      transition:border-color var(--t), background var(--t), transform 0.1s;
+      background:var(--bg-elevated);
+      border:1px solid var(--border-mid);
+      transition:border-color var(--t), background var(--t), transform 0.15s;
     }
+    .btn-social:hover { transform:translateY(-1px); border-color:var(--border-hover); }
     .btn-social:active { transform:scale(0.98); }
     .btn-social-icon { width:20px; height:20px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
-
-    .btn-google { background:var(--surface-2); border:1px solid var(--border); }
-    .btn-google:hover { border-color:var(--border-hover); background:var(--surface-3); }
-
-    /* Bouton Apple — respecte guidelines Apple (fond #000, texte blanc, logo blanc) */
     .btn-apple {
       background:#000; border:1px solid rgba(255,255,255,0.15); color:#fff;
     }
-    .btn-apple:hover { background:#1a1a1a; border-color:rgba(255,255,255,0.25); }
-    .btn-apple-logo { color:#fff; }
+    html:not(.dark) .btn-apple { background:#000; }
+    .btn-apple:hover { background:#111; border-color:rgba(255,255,255,0.25); }
 
-    /* Divider horizontal */
+    /* ── DIVIDER ── */
     .divider { display:flex; align-items:center; gap:0.75rem; }
-    .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+    .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border-subtle); }
     .divider span { font-size:0.72rem; color:var(--text-faint); white-space:nowrap; }
 
-    /* Form */
+    /* ── FORM ── */
     .form-fields { display:flex; flex-direction:column; gap:0.875rem; }
     .form-group { display:flex; flex-direction:column; gap:0.35rem; }
     label { font-size:0.78rem; font-weight:600; color:var(--text-muted); }
     .input-wrap { position:relative; }
     input[type=email], input[type=password] {
       width:100%; padding:0.75rem 1rem;
-      background:var(--surface-2); border:1px solid var(--border); border-radius:var(--r-md);
+      background:#F4F1EB;
+      border:1px solid var(--border-mid); border-radius:var(--r-md);
       color:var(--text); font-size:0.9rem; font-family:inherit;
       transition:border-color var(--t), box-shadow var(--t); outline:none;
     }
-    input:focus { border-color:rgba(99,102,241,0.5); box-shadow:0 0 0 3px rgba(99,102,241,0.12); }
+    html.dark input[type=email], html.dark input[type=password] {
+      background:#1F2230;
+    }
+    input::placeholder { color:var(--text-faint); }
+    input:focus { border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
     input.error { border-color:var(--red); }
 
-    /* CTA button */
+    /* ── CTA BUTTON ── */
     .btn-primary {
       display:flex; align-items:center; justify-content:center; gap:0.5rem;
-      padding:0.9rem; border-radius:var(--r-full);
-      background:linear-gradient(135deg,var(--indigo),var(--purple));
-      font-size:0.9rem; font-weight:700; color:#fff; border:none; cursor:pointer;
-      box-shadow:0 0 24px rgba(99,102,241,0.3), 0 4px 12px rgba(0,0,0,0.4);
-      transition:box-shadow var(--t), transform 0.1s;
+      padding:0.875rem; border-radius:var(--r-full);
+      background:var(--accent-fill);
+      font-size:0.9rem; font-weight:600; color:var(--accent-pill-text); border:none; cursor:pointer;
+      transition:transform 0.15s var(--ease-out), box-shadow var(--t);
       width:100%; font-family:inherit;
     }
-    .btn-primary:hover { box-shadow:0 0 36px rgba(99,102,241,0.45), 0 6px 20px rgba(0,0,0,0.5); }
+    html.dark .btn-primary { background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%); color:#fff; }
+    .btn-primary:hover { transform:translateY(-1px); box-shadow:var(--shadow-hover); }
     .btn-primary:active { transform:scale(0.98); }
-    .btn-primary:disabled { opacity:0.5; cursor:not-allowed; }
+    .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 
-    /* Messages */
+    /* ── MESSAGES ── */
     .msg { padding:0.75rem 1rem; border-radius:var(--r-md); font-size:0.82rem; font-weight:500; display:none; }
     .msg.show { display:block; }
-    .msg.error { background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); color:var(--red); }
-    .msg.success { background:var(--green-dim); border:1px solid rgba(74,222,128,0.3); color:var(--green); }
+    .msg.error { background:rgba(248,113,113,0.10); border:1px solid rgba(248,113,113,0.3); color:var(--red); }
+    .msg.success { background:rgba(34,197,94,0.10); border:1px solid rgba(34,197,94,0.3); color:var(--green); }
 
     .footer-note { text-align:center; font-size:0.72rem; color:var(--text-faint); line-height:1.6; }
-    .footer-note a { color:var(--violet); text-decoration:none; }
+    .footer-note a { color:var(--accent-strong); text-decoration:none; }
     .footer-note a:hover { text-decoration:underline; }
 
     .spinner { width:16px; height:16px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
@@ -202,49 +267,54 @@
   </style>
 </head>
 <body>
-<canvas id="bg-canvas"></canvas>
 
 <div class="auth-layout">
 
-  <!-- ═══ PANNEAU GAUCHE ═══════════════════════════════════════════ -->
+  <!-- ═══ LEFT PANEL ═══════════════════════════════════════════ -->
   <div class="auth-left">
-    <div class="auth-left-content">
-      <a href="#" class="auth-logo" aria-label="Fundamental">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <defs><linearGradient id="lg-auth" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
-          <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg-auth)"/>
-          <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg-auth)" opacity=".55"/>
-          <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg-auth)" opacity=".55"/>
-          <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg-auth)" opacity=".25"/>
-        </svg>
-        Fundamental
+    <div class="auth-left-content" style="display:flex;flex-direction:column;height:100%;min-height:600px;">
+      <a href="dashboard.html" class="wordmark" aria-label="Fundamental" style="margin-bottom:3rem;">
+        <span class="mark">f</span>
+        <span class="name">Fundamental</span>
       </a>
 
-      <h1 class="auth-headline">
-        Reprends<br>le contrôle de<br><span>tes finances.</span>
-      </h1>
-      <p class="auth-sub">
-        Un parcours personnalisé, brique par brique — adapté à ta situation réelle.
-      </p>
+      <div>
+        <p class="auth-kicker">Ta finance, brique par brique</p>
+        <h1 class="auth-headline">
+          Reprends le contrôle de<br><span style="font-weight:300;font-style:italic;">tes finances.</span>
+        </h1>
+        <p class="auth-sub">
+          Un parcours personnalisé, brique par brique — adapté à ta situation réelle.
+        </p>
+      </div>
 
       <div class="auth-features">
         <div class="auth-feat">
           <div class="auth-feat-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12c0-4.97 4.03-9 9-9 4.97 0 9 4.03 9 9"/><path d="M21 12c0 4.97-4.03 9-9 9-4.97 0-9-4.03-9-9"/><circle cx="12" cy="12" r="3"/></svg>
           </div>
-          <div class="auth-feat-text"><strong>Parcours sur-mesure</strong><br>Construit depuis tes réponses</div>
+          <div class="auth-feat-text">
+            <strong>Parcours sur-mesure</strong>
+            Calibré selon ton âge, ta situation, tes objectifs.
+          </div>
         </div>
         <div class="auth-feat">
           <div class="auth-feat-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="16" rx="1"/><rect x="15" y="13" width="6" height="7" rx="1"/></svg>
           </div>
-          <div class="auth-feat-text"><strong>21 briques financières</strong><br>Du budget à l'investissement</div>
+          <div class="auth-feat-text">
+            <strong>21 briques financières</strong>
+            De la survie au long terme, en passant par les projets.
+          </div>
         </div>
         <div class="auth-feat">
           <div class="auth-feat-icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </div>
-          <div class="auth-feat-text"><strong>Progression sauvegardée</strong><br>Reprends là où tu t'es arrêté</div>
+          <div class="auth-feat-text">
+            <strong>Progression sauvegardée</strong>
+            Reprends exactement où tu t'es arrêté, sur tous tes appareils.
+          </div>
         </div>
       </div>
     </div>
@@ -252,7 +322,7 @@
 
   <div class="auth-divider-v" aria-hidden="true"></div>
 
-  <!-- ═══ PANNEAU DROIT ════════════════════════════════════════════ -->
+  <!-- ═══ RIGHT PANEL ════════════════════════════════════════════ -->
   <div class="auth-right">
     <div class="auth-card">
 
@@ -262,9 +332,9 @@
       </div>
 
       <!-- Tabs -->
-      <div class="tabs" role="tablist">
-        <button class="tab active" id="tab-login"  onclick="setTab('login')"  role="tab" aria-selected="true">Se connecter</button>
-        <button class="tab"        id="tab-signup" onclick="setTab('signup')" role="tab" aria-selected="false">Créer un compte</button>
+      <div class="tab-controls" role="tablist">
+        <button class="tab-underline active" id="tab-login"  onclick="setTab('login')"  role="tab" aria-selected="true">Se connecter</button>
+        <button class="tab-underline"        id="tab-signup" onclick="setTab('signup')" role="tab" aria-selected="false">Créer un compte</button>
       </div>
 
       <!-- Messages -->
@@ -285,10 +355,8 @@
           Continuer avec Google
         </button>
 
-        <!-- Bouton Apple — activé quand Apple OAuth sera configuré dans Supabase -->
         <button class="btn-social btn-apple" onclick="handleApple()" id="btn-apple">
-          <span class="btn-social-icon btn-apple-logo">
-            <!-- Logo Apple SVG officiel (blanc sur noir) -->
+          <span class="btn-social-icon">
             <svg width="16" height="18" viewBox="0 0 814 1000" fill="white" aria-hidden="true">
               <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.5-167.2-117.3C46.7 763.7 0 663.2 0 566.5c0-168.2 109.4-257.5 216.7-257.5 59.3 0 108.9 38.5 146.1 38.5 35.5 0 91.2-40.8 160.8-40.8 26 0 108.2 2.6 168.4 79.1zm-90.3-199.8c28.5-35.2 49.1-84.1 49.1-133.1 0-6.4-.6-12.9-1.9-18.1-46.8 1.9-101.9 31.2-134.8 71.3-26 29.9-51.3 79.5-51.3 128.9 0 7.1.6 14.2 1.3 16.5 3.2.6 8.4 1.3 13.5 1.3 42.2 0 92.2-28.5 124.1-66.8z"/>
             </svg>
@@ -334,9 +402,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
+<script src="nav-avatar.js"></script>
+<script src="feedback-widget.js"></script>
 <script>
-  initBgCanvas('bg-canvas');
-
   // Redirect if already logged in
   (async () => {
     const user = await getCurrentUser();
