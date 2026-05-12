@@ -6,8 +6,161 @@
   <title>Fundamental — Fonds d'urgence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <script>
+(function() {
+  var saved = localStorage.getItem('fundamental-theme');
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
+})();
+</script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
+/* ════ FUNDAMENTAL V3 · DESIGN SYSTEM TOKENS (shared) ════ */
+:root {
+  /* Override/complement des tokens brique avec le design system V3 */
+  --v3-bg-elevated: #FFFFFF;
+  --v3-border-subtle: rgba(28,25,23,.07);
+  --v3-text: #1C1917;
+  --v3-text-secondary: #57534E;
+  --v3-text-muted: #78716C;
+  --v3-text-faint: #A8A29E;
+  --v3-accent-strong: #5B21B6;
+  --v3-accent-soft: rgba(196,181,253,.22);
+  --v3-nav-bg: rgba(250,248,245,.88);
+  --v3-track: #E7E5E4;
+  --v3-dot-survie: #E8A6A0;
+  --v3-dot-construction: #E5B66A;
+  --v3-dot-invest: #8FB59A;
+  --v3-shadow-card: 0 1px 2px rgba(20,20,30,.04), 0 4px 16px rgba(20,20,30,.04);
+}
+html.dark {
+  --v3-bg-elevated: #161824;
+  --v3-border-subtle: rgba(255,255,255,.08);
+  --v3-text: #F5F5F4;
+  --v3-text-secondary: #D4D4D8;
+  --v3-text-muted: #A1A1AA;
+  --v3-text-faint: #71717A;
+  --v3-accent-strong: #A78BFA;
+  --v3-accent-soft: rgba(167,139,250,.14);
+  --v3-nav-bg: rgba(11,11,26,.82);
+  --v3-track: rgba(255,255,255,.08);
+  --v3-dot-survie: #F472B6;
+  --v3-dot-construction: #FBBF24;
+  --v3-dot-invest: #34D399;
+  --v3-shadow-card: 0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
+}
+/* ════ FIN TOKENS V3 ════ */
+
+/* ── SIDEBAR SHELL (injecté par sidebar.js, CSS compat) ── */
+.f-sidebar-shell { display:flex; min-height:100dvh; }
+
+/* ── BRIQUE LAYOUT 2-COL 60/40 ── */
+.brique-2col-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2.5rem;
+  align-items: start;
+  padding: 2rem 2rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.brique-main-col { min-width: 0; }
+.brique-side-panel {
+  position: sticky;
+  top: 72px; /* ctx-header 56px + gap */
+}
+
+/* ── PROGRESS CARD (colonne droite) ── */
+.brique-progress-card {
+  background: var(--v3-bg-elevated);
+  border: 1px solid var(--v3-border-subtle);
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: var(--v3-shadow-card);
+}
+html.dark .brique-progress-card {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.bpc-kicker {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--v3-text-faint); margin-bottom: 0.875rem;
+}
+.bpc-title {
+  font-family: 'Fraunces', 'Instrument Serif', Georgia, serif;
+  font-style: italic; font-weight: 400;
+  font-size: 20px; color: var(--v3-text); margin-bottom: 1.25rem;
+  line-height: 1.2;
+}
+.bpc-steps { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+.bpc-step {
+  display:flex; align-items:center; gap:0.75rem;
+  padding:0.625rem 0.75rem; border-radius:10px;
+  font-size:13px; color:var(--v3-text-muted);
+  transition: background .15s;
+}
+.bpc-step.active { background:var(--v3-accent-soft); color:var(--v3-text); }
+.bpc-step.done { color:var(--v3-text-muted); }
+.bpc-step-num {
+  width:22px; height:22px; border-radius:50%;
+  background:var(--v3-track);
+  color:var(--v3-text-faint);
+  font-size:11px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  transition: background .2s, color .2s;
+}
+.bpc-step.active .bpc-step-num { background:var(--v3-accent-strong); color:#fff; }
+.bpc-step.done .bpc-step-num {
+  background:var(--v3-accent-soft); color:var(--v3-accent-strong);
+}
+html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
+.bpc-step-label { font-size:13px; font-weight:500; }
+.bpc-step.active .bpc-step-label { color:var(--v3-text); font-weight:600; }
+
+/* Progress ring */
+.bpc-ring-wrap {
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:1.25rem;
+  position:relative; width:72px; height:72px; margin-left:auto; margin-right:auto;
+}
+.bpc-ring { transform:rotate(-90deg); }
+.bpc-ring-pct {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700; color:var(--v3-text);
+}
+
+/* Nav buttons */
+.bpc-nav {
+  border-top:1px solid var(--v3-border-subtle);
+  padding-top:1rem; display:flex; flex-direction:column; gap:0.625rem;
+  margin-top:1rem;
+}
+.bpc-btn-back {
+  display:flex; align-items:center; gap:0.4rem;
+  font-size:13px; color:var(--v3-text-muted);
+  background:none; border:none; cursor:pointer; font-family:inherit;
+  padding:0.4rem 0; transition:color .15s;
+}
+.bpc-btn-back:hover { color:var(--v3-text); }
+
+/* Dashboard link */
+.bpc-dashboard-link {
+  display:flex; align-items:center; gap:0.4rem;
+  font-size:12px; color:var(--v3-text-faint);
+  text-decoration:none; transition:color .15s;
+  padding:0.3rem 0;
+}
+.bpc-dashboard-link:hover { color:var(--v3-accent-strong); }
+
+/* Responsive — stack sur mobile */
+@media(max-width: 900px) {
+  .brique-2col-wrapper { grid-template-columns:1fr; gap:1.5rem; }
+  .brique-side-panel { position:static; }
+}
+
+
     /* ─── TOKENS ─── */
     :root {
       --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
@@ -201,22 +354,12 @@
 <body>
 <canvas id="bg-canvas"></canvas>
 
-<!-- NAV -->
-<nav>
-  <a href="dashboard.html" class="logo" aria-label="Fundamental">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
-      <rect x="3" y="3" width="8" height="8" rx="2" fill="url(#lg)"/>
-      <rect x="13" y="3" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
-      <rect x="3" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".5"/>
-      <rect x="13" y="13" width="8" height="8" rx="2" fill="url(#lg)" opacity=".25"/>
-    </svg>
-    Fundamental
-  </a>
-  <div class="nav-right" id="nav-right-slot"></div>
-</nav>
 
-<main>
+
+
+<div class="brique-2col-wrapper">
+  <!-- Colonne gauche 60% — contenu de la brique -->
+  <main class="brique-main-col">
   <!-- PROGRESS BAR -->
   <div class="brick-progress" id="progress-bar">
     <div class="bp-dot active" id="dot-0"></div>
@@ -567,7 +710,41 @@
   </div>
 
 </main>
+  <!-- Colonne droite 40% — panel de progression -->
+  <aside class="brique-side-panel">
+    <div class="brique-progress-card">
+      <div class="bpc-kicker">TA PROGRESSION</div>
+      <div class="bpc-title" id="bpc-step-title">Étape 1</div>
+      
+      <!-- Ring de progression -->
+      <div class="bpc-ring-wrap">
+        <svg class="bpc-ring" width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="30" stroke="var(--v3-track)" stroke-width="4" fill="none"/>
+          <circle id="bpc-ring-arc" cx="36" cy="36" r="30" stroke="var(--v3-accent-strong)" stroke-width="4" fill="none"
+                  stroke-dasharray="188.5" stroke-dashoffset="188.5" stroke-linecap="round"/>
+        </svg>
+        <div class="bpc-ring-pct" id="bpc-ring-pct">0%</div>
+      </div>
 
+      <!-- Steps list (remplie par JS) -->
+      <div class="bpc-steps" id="bpc-steps-list"></div>
+
+      <!-- Nav -->
+      <div class="bpc-nav">
+        <a href="plan.html" class="bpc-dashboard-link">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Retour au plan
+        </a>
+        <a href="dashboard.html" class="bpc-dashboard-link">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script src="sidebar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
@@ -1019,6 +1196,77 @@ function goToNextBrick() {
 
   // Screen 1 — example cards
   populateExampleCards();
+})();
+
+// ── PANEL PROGRESSION V3 ────────────────────────────────────────
+(function setupProgressPanel() {
+  // Récupère les noms d'écrans depuis les titres .brick-title ou .screen-title
+  function getScreenLabels() {
+    const screens = document.querySelectorAll('.screen');
+    const labels = [];
+    screens.forEach((s, i) => {
+      const t = s.querySelector('.brick-title, .screen-title, h2, h3');
+      labels.push(t ? t.textContent.trim().slice(0, 32) : 'Étape ' + (i + 1));
+    });
+    return labels;
+  }
+
+  function updatePanel(activeIdx) {
+    const screens = document.querySelectorAll('.screen');
+    const total = screens.length;
+    const labels = getScreenLabels();
+    const pct = total > 1 ? Math.round((activeIdx / (total - 1)) * 100) : 0;
+    const clampedPct = Math.min(pct, 100);
+
+    // Ring
+    const arc = document.getElementById('bpc-ring-arc');
+    const pctEl = document.getElementById('bpc-ring-pct');
+    if (arc) {
+      const circ = 188.5;
+      arc.setAttribute('stroke-dashoffset', String(circ - (circ * clampedPct / 100)));
+    }
+    if (pctEl) pctEl.textContent = clampedPct + '%';
+
+    // Title
+    const titleEl = document.getElementById('bpc-step-title');
+    if (titleEl) titleEl.textContent = labels[activeIdx] || 'Étape ' + (activeIdx + 1);
+
+    // Steps list
+    const list = document.getElementById('bpc-steps-list');
+    if (list) {
+      list.innerHTML = '';
+      labels.slice(0, 7).forEach((label, i) => {
+        const div = document.createElement('div');
+        div.className = 'bpc-step' + (i < activeIdx ? ' done' : i === activeIdx ? ' active' : '');
+        const isDone = i < activeIdx;
+        const numContent = isDone
+          ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+          : String(i + 1);
+        div.innerHTML = '<span class="bpc-step-num">' + numContent + '</span><span class="bpc-step-label">' + label + '</span>';
+        list.appendChild(div);
+      });
+    }
+  }
+
+  // Observer l'écran actif
+  function getCurrentScreenIdx() {
+    const screens = Array.from(document.querySelectorAll('.screen'));
+    for (let i = 0; i < screens.length; i++) {
+      if (screens[i].style.display !== 'none') return i;
+    }
+    return 0;
+  }
+
+  // Patch les fonctions de navigation existantes
+  const origGoNext = window.goNext;
+  const origGoBack = window.goBack;
+  const origGoToScreen = window.goToScreen;
+  window.goNext = function() { if (origGoNext) origGoNext.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
+  window.goBack = function() { if (origGoBack) origGoBack.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
+  window.goToScreen = function() { if (origGoToScreen) origGoToScreen.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
+
+  // Init
+  document.addEventListener('DOMContentLoaded', () => setTimeout(() => updatePanel(getCurrentScreenIdx()), 100));
 })();
 </script>
 
