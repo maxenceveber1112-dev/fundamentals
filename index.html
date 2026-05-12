@@ -6,8 +6,9 @@
   <title>Fundamental — Construisons ton parcours</title>
   <script>
   (function() {
+    var saved = localStorage.getItem('fundamental-theme');
     var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (prefersDark) document.documentElement.classList.add('dark');
+    if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
   })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -105,27 +106,108 @@
     html.dark .wordmark .mark { background: linear-gradient(135deg, #8B5CF6, #3B82F6); color:#fff; }
     .wordmark .name { font-size:15px; font-weight:600; letter-spacing:-.01em; color:var(--text); }
 
-    /* ─── LAYOUT ────────────────────────────────────────────────── */
+    /* ─── ONBOARDING SHELL 3-COL ─── */
     #app {
       min-height: 100dvh;
-      display: flex; flex-direction: column; align-items: center;
-      padding: 0 1rem 4rem;
+      display: flex; flex-direction: column;
+      padding: 0;
     }
 
-    /* ─── HEADER ────────────────────────────────────────────────── */
-    header {
-      width: 100%; max-width: 680px;
-      height: 64px;
+    /* Header slim */
+    .onb-header {
       display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 56px;
       border-bottom: 1px solid var(--border-subtle);
-      margin-bottom: 2rem;
+      background: var(--nav-bg); backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 50;
     }
+
+    /* 3-col layout */
+    .onb-body {
+      display: grid;
+      grid-template-columns: 200px 1fr 220px;
+      flex: 1;
+      min-height: calc(100dvh - 56px);
+    }
+
+    /* Left — stepper */
+    .onb-stepper {
+      border-right: 1px solid var(--border-subtle);
+      padding: 2.5rem 1.25rem 2.5rem 1.5rem;
+      display: flex; flex-direction: column;
+      gap: 0.25rem;
+    }
+    .onb-stepper-kicker {
+      font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--text-faint); margin-bottom: 1.5rem;
+    }
+
+    .onb-step-pip {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 0.75rem; border-radius: 10px;
+      color: var(--text-faint); font-size: 13px;
+      transition: background .15s, color .15s;
+      text-decoration: none;
+    }
+    .onb-step-pip .onb-pip-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--track); color: var(--text-faint);
+      font-size: 11px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background .2s, color .2s;
+    }
+    .onb-step-pip.active { color: var(--text); background: var(--accent-soft); }
+    .onb-step-pip.active .onb-pip-num { background: var(--accent-strong); color: #fff; }
+    html.dark .onb-step-pip.active .onb-pip-num { background: linear-gradient(135deg,#8B5CF6,#3B82F6); }
+    .onb-step-pip.done { color: var(--text-muted); }
+    .onb-step-pip.done .onb-pip-num { background: var(--accent-soft); color: var(--accent-strong); }
+    .onb-pip-label { font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Centre — question */
+    .onb-center {
+      padding: 3rem 2.5rem 4rem;
+      display: flex; flex-direction: column;
+      align-items: flex-start;
+      overflow-y: auto;
+    }
+
+    /* Right — aide contextuelle */
+    .onb-help {
+      border-left: 1px solid var(--border-subtle);
+      padding: 2.5rem 1.25rem 2.5rem 1.5rem;
+      display: flex; flex-direction: column;
+      gap: 1.25rem;
+    }
+    .onb-help-kicker {
+      font-size: 10px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--text-faint); margin-bottom: 0.25rem;
+    }
+    .onb-help-text { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+    .onb-help-quote {
+      font-family: 'Fraunces','Instrument Serif',Georgia,serif;
+      font-style: italic; font-size: 14px;
+      color: var(--text-secondary); line-height: 1.5;
+      border-left: 2px solid var(--accent-soft);
+      padding-left: 0.875rem;
+      margin-top: 0.5rem;
+    }
+    .onb-help-quote-attr { font-size: 11px; color: var(--text-faint); margin-top: 0.5rem; font-style: normal; }
+
+    /* Steps visibility — keep existing .step logic */
+    .step { width: 100%; display: none; flex-direction: column; gap: 2rem; }
+    .step.active { display: flex; animation: slideInUp 0.38s var(--ease-out) both; }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     /* Avatar placeholder on right (managed by nav-avatar.js) */
     #header-avatar { display:flex; align-items:center; }
 
     /* ─── PROGRESS ──────────────────────────────────────────────── */
     .progress-area {
-      width: 100%; max-width: 680px;
+      width: 100%;
       display: flex; flex-direction: column; align-items: center;
       gap: 0.5rem;
       margin-bottom: 2.5rem;
@@ -151,18 +233,13 @@
       background: linear-gradient(90deg, #A78BFA, #60A5FA);
     }
 
-    /* ─── STEP ───────────────────────────────────────────────────── */
-    .step {
-      width: 100%; max-width: 680px;
-      display: none; flex-direction: column; gap: 2rem;
+    /* Responsive */
+    @media(max-width: 900px) {
+      .onb-body { grid-template-columns: 1fr; }
+      .onb-stepper { display: none; }
+      .onb-help { display: none; }
+      .onb-center { padding: 2rem 1.25rem 3rem; }
     }
-    .step.active { display: flex; }
-
-    @keyframes slideInUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .step.active { animation: slideInUp 0.38s var(--ease-out) both; }
 
     /* ─── STEP HEADER ───────────────────────────────────────────── */
     .step-header { display: flex; flex-direction: column; gap: 0.5rem; text-align: center; }
@@ -571,7 +648,8 @@
 <body>
 
 <div id="app">
-  <header>
+  <!-- Header -->
+  <header class="onb-header">
     <a href="dashboard.html" class="wordmark" aria-label="Fundamental">
       <span class="mark">f</span>
       <span class="name">Fundamental</span>
@@ -579,13 +657,44 @@
     <div id="header-avatar"></div>
   </header>
 
-  <!-- PROGRESS -->
-  <div class="progress-area" id="progress-wrapper">
-    <p class="progress-label" id="progress-label">ÉTAPE 1 SUR 5</p>
-    <div class="progress-track" aria-hidden="true">
-      <div class="progress-bar-fill" id="progress-bar-fill" style="width:20%"></div>
-    </div>
-  </div>
+  <!-- 3-col body -->
+  <div class="onb-body" id="onb-body">
+
+    <!-- LEFT — Stepper -->
+    <aside class="onb-stepper" aria-label="Progression">
+      <div class="onb-stepper-kicker">TON PARCOURS · 2 MIN</div>
+      <div class="onb-step-pip active" id="pip-1">
+        <span class="onb-pip-num">1</span>
+        <span class="onb-pip-label">Ton profil</span>
+      </div>
+      <div class="onb-step-pip" id="pip-2">
+        <span class="onb-pip-num">2</span>
+        <span class="onb-pip-label">Ton budget</span>
+      </div>
+      <div class="onb-step-pip" id="pip-3">
+        <span class="onb-pip-num">3</span>
+        <span class="onb-pip-label">Tes priorités</span>
+      </div>
+      <div class="onb-step-pip" id="pip-4">
+        <span class="onb-pip-num">4</span>
+        <span class="onb-pip-label">Tes habitudes</span>
+      </div>
+      <div class="onb-step-pip" id="pip-5">
+        <span class="onb-pip-num">5</span>
+        <span class="onb-pip-label">Tes objectifs</span>
+      </div>
+    </aside>
+
+    <!-- CENTER — Questions -->
+    <main class="onb-center">
+
+      <!-- PROGRESS -->
+      <div class="progress-area" id="progress-wrapper">
+        <p class="progress-label" id="progress-label">ÉTAPE 1 SUR 5</p>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-bar-fill" id="progress-bar-fill" style="width:20%"></div>
+        </div>
+      </div>
 
   <!-- ═══ STEP 1 — Identité ════════════════════════════════════ -->
   <div class="step active" id="step-1" aria-label="Étape 1">
@@ -1036,6 +1145,24 @@
     </button>
   </div>
 
+    </main><!-- /.onb-center -->
+
+    <!-- RIGHT — Aide contextuelle -->
+    <aside class="onb-help" id="onb-help" aria-label="Aide contextuelle">
+      <div>
+        <div class="onb-help-kicker">POURQUOI CETTE QUESTION ?</div>
+      </div>
+      <div class="onb-help-text" id="onb-help-text">
+        Tes réponses nous permettent de calibrer ton parcours Fundamental selon ta situation réelle.
+      </div>
+      <blockquote class="onb-help-quote" id="onb-help-quote">
+        “J’ai mis 5 minutes, et le plan proposé correspondait exactement à là où j’en étais.”
+        <div class="onb-help-quote-attr">— Thomas, 24 ans</div>
+      </blockquote>
+    </aside>
+
+  </div><!-- /.onb-body -->
+
 </div><!-- /#app -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1410,6 +1537,72 @@ applyConditionals();
     saveToStorage('fund_profil', profil);
   }
 })();
+
+// ─── STEPPER SYNC ────────────────────────────────────────────────────
+const STEP_META = {
+  1: {
+    help: "Ton âge et ta situation nous permettent de calibrer ton parcours financier. Un étudiant et un cadre de 40 ans n'ont pas les mêmes défis.",
+    quote: '"J\'ai mis 5 minutes et le plan correspondait exactement à où j\'en étais." — Thomas, 24 ans'
+  },
+  2: {
+    help: "Comprendre comment tu vis ton argent au quotidien est la base. On ne juge pas, on adapte.",
+    quote: '"J\'ai réalisé que mon stress budgétaire avait un nom. C\'était le début de la solution." — Sarah, 31 ans'
+  },
+  3: {
+    help: "Tes revenus et dépenses fixes nous permettent de calculer ta marge de manœuvre réelle.",
+    quote: '"Je n\'avais jamais fait le calcul. 340€ de sorties mensuelles que je n\'avais pas vues." — Lucas, 28 ans'
+  },
+  4: {
+    help: "Tes habitudes financières révèlent tes vrais points de friction — pas forcément là où tu crois.",
+    quote: '"Le questionnaire m\'a montré que mon problème ce n\'était pas mon salaire, c\'était mes abonnements." — Marie, 26 ans'
+  },
+  5: {
+    help: "Tes objectifs définissent l'ordre de tes briques. Sans objectif clair, on tourne en rond.",
+    quote: '"J\'avais l\'impression d\'économiser sans raison. Mettre un but derrière ça a tout changé." — Antoine, 33 ans'
+  }
+};
+
+function syncStepper(stepNum) {
+  for (let i = 1; i <= 5; i++) {
+    const pip = document.getElementById('pip-' + i);
+    if (!pip) continue;
+    pip.classList.remove('active', 'done');
+    if (i < stepNum) pip.classList.add('done');
+    else if (i === stepNum) pip.classList.add('active');
+  }
+  // Update help panel
+  const meta = STEP_META[stepNum];
+  if (meta) {
+    const helpText = document.getElementById('onb-help-text');
+    const helpQuote = document.getElementById('onb-help-quote');
+    if (helpText) helpText.textContent = meta.help;
+    if (helpQuote) {
+      const parts = meta.quote.split(' — ');
+      helpQuote.innerHTML = '\u201c' + parts[0].replace(/^["\u201c]/, '') + '\u201d' +
+        (parts[1] ? '<div class="onb-help-quote-attr">\u2014 ' + parts[1] + '</div>' : '');
+    }
+  }
+  // Hide stepper + help during loader/result
+  const onbBody = document.getElementById('onb-body');
+  const loader = document.getElementById('loader');
+  const result = document.getElementById('result');
+  if (onbBody) {
+    const isQuiz = !(loader && loader.classList.contains('active')) && !(result && result.classList.contains('active'));
+    const stepper = document.querySelector('.onb-stepper');
+    const help = document.getElementById('onb-help');
+    if (stepper) stepper.style.display = isQuiz ? '' : 'none';
+    if (help) help.style.display = isQuiz ? '' : 'none';
+  }
+}
+
+// Patch goNext / goBack to sync stepper
+const _origGoNext = window.goNext;
+window.goNext = function(n) { _origGoNext && _origGoNext(n); syncStepper(current); };
+const _origGoBack = window.goBack;
+window.goBack = function(n) { _origGoBack && _origGoBack(n); syncStepper(current); };
+
+// Init
+document.addEventListener('DOMContentLoaded', () => syncStepper(1));
 </script>
 <script src="feedback-widget.js"></script>
 </body>

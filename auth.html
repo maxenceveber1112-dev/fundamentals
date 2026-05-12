@@ -6,8 +6,9 @@
   <title>Fundamental — Connexion</title>
   <script>
   (function() {
+    var saved = localStorage.getItem('fundamental-theme');
     var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (prefersDark) document.documentElement.classList.add('dark');
+    if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
   })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -117,7 +118,7 @@
       padding:3rem;
       overflow:hidden;
     }
-    .auth-left-content {}
+    .auth-left-content { display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; }
 
     /* ── DIVIDER ── */
     .auth-divider-v {
@@ -135,10 +136,10 @@
       width:100%; max-width:400px;
       display:flex; flex-direction:column; gap:1.5rem;
       background:var(--bg-elevated);
-      border:1px solid var(--border-subtle);
+      border:1px solid var(--border-mid);
       border-radius:var(--r-xl);
       padding:2.25rem;
-      box-shadow:var(--shadow-card);
+      box-shadow:0 2px 8px rgba(20,20,30,0.06), 0 8px 32px rgba(20,20,30,0.06);
       animation:slideInUp 0.4s var(--ease-out) both;
     }
     html.dark .auth-card {
@@ -217,7 +218,7 @@
     .input-wrap { position:relative; }
     input[type=email], input[type=password] {
       width:100%; padding:0.75rem 1rem;
-      background:#F4F1EB;
+      background:var(--surface-2);
       border:1px solid var(--border-mid); border-radius:var(--r-md);
       color:var(--text); font-size:0.9rem; font-family:inherit;
       transition:border-color var(--t), box-shadow var(--t); outline:none;
@@ -272,7 +273,7 @@
 
   <!-- ═══ LEFT PANEL ═══════════════════════════════════════════ -->
   <div class="auth-left">
-    <div class="auth-left-content" style="display:flex;flex-direction:column;height:100%;min-height:600px;">
+    <div class="auth-left-content" style="height:100%;min-height:600px;">
       <a href="dashboard.html" class="wordmark" aria-label="Fundamental" style="margin-bottom:3rem;">
         <span class="mark">f</span>
         <span class="name">Fundamental</span>
@@ -316,6 +317,13 @@
             Reprends exactement où tu t'es arrêté, sur tous tes appareils.
           </div>
         </div>
+      </div>
+
+      <div class="auth-quote" style="margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border-subtle);">
+        <p style="font-family:'Fraunces','Instrument Serif',Georgia,serif;font-style:italic;font-size:17px;color:var(--text-secondary);line-height:1.5;margin-bottom:0.75rem;">
+          &ldquo;En 3 semaines, j&rsquo;ai compris où partait 20% de mon salaire. Maintenant je gère.&rdquo;
+        </p>
+        <p style="font-size:12px;color:var(--text-faint);font-weight:500;">— Camille, 27 ans · Bêta testeur</p>
       </div>
     </div>
   </div>

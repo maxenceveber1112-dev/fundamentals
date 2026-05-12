@@ -697,36 +697,7 @@
 <body>
 <canvas id="bg-canvas"></canvas>
 
-<!-- ═══════════════════════════════ NAV ═══════════════════════════ -->
-<nav>
-  <div class="nav-left">
-    <a href="dashboard.html" class="logo" aria-label="Fundamental">
-      <svg class="logo-mark" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.4"/>
-        <circle class="dot" cx="12" cy="12" r="3.5"/>
-      </svg>
-      Fundamental
-    </a>
-    <div class="nav-links">
-      <a href="index.html" class="nav-link" id="nav-quiz-link">Questionnaire</a>
-      <a href="plan.html" class="nav-link">Mon plan</a>
-      <a href="dashboard.html" class="nav-link active">Dashboard</a>
-    </div>
-  </div>
-  <div class="nav-right">
-    <!-- Theme toggle -->
-    <button id="theme-toggle-btn" class="theme-toggle" aria-label="Basculer light/dark" type="button">
-      <svg class="ico ico-sun" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-      </svg>
-      <svg class="ico ico-moon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-      </svg>
-      <span class="knob"></span>
-    </button>
-    <!-- Avatar injecté par nav-avatar.js -->
-  </div>
-</nav>
+<!-- NAV supprimée V3 — remplacée par sidebar.js (sidebar + ctx-header) -->
 
 <main>
   <!-- ══ Completed banner ══ -->
@@ -854,6 +825,7 @@
   </div>
 </div>
 
+<script src="sidebar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>

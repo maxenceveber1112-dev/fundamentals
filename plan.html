@@ -128,7 +128,7 @@
     }
 
     /* ── LAYOUT ── */
-    main{max-width:760px;margin:0 auto;padding:3rem 1.5rem 6rem;}
+    main{max-width:820px;margin:0 auto;padding:3rem 1.5rem 6rem;}
 
     /* ── KICKER ── */
     .kicker{
@@ -326,28 +326,35 @@
     }
     .modal-item-remove:hover{color:var(--red);}
 
+    /* ── Phase Timeline ── */
+    .phase-timeline {
+      display:flex; align-items:stretch; gap:0;
+      margin:2rem 0 3rem; border-radius:16px;
+      overflow:hidden; border:1px solid var(--border-subtle);
+      background:var(--bg-elevated); box-shadow:var(--shadow-card);
+    }
+    .phase-col {
+      flex:1; padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:0.5rem;
+    }
+    .phase-col:hover { background:var(--surface-2); }
+    .phase-divider { width:1px; background:var(--border-subtle); align-self:stretch; margin:0.75rem 0; }
+    .ptl-dot { width:8px; height:8px; border-radius:50%; }
+    .ptl-label { font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-faint); }
+    .ptl-count { font-size:22px; font-weight:700; color:var(--text); font-family:'Fraunces',serif; font-style:italic; }
+
     @media(max-width:520px){
       nav{padding:0 1rem;}
       main{padding:2rem 1rem 5rem;}
       .plan-card{padding:1rem;}
       .cta-block{padding:1.25rem;}
+      .phase-timeline{flex-direction:column;}
+      .phase-divider{width:auto;height:1px;margin:0 0.75rem;}
     }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a href="dashboard.html" class="wordmark" aria-label="Fundamental">
-    <span class="mark">f</span>
-    <span class="name">Fundamental</span>
-  </a>
-  <div class="nav-right">
-    <a href="index.html" class="nav-link">Questionnaire</a>
-    <a href="plan.html" class="nav-link active">Mon plan</a>
-    <a href="dashboard.html" class="nav-link">Dashboard</a>
-  </div>
-</nav>
+
 
 <main>
 
@@ -360,6 +367,27 @@
     <p>Voilà ton plan Fundamental pour les prochaines semaines — construit rien que pour toi.</p>
   </div>
 
+  <!-- Timeline phases -->
+  <div class="phase-timeline" id="phase-timeline">
+    <div class="phase-col phase-col--survie" id="ptl-survie">
+      <div class="ptl-dot" style="background:var(--dot-survie)"></div>
+      <div class="ptl-label">Survie &amp; stabilité</div>
+      <div class="ptl-count" id="ptl-count-survie">—</div>
+    </div>
+    <div class="phase-divider"></div>
+    <div class="phase-col phase-col--construction" id="ptl-construction">
+      <div class="ptl-dot" style="background:var(--dot-construction)"></div>
+      <div class="ptl-label">Construction &amp; projets</div>
+      <div class="ptl-count" id="ptl-count-construction">—</div>
+    </div>
+    <div class="phase-divider"></div>
+    <div class="phase-col phase-col--invest" id="ptl-invest">
+      <div class="ptl-dot" style="background:var(--dot-invest)"></div>
+      <div class="ptl-label">Investissement &amp; long terme</div>
+      <div class="ptl-count" id="ptl-count-invest">—</div>
+    </div>
+  </div>
+
   <!-- PROFIL -->
   <section class="profile-section">
     <div class="profile-header">
@@ -368,6 +396,8 @@
     </div>
     <!-- Hidden .tags div kept for JS compatibility (renderAll writes to it) -->
     <div class="tags" id="profile-tags" role="list" aria-hidden="true"></div>
+    <!-- Serif intro phrase populated by JS -->
+    <div class="profile-serif-intro" id="profile-serif-intro" style="font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:18px;color:var(--text);line-height:1.4;margin-bottom:0.875rem;"></div>
     <!-- Serif summary sentence populated by JS -->
     <div class="profile-sentences" id="profile-sentences"></div>
   </section>
@@ -416,6 +446,7 @@
   </div>
 </div>
 
+<script src="sidebar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
@@ -612,6 +643,19 @@
   function renderAll() {
     briquesIds = profil.briques_recommandees || ['budget_base','gestion_decouvert','fonds_urgence'];
 
+    // Compte par pack
+    const packCounts = {};
+    briquesIds.forEach(id => {
+      const b = BRIQUES_META[id]; if (!b) return;
+      packCounts[b.pack] = (packCounts[b.pack] || 0) + 1;
+    });
+    const elSurvie = document.getElementById('ptl-count-survie');
+    const elCons   = document.getElementById('ptl-count-construction');
+    const elInvest = document.getElementById('ptl-count-invest');
+    if (elSurvie) elSurvie.textContent = (packCounts['Survie & stabilité'] || 0) + ' brique' + (packCounts['Survie & stabilité']>1?'s':'');
+    if (elCons)   elCons.textContent   = (packCounts['Construction & projets'] || 0) + ' brique' + (packCounts['Construction & projets']>1?'s':'');
+    if (elInvest) elInvest.textContent = (packCounts['Investissement & long terme'] || 0) + ' brique' + (packCounts['Investissement & long terme']>1?'s':'');
+
     // Keep tags hidden (JS compat — profileToTags writes hidden spans)
     const tagsEl = document.getElementById('profile-tags');
     tagsEl.innerHTML = '';
@@ -629,6 +673,14 @@
       div.className = 'profile-sentence'; div.textContent = s;
       sentEl.appendChild(div);
     });
+
+    // Serif intro phrase
+    const introEl = document.getElementById('profile-serif-intro');
+    if (introEl && profil) {
+      const ageMap2 = {'15_17':'15–17 ans','18_24':'18–24 ans','25_34':'25–34 ans','35_54':'35–54 ans','55_64':'55–64 ans','65_plus':'65 ans et plus'};
+      const age = ageMap2[profil.age_group] || '';
+      introEl.textContent = age ? 'Parcours Fundamental pour ' + age + '.' : 'Ton parcours Fundamental.';
+    }
 
     renderPlan();
     renderCTA();
