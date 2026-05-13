@@ -115,7 +115,7 @@ html.dark .brique-progress-card {
   background:var(--v3-accent-soft); color:var(--v3-accent-strong);
 }
 html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
-.bpc-step-label { font-size:13px; font-weight:500; }
+.bpc-step-label { font-size:13px; font-weight:500; min-width:0; line-height:1.3; }
 .bpc-step.active .bpc-step-label { color:var(--v3-text); font-weight:600; }
 
 /* Progress ring */
@@ -1585,7 +1585,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   document.addEventListener('DOMContentLoaded', () => setTimeout(() => updatePanel(getCurrentScreenIdx()), 100));
 })();
 </script>
-
+<script>
   /* ══════════════════════════════════════════
      UX AMÉLIORATIONS — injected
   ══════════════════════════════════════════ */
@@ -1624,6 +1624,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   /* ── premiers_pas_bancaires : totalSteps ── */
   var _UX_TOTAL_STEPS = 5;
   updateStepIndicator(0);
+</script>
 
 <script src="feedback-widget.js"></script>
 </body>
