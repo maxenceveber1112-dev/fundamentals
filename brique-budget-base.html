@@ -4,1666 +4,2531 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fundamental — Budget de base</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Bootstrap theme (synchrone, avant render) -->
   <script>
 (function() {
   var saved = localStorage.getItem('fundamental-theme');
   var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
 })();
-</script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
   <style>
-/* ════ FUNDAMENTAL V3 · DESIGN SYSTEM TOKENS (shared) ════ */
-:root {
-  /* Override/complement des tokens brique avec le design system V3 */
-  --v3-bg-elevated: #FFFFFF;
-  --v3-border-subtle: rgba(28,25,23,.07);
-  --v3-text: #1C1917;
-  --v3-text-secondary: #57534E;
-  --v3-text-muted: #78716C;
-  --v3-text-faint: #A8A29E;
-  --v3-accent-strong: #5B21B6;
-  --v3-accent-soft: rgba(196,181,253,.22);
-  --v3-nav-bg: rgba(250,248,245,.88);
-  --v3-track: #E7E5E4;
-  --v3-dot-survie: #E8A6A0;
-  --v3-dot-construction: #E5B66A;
-  --v3-dot-invest: #8FB59A;
-  --v3-shadow-card: 0 1px 2px rgba(20,20,30,.04), 0 4px 16px rgba(20,20,30,.04);
-}
-html.dark {
-  --v3-bg-elevated: #161824;
-  --v3-border-subtle: rgba(255,255,255,.08);
-  --v3-text: #F5F5F4;
-  --v3-text-secondary: #D4D4D8;
-  --v3-text-muted: #A1A1AA;
-  --v3-text-faint: #71717A;
-  --v3-accent-strong: #A78BFA;
-  --v3-accent-soft: rgba(167,139,250,.14);
-  --v3-nav-bg: rgba(11,11,26,.82);
-  --v3-track: rgba(255,255,255,.08);
-  --v3-dot-survie: #F472B6;
-  --v3-dot-construction: #FBBF24;
-  --v3-dot-invest: #34D399;
-  --v3-shadow-card: 0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
-}
-/* ════ FIN TOKENS V3 ════ */
+  /* ══════════════════════════════════════════════════════════════
+     TOKENS — dashboard.html V2 (light + dark)
+  ══════════════════════════════════════════════════════════════ */
+  :root {
+    --bg:              #FAF8F5;
+    --bg-elevated:     #FFFFFF;
+    --bg-glass:        rgba(255,255,255,0.70);
+    --cream-grad:      linear-gradient(180deg, #F6F1E8 0%, #EFE7D8 100%);
+    --cream-border:    rgba(184,159,113,0.18);
 
-/* ── SIDEBAR SHELL (injecté par sidebar.js, CSS compat) ── */
-.f-sidebar-shell { display:flex; min-height:100dvh; }
+    --nav-bg:          rgba(250,248,245,0.88);
+    --nav-border:      rgba(28,25,23,0.07);
 
-/* ── BRIQUE LAYOUT 2-COL 60/40 ── */
-.brique-2col-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 2.5rem;
-  align-items: start;
-  padding: 2rem 2rem 4rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-.brique-main-col { min-width: 0; }
-.brique-side-panel {
-  position: sticky;
-  top: 72px; /* ctx-header 56px + gap */
-}
+    --border-subtle:   rgba(28,25,23,0.07);
+    --border-mid:      rgba(28,25,23,0.11);
+    --border-hover:    rgba(28,25,23,0.18);
 
-/* ── PROGRESS CARD (colonne droite) ── */
-.brique-progress-card {
-  background: var(--v3-bg-elevated);
-  border: 1px solid var(--v3-border-subtle);
-  border-radius: 18px;
-  padding: 1.5rem;
-  box-shadow: var(--v3-shadow-card);
-}
-html.dark .brique-progress-card {
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-.bpc-kicker {
-  font-size: 10px; font-weight: 600;
-  letter-spacing: .14em; text-transform: uppercase;
-  color: var(--v3-text-faint); margin-bottom: 0.875rem;
-}
-.bpc-title {
-  font-family: 'Fraunces', 'Instrument Serif', Georgia, serif;
-  font-style: italic; font-weight: 400;
-  font-size: 20px; color: var(--v3-text); margin-bottom: 1.25rem;
-  line-height: 1.2;
-}
-.bpc-steps { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
-.bpc-step {
-  display:flex; align-items:center; gap:0.75rem;
-  padding:0.625rem 0.75rem; border-radius:10px;
-  font-size:13px; color:var(--v3-text-muted);
-  transition: background .15s;
-}
-.bpc-step.active { background:var(--v3-accent-soft); color:var(--v3-text); }
-.bpc-step.done { color:var(--v3-text-muted); }
-.bpc-step-num {
-  width:22px; height:22px; border-radius:50%;
-  background:var(--v3-track);
-  color:var(--v3-text-faint);
-  font-size:11px; font-weight:600;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  transition: background .2s, color .2s;
-}
-.bpc-step.active .bpc-step-num { background:var(--v3-accent-strong); color:#fff; }
-.bpc-step.done .bpc-step-num {
-  background:var(--v3-accent-soft); color:var(--v3-accent-strong);
-}
-html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
-.bpc-step-label { font-size:13px; font-weight:500; min-width:0; line-height:1.3; }
-.bpc-step.active .bpc-step-label { color:var(--v3-text); font-weight:600; }
+    --text:            #1C1917;
+    --text-secondary:  #57534E;
+    --text-muted:      #78716C;
+    --text-faint:      #A8A29E;
 
-/* Progress ring */
-.bpc-ring-wrap {
-  display:flex; align-items:center; justify-content:center;
-  margin-bottom:1.25rem;
-  position:relative; width:72px; height:72px; margin-left:auto; margin-right:auto;
-}
-.bpc-ring { transform:rotate(-90deg); }
-.bpc-ring-pct {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:13px; font-weight:700; color:var(--v3-text);
-}
+    --accent:          #C4B5FD;
+    --accent-strong:   #5B21B6;
+    --accent-fill:     #C4B5FD;
+    --accent-soft:     rgba(196,181,253,0.22);
+    --accent-pill-text:#2E1065;
 
-/* Nav buttons */
-.bpc-nav {
-  border-top:1px solid var(--v3-border-subtle);
-  padding-top:1rem; display:flex; flex-direction:column; gap:0.625rem;
-  margin-top:1rem;
-}
-.bpc-btn-back {
-  display:flex; align-items:center; gap:0.4rem;
-  font-size:13px; color:var(--v3-text-muted);
-  background:none; border:none; cursor:pointer; font-family:inherit;
-  padding:0.4rem 0; transition:color .15s;
-}
-.bpc-btn-back:hover { color:var(--v3-text); }
+    --track:           #E7E5E4;
 
-/* Dashboard link */
-.bpc-dashboard-link {
-  display:flex; align-items:center; gap:0.4rem;
-  font-size:12px; color:var(--v3-text-faint);
-  text-decoration:none; transition:color .15s;
-  padding:0.3rem 0;
-}
-.bpc-dashboard-link:hover { color:var(--v3-accent-strong); }
+    --dot-survie:      #E8A6A0;
+    --dot-construction:#E5B66A;
+    --dot-invest:      #8FB59A;
 
-/* Responsive — stack sur mobile */
-@media(max-width: 900px) {
-  .brique-2col-wrapper { grid-template-columns:1fr; gap:1.5rem; }
-  .brique-side-panel { position:static; }
-}
+    --shadow-card:     0 1px 2px rgba(20,20,30,0.04), 0 4px 16px rgba(20,20,30,0.04);
+    --shadow-hover:    0 4px 20px rgba(20,20,30,0.10);
 
+    --green:           #22C55E;
+    --red:             #f87171;
+    --orange:          #FB923C;
+    --yellow:          #FBBF24;
+    --purple:          #C084FC;
 
-    /* ── Design tokens ── */
-    :root {
-      --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
-      --border:#252845;--border-hover:#363a68;
-      --text:#e2e4f0;--text-muted:#8b90b8;--text-faint:#444868;
-      --violet:#818cf8;--purple:#c084fc;--indigo:#6366f1;
-      --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
-      --violet-glow:rgba(129,140,248,0.10);
-      --green:#4ade80;--green-dim:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.3);
-      --orange:#fb923c;--orange-dim:rgba(251,146,60,0.12);--orange-border:rgba(251,146,60,0.3);
-      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
-      --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1.25rem;--r-xl:1.75rem;--r-full:9999px;
-      --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
-    }
+    --surface:         #FFFFFF;
+    --surface-2:       #F5F5F4;
+    --surface-3:       #EDEBE8;
+    --border:          rgba(28,25,23,0.07);
 
-    /* ── Reset ── */
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{-webkit-font-smoothing:antialiased;}
-    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;overflow-x:hidden;}
-    button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
-    a{color:inherit;text-decoration:none;}
-    input,textarea{font:inherit;}
-    :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:var(--r-sm);}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
+    /* Compat tokens nav-avatar.js */
+    --indigo:          #6366F1;
+    --violet:          #818CF8;
+    --indigo-dim:      rgba(99,102,241,0.10);
+    --indigo-glow:     rgba(99,102,241,0.18);
+    --violet-glow:     rgba(129,140,248,0.10);
+    --border-hover-nav:rgba(28,25,23,0.18);
 
-    /* ── Background canvas ── */
-    #bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;}
+    --r-sm:0.5rem; --r-md:0.875rem; --r-lg:1rem; --r-xl:1.5rem; --r-full:9999px;
+    --ease-out:cubic-bezier(0.16,1,0.3,1); --t:180ms;
 
-    /* ── Nav ── */
-    nav{position:sticky;top:0;z-index:100;background:rgba(11,13,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;}
-    .logo{display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
-    .nav-right{display:flex;align-items:center;gap:1rem;}
-    .nav-link{font-size:0.8rem;color:var(--text-muted);text-decoration:none;padding:0.35rem 0.75rem;border-radius:var(--r-full);border:1px solid var(--border);transition:color var(--t),border-color var(--t);}
-    .nav-link:hover{color:var(--violet);border-color:var(--violet);}
+    /* Brique-specific */
+    --v3-bg-elevated:  #FFFFFF;
+    --v3-border-subtle:rgba(28,25,23,.07);
+    --v3-text:         #1C1917;
+    --v3-text-secondary:#57534E;
+    --v3-text-muted:   #78716C;
+    --v3-text-faint:   #A8A29E;
+    --v3-accent-strong:#5B21B6;
+    --v3-accent-soft:  rgba(196,181,253,.22);
+    --v3-track:        #E7E5E4;
+    --v3-dot-survie:   #E8A6A0;
+    --v3-shadow-card:  0 1px 2px rgba(20,20,30,.04), 0 4px 16px rgba(20,20,30,.04);
+  }
 
-    /* ── Main layout ── */
-    main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:2rem 1.5rem 6rem;}
+  html.dark {
+    --bg:              #0B0B1A;
+    --bg-elevated:     #161824;
+    --bg-glass:        rgba(255,255,255,0.04);
+    --cream-grad:      linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    --cream-border:    rgba(255,255,255,0.08);
 
-    /* ── Progress bar ── */
-    .brick-progress{display:flex;gap:0.35rem;margin-bottom:2rem;}
+    --nav-bg:          rgba(11,11,26,0.82);
+    --nav-border:      rgba(255,255,255,0.05);
 
-    /* ── Indicateur Étape X/Y ── */
-    .step-indicator{font-size:0.72rem;font-weight:600;color:var(--text-faint);letter-spacing:0.05em;margin-bottom:0.75rem;display:none;}
-    .screen.active-screen .step-indicator{display:block;}
+    --border-subtle:   rgba(255,255,255,0.06);
+    --border-mid:      rgba(255,255,255,0.10);
+    --border-hover:    rgba(255,255,255,0.16);
 
-    .bp-dot{flex:1;height:4px;border-radius:var(--r-full);background:var(--surface-3);transition:background 0.3s var(--ease-out);}
-    .bp-dot.done{background:linear-gradient(90deg,var(--indigo),var(--purple));}
-    .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
+    --text:            #F5F5F4;
+    --text-secondary:  #D4D4D8;
+    --text-muted:      #A1A1AA;
+    --text-faint:      #71717A;
 
-    /* ── Screen ── */
-    .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
-    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+    --accent:          linear-gradient(90deg, #8B5CF6 0%, #6366F1 60%, #3B82F6 100%);
+    --accent-strong:   #A78BFA;
+    --accent-fill:     linear-gradient(90deg, #A78BFA, #60A5FA);
+    --accent-soft:     rgba(167,139,250,0.14);
+    --accent-pill-text:#FFFFFF;
 
-    /* ── Card ── */
-    .brick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;position:relative;overflow:hidden;}
-    .brick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
+    --track:           rgba(255,255,255,0.08);
 
-    /* ── Typography ── */
-    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.5rem;}
-    .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5;}
+    --dot-survie:      #F472B6;
+    --dot-construction:#FBBF24;
+    --dot-invest:      #34D399;
 
-    /* ── Reassurance bubble ── */
-    .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-dim);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green);margin-bottom:1.25rem;}
+    --shadow-card:     0 1px 2px rgba(0,0,0,0.4), 0 4px 24px rgba(0,0,0,0.20);
+    --shadow-hover:    0 4px 28px rgba(0,0,0,0.45);
 
-    /* ── Inputs ── */
-    .field-group{margin-bottom:1.25rem;}
-    .field-label{font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.4rem;}
-    .field-help{font-size:0.75rem;color:var(--text-faint);margin-top:0.3rem;}
-    .field-input{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
-    .field-input:focus{border-color:var(--violet);outline:none;}
-    .field-input::placeholder{color:var(--text-faint);}
-    .field-error{font-size:0.75rem;color:var(--orange);margin-top:0.3rem;}
+    --green:           #4ade80;
 
-    /* ── Chips ── */
-    .chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
-    .chip{padding:0.5rem 1rem;border-radius:var(--r-full);background:var(--surface-2);border:1.5px solid var(--border);font-size:0.85rem;color:var(--text-muted);cursor:pointer;transition:all var(--t);}
-    .chip:hover{border-color:var(--border-hover);color:var(--text);}
-    .chip.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);color:#a5b4fc;font-weight:600;}
+    --surface:         rgba(255,255,255,0.04);
+    --surface-2:       rgba(255,255,255,0.06);
+    --surface-3:       rgba(255,255,255,0.09);
+    --border:          rgba(255,255,255,0.06);
 
-    /* ── Buttons ── */
-    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
-    .btn-primary:hover{box-shadow:0 0 40px rgba(99,102,241,0.5),0 6px 20px rgba(0,0,0,0.5);}
-    .btn-primary:active{transform:scale(0.98);}
-    .btn-primary:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
-    .btn-secondary{display:flex;align-items:center;justify-content:center;gap:0.4rem;width:100%;padding:0.75rem;font-size:0.82rem;color:var(--text-faint);text-decoration:underline;text-underline-offset:3px;transition:color var(--t);margin-top:0.5rem;}
-    .btn-secondary:hover{color:var(--text-muted);}
-    .text-link{font-size:0.8rem;color:var(--violet);cursor:pointer;text-decoration:underline;text-underline-offset:3px;background:none;border:none;padding:0;transition:color var(--t);}
-    .text-link:hover{color:var(--purple);}
+    --indigo:          #818CF8;
+    --violet:          #A78BFA;
+    --indigo-dim:      rgba(99,102,241,0.14);
+    --indigo-glow:     rgba(99,102,241,0.22);
 
-    /* ── Sticky total bar ── */
-    .sticky-total{position:sticky;bottom:0;background:rgba(11,13,23,0.92);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:0.875rem 1rem;display:flex;justify-content:space-between;align-items:center;margin:1.5rem -1.5rem -6rem;z-index:50;}
-    .sticky-label{font-size:0.82rem;color:var(--text-muted);}
-    .sticky-value{font-size:1.1rem;font-weight:800;color:#fff;transition:color 0.3s;}
-    .sticky-value.flash{color:var(--violet);}
+    --v3-bg-elevated:  #161824;
+    --v3-border-subtle:rgba(255,255,255,.08);
+    --v3-text:         #F5F5F4;
+    --v3-text-secondary:#D4D4D8;
+    --v3-text-muted:   #A1A1AA;
+    --v3-text-faint:   #71717A;
+    --v3-accent-strong:#A78BFA;
+    --v3-accent-soft:  rgba(167,139,250,.14);
+    --v3-track:        rgba(255,255,255,.08);
+    --v3-dot-survie:   #F472B6;
+    --v3-shadow-card:  0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
+  }
 
-    /* ── Accordion ── */
-    .accordion{border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden;margin-bottom:0.625rem;}
-    .accordion-header{display:flex;align-items:center;justify-content:space-between;padding:0.875rem 1rem;background:var(--surface-2);cursor:pointer;transition:background var(--t);}
-    .accordion-header:hover{background:var(--surface-3);}
-    .accordion-title{font-size:0.875rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:0.5rem;}
-    .accordion-arrow{transition:transform 0.2s;color:var(--text-faint);}
-    .accordion.open .accordion-arrow{transform:rotate(180deg);}
-    .accordion-body{max-height:0;overflow:hidden;transition:max-height 0.35s var(--ease-out);padding:0 1rem;}
-    .accordion.open .accordion-body{max-height:600px;padding:1rem;}
-    .accordion-amount{font-size:0.8rem;color:var(--text-muted);font-weight:500;}
-    .badge{font-size:0.65rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:var(--r-full);background:var(--orange-dim);border:1px solid var(--orange-border);color:var(--orange);text-transform:uppercase;letter-spacing:0.04em;}
+  /* ── Reset ── */
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  html { -webkit-font-smoothing:antialiased; }
+  body {
+    min-height:100dvh;
+    background: var(--bg);
+    color: var(--text);
+    font-family:'Inter', system-ui, sans-serif;
+    font-size:1rem; line-height:1.6;
+    overflow-x:hidden;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  html.dark body {
+    background: radial-gradient(1100px 600px at 70% -5%, #1E1B4B 0%, transparent 55%),
+                linear-gradient(180deg, #0B0B1A 0%, #050507 100%);
+    background-attachment: fixed;
+  }
+  button { cursor:pointer; background:none; border:none; font:inherit; color:inherit; }
+  a { color:inherit; text-decoration:none; }
+  :focus-visible { outline:2px solid var(--accent-strong); outline-offset:3px; border-radius:var(--r-sm); }
+  @media(prefers-reduced-motion:reduce){ *,*::before,*::after{ animation-duration:.01ms!important; transition-duration:.01ms!important; } }
 
-    /* ── Slider ── */
-    .range-wrap{position:relative;margin:0.75rem 0;}
-    .range-wrap input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:var(--surface-3);border-radius:var(--r-full);outline:none;cursor:pointer;}
-    .range-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:linear-gradient(135deg,var(--indigo),var(--purple));border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(99,102,241,0.4);}
-    .range-wrap input[type=range]::-moz-range-thumb{width:20px;height:20px;background:linear-gradient(135deg,var(--indigo),var(--purple));border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(99,102,241,0.4);border:none;}
-    .range-labels{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-faint);margin-top:0.25rem;}
-    .range-value{font-size:0.8rem;font-weight:600;color:var(--violet);margin-top:0.35rem;}
+  /* ── Sidebar shell ── */
+  .f-sidebar-shell { display:flex; min-height:100dvh; }
 
-    /* ── Variable category row ── */
-    .var-category{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;margin-bottom:0.625rem;transition:border-color var(--t);}
-    .var-category.filled{border-color:rgba(99,102,241,0.3);}
-    .var-cat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;}
-    .var-cat-name{font-size:0.875rem;font-weight:600;color:var(--text);}
-    .var-cat-amount{font-size:0.85rem;font-weight:700;color:var(--text-muted);}
-    .var-cat-amount.has-value{color:var(--violet);}
+  /* ── Animations ── */
+  @keyframes slideUp    { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes stripe     { to { background-position:-200% 0; } }
+  @keyframes fadeSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn     { from { opacity:0; } to { opacity:1; } }
+  @keyframes countUp    { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+  @keyframes donutDraw  { from { stroke-dashoffset: 400; } to { stroke-dashoffset: var(--target); } }
 
-    /* ── Completion indicator ── */
-    .completion-bar{display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;font-size:0.8rem;color:var(--text-muted);}
-    .completion-track{flex:1;height:4px;background:var(--surface-3);border-radius:var(--r-full);overflow:hidden;}
-    .completion-fill{height:100%;background:linear-gradient(90deg,var(--indigo),var(--purple));border-radius:var(--r-full);transition:width 0.4s var(--ease-out);}
+  /* ══════════════════════════════════════════════════════════════
+     PROGRESS PANEL (colonne droite — sticky)
+  ══════════════════════════════════════════════════════════════ */
+  .brique-layout {
+    display:grid;
+    grid-template-columns:1fr 320px;
+    gap:2rem;
+    max-width:1080px;
+    margin:0 auto;
+    padding:2rem 2rem 6rem;
+    align-items:start;
+  }
+  @media(max-width:768px) {
+    .brique-layout { grid-template-columns:1fr; padding:1rem 1rem 5rem; }
+    .brique-progress-col { display:none; }
+  }
 
-    /* ── Banner ── */
-    .banner{display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1rem;border-radius:var(--r-md);background:var(--orange-dim);border:1px solid var(--orange-border);font-size:0.82rem;color:var(--orange);margin-bottom:1rem;}
-    .banner-info{display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1rem;border-radius:var(--r-md);background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;}
+  .brique-progress-col { position:sticky; top:5rem; }
 
-    /* ── Synthesis ── */
-    .synth-donut{display:flex;justify-content:center;margin:1.5rem 0;}
-    .synth-blocks{display:grid;grid-template-columns:1fr 1fr;gap:0.625rem;margin-bottom:1.25rem;}
-    .synth-block{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:0.875rem;}
-    .synth-block.full{grid-column:1/-1;}
-    .synth-block-label{font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;margin-bottom:0.25rem;}
-    .synth-block-value{font-size:1.2rem;font-weight:800;color:#fff;}
-    .synth-block-value.positive{color:var(--green);}
-    .synth-block-value.neutral{color:var(--orange);}
-    .synth-block-value.negative{color:var(--orange);}
-    .synth-msg{padding:1rem;border-radius:var(--r-md);background:var(--surface-2);border:1px solid var(--border);font-size:0.875rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.5;}
-    .synth-msg.positive{border-color:var(--green-border);color:var(--green);}
-    .synth-msg.tight{border-color:var(--orange-border);color:var(--orange);}
+  .brique-progress-card {
+    background: var(--v3-bg-elevated);
+    border:1px solid var(--v3-border-subtle);
+    border-radius:1.25rem;
+    box-shadow: var(--v3-shadow-card);
+    padding:1.5rem;
+  }
+  html.dark .brique-progress-card { backdrop-filter:blur(12px); }
 
-    /* ── Lever cards ── */
-    .lever-cards{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.25rem;}
-    .lever-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;cursor:default;transition:border-color var(--t),background var(--t);position:relative;}
-    .lever-card:hover{border-color:var(--border-hover);background:var(--surface-3);}
-    .lever-card-label{font-size:0.875rem;font-weight:600;color:var(--text);}
-    .lever-card-annual{font-size:0.75rem;color:var(--text-faint);margin-top:0.25rem;transition:color var(--t);}
-    .lever-card:hover .lever-card-annual{color:var(--violet);}
+  .bpc-kicker {
+    font-size:0.6875rem; font-weight:600;
+    letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--v3-accent-strong);
+    margin-bottom:0.625rem;
+  }
+  .bpc-title {
+    font-family:'Fraunces',serif;
+    font-size:0.9375rem; font-weight:400;
+    font-style:italic;
+    color:var(--v3-text);
+    margin-bottom:1.25rem;
+    line-height:1.35;
+  }
 
-    /* ── Engagement chips (screen 5) ── */
-    .engagement-options{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem;}
-    .eng-option{display:flex;align-items:center;gap:0.875rem;padding:1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:all var(--t);}
-    .eng-option:hover{border-color:var(--border-hover);}
-    .eng-option.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);}
-    .eng-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color var(--t);}
-    .eng-option.selected .eng-radio{border-color:var(--violet);}
-    .eng-radio-dot{width:8px;height:8px;border-radius:50%;background:var(--violet);opacity:0;transition:opacity var(--t);}
-    .eng-option.selected .eng-radio-dot{opacity:1;}
-    .eng-text{font-size:0.875rem;color:var(--text);flex:1;}
-    .eng-amount{display:inline-block;font-weight:700;color:var(--violet);}
+  /* Ring SVG */
+  .bpc-ring-wrap {
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:1.25rem;
+  }
+  .bpc-ring { transform:rotate(-90deg); }
+  .bpc-ring-bg { fill:none; stroke:var(--v3-track); stroke-width:6; }
+  .bpc-ring-fill {
+    fill:none; stroke:var(--v3-accent-strong); stroke-width:6;
+    stroke-linecap:round;
+    transition:stroke-dashoffset 0.8s var(--ease-out);
+  }
+  .bpc-ring-pct {
+    font-family:'Fraunces',serif;
+    font-size:1.125rem; font-weight:400;
+    fill:var(--v3-text);
+  }
 
-    /* ── Inline amount input in engagement ── */
-    .eng-inline-input{width:3.5rem;background:transparent;border:none;border-bottom:1.5px solid var(--violet);color:var(--violet);font-weight:700;font-size:0.875rem;text-align:center;padding:0 0.25rem;outline:none;}
+  /* Steps list */
+  .bpc-steps { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+  .bpc-step {
+    display:flex; align-items:flex-start; gap:0.625rem;
+    padding:0.5rem 0.625rem; border-radius:0.625rem;
+    color:var(--v3-text-faint); font-size:13px;
+    transition:background .15s, color .15s;
+  }
+  .bpc-step.active { background:var(--v3-accent-soft); color:var(--v3-text); }
+  .bpc-step.done   { color:var(--v3-text-muted); }
+  .bpc-step-num {
+    width:20px; height:20px; border-radius:50%;
+    background:var(--v3-track); color:var(--v3-text-faint);
+    font-size:10px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition:background .2s, color .2s;
+  }
+  .bpc-step.active .bpc-step-num { background:var(--v3-accent-strong); color:#fff; }
+  .bpc-step.done   .bpc-step-num { background:var(--v3-accent-soft); color:var(--v3-accent-strong); }
+  html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
+  .bpc-step-label { font-size:13px; font-weight:500; min-width:0; line-height:1.3; }
+  .bpc-step.active .bpc-step-label { color:var(--v3-text); font-weight:600; }
 
-    /* ── Bottom sheet overlay ── */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;opacity:0;pointer-events:none;transition:opacity 0.25s;display:flex;align-items:flex-end;}
-    .overlay.visible{opacity:1;pointer-events:all;}
-    .sheet{background:var(--surface);border-radius:var(--r-xl) var(--r-xl) 0 0;border:1px solid var(--border);border-bottom:none;padding:1.5rem 1.5rem 2rem;width:100%;max-width:640px;margin:0 auto;transform:translateY(100%);transition:transform 0.35s var(--ease-out);}
-    .overlay.visible .sheet{transform:translateY(0);}
-    .sheet-handle{width:2.5rem;height:4px;background:var(--border-hover);border-radius:var(--r-full);margin:0 auto 1.25rem;}
-    .sheet-title{font-size:1rem;font-weight:700;color:#fff;margin-bottom:1rem;}
-    .sheet-table{width:100%;border-collapse:collapse;}
-    .sheet-table td{padding:0.625rem 0;font-size:0.875rem;border-bottom:1px solid var(--border);}
-    .sheet-table td:last-child{text-align:right;font-weight:600;color:#fff;}
-    .sheet-table tr:last-child td{border-bottom:none;font-weight:700;color:var(--green);}
-    .sheet-close{margin-top:1.25rem;width:100%;padding:0.75rem;border-radius:var(--r-full);background:var(--surface-2);border:1px solid var(--border);font-size:0.875rem;color:var(--text-muted);cursor:pointer;transition:all var(--t);}
-    .sheet-close:hover{border-color:var(--border-hover);color:var(--text);}
+  /* Nav links en bas du panel */
+  .bpc-nav { display:flex; flex-direction:column; gap:0.375rem; padding-top:1rem; border-top:1px solid var(--v3-border-subtle); }
+  .bpc-nav-link {
+    display:flex; align-items:center; gap:0.5rem;
+    font-size:0.78rem; font-weight:500; color:var(--v3-text-muted);
+    padding:0.3rem 0.25rem; border-radius:0.375rem;
+    transition:color .15s;
+  }
+  .bpc-nav-link:hover { color:var(--v3-text); }
+  .bpc-nav-link svg { opacity:0.5; flex-shrink:0; }
 
-    /* ── Sub items inside accordion ── */
-    .sub-field-group{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;margin-bottom:0.625rem;}
-    .sub-field-label{font-size:0.82rem;color:var(--text-muted);flex:1;}
-    .sub-field-input{width:7rem;padding:0.5rem 0.75rem;background:var(--surface-3);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.85rem;text-align:right;transition:border-color var(--t);}
-    .sub-field-input:focus{border-color:var(--violet);outline:none;}
+  /* ══════════════════════════════════════════════════════════════
+     SCREENS (colonne gauche)
+  ══════════════════════════════════════════════════════════════ */
+  .screen { display:none; flex-direction:column; gap:1.5rem; animation:fadeSlideUp 0.35s var(--ease-out) both; }
+  .screen.active { display:flex; }
 
-    /* ── Exit card ── */
-    .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
-    .exit-icon{font-size:2.5rem;margin-bottom:1rem;}
-    .exit-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
-    .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
-    .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
-    .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
-    .exit-item-icon{flex-shrink:0;margin-top:0.1em;}
-    .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
-    .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
-    .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
-    .exit-next-text{flex:1;}
-    .exit-next-label{font-size:0.7rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;}
-    .exit-next-name{font-size:0.9rem;font-weight:600;color:var(--text);}
+  /* Progress bar top */
+  .brick-progress-bar {
+    display:flex; align-items:center; gap:0.75rem;
+    margin-bottom:0.5rem;
+  }
+  .brick-prog-dots { display:flex; gap:0.375rem; }
+  .brick-prog-dot {
+    width:6px; height:6px; border-radius:50%;
+    background:var(--track); transition:background 0.3s ease;
+  }
+  .brick-prog-dot.done { background:var(--accent-strong); }
+  html.dark .brick-prog-dot.done { background:#A78BFA; }
+  .brick-prog-dot.active { background:var(--accent-strong); opacity:0.5; }
+  html.dark .brick-prog-dot.active { background:#A78BFA; }
+  .f-track { height:2px; background:var(--track); border-radius:9999px; overflow:hidden; flex:1; }
+  .f-fill  { height:100%; background:var(--accent-fill); border-radius:9999px; transition:width 0.9s var(--ease-out); }
+  .f-fill.stripe {
+    background:repeating-linear-gradient(90deg,#8B5CF6 0,#8B5CF6 8px,#60A5FA 8px,#60A5FA 16px);
+    background-size:200% 100%; animation:stripe 1.5s linear infinite;
+  }
 
-    /* ── Nudge ── */
-    .nudge{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem 1rem;border-radius:var(--r-md);background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.2);font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem;animation:fadeSlideUp 0.3s var(--ease-out);}
+  /* ── Hero cream (screen 0) ── */
+  .hero-cream {
+    background: var(--cream-grad);
+    border:1px solid var(--cream-border);
+    border-radius:1.375rem;
+    padding:2.75rem 3rem 2.5rem;
+    position:relative; overflow:hidden;
+    transition:background 0.3s ease, border-color 0.3s ease;
+  }
+  html.dark .hero-cream { backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
+  .hero-cream::after {
+    content:'f';
+    font-family:'Instrument Serif','Fraunces',Georgia,serif;
+    font-style:italic; font-weight:300;
+    position:absolute; right:-0.25rem; bottom:-1.5rem;
+    font-size:14rem; line-height:1;
+    color:rgba(196,181,253,0.18);
+    pointer-events:none; user-select:none;
+  }
 
-    /* ── Tip ── */
-    .tip{font-size:0.78rem;color:var(--text-faint);font-style:italic;margin-bottom:1rem;padding:0.625rem 0.875rem;border-left:2px solid var(--border-hover);}
+  .hero-kicker {
+    font-size:0.6875rem; font-weight:600;
+    letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--text-muted); margin-bottom:1.125rem;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  html.dark .hero-kicker { color:#A5B4FC; }
+  .hero-kicker .dot-cat {
+    width:6px; height:6px; border-radius:50%;
+    background:var(--dot-survie); flex-shrink:0;
+  }
 
-    /* ── Orientation card ── */
-    .orientation-card{background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.25);border-radius:var(--r-md);padding:1rem;margin-top:0.75rem;font-size:0.82rem;color:var(--text-muted);}
-    .orientation-card strong{color:var(--violet);}
+  .hero-title {
+    font-family:'Fraunces','Instrument Serif',Georgia,serif;
+    font-size:clamp(1.5rem, 3.5vw, 2rem);
+    font-weight:400; line-height:1.15;
+    letter-spacing:-0.02em;
+    color:var(--text); margin-bottom:0.875rem;
+  }
+  .hero-title em { font-style:italic; font-weight:300; }
 
-    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-    @keyframes popIn{from{transform:scale(0.4);opacity:0;}to{transform:scale(1);opacity:1;};}
+  .hero-desc {
+    font-size:0.9375rem; color:var(--text-muted);
+    max-width:480px; line-height:1.6; margin-bottom:2rem;
+  }
 
-    @media(max-width:520px){
-      nav{padding:0.875rem 1rem;}
-      main{padding:1.5rem 1rem 5rem;}
-      .brick-card{padding:1.5rem;}
-      .synth-blocks{grid-template-columns:1fr;}
-      .synth-block.full{grid-column:1;}
-    }
+  .badge-rassurant {
+    display:inline-flex; align-items:center; gap:0.4rem;
+    padding:0.35rem 0.75rem;
+    background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2);
+    border-radius:9999px;
+    font-size:0.78rem; font-weight:500; color:var(--green);
+    margin-bottom:1.75rem;
+  }
+
+  .hero-actions { display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap; }
+
+  .btn-hero-primary {
+    display:inline-flex; align-items:center; gap:0.5rem;
+    padding:0.75rem 1.375rem; border-radius:9999px;
+    background:var(--accent); color:var(--accent-pill-text);
+    font-size:0.875rem; font-weight:600; border:none; cursor:pointer;
+    transition:filter 0.2s ease, transform 0.12s ease;
+  }
+  html.dark .btn-hero-primary {
+    box-shadow:0 8px 28px -10px rgba(99,102,241,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .btn-hero-primary:hover { filter:brightness(0.95); }
+  html.dark .btn-hero-primary:hover { filter:brightness(1.08); }
+  .btn-hero-primary:active { transform:scale(0.98); }
+  .btn-hero-primary:disabled { opacity:0.45; cursor:not-allowed; filter:none; }
+
+  .btn-hero-secondary {
+    font-size:0.8125rem; font-weight:500; color:var(--text-muted);
+    text-decoration:none; cursor:pointer;
+    transition:color var(--t);
+    background:none; border:none;
+  }
+  .btn-hero-secondary:hover { color:var(--text); }
+
+  /* ── Brick card (écrans 1-4) ── */
+  .brick-card {
+    background:var(--bg-elevated);
+    border:1px solid var(--border-subtle);
+    border-radius:1.25rem;
+    box-shadow:var(--shadow-card);
+    padding:2rem 2.25rem;
+    position:relative; overflow:hidden;
+    transition:background 0.3s ease, border-color 0.3s ease;
+  }
+  html.dark .brick-card { backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+  .brick-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:280px;
+    background:radial-gradient(ellipse 60% 40% at 50% 0%, var(--accent-soft) 0%, transparent 100%);
+    opacity:0.06; pointer-events:none;
+  }
+
+  .brick-kicker {
+    font-size:0.6875rem; font-weight:600;
+    letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--text-muted); margin-bottom:0.875rem;
+  }
+  html.dark .brick-kicker { color:#A5B4FC; }
+
+  .brick-title {
+    font-family:'Fraunces','Instrument Serif',Georgia,serif;
+    font-size:clamp(1.5rem, 3.5vw, 2rem);
+    font-weight:400; font-style:italic;
+    line-height:1.15; letter-spacing:-0.02em;
+    color:var(--text); margin-bottom:0.625rem;
+  }
+  .brick-subtitle {
+    font-size:0.9rem; color:var(--text-muted);
+    margin-bottom:1.75rem; line-height:1.55;
+  }
+
+  /* ── Champs ── */
+  .field-group { display:flex; flex-direction:column; gap:0.375rem; }
+  .field-label {
+    font-size:0.82rem; font-weight:600; color:var(--text);
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .field-help  { font-size:0.75rem; color:var(--text-faint); margin-top:0.2rem; }
+
+  .badge-prefilled {
+    font-size:0.6rem; font-weight:600; letter-spacing:0.06em;
+    color:var(--green); background:rgba(34,197,94,0.08);
+    border-radius:9999px; padding:0.15rem 0.45rem;
+    white-space:nowrap;
+  }
+
+  .field-input {
+    width:100%; padding:0.75rem 1rem;
+    background:var(--surface-2);
+    border:1.5px solid var(--border-mid);
+    border-radius:var(--r-md);
+    color:var(--text); font-size:0.95rem; font-family:inherit;
+    transition:border-color var(--t), box-shadow var(--t);
+  }
+  .field-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+  .field-input::placeholder { color:var(--text-faint); }
+  .field-input.prefilled { border-color:rgba(34,197,94,0.3); }
+  .field-input.prefilled:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,0.1); }
+
+  /* Grille 2 champs */
+  .fields-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:520px) { .fields-grid { grid-template-columns:1fr; } }
+
+  /* ── Fourchette revenus (chips) ── */
+  .fourchette-link {
+    font-size:0.75rem; color:var(--accent-strong); cursor:pointer;
+    margin-top:0.25rem; display:inline-block;
+    transition:opacity var(--t);
+  }
+  html.dark .fourchette-link { color:#A78BFA; }
+  .fourchette-link:hover { opacity:0.7; }
+
+  .fourchette-chips {
+    display:flex; flex-wrap:wrap; gap:0.5rem;
+    margin-top:0.5rem; display:none;
+  }
+  .fourchette-chips.visible { display:flex; }
+  .chip-fourchette {
+    padding:0.4rem 0.875rem; border-radius:9999px;
+    background:var(--surface-2); border:1.5px solid var(--border-mid);
+    font-size:0.8rem; color:var(--text-muted); cursor:pointer;
+    transition:all var(--t);
+  }
+  .chip-fourchette:hover { border-color:var(--border-hover); color:var(--text); }
+  .chip-fourchette.selected { background:var(--accent-soft); border-color:var(--accent-strong); color:var(--accent-strong); }
+
+  /* ── Nudge épargne ── */
+  .nudge-epargne {
+    display:none; align-items:center; gap:0.5rem;
+    padding:0.4rem 0.875rem; border-radius:9999px;
+    background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.18);
+    font-size:0.78rem; color:#6366F1;
+    margin-top:0.375rem;
+  }
+  html.dark .nudge-epargne { color:#A78BFA; background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.2); }
+  .nudge-epargne.visible { display:flex; }
+
+  /* ── Séparateur section ── */
+  .section-sep {
+    display:flex; align-items:center; gap:0.75rem;
+    margin:0.25rem 0;
+  }
+  .section-sep-line { flex:1; height:1px; background:var(--border-subtle); }
+  .section-sep-label { font-size:0.75rem; color:var(--text-faint); white-space:nowrap; }
+
+  /* ── Bloc 2 révélé ── */
+  .bloc-revele {
+    display:none; flex-direction:column; gap:1rem;
+    animation:fadeSlideUp 0.4s var(--ease-out) both;
+  }
+  .bloc-revele.visible { display:flex; }
+
+  /* ── Bouton affiner ── */
+  .affiner-btn {
+    display:flex; flex-direction:column; align-items:flex-start;
+    gap:0.15rem; padding:0.625rem 0;
+    background:none; border:none; cursor:pointer;
+    text-align:left;
+  }
+  .affiner-btn-label { font-size:0.8125rem; font-weight:500; color:var(--accent-strong); }
+  html.dark .affiner-btn-label { color:#A78BFA; }
+  .affiner-btn-sub { font-size:0.75rem; color:var(--text-faint); }
+  .bloc-affine { display:none; flex-direction:column; gap:1rem; animation:fadeSlideUp 0.4s var(--ease-out) both; }
+  .bloc-affine.visible { display:flex; }
+
+  /* ── Sticky bar ── */
+  .sticky-bar {
+    position:sticky; bottom:0; z-index:50;
+    margin:0 -2.25rem -2rem;
+    padding:1rem 2.25rem;
+    border-top:1px solid var(--border-subtle);
+    background:var(--bg-elevated);
+    backdrop-filter:blur(12px);
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; flex-wrap:wrap;
+    transition:background 0.3s ease;
+  }
+  html.dark .sticky-bar { background:rgba(22,24,36,0.95); }
+  .sticky-bar-amounts {
+    display:flex; align-items:baseline; gap:0.75rem;
+  }
+  .sticky-bar-item {
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .sticky-bar-val {
+    font-family:'Fraunces',serif;
+    font-size:1.125rem; font-weight:400; line-height:1;
+    transition:color 0.3s ease;
+  }
+  .sticky-bar-sub { font-size:0.65rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; }
+  .sticky-bar-sep { font-size:1.25rem; color:var(--border-mid); line-height:1; }
+  .sticky-bar-ral { font-family:'Fraunces',serif; font-size:1.375rem; font-weight:400; line-height:1; }
+  .sticky-bar-ral.positive { color:var(--green); }
+  .sticky-bar-ral.warning  { color:var(--orange); }
+  .sticky-bar-ral.negative { color:var(--red); }
+
+  /* ── Insight card ── */
+  .insight-card {
+    background:var(--bg-elevated);
+    border:1px solid var(--border-subtle);
+    border-radius:1rem; padding:1.25rem 1.5rem;
+    box-shadow:var(--shadow-card);
+    transition:background 0.3s ease, border-color 0.3s ease;
+  }
+  html.dark .insight-card { backdrop-filter:blur(12px); }
+  .insight-kicker {
+    font-size:0.6875rem; font-weight:600;
+    letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--accent-strong); margin-bottom:0.625rem;
+  }
+  html.dark .insight-kicker { color:#A78BFA; }
+  .insight-figure {
+    font-family:'Fraunces',serif;
+    font-size:1rem; font-weight:400; line-height:1.55;
+    color:var(--text);
+  }
+  .insight-figure em { font-style:italic; font-weight:300; }
+  .insight-sub { font-size:0.8125rem; color:var(--text-muted); line-height:1.65; margin-top:0.5rem; }
+
+  /* ── Messages contextuels (screen 2) ── */
+  .msg-card {
+    padding:1rem 1.25rem; border-radius:0.875rem;
+    border:1px solid;
+    font-size:0.875rem; line-height:1.55;
+    animation:fadeSlideUp 0.35s var(--ease-out) both;
+  }
+  .msg-card-label {
+    font-size:0.6875rem; font-weight:600;
+    letter-spacing:0.12em; text-transform:uppercase;
+    margin-bottom:0.375rem;
+  }
+
+  /* ── Double donut (screen 2) ── */
+  .donuts-wrap {
+    display:flex; gap:2rem; justify-content:center; flex-wrap:wrap;
+    padding:1.5rem 0;
+  }
+  .donut-block { display:flex; flex-direction:column; align-items:center; gap:0.75rem; }
+  .donut-label { font-size:0.75rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; }
+  .donut-legend { display:flex; flex-direction:column; gap:0.3rem; }
+  .donut-legend-item { display:flex; align-items:center; gap:0.5rem; font-size:0.78rem; color:var(--text-muted); }
+  .donut-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+  /* ── Barres proportionnelles ── */
+  .sankey-block { display:flex; flex-direction:column; gap:0.625rem; }
+  .sankey-row { display:flex; flex-direction:column; gap:0.25rem; }
+  .sankey-row-head { display:flex; justify-content:space-between; align-items:center; }
+  .sankey-row-name { font-size:0.8rem; font-weight:500; color:var(--text-secondary); }
+  .sankey-row-val  { font-size:0.78rem; color:var(--text-faint); }
+  .sankey-bar-track { height:6px; background:var(--track); border-radius:9999px; overflow:hidden; }
+  .sankey-bar-fill  { height:100%; border-radius:9999px; transition:width 0.9s var(--ease-out); }
+
+  /* Leviers rapides */
+  .leviers-grid { display:grid; grid-template-columns:1fr; gap:0.625rem; }
+  .levier-card {
+    padding:0.875rem 1rem;
+    background:var(--bg-elevated);
+    border:1px solid var(--border-subtle);
+    border-radius:0.875rem;
+    box-shadow:var(--shadow-card);
+    display:flex; align-items:flex-start; gap:0.625rem;
+  }
+  .levier-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+  .levier-body { flex:1; min-width:0; }
+  .levier-title { font-size:0.875rem; font-weight:600; color:var(--text); }
+  .levier-sub { font-size:0.78rem; color:var(--text-faint); margin-top:0.15rem; }
+
+  /* ── Screen 3 — Dettes ── */
+  .dette-row {
+    display:flex; align-items:flex-start; gap:0.625rem;
+    padding:0.875rem 1rem;
+    background:var(--surface-2);
+    border:1px solid var(--border-subtle);
+    border-radius:0.875rem;
+    transition:border-color var(--t);
+    animation:fadeSlideUp 0.3s var(--ease-out) both;
+  }
+  .dette-row:hover { border-color:var(--border-mid); }
+  .dette-row-icon { font-size:1.125rem; flex-shrink:0; line-height:1; margin-top:2px; }
+  .dette-row-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:0.375rem; }
+  .dette-row-fields { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+  @media(max-width:520px) { .dette-row-fields { grid-template-columns:1fr; } }
+  .dette-row-select {
+    padding:0.45rem 0.75rem;
+    background:var(--surface-3); border:1px solid var(--border-mid);
+    border-radius:var(--r-sm); color:var(--text);
+    font-size:0.85rem; font-family:inherit; cursor:pointer;
+    transition:border-color var(--t);
+  }
+  .dette-row-select:focus { outline:none; border-color:var(--accent-strong); }
+  .dette-row-input {
+    padding:0.45rem 0.75rem;
+    background:var(--surface-3); border:1px solid var(--border-mid);
+    border-radius:var(--r-sm); color:var(--text);
+    font-size:0.85rem; font-family:inherit;
+    transition:border-color var(--t);
+  }
+  .dette-row-input:focus { outline:none; border-color:var(--accent-strong); }
+  .dette-row-input::placeholder { color:var(--text-faint); }
+  .dette-row-delete {
+    font-size:1.25rem; color:var(--text-faint); padding:0.25rem;
+    border-radius:var(--r-sm); transition:color var(--t), background var(--t);
+    flex-shrink:0; align-self:center;
+  }
+  .dette-row-delete:hover { color:var(--red); background:rgba(248,113,113,0.08); }
+  .dette-classification {
+    display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;
+    padding-top:0.25rem;
+  }
+
+  /* Badges statut dette */
+  .badge-dette {
+    font-size:0.6875rem; font-weight:600; letter-spacing:0.06em;
+    border-radius:9999px; padding:0.2rem 0.5rem; white-space:nowrap;
+  }
+  .badge-dette.vert  { color:var(--green);   background:rgba(34,197,94,0.08); }
+  .badge-dette.jaune { color:#FBBF24;         background:rgba(251,191,36,0.10); }
+  .badge-dette.orange{ color:#FB923C;          background:rgba(251,146,60,0.12); }
+  .badge-dette.rouge { color:#F87171;           background:rgba(248,113,113,0.12); }
+
+  .dette-cta {
+    font-size:0.75rem; font-weight:600; color:var(--accent-strong);
+    padding:0.2rem 0.5rem; border-radius:9999px;
+    border:1px solid var(--accent-soft);
+    transition:background var(--t);
+    white-space:nowrap;
+  }
+  html.dark .dette-cta { color:#A78BFA; border-color:rgba(167,139,250,0.2); }
+  .dette-cta:hover { background:var(--accent-soft); }
+
+  .dette-msg { font-size:0.78rem; color:var(--text-muted); font-style:italic; }
+
+  .add-dette-btn {
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.625rem 1rem; border-radius:9999px;
+    border:1.5px dashed var(--border-mid);
+    font-size:0.8125rem; font-weight:500; color:var(--text-muted);
+    cursor:pointer; transition:border-color var(--t), color var(--t);
+    width:fit-content;
+  }
+  .add-dette-btn:hover { border-color:var(--accent-strong); color:var(--accent-strong); }
+  html.dark .add-dette-btn:hover { color:#A78BFA; border-color:#A78BFA; }
+
+  /* Pas de dette card */
+  .no-dette-card {
+    padding:1rem 1.25rem; border-radius:0.875rem;
+    border:1px solid rgba(34,197,94,0.25);
+    background:rgba(34,197,94,0.06);
+    font-size:0.875rem; color:var(--text-muted);
+    display:flex; align-items:center; gap:0.625rem;
+  }
+
+  /* Popup ajout dette oublié */
+  .dette-oublie-link {
+    font-size:0.78rem; color:var(--text-faint); cursor:pointer;
+    margin-top:0.375rem; display:inline-block;
+    transition:color var(--t);
+  }
+  .dette-oublie-link:hover { color:var(--text-muted); }
+  .dette-oublie-tip {
+    display:none; padding:0.75rem 1rem; border-radius:0.75rem;
+    background:var(--surface-2); border:1px solid var(--border-subtle);
+    font-size:0.8rem; color:var(--text-muted); line-height:1.55;
+    animation:fadeIn 0.2s ease both;
+  }
+  .dette-oublie-tip.visible { display:block; }
+
+  /* ── Screen 4 — Récap + engagement ── */
+  .recap-grid {
+    display:grid; grid-template-columns:repeat(2,1fr); gap:0.625rem;
+  }
+  @media(max-width:520px) { .recap-grid { grid-template-columns:1fr; } }
+  .recap-block {
+    padding:1rem 1.125rem;
+    background:var(--bg-elevated);
+    border:1px solid var(--border-subtle);
+    border-radius:0.875rem;
+    box-shadow:var(--shadow-card);
+  }
+  .recap-val {
+    font-family:'Fraunces',serif;
+    font-size:1.375rem; font-weight:400; line-height:1;
+    margin-bottom:0.25rem;
+  }
+  .recap-label {
+    font-size:0.6875rem; font-weight:600;
+    text-transform:uppercase; letter-spacing:0.1em;
+    color:var(--text-faint);
+  }
+
+  /* Brique recommandée card (style hero-cream compact) */
+  .reco-card {
+    background:var(--cream-grad);
+    border:1px solid var(--cream-border);
+    border-radius:1.125rem;
+    padding:1.5rem 1.75rem;
+    position:relative; overflow:hidden;
+  }
+  html.dark .reco-card { backdrop-filter:blur(12px); }
+  .reco-card::after {
+    content:attr(data-glyph);
+    font-family:'Instrument Serif',serif; font-style:italic;
+    position:absolute; right:-0.5rem; bottom:-1.5rem;
+    font-size:8rem; line-height:1;
+    color:rgba(196,181,253,0.15);
+    pointer-events:none; user-select:none;
+  }
+  .reco-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.4rem; }
+  .reco-title { font-family:'Fraunces',serif; font-size:1.125rem; font-weight:400; color:var(--text); margin-bottom:0.375rem; }
+  .reco-desc { font-size:0.8125rem; color:var(--text-muted); margin-bottom:1.25rem; line-height:1.55; }
+
+  /* Options engagement */
+  .engagement-options { display:flex; flex-direction:column; gap:0.625rem; }
+  .eng-option {
+    display:flex; align-items:flex-start; gap:0.75rem;
+    padding:0.875rem 1rem;
+    background:var(--surface-2); border:1.5px solid var(--border-subtle);
+    border-radius:0.875rem; cursor:pointer;
+    transition:border-color var(--t), background var(--t);
+  }
+  .eng-option:hover { border-color:var(--border-mid); }
+  .eng-option.selected { background:var(--accent-soft); border-color:var(--accent-strong); }
+  .eng-option input[type="radio"] { display:none; }
+  .eng-option-radio {
+    width:18px; height:18px; border-radius:50%;
+    border:2px solid var(--border-mid); flex-shrink:0; margin-top:2px;
+    display:flex; align-items:center; justify-content:center;
+    transition:border-color var(--t), background var(--t);
+  }
+  .eng-option.selected .eng-option-radio { border-color:var(--accent-strong); background:var(--accent-strong); }
+  .eng-option.selected .eng-option-radio::after { content:''; width:6px; height:6px; border-radius:50%; background:#fff; }
+  .eng-option-body { flex:1; min-width:0; }
+  .eng-option-label { font-size:0.875rem; font-weight:500; color:var(--text); line-height:1.4; }
+  .eng-montant-inline {
+    background:none; border:none; border-bottom:1.5px solid var(--accent-strong);
+    color:var(--accent-strong); font-weight:700; font-family:inherit; font-size:0.875rem;
+    width:3.5rem; text-align:center; padding:0 0.15rem;
+    transition:border-color var(--t);
+  }
+  html.dark .eng-montant-inline { color:#A78BFA; border-color:#A78BFA; }
+  .eng-montant-inline:focus { outline:none; }
+
+  /* ── Screen Exit ── */
+  .exit-card {
+    padding:2rem; border-radius:1.25rem;
+    border:1px solid rgba(34,197,94,0.25);
+    background:rgba(34,197,94,0.04);
+  }
+  .exit-title { font-family:'Fraunces',serif; font-size:1.5rem; font-weight:400; color:var(--text); margin-bottom:0.5rem; }
+  .exit-subtitle { font-size:0.875rem; color:var(--text-muted); margin-bottom:1.5rem; line-height:1.55; }
+  .exit-recap { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+  .exit-line { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-bottom:1px solid var(--border-subtle); font-size:0.875rem; }
+  .exit-line-label { color:var(--text-muted); }
+  .exit-line-val { font-weight:600; color:var(--text); }
+
+  /* ══════════════════════════════════════════════════════════════
+     POPUP ABONNEMENTS (bottom sheet overlay)
+  ══════════════════════════════════════════════════════════════ */
+  .popup-overlay {
+    position:fixed; inset:0; z-index:500;
+    background:rgba(0,0,0,0.45);
+    backdrop-filter:blur(4px);
+    display:flex; align-items:flex-end; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.25s ease;
+  }
+  html.dark .popup-overlay { background:rgba(0,0,0,0.65); }
+  .popup-overlay.open { opacity:1; pointer-events:all; }
+
+  .popup-sheet {
+    width:100%; max-width:640px;
+    max-height:90dvh; overflow-y:auto;
+    background:var(--bg-elevated);
+    border-radius:1.5rem 1.5rem 0 0;
+    padding:1.5rem 1.5rem 2.5rem;
+    transform:translateY(40px);
+    transition:transform 0.3s var(--ease-out);
+  }
+  html.dark .popup-sheet { background:#161824; }
+  .popup-overlay.open .popup-sheet { transform:translateY(0); }
+
+  .popup-handle {
+    width:40px; height:4px; border-radius:9999px;
+    background:var(--border-mid); margin:0 auto 1.25rem;
+  }
+  .popup-title {
+    font-family:'Fraunces',serif;
+    font-size:1.25rem; font-weight:400; font-style:italic;
+    color:var(--text); margin-bottom:1.5rem;
+  }
+
+  /* Checklist abonnements */
+  .abo-list { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.25rem; }
+  .abo-item {
+    display:flex; align-items:center; gap:0.75rem;
+    padding:0.75rem 1rem;
+    background:var(--surface-2); border:1.5px solid var(--border-subtle);
+    border-radius:0.875rem; cursor:pointer;
+    transition:border-color var(--t), background var(--t);
+  }
+  .abo-item:hover { border-color:var(--border-mid); }
+  .abo-item.checked { background:var(--accent-soft); border-color:var(--accent-strong); }
+  .abo-item-check {
+    width:20px; height:20px; border-radius:5px;
+    border:2px solid var(--border-mid); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    transition:all var(--t);
+  }
+  .abo-item.checked .abo-item-check {
+    background:var(--accent-strong); border-color:var(--accent-strong);
+  }
+  .abo-item.checked .abo-item-check::after { content:'✓'; color:#fff; font-size:0.75rem; font-weight:700; }
+  .abo-item-emoji { font-size:1.125rem; flex-shrink:0; }
+  .abo-item-name { flex:1; font-size:0.875rem; font-weight:500; color:var(--text); }
+  .abo-item-montant {
+    width:70px; padding:0.35rem 0.5rem;
+    background:var(--surface-3); border:1px solid var(--border-mid);
+    border-radius:var(--r-sm); color:var(--text); font-size:0.85rem;
+    font-family:inherit; text-align:right;
+    transition:border-color var(--t);
+  }
+  .abo-item-montant:focus { outline:none; border-color:var(--accent-strong); }
+
+  /* Section "non utilisés" */
+  .abo-non-utilises { display:none; flex-direction:column; gap:0.5rem; animation:fadeSlideUp 0.3s var(--ease-out) both; }
+  .abo-non-utilises.visible { display:flex; }
+  .abo-non-utilises-title { font-size:0.8125rem; font-weight:600; color:var(--text-secondary); margin-bottom:0.25rem; }
+
+  /* Compteur économie */
+  .abo-economie {
+    padding:1rem 1.25rem; border-radius:0.875rem;
+    background:var(--bg-elevated); border:1px solid var(--border-subtle);
+    box-shadow:var(--shadow-card);
+    display:none;
+  }
+  .abo-economie.visible { display:block; }
+  .abo-eco-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.375rem; }
+  html.dark .abo-eco-kicker { color:#A78BFA; }
+  .abo-eco-val {
+    font-family:'Fraunces',serif; font-style:italic;
+    font-size:1.5rem; font-weight:400; color:var(--text);
+    animation:countUp 0.4s var(--ease-out) both;
+  }
+  .abo-eco-sub { font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem; }
+
+  /* Card frais bancaires */
+  .abo-frais-card {
+    margin-top:1rem; padding:0.875rem 1rem; border-radius:0.875rem;
+    background:var(--surface-2); border:1px solid var(--border-subtle);
+    font-size:0.8125rem; color:var(--text-muted); line-height:1.55;
+  }
+  .abo-frais-card-icon { font-size:1rem; margin-right:0.375rem; }
+
+  /* CTA ajouter premiers-pas-bancaires */
+  .abo-add-brique {
+    display:flex; align-items:center; gap:0.75rem;
+    margin-top:1rem; padding:0.875rem 1rem;
+    border-radius:9999px; cursor:pointer;
+    background:var(--accent); color:var(--accent-pill-text);
+    font-size:0.875rem; font-weight:600;
+    transition:filter 0.2s ease;
+    border:none; font-family:inherit; width:100%; justify-content:center;
+  }
+  html.dark .abo-add-brique { box-shadow:0 6px 20px -8px rgba(99,102,241,0.5); }
+  .abo-add-brique:hover { filter:brightness(0.95); }
+  html.dark .abo-add-brique:hover { filter:brightness(1.08); }
+  .abo-add-brique.added { background:rgba(34,197,94,0.12); color:var(--green); cursor:default; filter:none; }
+
+  /* Bouton fermer popup */
+  .popup-close { position:absolute; top:1.25rem; right:1.25rem; font-size:1.25rem; color:var(--text-faint); cursor:pointer; transition:color var(--t); }
+  .popup-close:hover { color:var(--text); }
+
+  /* ── Boutons navigation écrans ── */
+  .nav-btns { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding-top:0.5rem; }
+  .btn-back {
+    display:flex; align-items:center; gap:0.375rem;
+    font-size:0.8125rem; font-weight:500; color:var(--text-muted);
+    padding:0.5rem 0; cursor:pointer;
+    transition:color var(--t);
+  }
+  .btn-back:hover { color:var(--text); }
+
+  /* Responsive */
+  @media(max-width:520px) {
+    .brique-layout { padding:1rem 1rem 5rem; }
+    .brick-card { padding:1.5rem 1.25rem; }
+    .hero-cream { padding:2rem 1.5rem; }
+    .sticky-bar { margin:0 -1.25rem -1.5rem; padding:0.875rem 1.25rem; }
+  }
   </style>
 </head>
 <body>
-<canvas id="bg-canvas"></canvas>
 
+<canvas id="bg-canvas" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none;display:none;"></canvas>
 
+<!-- Sidebar injectée par sidebar.js -->
+<div class="f-sidebar-shell">
+  <div class="f-content" style="flex:1;min-width:0;">
 
+    <!-- Layout 2 colonnes -->
+    <div class="brique-layout">
 
-<div class="brique-2col-wrapper">
-  <!-- Colonne gauche 60% — contenu de la brique -->
-  <main class="brique-main-col">
-  <!-- PROGRESS BAR -->
-  <div class="brick-progress" id="brick-progress">
-    <div class="bp-dot active" data-idx="0"></div>
-    <div class="bp-dot" data-idx="1"></div>
-    <div class="bp-dot" data-idx="2"></div>
-    <div class="bp-dot" data-idx="3"></div>
-    <div class="bp-dot" data-idx="4"></div>
-    <div class="bp-dot" data-idx="5"></div>
-  </div>
+      <!-- ════════════════════════════ COLONNE GAUCHE ════════════════════════════ -->
+      <div class="brique-main">
 
-  <!-- ── SCREEN 0 — Entry card ── -->
-  <div class="screen" id="screen-0">
-    <div class="brick-card">
-      <p class="brick-subtitle" style="font-size:0.72rem;color:var(--text-faint);letter-spacing:0.06em;text-transform:uppercase;font-weight:700;margin-bottom:0.75rem;">Budget de base</p>
-      <h1 class="brick-title" id="s0-title">On va poser ton mois, sans jugement.</h1>
-      <p class="brick-subtitle" id="s0-subtitle">En 5 minutes, tu vas voir d'où vient ton argent, où il part, et quel levier peut vraiment te soulager.</p>
-      <div class="reassurance">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Tu peux donner des montants approximatifs.
+        <!-- Barre de progression globale -->
+        <div class="brick-progress-bar" id="global-progress-bar" style="margin-bottom:1.5rem;">
+          <div class="brick-prog-dots" id="prog-dots"></div>
+          <div class="f-track" style="max-width:200px;">
+            <div class="f-fill stripe" id="prog-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- ═══ SCREEN 0 — Entrée ═══ -->
+        <div class="screen active" id="screen-0">
+          <div class="hero-cream">
+            <div class="hero-kicker">
+              <span class="dot-cat"></span>
+              BUDGET DE BASE · Survie &amp; stabilité
+            </div>
+            <h1 class="hero-title" id="hero-intro-title">
+              On va poser <em>ton mois,</em><br>sans jugement.
+            </h1>
+            <p class="hero-desc" id="hero-intro-desc">
+              En moins de 10 minutes, tu sais où part ton argent, combien tu peux réellement dépenser, quoi couper en priorité, et quelle est ta prochaine action.
+            </p>
+            <div class="badge-rassurant">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              Tu peux donner des montants approximatifs.
+            </div>
+            <div class="hero-actions">
+              <button class="btn-hero-primary" onclick="goToScreen(1)">
+                Commencer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+              <button class="btn-hero-secondary" onclick="showExample()">Voir un exemple</button>
+            </div>
+          </div>
+
+          <!-- Card "En cours" si session existante -->
+          <div id="resume-card" style="display:none;">
+            <div class="insight-card" style="border-color:var(--accent-soft);">
+              <div class="insight-kicker">Reprendre où tu t'es arrêté·e</div>
+              <div class="insight-figure">Tu avais commencé cette brique. <em>Continuer ?</em></div>
+              <div style="display:flex;gap:0.75rem;margin-top:0.875rem;flex-wrap:wrap;">
+                <button class="btn-hero-primary" id="btn-resume" style="padding:0.5rem 1.125rem;font-size:0.825rem;">Reprendre →</button>
+                <button class="btn-hero-secondary" onclick="document.getElementById('resume-card').style.display='none'">Recommencer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SCREEN 1 — Diagnostic & dépenses ═══ -->
+        <div class="screen" id="screen-1">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 1 / 4 · CE QUI RENTRE ET CE QUI PART</div>
+            <h2 class="brick-title">D'abord, posons les bases.</h2>
+            <p class="brick-subtitle">Commence par tes chiffres principaux — tu pourras affiner ensuite.</p>
+
+            <div style="display:flex;flex-direction:column;gap:1.25rem;" id="bloc-1">
+
+              <!-- Revenus -->
+              <div class="field-group">
+                <label class="field-label" for="f-revenus">
+                  Revenus mensuels nets (€)
+                  <span class="badge-prefilled" id="badge-revenus" style="display:none;">✓ Pré-rempli</span>
+                </label>
+                <input type="number" id="f-revenus" class="field-input" placeholder="1 800" min="0" inputmode="numeric" />
+                <button class="fourchette-link" id="fourchette-toggle" onclick="toggleFourchette()">Je préfère donner une fourchette</button>
+                <div class="fourchette-chips" id="fourchette-chips">
+                  <button class="chip-fourchette" data-val="250"  onclick="selectFourchette(this,'< 500 €',250)">  &lt; 500 €</button>
+                  <button class="chip-fourchette" data-val="750"  onclick="selectFourchette(this,'500–1 000 €',750)">500–1 000 €</button>
+                  <button class="chip-fourchette" data-val="1250" onclick="selectFourchette(this,'1 000–1 500 €',1250)">1 000–1 500 €</button>
+                  <button class="chip-fourchette" data-val="2000" onclick="selectFourchette(this,'1 500–2 500 €',2000)">1 500–2 500 €</button>
+                  <button class="chip-fourchette" data-val="3000" onclick="selectFourchette(this,'2 500 € +',3000)">2 500 € +</button>
+                </div>
+              </div>
+
+              <!-- Aides -->
+              <div class="field-group">
+                <label class="field-label" for="f-aides">Aides / autres entrées (€)</label>
+                <input type="number" id="f-aides" class="field-input" placeholder="APL, soutien familial, jobs…" min="0" inputmode="numeric" />
+              </div>
+
+              <!-- Loyer -->
+              <div class="field-group" id="loyer-group">
+                <label class="field-label" for="f-loyer">
+                  Loyer / logement (€)
+                  <span class="badge-prefilled" id="badge-loyer" style="display:none;">✓ Pré-rempli</span>
+                </label>
+                <input type="number" id="f-loyer" class="field-input" placeholder="750" min="0" inputmode="numeric" />
+                <button class="fourchette-link" id="loyer-ajouter-link" style="display:none;font-size:0.75rem;color:var(--text-faint);" onclick="showLoyerField()">Ajouter quand même</button>
+              </div>
+
+              <!-- Courses -->
+              <div class="field-group">
+                <label class="field-label" for="f-courses">Courses alimentaires (€)</label>
+                <input type="number" id="f-courses" class="field-input" placeholder="300" min="0" inputmode="numeric" />
+              </div>
+
+              <!-- Transport -->
+              <div class="field-group">
+                <label class="field-label" for="f-transport">Transport (€)</label>
+                <input type="number" id="f-transport" class="field-input" placeholder="Abonnement, carburant…" min="0" inputmode="numeric" />
+              </div>
+
+            </div><!-- /bloc-1 -->
+
+            <!-- Séparateur -->
+            <div class="section-sep" id="sep-bloc2" style="display:none;margin-top:1.25rem;">
+              <div class="section-sep-line"></div>
+              <span class="section-sep-label">Et du côté des dépenses courantes ?</span>
+              <div class="section-sep-line"></div>
+            </div>
+
+            <!-- BLOC 2 — révélé à ≥ 3 champs remplis -->
+            <div class="bloc-revele" id="bloc-2" style="margin-top:0;">
+
+              <!-- Abonnements -->
+              <div class="field-group">
+                <label class="field-label" for="f-abonnements">Abonnements (€)</label>
+                <input type="number" id="f-abonnements" class="field-input" placeholder="Netflix, Spotify, salle de sport…" min="0" inputmode="numeric"
+                  onfocus="maybeOpenPopupAbo()" />
+              </div>
+
+              <!-- Sorties -->
+              <div class="field-group">
+                <label class="field-label" for="f-sorties">Sorties / loisirs (€)</label>
+                <input type="number" id="f-sorties" class="field-input" placeholder="Resto, ciné, bar…" min="0" inputmode="numeric" />
+              </div>
+
+              <!-- Épargne -->
+              <div class="field-group">
+                <label class="field-label" for="f-epargne">Épargne mensuelle (€)</label>
+                <input type="number" id="f-epargne" class="field-input" placeholder="Virement automatique, livret…" min="0" inputmode="numeric"
+                  oninput="checkEpargne()" />
+                <div class="nudge-epargne" id="nudge-epargne">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  Pas encore — ce n'est pas grave.
+                </div>
+              </div>
+
+              <!-- Affiner bloc 3 -->
+              <div style="margin-top:0.25rem;">
+                <button class="affiner-btn" onclick="toggleAffiner()">
+                  <span class="affiner-btn-label">🔍 Affiner mon budget</span>
+                  <span class="affiner-btn-sub">Santé, repas, shopping… pour une analyse plus précise</span>
+                </button>
+                <div class="bloc-affine" id="bloc-3">
+                  <div class="fields-grid">
+                    <div class="field-group">
+                      <label class="field-label" for="f-repas">Repas / cafés (€)</label>
+                      <input type="number" id="f-repas" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="f-shopping">Shopping / vêtements (€)</label>
+                      <input type="number" id="f-shopping" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="f-sante">Santé / pharmacie (€)</label>
+                      <input type="number" id="f-sante" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="f-transport-var" id="label-transport-var">Transport variable (€)</label>
+                      <input type="number" id="f-transport-var" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="f-pro">Dépenses professionnelles (€)</label>
+                      <input type="number" id="f-pro" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                    </div>
+                    <div class="field-group">
+                      <label class="field-label" for="f-autres">Autres (€)</label>
+                      <input type="number" id="f-autres" class="field-input" placeholder="Cadeaux, imprévus…" min="0" inputmode="numeric" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /bloc-2 -->
+
+            <!-- Sticky bar -->
+            <div class="sticky-bar" id="sticky-bar" style="display:none;">
+              <div class="sticky-bar-amounts">
+                <div class="sticky-bar-item">
+                  <span class="sticky-bar-val" id="sticky-revenus" style="color:var(--green);">0 €</span>
+                  <span class="sticky-bar-sub">Revenus</span>
+                </div>
+                <span class="sticky-bar-sep">−</span>
+                <div class="sticky-bar-item">
+                  <span class="sticky-bar-val" id="sticky-depenses" style="color:var(--text);">0 €</span>
+                  <span class="sticky-bar-sub">Dépenses</span>
+                </div>
+                <span class="sticky-bar-sep">=</span>
+                <div class="sticky-bar-item">
+                  <span class="sticky-bar-ral positive" id="sticky-ral">0 €</span>
+                  <span class="sticky-bar-sub">Reste</span>
+                </div>
+              </div>
+              <button class="btn-hero-primary" id="btn-suivant-1" onclick="goToScreen(2)" style="flex-shrink:0;">
+                Voir l'analyse →
+              </button>
+            </div>
+
+          </div><!-- /brick-card -->
+
+          <!-- Nav retour -->
+          <div class="nav-btns">
+            <button class="btn-back" onclick="goToScreen(0)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              Retour
+            </button>
+          </div>
+
+        </div><!-- /screen-1 -->
+
+        <!-- ═══ SCREEN 2 — Analyse ═══ -->
+        <div class="screen" id="screen-2">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 2 / 4 · TON ARGENT EN CLAIR</div>
+            <h2 class="brick-title">Voilà où part ton argent.</h2>
+
+            <!-- Double donut SVG -->
+            <div class="donuts-wrap" id="donuts-wrap">
+              <!-- Généré par JS -->
+            </div>
+
+            <!-- Barres proportionnelles (remplace Sankey D3) -->
+            <div class="sankey-block" id="sankey-block" style="margin-top:1rem;">
+              <!-- Généré par JS -->
+            </div>
+
+            <!-- Messages contextuels -->
+            <div id="msg-cards" style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1.5rem;"></div>
+
+            <!-- Leviers rapides -->
+            <div style="margin-top:1.5rem;">
+              <div class="brick-kicker" style="margin-bottom:0.75rem;">3 LEVIERS RAPIDES</div>
+              <div class="leviers-grid" id="leviers-grid"></div>
+            </div>
+
+          </div>
+
+          <div class="nav-btns">
+            <button class="btn-back" onclick="goToScreen(1)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              Modifier
+            </button>
+            <button class="btn-hero-primary" onclick="goToScreen(3)">
+              Tes dettes →
+            </button>
+          </div>
+        </div><!-- /screen-2 -->
+
+        <!-- ═══ SCREEN 3 — Dettes ═══ -->
+        <div class="screen" id="screen-3">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 3 / 4 · TES ENGAGEMENTS FINANCIERS</div>
+            <h2 class="brick-title">Parlons de ce que tu dois.</h2>
+
+            <!-- Confirmation si pré-rempli -->
+            <div id="dettes-confirm-bar" style="display:none;margin-bottom:1.25rem;">
+              <div class="insight-card" style="padding:1rem 1.25rem;">
+                <div class="insight-kicker">Depuis ton questionnaire</div>
+                <div class="insight-figure" style="font-size:0.9rem;">On a détecté des dettes dans ton profil. <em>C'est bien ta situation actuelle ?</em></div>
+                <div style="display:flex;gap:0.625rem;margin-top:0.75rem;">
+                  <button class="btn-hero-primary" style="padding:0.4rem 1rem;font-size:0.8rem;" onclick="document.getElementById('dettes-confirm-bar').style.display='none'">Oui, c'est ça</button>
+                  <button class="btn-hero-secondary" onclick="resetDettes()">Non, je modifie</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Liste des dettes -->
+            <div id="dettes-list" style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1rem;"></div>
+
+            <!-- Card "pas de dette" -->
+            <div id="no-dette-card" style="display:none;" class="no-dette-card">
+              <span style="font-size:1.25rem;">✅</span>
+              <span>Pas de dette — excellente base. Tu peux quand même ajouter si tu en as oublié une.</span>
+            </div>
+
+            <!-- Info pour dettes oubliées dans l'onboarding -->
+            <div style="margin-top:0.75rem;">
+              <button class="dette-oublie-link" onclick="toggleOublieTip()">
+                Tu as oublié quelque chose dans l'onboarding ?
+              </button>
+              <div class="dette-oublie-tip" id="dette-oublie-tip">
+                Pas de problème — le bouton ci-dessous te permet d'ajouter n'importe quel type de crédit ou engagement. Tout sera pris en compte dans l'analyse.
+              </div>
+            </div>
+
+            <!-- Ajouter une dette -->
+            <button class="add-dette-btn" onclick="addDette()" style="margin-top:0.875rem;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Ajouter une dette / crédit
+            </button>
+
+          </div>
+
+          <div class="nav-btns">
+            <button class="btn-back" onclick="goToScreen(2)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              Modifier
+            </button>
+            <button class="btn-hero-primary" onclick="goToScreen(4)">
+              Ma prochaine action →
+            </button>
+          </div>
+        </div><!-- /screen-3 -->
+
+        <!-- ═══ SCREEN 4 — Arbre de décision ═══ -->
+        <div class="screen" id="screen-4">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 4 / 4 · TA PROCHAINE ACTION</div>
+            <h2 class="brick-title">Voici ce qu'on te recommande.</h2>
+
+            <!-- Récapitulatif 4 blocs -->
+            <div class="recap-grid" id="recap-grid" style="margin-bottom:1.75rem;"></div>
+
+            <!-- Brique recommandée -->
+            <div id="reco-card-wrap" style="margin-bottom:1.75rem;"></div>
+
+            <!-- Engagement -->
+            <div>
+              <h3 style="font-family:'Fraunces',serif;font-size:1.125rem;font-weight:400;font-style:italic;color:var(--text);margin-bottom:0.375rem;">Choisis une seule action.</h3>
+              <p style="font-size:0.8125rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.55;">Une seule bien tenue vaut mieux qu'un grand plan abandonné.</p>
+              <div class="engagement-options" id="engagement-options"></div>
+            </div>
+
+          </div>
+
+          <div class="nav-btns">
+            <button class="btn-back" onclick="goToScreen(3)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              Modifier
+            </button>
+            <button class="btn-hero-primary" id="btn-valider-engagement" disabled onclick="validerEngagement()">
+              Valider mon objectif →
+            </button>
+          </div>
+        </div><!-- /screen-4 -->
+
+        <!-- ═══ SCREEN EXIT ═══ -->
+        <div class="screen" id="screen-exit">
+          <div class="exit-card">
+            <div style="font-size:2rem;margin-bottom:0.75rem;">✅</div>
+            <h2 class="exit-title">C'est noté.</h2>
+            <p class="exit-subtitle">Ton budget est posé. La prochaine étape t'attend.</p>
+            <div class="exit-recap" id="exit-recap"></div>
+            <div style="display:flex;flex-direction:column;gap:0.75rem;" id="exit-actions"></div>
+          </div>
+        </div>
+
+      </div><!-- /brique-main -->
+
+      <!-- ════════════════════════════ COLONNE DROITE — PANEL PROGRESSION ════════════════════════════ -->
+      <div class="brique-progress-col">
+        <div class="brique-progress-card">
+          <div class="bpc-kicker">TA PROGRESSION</div>
+          <div class="bpc-title" id="bpc-step-title">On va poser ton mois, sans jugement.</div>
+
+          <!-- Ring SVG -->
+          <div class="bpc-ring-wrap">
+            <svg class="bpc-ring" width="80" height="80" viewBox="0 0 80 80">
+              <circle class="bpc-ring-bg" cx="40" cy="40" r="32"/>
+              <circle class="bpc-ring-fill" id="bpc-ring-fill" cx="40" cy="40" r="32"
+                stroke-dasharray="201" stroke-dashoffset="201"/>
+              <text class="bpc-ring-pct" id="bpc-ring-pct" x="40" y="45" text-anchor="middle" dominant-baseline="middle" transform="rotate(90,40,40)">0%</text>
+            </svg>
+          </div>
+
+          <!-- Steps list -->
+          <div class="bpc-steps" id="bpc-steps-list">
+            <div class="bpc-step" id="bpc-step-0">
+              <div class="bpc-step-num">0</div>
+              <div class="bpc-step-label">Introduction</div>
+            </div>
+            <div class="bpc-step" id="bpc-step-1">
+              <div class="bpc-step-num">1</div>
+              <div class="bpc-step-label">Ce qui rentre et ce qui part</div>
+            </div>
+            <div class="bpc-step" id="bpc-step-2">
+              <div class="bpc-step-num">2</div>
+              <div class="bpc-step-label">Ton argent en clair</div>
+            </div>
+            <div class="bpc-step" id="bpc-step-3">
+              <div class="bpc-step-num">3</div>
+              <div class="bpc-step-label">Tes engagements financiers</div>
+            </div>
+            <div class="bpc-step" id="bpc-step-4">
+              <div class="bpc-step-num">4</div>
+              <div class="bpc-step-label">Ta prochaine action</div>
+            </div>
+            <div class="bpc-step" id="bpc-step-5">
+              <div class="bpc-step-num">✓</div>
+              <div class="bpc-step-label">C'est noté.</div>
+            </div>
+          </div>
+
+          <!-- Nav links -->
+          <div class="bpc-nav">
+            <a href="plan.html" class="bpc-nav-link">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              Retour au plan
+            </a>
+            <a href="dashboard.html" class="bpc-nav-link">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+              Dashboard
+            </a>
+          </div>
+        </div>
+      </div><!-- /brique-progress-col -->
+
+    </div><!-- /brique-layout -->
+
+  </div><!-- /f-content -->
+</div><!-- /f-sidebar-shell -->
+
+<!-- ══════════════════════════ POPUP ABONNEMENTS ══════════════════════════ -->
+<div class="popup-overlay" id="popup-abo" role="dialog" aria-modal="true" aria-labelledby="popup-abo-title">
+  <div class="popup-sheet" style="position:relative;">
+    <button class="popup-close" onclick="closePopupAbo()" aria-label="Fermer">×</button>
+    <div class="popup-handle" aria-hidden="true"></div>
+    <h2 class="popup-title" id="popup-abo-title">Voyons tes abonnements en détail</h2>
+
+    <div class="abo-list" id="abo-list">
+      <div class="abo-item" data-id="netflix" onclick="toggleAbo(this)">
+        <div class="abo-item-check"></div>
+        <span class="abo-item-emoji">🎬</span>
+        <span class="abo-item-name">Netflix / Prime / Disney+</span>
+        <input type="number" class="abo-item-montant" placeholder="14" min="0" onclick="event.stopPropagation()" />
       </div>
-      <button class="btn-primary" id="s0-cta">Commencer</button>
-      <button class="btn-secondary" id="s0-example">Voir un exemple</button>
+      <div class="abo-item" data-id="musique" onclick="toggleAbo(this)">
+        <div class="abo-item-check"></div>
+        <span class="abo-item-emoji">🎵</span>
+        <span class="abo-item-name">Spotify / Deezer / Apple Music</span>
+        <input type="number" class="abo-item-montant" placeholder="10" min="0" onclick="event.stopPropagation()" />
+      </div>
+      <div class="abo-item" data-id="sport" onclick="toggleAbo(this)">
+        <div class="abo-item-check"></div>
+        <span class="abo-item-emoji">💪</span>
+        <span class="abo-item-name">Salle de sport</span>
+        <input type="number" class="abo-item-montant" placeholder="30" min="0" onclick="event.stopPropagation()" />
+      </div>
+      <div class="abo-item" data-id="box" onclick="toggleAbo(this)">
+        <div class="abo-item-check"></div>
+        <span class="abo-item-emoji">📱</span>
+        <span class="abo-item-name">Box internet / mobile premium</span>
+        <input type="number" class="abo-item-montant" placeholder="25" min="0" onclick="event.stopPropagation()" />
+      </div>
+      <div class="abo-item" data-id="cloud" onclick="toggleAbo(this)">
+        <div class="abo-item-check"></div>
+        <span class="abo-item-emoji">☁️</span>
+        <span class="abo-item-name">Cloud / app premium (iCloud, Adobe…)</span>
+        <input type="number" class="abo-item-montant" placeholder="3" min="0" onclick="event.stopPropagation()" />
+      </div>
+      <div class="abo-item" data-id="assurance" onclick="toggleAbo(this)">
+        <div class="abo-item-check"></div>
+        <span class="abo-item-emoji">🛡️</span>
+        <span class="abo-item-name">Assurance optionnelle</span>
+        <input type="number" class="abo-item-montant" placeholder="12" min="0" onclick="event.stopPropagation()" />
+      </div>
+      <div class="abo-item" data-id="autre_abo" onclick="toggleAbo(this)">
+        <div class="abo-item-check"></div>
+        <span class="abo-item-emoji">➕</span>
+        <input type="text" class="abo-item-name" placeholder="Autre…" onclick="event.stopPropagation()" style="background:none;border:none;font-family:inherit;font-size:0.875rem;font-weight:500;color:var(--text);outline:none;flex:1;min-width:0;" />
+        <input type="number" class="abo-item-montant" placeholder="0" min="0" onclick="event.stopPropagation()" />
+      </div>
     </div>
-  </div>
 
-  <!-- ── SCREEN 1 — Ce qui rentre ── -->
-  <div class="screen" id="screen-1" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 1 / 5</div>
-      <h2 class="brick-title">D'abord, ce qui rentre.</h2>
-      <p class="brick-subtitle">Même une estimation suffit pour commencer.</p>
-
-      <div class="field-group" id="s1-revenu-group">
-        <label class="field-label" for="s1-revenu">Revenu principal par mois</label>
-        <input class="field-input" id="s1-revenu" type="text" inputmode="numeric" placeholder="Ex. 1 450 €" autocomplete="off" />
-        <p id="s1-revenu-error" class="field-error" style="display:none;"></p>
-      </div>
-
-      <div id="s1-fourchette-wrap" style="display:none;margin-bottom:1.25rem;">
-        <p class="field-label" style="margin-bottom:0.5rem;">Choisir une fourchette</p>
-        <div class="chips" id="s1-fourchette-chips">
-          <button class="chip" data-val="250">0 – 500 €</button>
-          <button class="chip" data-val="750">500 – 1 000 €</button>
-          <button class="chip" data-val="1250">1 000 – 1 500 €</button>
-          <button class="chip" data-val="2000">1 500 – 2 500 €</button>
-          <button class="chip" data-val="3000">2 500 € +</button>
-        </div>
-      </div>
-
-      <button class="text-link" id="s1-toggle-fourchette" style="margin-bottom:1.25rem;">Je préfère donner une fourchette</button>
-
-      <div class="field-group">
-        <label class="field-label" for="s1-aides">Aides, soutien familial ou autres entrées</label>
-        <input class="field-input" id="s1-aides" type="text" inputmode="numeric" placeholder="Ex. 200 €" autocomplete="off" />
-        <p class="field-help">Pense aux aides, jobs, pensions, virements réguliers ou argent envoyé par tes proches.</p>
-      </div>
-
-      <button class="btn-primary" id="s1-cta">Continuer</button>
-      <button class="btn-secondary" id="s1-skip">Je ne sais pas exactement</button>
-
-      <!-- Sticky total -->
-      <div class="sticky-total">
-        <span class="sticky-label">Total estimé qui rentre ce mois-ci :</span>
-        <span class="sticky-value" id="s1-total">0 €</span>
-      </div>
+    <!-- Section non-utilisés -->
+    <div class="abo-non-utilises" id="abo-non-utilises">
+      <p class="abo-non-utilises-title">Lesquels n'as-tu pas utilisés ce mois-ci ?</p>
+      <div id="abo-non-utilises-list" style="display:flex;flex-direction:column;gap:0.375rem;"></div>
     </div>
-  </div>
 
-  <!-- ── SCREEN 2 — Charges fixes ── -->
-  <div class="screen" id="screen-2" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 2 / 5</div>
-      <h2 class="brick-title">Ce qui tombe presque automatiquement.</h2>
-      <p class="brick-subtitle">Loyer, forfaits, crédits, abonnements : tout ce qui part chaque mois.</p>
-      <p class="field-help" style="margin-bottom:1rem;">Tu peux laisser vide ce que tu n'as pas.</p>
-
-      <div id="s2-tight-banner" class="banner" style="display:none;">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;margin-top:1px;"><path d="M8 2L14 13H2L8 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v3M8 11v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span>Ton mois semble très serré. On continue pour trouver les marges réelles.</span>
-      </div>
-
-      <div id="s2-nudge-logement" style="display:none;">
-        <div class="nudge">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-          Tu as indiqué être locataire pendant l'onboarding. Tu veux ajouter ton loyer ?
-        </div>
-      </div>
-
-      <!-- Accordions -->
-      <div id="s2-accordions">
-
-        <!-- Logement -->
-        <div class="accordion open" data-cat="logement">
-          <div class="accordion-header">
-            <span class="accordion-title">🏠 Logement</span>
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <span class="accordion-amount" id="acc-logement-amount">—</span>
-              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </div>
-          </div>
-          <div class="accordion-body">
-            <div class="field-group">
-              <label class="field-label" for="s2-loyer">Loyer ou charges</label>
-              <input class="field-input sub-field-input" id="s2-loyer" type="text" inputmode="numeric" placeholder="Ex. 650 €" autocomplete="off" style="width:100%;" />
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="s2-charges-loc">Charges copropriété / eau</label>
-              <input class="field-input sub-field-input" id="s2-charges-loc" type="text" inputmode="numeric" placeholder="Ex. 50 €" autocomplete="off" style="width:100%;" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Transport -->
-        <div class="accordion" data-cat="transport">
-          <div class="accordion-header">
-            <span class="accordion-title">🚌 Transport</span>
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <span class="accordion-amount" id="acc-transport-amount">—</span>
-              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </div>
-          </div>
-          <div class="accordion-body">
-            <div class="field-group">
-              <label class="field-label" for="s2-navigo">Abonnement transport (Navigo, etc.)</label>
-              <input class="field-input sub-field-input" id="s2-navigo" type="text" inputmode="numeric" placeholder="Ex. 86 €" autocomplete="off" style="width:100%;" />
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="s2-voiture">Assurance voiture / leasing</label>
-              <input class="field-input sub-field-input" id="s2-voiture" type="text" inputmode="numeric" placeholder="Ex. 120 €" autocomplete="off" style="width:100%;" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Téléphone / internet -->
-        <div class="accordion" data-cat="tel">
-          <div class="accordion-header">
-            <span class="accordion-title">📱 Téléphone / internet</span>
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <span class="accordion-amount" id="acc-tel-amount">—</span>
-              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </div>
-          </div>
-          <div class="accordion-body">
-            <div class="field-group">
-              <label class="field-label" for="s2-forfait">Forfait mobile</label>
-              <input class="field-input sub-field-input" id="s2-forfait" type="text" inputmode="numeric" placeholder="Ex. 20 €" autocomplete="off" style="width:100%;" />
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="s2-internet">Box internet</label>
-              <input class="field-input sub-field-input" id="s2-internet" type="text" inputmode="numeric" placeholder="Ex. 35 €" autocomplete="off" style="width:100%;" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Crédits -->
-        <div class="accordion" data-cat="credits">
-          <div class="accordion-header">
-            <span class="accordion-title">💳 Crédits</span>
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <span class="accordion-amount" id="acc-credits-amount">—</span>
-              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </div>
-          </div>
-          <div class="accordion-body">
-            <div class="field-group">
-              <label class="field-label" for="s2-credit-conso">Crédit conso / personnel</label>
-              <input class="field-input sub-field-input" id="s2-credit-conso" type="text" inputmode="numeric" placeholder="Ex. 150 €" autocomplete="off" style="width:100%;" />
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="s2-credit-immo">Crédit immobilier</label>
-              <input class="field-input sub-field-input" id="s2-credit-immo" type="text" inputmode="numeric" placeholder="Ex. 700 €" autocomplete="off" style="width:100%;" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Abonnements (badge "Souvent oublié") -->
-        <div class="accordion" data-cat="abonnements">
-          <div class="accordion-header">
-            <span class="accordion-title">
-              🎬 Abonnements
-              <span class="badge">Souvent oublié</span>
-            </span>
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <span class="accordion-amount" id="acc-abonnements-amount">—</span>
-              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </div>
-          </div>
-          <div class="accordion-body">
-            <div id="s2-abo-rows">
-              <!-- Sub-categories pre-filled -->
-              <div class="sub-field-group"><label class="sub-field-label">Netflix</label><input class="sub-field-input" data-abo="netflix" type="text" inputmode="numeric" placeholder="Ex. 14 €" /></div>
-              <div class="sub-field-group"><label class="sub-field-label">Spotify / Musique</label><input class="sub-field-input" data-abo="spotify" type="text" inputmode="numeric" placeholder="Ex. 10 €" /></div>
-              <div class="sub-field-group"><label class="sub-field-label">Salle de sport</label><input class="sub-field-input" data-abo="salle" type="text" inputmode="numeric" placeholder="Ex. 30 €" /></div>
-              <div class="sub-field-group"><label class="sub-field-label">Stockage cloud</label><input class="sub-field-input" data-abo="cloud" type="text" inputmode="numeric" placeholder="Ex. 3 €" /></div>
-              <div class="sub-field-group"><label class="sub-field-label">Jeux vidéo / gaming</label><input class="sub-field-input" data-abo="jeux" type="text" inputmode="numeric" placeholder="Ex. 15 €" /></div>
-              <div class="sub-field-group"><label class="sub-field-label">Autre abonnement</label><input class="sub-field-input" data-abo="autre_abo" type="text" inputmode="numeric" placeholder="Ex. 8 €" /></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Autres charges fixes -->
-        <div class="accordion" data-cat="autres_fixes">
-          <div class="accordion-header">
-            <span class="accordion-title">📦 Autres charges fixes</span>
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <span class="accordion-amount" id="acc-autres_fixes-amount">—</span>
-              <svg class="accordion-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            </div>
-          </div>
-          <div class="accordion-body">
-            <div class="field-group">
-              <label class="field-label" for="s2-assurances">Assurances (habitation, santé...)</label>
-              <input class="field-input sub-field-input" id="s2-assurances" type="text" inputmode="numeric" placeholder="Ex. 40 €" autocomplete="off" style="width:100%;" />
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="s2-autres-fixes-autre">Autre (mutuelle, garde enfants…)</label>
-              <input class="field-input sub-field-input" id="s2-autres-fixes-autre" type="text" inputmode="numeric" placeholder="Ex. 80 €" autocomplete="off" style="width:100%;" />
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /s2-accordions -->
-
-      <button class="btn-primary" id="s2-cta">Continuer</button>
-
-      <!-- Sticky total fixed charges -->
-      <div class="sticky-total">
-        <span class="sticky-label">Total charges fixes :</span>
-        <span class="sticky-value" id="s2-total">0 €</span>
-      </div>
+    <!-- Compteur économie -->
+    <div class="abo-economie" id="abo-economie">
+      <div class="abo-eco-kicker">POTENTIEL D'ÉCONOMIE ESTIMÉ</div>
+      <div class="abo-eco-val" id="abo-eco-val">0 €/mois</div>
+      <div class="abo-eco-sub">Si tu supprimes les abonnements non utilisés</div>
     </div>
-  </div>
 
-  <!-- ── SCREEN 3 — Dépenses variables ── -->
-  <div class="screen" id="screen-3" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 3 / 5</div>
-      <h2 class="brick-title">Ton argent part surtout où, au quotidien ?</h2>
-      <p class="brick-subtitle">Choisis un montant ou une fourchette. Le but est de voir les ordres de grandeur.</p>
-
-      <div class="completion-bar">
-        <span id="s3-completion-text">0/7 catégories renseignées</span>
-        <div class="completion-track"><div class="completion-fill" id="s3-completion-fill" style="width:0%;"></div></div>
-      </div>
-
-      <div class="tip">Tu peux aller vite : si tu hésites, prends la fourchette qui te ressemble le plus.</div>
-
-      <div id="s3-categories"></div>
-
-      <button class="btn-primary" id="s3-cta">Voir ma synthèse</button>
-
-      <!-- Sticky total variable -->
-      <div class="sticky-total">
-        <span class="sticky-label">Total dépenses variables :</span>
-        <span class="sticky-value" id="s3-total">0 €</span>
-      </div>
+    <!-- Card frais bancaires -->
+    <div class="abo-frais-card">
+      <span class="abo-frais-card-icon">💡</span>
+      Cherche <strong>"récapitulatif annuel des frais"</strong> dans ton appli bancaire.
+      Plus de 80 €/an hors incidents ? Il est temps de comparer.
     </div>
-  </div>
 
-  <!-- ── SCREEN 4 — Synthesis ── -->
-  <div class="screen" id="screen-4" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 4 / 5</div>
-      <h2 class="brick-title">Voilà ton mois, en version claire.</h2>
-      <p class="brick-subtitle">Ce n'est pas une note. C'est une base pour reprendre la main.</p>
+    <!-- CTA premiers pas bancaires -->
+    <button class="abo-add-brique" id="abo-add-ppb-btn" onclick="ajouterPremiersPasBancaires()">
+      + Ajouter "Premiers pas bancaires" à mon parcours
+    </button>
 
-      <!-- Donut SVG -->
-      <div class="synth-donut">
-        <svg id="synth-donut-svg" width="180" height="180" viewBox="0 0 180 180">
-          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--surface-3)" stroke-width="22"/>
-          <!-- Segments will be drawn by JS -->
-          <circle id="donut-charges" cx="90" cy="90" r="70" fill="none" stroke="var(--indigo)" stroke-width="22"
-            stroke-dasharray="0 440" stroke-dashoffset="0" stroke-linecap="butt" style="transition:stroke-dasharray 0.6s var(--ease-out);" transform="rotate(-90 90 90)"/>
-          <circle id="donut-variable" cx="90" cy="90" r="70" fill="none" stroke="var(--purple)" stroke-width="22"
-            stroke-dasharray="0 440" stroke-dashoffset="0" stroke-linecap="butt" style="transition:stroke-dasharray 0.6s var(--ease-out);" transform="rotate(-90 90 90)"/>
-          <!-- Legend text in center -->
-          <text id="donut-center-label" x="90" y="86" text-anchor="middle" fill="var(--text-muted)" font-size="11" font-family="Inter,sans-serif">Reste</text>
-          <text id="donut-center-val" x="90" y="103" text-anchor="middle" fill="white" font-size="15" font-weight="800" font-family="Inter,sans-serif">—</text>
-        </svg>
-      </div>
-      <!-- Legend -->
-      <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:1.25rem;flex-wrap:wrap;">
-        <span style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:50%;background:var(--surface-3);display:inline-block;"></span>Revenus</span>
-        <span style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:50%;background:var(--indigo);display:inline-block;"></span>Charges fixes</span>
-        <span style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:50%;background:var(--purple);display:inline-block;"></span>Dép. variables</span>
-      </div>
-
-      <!-- Blocks -->
-      <div class="synth-blocks">
-        <div class="synth-block">
-          <div class="synth-block-label">Ce qui rentre</div>
-          <div class="synth-block-value" id="synth-revenus">—</div>
-        </div>
-        <div class="synth-block">
-          <div class="synth-block-label">Charges fixes</div>
-          <div class="synth-block-value" id="synth-charges">—</div>
-        </div>
-        <div class="synth-block">
-          <div class="synth-block-label">Dépenses variables</div>
-          <div class="synth-block-value" id="synth-variable">—</div>
-        </div>
-        <div class="synth-block">
-          <div class="synth-block-label">Reste à vivre</div>
-          <div class="synth-block-value" id="synth-reste">—</div>
-        </div>
-      </div>
-
-      <!-- Conditional message -->
-      <div class="synth-msg" id="synth-msg"></div>
-
-      <!-- Orientation card for negative balance -->
-      <div id="synth-orientation" style="display:none;">
-        <div class="orientation-card">
-          <strong>Tu n'es pas seul·e dans cette situation.</strong> On te suggère de regarder la brique <strong>Découvert & BNPL</strong> après celle-ci pour trouver les leviers immédiats.
-        </div>
-      </div>
-
-      <!-- Lever cards -->
-      <div class="lever-cards" id="synth-levers">
-        <div class="lever-card">
-          <div class="lever-card-label" id="lever-1-label">Réduire les abonnements de 15 €/mois</div>
-          <div class="lever-card-annual" id="lever-1-annual">Soit 180 € de récupérés sur l'année</div>
-        </div>
-        <div class="lever-card">
-          <div class="lever-card-label">Suivre les dépenses sorties pendant 2 semaines</div>
-          <div class="lever-card-annual">Visualiser pour reprendre le contrôle</div>
-        </div>
-        <div class="lever-card">
-          <div class="lever-card-label" id="lever-3-label">Mettre 20 € de côté à la paie</div>
-          <div class="lever-card-annual" id="lever-3-annual">Soit 240 € épargnés sur l'année</div>
-        </div>
-      </div>
-
-      <button class="btn-primary" id="s4-cta">Choisir mon premier levier</button>
-      <button class="btn-secondary" id="s4-back">Modifier mes montants</button>
+    <!-- Bouton valider -->
+    <div style="margin-top:1.25rem;">
+      <button class="btn-hero-primary" style="width:100%;" onclick="validerPopupAbo()">
+        Valider mes abonnements →
+      </button>
     </div>
+
   </div>
+</div><!-- /popup-abo -->
 
-  <!-- ── SCREEN 5 — Engagement ── -->
-  <div class="screen" id="screen-5" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 5 / 5</div>
-      <h2 class="brick-title">Choisis une seule action pour ce mois-ci.</h2>
-      <p class="brick-subtitle">Pas besoin d'en faire dix. Une seule action bien tenue vaut mieux qu'un grand plan abandonné.</p>
-
-      <div class="engagement-options" id="s5-options">
-
-        <label class="eng-option" data-idx="0">
-          <div class="eng-radio"><div class="eng-radio-dot"></div></div>
-          <div class="eng-text">
-            Je veux réduire mes abonnements de
-            <input class="eng-inline-input" id="eng-abo-amount" type="text" inputmode="numeric" value="15" />
-            €/mois
-          </div>
-        </label>
-
-        <label class="eng-option" data-idx="1">
-          <div class="eng-radio"><div class="eng-radio-dot"></div></div>
-          <div class="eng-text">Je veux surveiller mes sorties pendant 14 jours</div>
-        </label>
-
-        <label class="eng-option" data-idx="2">
-          <div class="eng-radio"><div class="eng-radio-dot"></div></div>
-          <div class="eng-text">
-            Je veux viser au moins
-            <input class="eng-inline-input" id="eng-marge-amount" type="text" inputmode="numeric" value="50" />
-            € de marge en fin de mois
-          </div>
-        </label>
-
-        <label class="eng-option" data-idx="3">
-          <div class="eng-radio"><div class="eng-radio-dot"></div></div>
-          <div class="eng-text">
-            Je veux mettre
-            <input class="eng-inline-input" id="eng-epargne-amount" type="text" inputmode="numeric" value="20" />
-            € de côté
-          </div>
-        </label>
-
-      </div>
-
-      <button class="btn-primary" id="s5-cta" disabled>Valider mon objectif</button>
-    </div>
-  </div>
-
-  <!-- ── EXIT SCREEN ── -->
-  <div class="screen" id="screen-exit" style="display:none;">
-    <div class="exit-card">
-      <div class="exit-icon">✅</div>
-      <h2 class="exit-title">C'est noté.</h2>
-      <p class="exit-subtitle">On te rappellera ce point dans ton dashboard.</p>
-
-      <div class="exit-summary" id="exit-summary">
-        <!-- filled by JS -->
-      </div>
-
-      <div id="exit-btns"></div>
-    </div>
-  </div>
-
-</main>
-  <!-- Colonne droite 40% — panel de progression -->
-  <aside class="brique-side-panel">
-    <div class="brique-progress-card">
-      <div class="bpc-kicker">TA PROGRESSION</div>
-      <div class="bpc-title" id="bpc-step-title">Étape 1</div>
-      
-      <!-- Ring de progression -->
-      <div class="bpc-ring-wrap">
-        <svg class="bpc-ring" width="72" height="72" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r="30" stroke="var(--v3-track)" stroke-width="4" fill="none"/>
-          <circle id="bpc-ring-arc" cx="36" cy="36" r="30" stroke="var(--v3-accent-strong)" stroke-width="4" fill="none"
-                  stroke-dasharray="188.5" stroke-dashoffset="188.5" stroke-linecap="round"/>
-        </svg>
-        <div class="bpc-ring-pct" id="bpc-ring-pct">0%</div>
-      </div>
-
-      <!-- Steps list (remplie par JS) -->
-      <div class="bpc-steps" id="bpc-steps-list"></div>
-
-      <!-- Nav -->
-      <div class="bpc-nav">
-        <a href="plan.html" class="bpc-dashboard-link">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Retour au plan
-        </a>
-        <a href="dashboard.html" class="bpc-dashboard-link">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-          Dashboard
-        </a>
-      </div>
-    </div>
-  </aside>
-</div>
-
-<!-- ── BOTTOM SHEET — Exemple de budget ── -->
-<div class="overlay" id="example-overlay" role="dialog" aria-modal="true" aria-label="Exemple de budget">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <h3 class="sheet-title">Exemple de budget type</h3>
-    <table class="sheet-table">
-      <tr><td>💰 Revenus</td><td>1 450 €</td></tr>
-      <tr><td>🏠 Charges fixes</td><td>– 780 €</td></tr>
-      <tr><td>🛒 Dépenses variables</td><td>– 350 €</td></tr>
-      <tr><td><strong>✨ Reste à vivre</strong></td><td>320 €</td></tr>
-    </table>
-    <button class="sheet-close" id="example-close">Fermer</button>
-  </div>
-</div>
-
+<!-- Scripts (ordre invariant) -->
 <script src="sidebar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
 <script src="nav-avatar.js"></script>
 <script>
-  /* ── Init ── */
-  initBgCanvas('bg-canvas');
-  const BRICK_ID = 'budget_base';
-  let profil = loadFromStorage('profil') || getMockProfile();
-  brickStarted(BRICK_ID);
-  // ── Reprise d'état depuis Supabase ──
-  (async function resumeIfNeeded() {
-    const saved = await loadBrickState('budget_base');
-    if (saved && saved.data && Object.keys(saved.data).length > 0) {
-      // Restaurer les données dans l'état local
-      if (typeof restoreState === 'function') restoreState(saved.data);
-      // Ne pas sauter l'écran de démarrage si la brique est déjà terminée
-      if (!saved.completed && saved.screenCourant > 0) {
-        console.log('[Fund] Reprise brique budget_base écran', saved.screenCourant);
-        // showScreen/goTo sera appelé après hydrateFromSupabase
-        window._brickResume_budget_base = saved.screenCourant;
-      }
-    }
-  })();
+// ══════════════════════════════════════════════════════════════
+// FUNDAMENTALS — brique-budget-base.js (inline)
+// ══════════════════════════════════════════════════════════════
 
-  /* ── State ── */
-  let currentScreen = 0;
-  const totalScreens = 6; // 0-5 + exit
-  const budgetData = {
-    revenus: 0,
-    aides: 0,
-    revenuFourchette: null,
-    chargesFixes: {},
-    variable: {},
+const BRICK_ID  = 'budget_base';
+const TOTAL_STEPS = 5; // 0 → exit
+
+// ── État global ──────────────────────────────────────────────
+let profil = {};
+let currentScreen = 0;
+let aboPopupOpened = false;
+
+const budgetData = {
+  revenus:0, aides:0, revenu_fourchette:null,
+  loyer:0, courses:0, transport:0,
+  abonnements_total:0, abonnements_detail:{}, abonnements_economies:0,
+  sorties:0, epargne:0,
+  repas:0, shopping:0, sante:0, transport_variable:0, depenses_pro:0, autres:0,
+  total_besoins:0, total_envies:0, total_depenses:0, reste_a_vivre:0,
+  pct_besoins:0, pct_envies:0, pct_investissement:0,
+  dettes:[], engagement:null, brique_recommandee:null,
+  prefilled_fields:[], modified_prefilled:[],
+};
+
+// ── Init ──────────────────────────────────────────────────────
+(async function init() {
+  if (typeof brickStarted === 'function') brickStarted(BRICK_ID);
+
+  // 1. Auth
+  if (typeof requireAuth === 'function') {
+    const user = await requireAuth();
+    if (!user) return;
+  }
+
+  // 2. Hydrater depuis Supabase
+  if (typeof hydrateFromSupabase === 'function') {
+    await hydrateFromSupabase();
+  }
+
+  // 3. Charger profil
+  profil = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_profil') : null)
+    || (typeof getMockProfile === 'function' ? getMockProfile() : {});
+
+  // 4. Titre d'intro personnalisé
+  applyIntroVariant();
+
+  // 5. Vérifier reprise de session
+  await checkResume();
+
+  // 6. Pré-remplir les champs
+  prefillFromProfil();
+
+  // 7. Init sticky bar
+  initStickyListeners();
+
+  // 8. Init progress panel
+  updateProgressPanel(0);
+  buildProgDots();
+
+})();
+
+// ── Intro variant ─────────────────────────────────────────────
+function applyIntroVariant() {
+  if (typeof getBudgetIntroVariant !== 'function') return;
+  const v = getBudgetIntroVariant(profil);
+  if (!v) return;
+  const titleEl = document.getElementById('hero-intro-title');
+  const descEl  = document.getElementById('hero-intro-desc');
+  if (titleEl) titleEl.innerHTML = v.intro.replace(/(\S+\s+\S+)$/, '<em>$1</em>');
+  if (descEl && v.levier) descEl.textContent = 'En moins de 10 minutes : ' + v.levier;
+}
+
+// ── Reprise de session ────────────────────────────────────────
+async function checkResume() {
+  let saved = null;
+  // Essayer localStorage d'abord (rapide)
+  if (typeof loadFromStorage === 'function') {
+    saved = loadFromStorage('fund_brick_' + BRICK_ID);
+  }
+  // Essayer Supabase (plus fiable)
+  if (!saved && typeof loadBrickState === 'function') {
+    const state = await loadBrickState(BRICK_ID);
+    if (state && state.screenCourant > 0 && !state.completed) {
+      saved = { screen: state.screenCourant, data: state.data };
+    }
+  }
+  if (!saved || saved.screen <= 0) return;
+
+  const resumeCard = document.getElementById('resume-card');
+  const btnResume  = document.getElementById('btn-resume');
+  if (!resumeCard || !btnResume) return;
+
+  resumeCard.style.display = 'block';
+  btnResume.onclick = () => {
+    // Restaurer données
+    if (saved.data) Object.assign(budgetData, saved.data);
+    restoreFieldsFromData();
+    resumeCard.style.display = 'none';
+    goToScreen(saved.screen);
   };
-  let selectedEngagement = null;
+}
 
-  /* ── Customize screen 0 based on profile ── */
-  (function applyProfileVariant() {
-    if (typeof getBudgetIntroVariant === 'function') {
-      const variant = getBudgetIntroVariant(profil);
-      if (variant && variant.subtitle) {
-        document.getElementById('s0-subtitle').textContent = variant.subtitle;
-      }
-      if (variant && variant.title) {
-        document.getElementById('s0-title').textContent = variant.title;
-      }
-    }
-  })();
+// Restaure les inputs depuis budgetData (après reprise)
+function restoreFieldsFromData() {
+  const map = {
+    'f-revenus':       budgetData.revenus,
+    'f-aides':         budgetData.aides,
+    'f-loyer':         budgetData.loyer,
+    'f-courses':       budgetData.courses,
+    'f-transport':     budgetData.transport,
+    'f-abonnements':   budgetData.abonnements_total,
+    'f-sorties':       budgetData.sorties,
+    'f-epargne':       budgetData.epargne,
+    'f-repas':         budgetData.repas,
+    'f-shopping':      budgetData.shopping,
+    'f-sante':         budgetData.sante,
+    'f-transport-var': budgetData.transport_variable,
+    'f-pro':           budgetData.depenses_pro,
+    'f-autres':        budgetData.autres,
+  };
+  Object.entries(map).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && val) el.value = val;
+  });
+  updateStickyBar();
+}
 
-  /* ── Progress bar update ── */
-  function updateProgress(screenIdx) {
-    const dots = document.querySelectorAll('.bp-dot');
-    dots.forEach((dot, i) => {
-      dot.classList.remove('done', 'active');
-      if (i < screenIdx) dot.classList.add('done');
-      else if (i === screenIdx) dot.classList.add('active');
-    });
+// ── Pré-remplissage depuis profil ─────────────────────────────
+function prefillFromProfil() {
+  // Revenus
+  if (profil.revenus_nets_mensuel > 0) {
+    const el = document.getElementById('f-revenus');
+    if (el) { el.value = profil.revenus_nets_mensuel; el.classList.add('prefilled'); }
+    document.getElementById('badge-revenus').style.display = 'inline-flex';
+    budgetData.prefilled_fields.push('revenus');
+    budgetData.revenus = profil.revenus_nets_mensuel;
   }
-
-  /* ── Navigate to screen ── */
-  function showScreen(idx) {
-    const screens = document.querySelectorAll('.screen');
-    screens.forEach(s => { s.style.display = 'none'; });
-
-    let targetId;
-    if (idx === 'exit') {
-      targetId = 'screen-exit';
-    } else {
-      targetId = 'screen-' + idx;
+  // Loyer selon logement_situation
+  if (profil.logement_situation === 'heberge_gratuit') {
+    const lGroup = document.getElementById('loyer-group');
+    const lInput = document.getElementById('f-loyer');
+    if (lGroup && lInput) {
+      lInput.style.display = 'none';
+      document.getElementById('loyer-ajouter-link').style.display = 'inline';
     }
-
-    const target = document.getElementById(targetId);
-    if (target) {
-      target.style.display = 'block';
-      // Trigger animation re-flow
-      target.style.animation = 'none';
-      requestAnimationFrame(() => { target.style.animation = ''; });
-    }
-
-    if (typeof idx === 'number') {
-      currentScreen = idx;
-      updateProgress(idx);
-      screenViewed(BRICK_ID, idx);
-    autosaveBrickProgress(BRICK_ID, typeof idx === 'number' ? idx : (typeof n === 'number' ? n : currentScreen), budgetData);
-    } else {
-      updateProgress(totalScreens);
-    }
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Marquer l'écran actif pour CSS step-indicator
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-    const activeEl = document.getElementById(typeof idx === 'number' ? 'screen-' + idx : 'screen-exit');
-    if (activeEl) activeEl.classList.add('active-screen');
-    updateStepIndicator(typeof idx === 'number' ? idx : null);
+  } else if (profil.loyer > 0) {
+    const el = document.getElementById('f-loyer');
+    if (el) { el.value = profil.loyer; el.classList.add('prefilled'); }
+    document.getElementById('badge-loyer').style.display = 'inline-flex';
+    budgetData.prefilled_fields.push('loyer');
+    budgetData.loyer = profil.loyer;
   }
+}
 
-  /* ── Format euro helpers ── */
-  function parseEuro(val) {
-    if (!val) return 0;
-    const cleaned = String(val).replace(/[^\d,.-]/g, '').replace(',', '.');
-    const n = parseFloat(cleaned);
-    return isNaN(n) ? 0 : Math.max(0, n);
-  }
-  function fmt(n) {
-    if (!n && n !== 0) return '—';
-    return Math.round(n).toLocaleString('fr-FR') + ' €';
-  }
+function showLoyerField() {
+  const el = document.getElementById('f-loyer');
+  if (el) el.style.display = 'block';
+  const link = document.getElementById('loyer-ajouter-link');
+  if (link) link.style.display = 'none';
+}
 
-  /* ── Animate sticky total ── */
-  function flashTotal(elId, value) {
-    const el = document.getElementById(elId);
+// ── Fourchette revenus ────────────────────────────────────────
+function toggleFourchette() {
+  const chips = document.getElementById('fourchette-chips');
+  const link  = document.getElementById('fourchette-toggle');
+  if (!chips) return;
+  const isVisible = chips.classList.contains('visible');
+  chips.classList.toggle('visible', !isVisible);
+  link.textContent = isVisible ? 'Je préfère donner une fourchette' : 'Saisir un montant exact';
+  if (!isVisible) document.getElementById('f-revenus').value = '';
+}
+
+function selectFourchette(el, label, midVal) {
+  document.querySelectorAll('.chip-fourchette').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  budgetData.revenu_fourchette = label;
+  budgetData.revenus = midVal;
+  document.getElementById('f-revenus').value = midVal;
+  if (typeof estimateUsed === 'function') estimateUsed(BRICK_ID, 'revenus');
+  updateStickyBar();
+}
+
+// ── Vérification épargne ──────────────────────────────────────
+function checkEpargne() {
+  const val = parseFloat(document.getElementById('f-epargne')?.value) || 0;
+  const nudge = document.getElementById('nudge-epargne');
+  if (nudge) nudge.classList.toggle('visible', val === 0);
+}
+
+// ── Bloc 2 révélé ─────────────────────────────────────────────
+let bloc2Shown = false;
+function checkBloc2Reveal() {
+  if (bloc2Shown) return;
+  const ids = ['f-revenus','f-aides','f-loyer','f-courses','f-transport'];
+  const filled = ids.filter(id => {
+    const el = document.getElementById(id);
+    return el && el.style.display !== 'none' && parseFloat(el.value) > 0;
+  });
+  if (filled.length >= 3) {
+    bloc2Shown = true;
+    const bloc2 = document.getElementById('bloc-2');
+    const sep   = document.getElementById('sep-bloc2');
+    if (bloc2) { bloc2.classList.add('visible'); }
+    if (sep)   { sep.style.display = 'flex'; }
+    // Autosave après bloc 1
+    collectBudgetData();
+    if (typeof autosaveBrickProgress === 'function') autosaveBrickProgress(BRICK_ID, 1, budgetData);
+  }
+}
+
+function toggleAffiner() {
+  const bloc = document.getElementById('bloc-3');
+  if (!bloc) return;
+  bloc.classList.toggle('visible');
+  // Masquer transport-variable si transport fixe > 0
+  if (bloc.classList.contains('visible')) {
+    const tFixe = parseFloat(document.getElementById('f-transport')?.value) || 0;
+    const tvLabel = document.getElementById('label-transport-var');
+    if (tFixe === 0 && tvLabel) tvLabel.closest('.field-group').style.display = 'none';
+  }
+}
+
+// ── Sticky bar ────────────────────────────────────────────────
+function initStickyListeners() {
+  const fieldIds = [
+    'f-revenus','f-aides','f-loyer','f-courses','f-transport',
+    'f-abonnements','f-sorties','f-epargne',
+    'f-repas','f-shopping','f-sante','f-transport-var','f-pro','f-autres'
+  ];
+  fieldIds.forEach(id => {
+    const el = document.getElementById(id);
     if (!el) return;
-    el.textContent = fmt(value);
-    el.classList.remove('flash');
-    void el.offsetWidth;
-    el.classList.add('flash');
-    setTimeout(() => el.classList.remove('flash'), 600);
-  }
-
-  /* ─────────────────── SCREEN 0 ─────────────────── */
-  document.getElementById('s0-cta').addEventListener('click', () => {
-    showScreen(1);
-  });
-
-  // Example sheet
-  document.getElementById('s0-example').addEventListener('click', () => {
-    helpClicked(BRICK_ID, 'example_budget');
-    document.getElementById('example-overlay').classList.add('visible');
-  });
-  document.getElementById('example-close').addEventListener('click', () => {
-    document.getElementById('example-overlay').classList.remove('visible');
-  });
-  document.getElementById('example-overlay').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) {
-      e.currentTarget.classList.remove('visible');
-    }
-  });
-
-  /* ─────────────────── SCREEN 1 ─────────────────── */
-  const s1Revenu = document.getElementById('s1-revenu');
-  const s1Aides = document.getElementById('s1-aides');
-  const s1FourchetteWrap = document.getElementById('s1-fourchette-wrap');
-  const s1ToggleFourchette = document.getElementById('s1-toggle-fourchette');
-  let s1ShowingFourchette = false;
-  let s1SelectedFourchette = null;
-
-  function calcS1Total() {
-    const rev = s1SelectedFourchette !== null ? s1SelectedFourchette : parseEuro(s1Revenu.value);
-    const aides = parseEuro(s1Aides.value);
-    return rev + aides;
-  }
-
-  function updateS1Total() {
-    flashTotal('s1-total', calcS1Total());
-  }
-
-  s1Revenu.addEventListener('input', () => {
-    s1SelectedFourchette = null;
-    document.querySelectorAll('#s1-fourchette-chips .chip').forEach(c => c.classList.remove('selected'));
-    updateS1Total();
-    fieldCompleted(BRICK_ID, 'revenu_principal');
-  });
-  s1Aides.addEventListener('input', () => {
-    updateS1Total();
-    fieldCompleted(BRICK_ID, 'aides');
-  });
-
-  s1ToggleFourchette.addEventListener('click', () => {
-    s1ShowingFourchette = !s1ShowingFourchette;
-    s1FourchetteWrap.style.display = s1ShowingFourchette ? 'block' : 'none';
-    s1ToggleFourchette.textContent = s1ShowingFourchette ? 'Saisir un montant exact' : 'Je préfère donner une fourchette';
-    helpClicked(BRICK_ID, 'fourchette_toggle');
-  });
-
-  document.querySelectorAll('#s1-fourchette-chips .chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('#s1-fourchette-chips .chip').forEach(c => c.classList.remove('selected'));
-      chip.classList.add('selected');
-      s1SelectedFourchette = parseInt(chip.dataset.val, 10);
-      s1Revenu.value = '';
-      estimateUsed(BRICK_ID, 'revenu_fourchette');
-      updateS1Total();
-    });
-  });
-
-  document.getElementById('s1-cta').addEventListener('click', () => {
-    const rev = s1SelectedFourchette !== null ? s1SelectedFourchette : parseEuro(s1Revenu.value);
-    const aides = parseEuro(s1Aides.value);
-
-    // Soft validation
-    if (rev < 0) {
-      const errEl = document.getElementById('s1-revenu-error');
-      errEl.textContent = 'Le montant ne peut pas être négatif.';
-      errEl.style.display = 'block';
-      return;
-    }
-
-    budgetData.revenus = rev;
-    budgetData.aides = aides;
-    budgetData.revenuFourchette = s1SelectedFourchette;
-
-    showScreen(2);
-    checkLogementNudge();
-  });
-
-  document.getElementById('s1-skip').addEventListener('click', () => {
-    // Use mid-range estimate
-    s1SelectedFourchette = 1250;
-    s1Revenu.value = '';
-    document.querySelectorAll('#s1-fourchette-chips .chip').forEach(c => {
-      c.classList.toggle('selected', c.dataset.val === '1250');
-    });
-    updateS1Total();
-    fieldSkipped(BRICK_ID, 'revenu_principal');
-    estimateUsed(BRICK_ID, 'revenu_principal_skip');
-
-    budgetData.revenus = 1250;
-    budgetData.aides = parseEuro(s1Aides.value);
-    showScreen(2);
-    checkLogementNudge();
-  });
-
-  /* ─────────────────── SCREEN 2 ─────────────────── */
-  // Accordion open/close
-  document.querySelectorAll('.accordion-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const acc = header.closest('.accordion');
-      acc.classList.toggle('open');
-    });
-  });
-
-  // Map of all s2 inputs to their category
-  const s2CatInputs = {
-    logement: ['s2-loyer', 's2-charges-loc'],
-    transport: ['s2-navigo', 's2-voiture'],
-    tel: ['s2-forfait', 's2-internet'],
-    credits: ['s2-credit-conso', 's2-credit-immo'],
-    abonnements: [], // dynamic — handled separately
-    autres_fixes: ['s2-assurances', 's2-autres-fixes-autre'],
-  };
-
-  function calcCatTotal(cat) {
-    let sum = 0;
-    if (cat === 'abonnements') {
-      document.querySelectorAll('#s2-abo-rows .sub-field-input').forEach(inp => {
-        sum += parseEuro(inp.value);
-      });
-    } else {
-      (s2CatInputs[cat] || []).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) sum += parseEuro(el.value);
-      });
-    }
-    return sum;
-  }
-
-  function calcS2Total() {
-    return Object.keys(s2CatInputs).reduce((acc, cat) => acc + calcCatTotal(cat), 0);
-  }
-
-  function updateS2CatAmounts() {
-    Object.keys(s2CatInputs).forEach(cat => {
-      const amtEl = document.getElementById('acc-' + cat + '-amount');
-      if (!amtEl) return;
-      const total = calcCatTotal(cat);
-      amtEl.textContent = total > 0 ? fmt(total) : '—';
-    });
-    const total = calcS2Total();
-    flashTotal('s2-total', total);
-
-    // Tight banner check
-    const totalIn = budgetData.revenus + budgetData.aides;
-    const banner = document.getElementById('s2-tight-banner');
-    if (totalIn > 0 && total > totalIn * 0.9) {
-      banner.style.display = 'flex';
-    } else {
-      banner.style.display = 'none';
-    }
-  }
-
-  // Listen on all s2 inputs
-  document.querySelectorAll('#screen-2 .field-input, #screen-2 .sub-field-input').forEach(inp => {
-    inp.addEventListener('input', () => {
-      updateS2CatAmounts();
-      fieldCompleted(BRICK_ID, 'charges_fixes');
-    });
-  });
-
-  function checkLogementNudge() {
-    const nudge = document.getElementById('s2-nudge-logement');
-    if (profil && profil.logement_situation === 'locataire') {
-      const loyerVal = document.getElementById('s2-loyer').value;
-      if (!loyerVal || parseEuro(loyerVal) === 0) {
-        nudge.style.display = 'block';
+    el.addEventListener('input', () => {
+      updateStickyBar();
+      checkBloc2Reveal();
+      // Détecter modification d'un champ pré-rempli
+      if (el.classList.contains('prefilled')) {
+        el.classList.remove('prefilled');
+        const fieldName = id.replace('f-','');
+        if (!budgetData.modified_prefilled.includes(fieldName)) budgetData.modified_prefilled.push(fieldName);
+        // Masquer le badge
+        const badge = document.getElementById('badge-' + fieldName);
+        if (badge) badge.style.display = 'none';
       }
+      if (typeof fieldCompleted === 'function' && parseFloat(el.value) > 0) fieldCompleted(BRICK_ID, id);
+    });
+  });
+}
+
+function updateStickyBar() {
+  const rev = parseFloat(document.getElementById('f-revenus')?.value) || 0;
+  const aid = parseFloat(document.getElementById('f-aides')?.value)   || 0;
+  const totalRev = rev + aid;
+
+  const depFields = ['f-loyer','f-courses','f-transport','f-abonnements','f-sorties','f-epargne',
+    'f-repas','f-shopping','f-sante','f-transport-var','f-pro','f-autres'];
+  let totalDep = 0;
+  depFields.forEach(id => { totalDep += parseFloat(document.getElementById(id)?.value) || 0; });
+
+  const ral = totalRev - totalDep;
+
+  const stickyBar = document.getElementById('sticky-bar');
+  if (totalRev > 0 || totalDep > 0) {
+    if (stickyBar) stickyBar.style.display = 'flex';
+  }
+
+  const revEl  = document.getElementById('sticky-revenus');
+  const depEl  = document.getElementById('sticky-depenses');
+  const ralEl  = document.getElementById('sticky-ral');
+  if (revEl)  revEl.textContent  = formatEuro(totalRev);
+  if (depEl)  depEl.textContent  = formatEuro(totalDep);
+  if (ralEl) {
+    ralEl.textContent = formatEuro(ral);
+    ralEl.className   = 'sticky-bar-ral ' + (ral > 100 ? 'positive' : ral >= 0 ? 'warning' : 'negative');
+  }
+}
+
+// ── Collecte données screen 1 ─────────────────────────────────
+function collectBudgetData() {
+  budgetData.revenus    = parseFloat(document.getElementById('f-revenus')?.value)       || 0;
+  budgetData.aides      = parseFloat(document.getElementById('f-aides')?.value)         || 0;
+  budgetData.loyer      = parseFloat(document.getElementById('f-loyer')?.value)         || 0;
+  budgetData.courses    = parseFloat(document.getElementById('f-courses')?.value)       || 0;
+  budgetData.transport  = parseFloat(document.getElementById('f-transport')?.value)     || 0;
+  budgetData.abonnements_total = parseFloat(document.getElementById('f-abonnements')?.value) || 0;
+  budgetData.sorties    = parseFloat(document.getElementById('f-sorties')?.value)       || 0;
+  budgetData.epargne    = parseFloat(document.getElementById('f-epargne')?.value)       || 0;
+  budgetData.repas      = parseFloat(document.getElementById('f-repas')?.value)         || 0;
+  budgetData.shopping   = parseFloat(document.getElementById('f-shopping')?.value)      || 0;
+  budgetData.sante      = parseFloat(document.getElementById('f-sante')?.value)         || 0;
+  budgetData.transport_variable = parseFloat(document.getElementById('f-transport-var')?.value) || 0;
+  budgetData.depenses_pro = parseFloat(document.getElementById('f-pro')?.value)         || 0;
+  budgetData.autres     = parseFloat(document.getElementById('f-autres')?.value)        || 0;
+
+  const totalRev = budgetData.revenus + budgetData.aides;
+
+  // Calcul besoins / envies / investissement
+  budgetData.total_besoins   = budgetData.loyer + budgetData.courses + budgetData.transport + budgetData.sante + budgetData.depenses_pro;
+  budgetData.total_envies    = budgetData.abonnements_total + budgetData.sorties + budgetData.repas + budgetData.shopping + budgetData.transport_variable + budgetData.autres;
+  budgetData.total_depenses  = budgetData.total_besoins + budgetData.total_envies + budgetData.epargne;
+  budgetData.reste_a_vivre   = totalRev - budgetData.total_depenses;
+  budgetData.pct_besoins     = totalRev > 0 ? Math.round(budgetData.total_besoins / totalRev * 100) : 0;
+  budgetData.pct_envies      = totalRev > 0 ? Math.round(budgetData.total_envies  / totalRev * 100) : 0;
+  budgetData.pct_investissement = totalRev > 0 ? Math.round(budgetData.epargne    / totalRev * 100) : 0;
+
+  // Dettes : montants mensuels depuis screen 3
+  const detteTotal = budgetData.dettes.reduce((s, d) => s + (d.montant_mensuel || 0), 0);
+  budgetData.total_besoins += detteTotal;
+}
+
+// ── Navigation écrans ─────────────────────────────────────────
+function goToScreen(n) {
+  if (n === 2) collectBudgetData();
+  if (n === 4) { collectBudgetData(); buildScreen4(); }
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + (n === 'exit' ? 'exit' : n));
+  if (target) target.classList.add('active');
+
+  currentScreen = typeof n === 'number' ? n : 5;
+  updateProgressPanel(currentScreen);
+  updateProgBar(currentScreen);
+
+  if (typeof screenViewed === 'function') screenViewed(BRICK_ID, n);
+  if (typeof autosaveBrickProgress === 'function') autosaveBrickProgress(BRICK_ID, currentScreen, budgetData);
+
+  if (n === 2) buildScreen2();
+  if (n === 3) buildScreen3();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Progress bar dots ─────────────────────────────────────────
+function buildProgDots() {
+  const container = document.getElementById('prog-dots');
+  if (!container) return;
+  for (let i = 0; i <= 4; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'brick-prog-dot';
+    dot.id = 'prog-dot-' + i;
+    container.appendChild(dot);
+  }
+}
+
+function updateProgBar(screenIdx) {
+  const pct = Math.round((screenIdx / 5) * 100);
+  const fill = document.getElementById('prog-fill');
+  if (fill) {
+    fill.style.width = pct + '%';
+    fill.classList.toggle('stripe', pct > 0 && pct < 100);
+  }
+  for (let i = 0; i <= 4; i++) {
+    const dot = document.getElementById('prog-dot-' + i);
+    if (!dot) continue;
+    dot.classList.remove('done','active');
+    if (i < screenIdx) dot.classList.add('done');
+    else if (i === screenIdx) dot.classList.add('active');
+  }
+}
+
+// ── Progress panel ────────────────────────────────────────────
+const STEP_TITLES = [
+  'On va poser ton mois, sans jugement.',
+  'Ce qui rentre et ce qui part.',
+  'Ton argent en clair.',
+  'Tes engagements financiers.',
+  'Ta prochaine action.',
+  'C\'est noté. 🎉'
+];
+
+function updateProgressPanel(screenIdx) {
+  // Titre
+  const titleEl = document.getElementById('bpc-step-title');
+  if (titleEl) titleEl.textContent = STEP_TITLES[screenIdx] || STEP_TITLES[0];
+
+  // Ring SVG (circumference = 2π×32 ≈ 201)
+  const circ  = 201;
+  const pct   = Math.round((screenIdx / 5) * 100);
+  const offset = circ - (pct / 100) * circ;
+  const fill  = document.getElementById('bpc-ring-fill');
+  const pctEl = document.getElementById('bpc-ring-pct');
+  if (fill)  fill.style.strokeDashoffset = offset;
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  // Steps
+  for (let i = 0; i <= 5; i++) {
+    const step = document.getElementById('bpc-step-' + i);
+    if (!step) continue;
+    step.classList.remove('active','done');
+    if (i < screenIdx) step.classList.add('done');
+    else if (i === screenIdx) step.classList.add('active');
+  }
+}
+
+// ── Exemple (screen 0) ────────────────────────────────────────
+function showExample() {
+  // Pré-rempli avec données exemple
+  document.getElementById('f-revenus').value  = 1800;
+  document.getElementById('f-loyer').value    = 650;
+  document.getElementById('f-courses').value  = 250;
+  document.getElementById('f-transport').value = 80;
+  updateStickyBar();
+  checkBloc2Reveal();
+  goToScreen(1);
+}
+
+// ══════════════════════════════════════════════════════════════
+// POPUP ABONNEMENTS
+// ══════════════════════════════════════════════════════════════
+function maybeOpenPopupAbo() {
+  if (aboPopupOpened) return;
+  const val = parseFloat(document.getElementById('f-abonnements')?.value) || 0;
+  if (val > 0) return; // Déjà rempli
+  aboPopupOpened = true;
+  openPopupAbo();
+}
+
+function openPopupAbo() {
+  const overlay = document.getElementById('popup-abo');
+  if (overlay) overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePopupAbo() {
+  const overlay = document.getElementById('popup-abo');
+  if (overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function toggleAbo(el) {
+  el.classList.toggle('checked');
+  updateAboNonUtilises();
+  updateAboEconomie();
+}
+
+function updateAboNonUtilises() {
+  const checked = document.querySelectorAll('#abo-list .abo-item.checked');
+  const container = document.getElementById('abo-non-utilises');
+  const list = document.getElementById('abo-non-utilises-list');
+  if (!container || !list) return;
+
+  if (checked.length === 0) {
+    container.classList.remove('visible');
+    return;
+  }
+  container.classList.add('visible');
+  list.innerHTML = '';
+  checked.forEach(item => {
+    const nameEl = item.querySelector('.abo-item-name');
+    const name = (typeof nameEl.value !== 'undefined' ? nameEl.value : nameEl.textContent).trim() || 'Abonnement';
+    const id = item.dataset.id;
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;';
+    div.innerHTML = `
+      <input type="checkbox" id="nu-${id}" style="accent-color:var(--accent-strong);" />
+      <label for="nu-${id}" style="color:var(--text-muted);cursor:pointer;">${name}</label>
+    `;
+    div.querySelector('input').addEventListener('change', updateAboEconomie);
+    list.appendChild(div);
+  });
+}
+
+function updateAboEconomie() {
+  const nonUtilises = document.querySelectorAll('#abo-non-utilises-list input[type="checkbox"]:checked');
+  const econEl = document.getElementById('abo-economie');
+  const valEl  = document.getElementById('abo-eco-val');
+  if (!econEl) return;
+
+  let eco = 0;
+  nonUtilises.forEach(cb => {
+    const id = cb.id.replace('nu-','');
+    const aboItem = document.querySelector(`#abo-list .abo-item[data-id="${id}"]`);
+    if (aboItem) {
+      const montantInput = aboItem.querySelector('.abo-item-montant');
+      eco += parseFloat(montantInput?.value) || parseFloat(montantInput?.placeholder) || 0;
+    }
+  });
+
+  budgetData.abonnements_economies = eco;
+  econEl.classList.toggle('visible', nonUtilises.length > 0);
+  if (valEl) valEl.textContent = eco + ' €/mois';
+}
+
+function ajouterPremiersPasBancaires() {
+  const btn = document.getElementById('abo-add-ppb-btn');
+  if (!btn || btn.classList.contains('added')) return;
+
+  // Ajouter au dashboard
+  if (typeof loadFromStorage === 'function' && typeof saveToStorage === 'function') {
+    const dash = loadFromStorage('fund_dashboard') || (typeof getMockDashboard === 'function' ? getMockDashboard() : { briques: [] });
+    const exists = dash.briques.find(b => b.id === 'premiers_pas_bancaires');
+    if (!exists) {
+      // Insérer après budget_base ou en queue selon logique
+      const budgetIdx = dash.briques.findIndex(b => b.id === 'budget_base');
+      const newBrique = { id:'premiers_pas_bancaires', statut:'a_faire', progression:0 };
+      if (budgetIdx >= 0) {
+        dash.briques.splice(budgetIdx + 1, 0, newBrique);
+      } else {
+        dash.briques.push(newBrique);
+      }
+      saveToStorage('fund_dashboard', dash);
+      budgetData.premiers_pas_ajoute = true;
     }
   }
 
-  document.getElementById('s2-loyer').addEventListener('input', () => {
-    const nudge = document.getElementById('s2-nudge-logement');
-    if (parseEuro(document.getElementById('s2-loyer').value) > 0) {
-      nudge.style.display = 'none';
-    }
-    updateS2CatAmounts();
-  });
+  btn.textContent = '✓ Ajouté à ton parcours';
+  btn.classList.add('added');
+  if (typeof localStorage !== 'undefined') localStorage.setItem('ppb_added_from_budget', '1');
+}
 
-  document.getElementById('s2-cta').addEventListener('click', () => {
-    // Guard: si aucun champ renseigné, demander confirmation
-    if (calcS2Total() === 0) {
-      const confirmed = window.confirm("Tu n'as saisi aucune charge fixe. Continuer quand même ?");
-      if (!confirmed) return;
+function validerPopupAbo() {
+  // Calculer total abonnements
+  let total = 0;
+  const detail = {};
+  document.querySelectorAll('#abo-list .abo-item.checked').forEach(item => {
+    const id = item.dataset.id;
+    const montantInput = item.querySelector('.abo-item-montant');
+    const montant = parseFloat(montantInput?.value) || parseFloat(montantInput?.placeholder) || 0;
+    if (montant > 0) {
+      total += montant;
+      const nameEl = item.querySelector('.abo-item-name');
+      const name = (typeof nameEl.value !== 'undefined' ? nameEl.value : nameEl.textContent).trim();
+      detail[id] = { nom: name, montant };
     }
-    // Collect all fixed charges data
-    budgetData.chargesFixes = {};
-    Object.keys(s2CatInputs).forEach(cat => {
-      budgetData.chargesFixes[cat] = calcCatTotal(cat);
-    });
-    budgetData.totalFixes = calcS2Total();
-    showScreen(3);
-    initScreen3();
   });
+  budgetData.abonnements_total = total;
+  budgetData.abonnements_detail = detail;
 
-  /* ─────────────────── SCREEN 3 ─────────────────── */
-  const varCategories = [
-    { id: 'courses', label: '🛒 Courses', emoji: '🛒' },
-    { id: 'repas', label: '🍕 Repas / cafés', emoji: '🍕' },
-    { id: 'sorties', label: '🎉 Sorties', emoji: '🎉' },
-    { id: 'shopping', label: '🛍 Shopping', emoji: '🛍' },
-    { id: 'sante', label: '💊 Santé', emoji: '💊' },
-    { id: 'transport_var', label: '🚗 Transport variable', emoji: '🚗' },
-    { id: 'autres_var', label: '📎 Autres', emoji: '📎' },
+  const aboInput = document.getElementById('f-abonnements');
+  if (aboInput) aboInput.value = total;
+
+  closePopupAbo();
+  updateStickyBar();
+}
+
+// Fermer overlay au clic extérieur
+document.getElementById('popup-abo')?.addEventListener('click', function(e) {
+  if (e.target === this) closePopupAbo();
+});
+
+// ══════════════════════════════════════════════════════════════
+// SCREEN 2 — Analyse + visualisations
+// ══════════════════════════════════════════════════════════════
+function buildScreen2() {
+  if (typeof resultViewed === 'function') resultViewed(BRICK_ID);
+  buildDonuts();
+  buildSankeyBars();
+  buildMsgCards();
+  buildLeviers();
+}
+
+// ── Double donut SVG ──────────────────────────────────────────
+function buildDonuts() {
+  const container = document.getElementById('donuts-wrap');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const realData = [
+    { label:'Besoins',       pct: budgetData.pct_besoins,        color:'var(--accent-strong)' },
+    { label:'Envies',        pct: budgetData.pct_envies,         color:'var(--purple)' },
+    { label:'Investissement',pct: budgetData.pct_investissement, color:'var(--green)' },
+    { label:'Non alloué',    pct: Math.max(0, 100 - budgetData.pct_besoins - budgetData.pct_envies - budgetData.pct_investissement), color:'var(--track)' },
+  ].filter(d => d.pct > 0);
+
+  const refData = [
+    { label:'Besoins',        pct:50, color:'var(--accent-strong)' },
+    { label:'Envies',         pct:30, color:'var(--purple)' },
+    { label:'Investissement', pct:20, color:'var(--green)' },
   ];
 
-  // Qualitative paliers → euro ranges
-  // Fallback if getSpendingPaliers not available
-  function getPaliers(catId) {
-    if (typeof getSpendingPaliers === 'function') {
-      const paliers = getSpendingPaliers(profil && profil.age_group);
-      if (paliers && paliers[catId]) return paliers[catId];
-    }
-    // Default paliers
-    const defaults = {
-      courses:       [30, 100, 200, 350],
-      repas:         [20, 60, 120, 200],
-      sorties:       [10, 40, 80, 150],
-      shopping:      [10, 40, 100, 200],
-      sante:         [5, 20, 50, 100],
-      transport_var: [10, 30, 70, 150],
-      autres_var:    [10, 30, 70, 150],
-    };
-    return defaults[catId] || [10, 30, 70, 150];
-  }
+  [
+    { title:'Ta situation', data: realData },
+    { title:'Repère 50/30/20', data: refData }
+  ].forEach(({ title, data }) => {
+    const block = document.createElement('div');
+    block.className = 'donut-block';
 
-  const palierLabels = ['Très peu', 'Un peu', 'Assez souvent', 'Beaucoup'];
-  let s3FilledCount = 0;
+    const r = 54, cx = 64, cy = 64, circ = 2 * Math.PI * r;
+    let cumOffset = 0;
+    const svgPaths = data.map(d => {
+      const dash   = (d.pct / 100) * circ;
+      const gap    = circ - dash;
+      const rotate = (cumOffset / 100) * 360 - 90;
+      cumOffset += d.pct;
+      return `<circle cx="${cx}" cy="${cy}" r="${r}"
+        fill="none" stroke="${d.color}" stroke-width="14"
+        stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}"
+        stroke-linecap="butt"
+        transform="rotate(${rotate.toFixed(1)}, ${cx}, ${cy})"
+        style="transition:stroke-dasharray 0.8s var(--ease-out);" />`;
+    }).join('');
 
-  function getS3ExactId(catId) { return 's3-exact-' + catId; }
-  function getS3RangeId(catId) { return 's3-range-' + catId; }
-  function getS3ValId(catId)   { return 's3-val-' + catId; }
+    // Texte centre
+    const mainPct = data[0]?.pct || 0;
 
-  function initScreen3() {
-    const container = document.getElementById('s3-categories');
-    container.innerHTML = '';
-    s3FilledCount = 0;
+    block.innerHTML = `
+      <div class="donut-label">${title}</div>
+      <svg width="128" height="128" viewBox="0 0 128 128">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--track)" stroke-width="14"/>
+        ${svgPaths}
+        <text x="${cx}" y="${cy - 6}" text-anchor="middle" dominant-baseline="middle"
+          style="font-family:'Fraunces',serif;font-size:18px;font-style:italic;fill:var(--text);">${mainPct}%</text>
+        <text x="${cx}" y="${cy + 12}" text-anchor="middle"
+          style="font-size:9px;fill:var(--text-faint);font-family:'Inter',sans-serif;letter-spacing:0.05em;text-transform:uppercase;">${data[0]?.label || ''}</text>
+      </svg>
+      <div class="donut-legend">
+        ${data.map(d => `<div class="donut-legend-item">
+          <div class="donut-legend-dot" style="background:${d.color};"></div>
+          <span>${d.label} <strong style="color:var(--text);">${d.pct}%</strong></span>
+        </div>`).join('')}
+      </div>
+    `;
+    container.appendChild(block);
+  });
+}
 
-    varCategories.forEach(cat => {
-      const paliers = getPaliers(cat.id);
-      const div = document.createElement('div');
-      div.className = 'var-category';
-      div.id = 'varcat-' + cat.id;
-      div.innerHTML = `
-        <div class="var-cat-header">
-          <span class="var-cat-name">${cat.label}</span>
-          <span class="var-cat-amount" id="${getS3ValId(cat.id)}">—</span>
-        </div>
-        <div class="range-wrap">
-          <input type="range" id="${getS3RangeId(cat.id)}" min="0" max="3" step="1" value="-1" style="--val:-1;" />
-          <div class="range-labels">
-            ${palierLabels.map((l, i) => `<span>${l}</span>`).join('')}
-          </div>
-        </div>
-        <div class="range-value" id="${getS3ValId(cat.id)}-display" style="display:none;"></div>
-        <div style="margin-top:0.5rem;">
-          <button class="text-link" data-exact-for="${cat.id}">ou saisir un montant exact</button>
-          <div style="display:none;margin-top:0.5rem;" id="s3-exact-wrap-${cat.id}">
-            <input class="field-input" id="${getS3ExactId(cat.id)}" type="text" inputmode="numeric" placeholder="Ex. 80 €" style="max-width:160px;" />
-          </div>
-        </div>
-      `;
-      container.appendChild(div);
+// ── Barres proportionnelles (Sankey SVG natif) ────────────────
+function buildSankeyBars() {
+  const container = document.getElementById('sankey-block');
+  if (!container) return;
 
-      // Slider events
-      const slider = div.querySelector('#' + getS3RangeId(cat.id));
+  const totalRev = budgetData.revenus + budgetData.aides || 1;
+  const categories = [
+    { name:'Loyer / logement',    val: budgetData.loyer,              color:'var(--accent-strong)' },
+    { name:'Courses',             val: budgetData.courses,            color:'var(--accent-strong)' },
+    { name:'Transport',           val: budgetData.transport,          color:'var(--accent-strong)' },
+    { name:'Abonnements',         val: budgetData.abonnements_total,  color:'var(--purple)' },
+    { name:'Sorties / loisirs',   val: budgetData.sorties,            color:'var(--purple)' },
+    { name:'Épargne',             val: budgetData.epargne,            color:'var(--green)' },
+    { name:'Santé',               val: budgetData.sante,              color:'var(--accent-strong)' },
+    { name:'Shopping',            val: budgetData.shopping,           color:'var(--purple)' },
+    { name:'Repas / cafés',       val: budgetData.repas,              color:'var(--purple)' },
+    { name:'Dépenses pro',        val: budgetData.depenses_pro,       color:'var(--accent-strong)' },
+    { name:'Autres',              val: budgetData.autres,             color:'var(--text-faint)' },
+    { name:'Dettes',              val: budgetData.dettes.reduce((s,d) => s+(d.montant_mensuel||0),0), color:'var(--orange)' },
+  ].filter(c => c.val > 0).sort((a,b) => b.val - a.val);
 
-      // Initialize slider at -1 (not selected) — visually to 0
-      slider.value = 0;
-      let sliderTouched = false;
+  const ralVal = Math.max(0, budgetData.reste_a_vivre);
+  if (ralVal > 0) categories.push({ name:'Reste à vivre', val: ralVal, color:'var(--green)' });
 
-      slider.addEventListener('input', () => {
-        sliderTouched = true;
-        const idx = parseInt(slider.value, 10);
-        const val = paliers[idx];
-        budgetData.variable[cat.id] = val;
-        updateVarCatDisplay(cat.id, val, palierLabels[idx]);
-        updateS3Completion();
-        updateS3Total();
-        fieldCompleted(BRICK_ID, 'variable_' + cat.id);
-        estimateUsed(BRICK_ID, 'variable_' + cat.id + '_slider');
-      });
+  container.innerHTML = `<div class="brick-kicker" style="margin-bottom:0.875rem;">RÉPARTITION PAR POSTE</div>`;
+  const inner = document.createElement('div');
+  inner.className = 'sankey-block';
+  inner.style.gap = '0.5rem';
 
-      // Exact input
-      const exactToggle = div.querySelector('[data-exact-for]');
-      exactToggle.addEventListener('click', () => {
-        const wrap = document.getElementById('s3-exact-wrap-' + cat.id);
-        const isVisible = wrap.style.display !== 'none';
-        wrap.style.display = isVisible ? 'none' : 'block';
-        exactToggle.textContent = isVisible ? 'ou saisir un montant exact' : 'utiliser le curseur';
-        helpClicked(BRICK_ID, 'exact_amount_' + cat.id);
-      });
+  categories.forEach(cat => {
+    const pct = Math.min(100, Math.round(cat.val / totalRev * 100));
+    const row = document.createElement('div');
+    row.className = 'sankey-row';
+    row.innerHTML = `
+      <div class="sankey-row-head">
+        <span class="sankey-row-name">${cat.name}</span>
+        <span class="sankey-row-val">${formatEuro(cat.val)} <span style="color:var(--text-faint);font-size:0.72rem;">(${pct}%)</span></span>
+      </div>
+      <div class="sankey-bar-track">
+        <div class="sankey-bar-fill" style="width:0%;background:${cat.color};" data-target="${pct}"></div>
+      </div>
+    `;
+    inner.appendChild(row);
+  });
+  container.appendChild(inner);
 
-      const exactInput = div.querySelector('#' + getS3ExactId(cat.id));
-      exactInput.addEventListener('input', () => {
-        const val = parseEuro(exactInput.value);
-        budgetData.variable[cat.id] = val;
-        updateVarCatDisplay(cat.id, val, null);
-        updateS3Completion();
-        updateS3Total();
-        fieldCompleted(BRICK_ID, 'variable_' + cat.id + '_exact');
-      });
+  // Animer les barres après render
+  setTimeout(() => {
+    container.querySelectorAll('.sankey-bar-fill').forEach(fill => {
+      fill.style.width = fill.dataset.target + '%';
     });
+  }, 80);
+}
 
-    updateS3Completion();
-    updateS3Total();
+// ── Messages contextuels ──────────────────────────────────────
+function buildMsgCards() {
+  const container = document.getElementById('msg-cards');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const msgs = [];
+  const { pct_besoins, pct_envies, pct_investissement, reste_a_vivre } = budgetData;
+  const totalRev = budgetData.revenus + budgetData.aides;
+
+  if (totalRev > 0 && budgetData.total_depenses > totalRev) {
+    msgs.push({ border:'var(--red)', kicker:'⚠️ ATTENTION', text:"Tu dépenses plus que tu gagnes. Avant tout le reste, il faut retrouver l'équilibre." });
+  }
+  if (pct_besoins > 65) {
+    msgs.push({ border:'var(--dot-construction)', kicker:'BUDGET SERRÉ', text:"Ton budget est peu flexible. La priorité : retrouver de l'air, pas encore investir." });
+  }
+  if (pct_envies > 35) {
+    msgs.push({ border:'var(--dot-construction)', kicker:'POSTE PLAISIR ÉLEVÉ', text:"Quelques ajustements peuvent libérer 100–200 €/mois." });
+  }
+  if (pct_investissement === 0) {
+    msgs.push({ border:'rgba(99,102,241,0.25)', kicker:'ÉPARGNE À ZÉRO', text:"Tu ne t'épargnes pas encore. Ce n'est pas grave — on va trouver d'où vient le problème." });
+  }
+  if (msgs.length === 0 && reste_a_vivre > 0) {
+    msgs.push({ border:'var(--green)', kicker:'✅ BONNE POSITION', text:"Tu es en bonne position. L'étape suivante : optimiser et faire travailler ton épargne." });
   }
 
-  function updateVarCatDisplay(catId, val, palierLabel) {
-    const catDiv = document.getElementById('varcat-' + catId);
-    if (!catDiv) return;
-    const amtEl = document.getElementById(getS3ValId(catId));
-    const display = document.getElementById(getS3ValId(catId) + '-display');
-
-    if (val > 0) {
-      amtEl.textContent = fmt(val);
-      amtEl.classList.add('has-value');
-      catDiv.classList.add('filled');
-      if (palierLabel) {
-        display.style.display = 'block';
-        display.textContent = palierLabel + ' → ' + fmt(val);
-      }
-    } else {
-      amtEl.textContent = '—';
-      amtEl.classList.remove('has-value');
-      catDiv.classList.remove('filled');
-      if (display) display.style.display = 'none';
-    }
-  }
-
-  function updateS3Completion() {
-    const filled = varCategories.filter(cat => (budgetData.variable[cat.id] || 0) > 0).length;
-    const total = varCategories.length;
-    const pct = Math.round((filled / total) * 100);
-    document.getElementById('s3-completion-text').textContent = filled + '/' + total + ' catégories renseignées';
-    document.getElementById('s3-completion-fill').style.width = pct + '%';
-  }
-
-  function calcS3Total() {
-    return varCategories.reduce((acc, cat) => acc + (budgetData.variable[cat.id] || 0), 0);
-  }
-
-  function updateS3Total() {
-    flashTotal('s3-total', calcS3Total());
-  }
-
-  document.getElementById('s3-cta').addEventListener('click', () => {
-    budgetData.totalVariable = calcS3Total();
-    resultViewed(BRICK_ID);
-    showScreen(4);
-    renderSynthesis();
+  msgs.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'msg-card';
+    card.style.borderColor = m.border;
+    card.innerHTML = `<div class="msg-card-label" style="color:${m.border};">${m.kicker}</div>${m.text}`;
+    container.appendChild(card);
   });
+}
 
-  /* ─────────────────── SCREEN 4 — Synthesis ─────────────────── */
-  function renderSynthesis() {
-    const totalIn = budgetData.revenus + budgetData.aides;
-    const totalFixes = budgetData.totalFixes || 0;
-    const totalVar = budgetData.totalVariable || 0;
-    const reste = totalIn - totalFixes - totalVar;
+// ── Leviers rapides ───────────────────────────────────────────
+function buildLeviers() {
+  const container = document.getElementById('leviers-grid');
+  if (!container) return;
+  container.innerHTML = '';
 
-    document.getElementById('synth-revenus').textContent = fmt(totalIn);
-    document.getElementById('synth-charges').textContent = fmt(totalFixes);
-    document.getElementById('synth-variable').textContent = fmt(totalVar);
+  const postes = [
+    { name:'Loyer / logement', val:budgetData.loyer,              color:'var(--accent-strong)' },
+    { name:'Abonnements',       val:budgetData.abonnements_total, color:'var(--purple)' },
+    { name:'Sorties / loisirs', val:budgetData.sorties,           color:'var(--purple)' },
+    { name:'Shopping',          val:budgetData.shopping,          color:'var(--purple)' },
+    { name:'Courses',           val:budgetData.courses,           color:'var(--accent-strong)' },
+    { name:'Transport',         val:budgetData.transport,         color:'var(--accent-strong)' },
+  ].filter(p => p.val > 20).sort((a,b) => b.val - a.val).slice(0,3);
 
-    const resteEl = document.getElementById('synth-reste');
-    resteEl.textContent = fmt(Math.abs(reste)) + (reste < 0 ? ' (déficit)' : '');
-    resteEl.className = 'synth-block-value ' + (reste > 50 ? 'positive' : reste < 0 ? 'negative' : 'neutral');
-
-    // Donut
-    renderDonut(totalIn, totalFixes, totalVar, reste);
-
-    // Center text
-    document.getElementById('donut-center-val').textContent = fmt(reste);
-    document.getElementById('donut-center-label').textContent = reste >= 0 ? 'Reste' : 'Déficit';
-
-    // Conditional message
-    const msgEl = document.getElementById('synth-msg');
-    const orientEl = document.getElementById('synth-orientation');
-    if (reste > 50) {
-      msgEl.textContent = 'Tu as une marge. L\'enjeu est de la protéger.';
-      msgEl.className = 'synth-msg positive';
-      orientEl.style.display = 'none';
-    } else if (reste >= -50 && reste <= 50) {
-      msgEl.textContent = 'Ton mois semble très tendu. On va chercher le levier le plus simple.';
-      msgEl.className = 'synth-msg tight';
-      orientEl.style.display = 'none';
-    } else {
-      msgEl.textContent = 'Aujourd\'hui, ton mois semble déséquilibré. Ce n\'est pas rare. On commence petit.';
-      msgEl.className = 'synth-msg tight';
-      orientEl.style.display = 'block';
-    }
-
-    // Pre-fill lever cards & engagement amounts
-    const aboTotal = budgetData.chargesFixes && budgetData.chargesFixes.abonnements || 0;
-    const aboSave = Math.min(aboTotal > 0 ? Math.round(aboTotal * 0.2) : 15, 50);
-    const epargne = Math.max(10, Math.round(Math.max(reste, 0) * 0.15));
-    const margeTarget = Math.max(50, Math.round(Math.max(reste, 0) * 1.2));
-
-    document.getElementById('lever-1-label').textContent = 'Réduire les abonnements de ' + aboSave + ' €/mois';
-    document.getElementById('lever-1-annual').textContent = 'Soit ' + (aboSave * 12) + ' € récupérés sur l\'année';
-    document.getElementById('lever-3-label').textContent = 'Mettre ' + epargne + ' € de côté à la paie';
-    document.getElementById('lever-3-annual').textContent = 'Soit ' + (epargne * 12) + ' € épargnés sur l\'année';
-
-    // Pre-fill engagement inputs
-    document.getElementById('eng-abo-amount').value = aboSave;
-    document.getElementById('eng-marge-amount').value = margeTarget;
-    document.getElementById('eng-epargne-amount').value = epargne;
-  }
-
-  // Inline SVG donut rendering
-  function renderDonut(totalIn, totalFixes, totalVar, reste) {
-    const circumference = 2 * Math.PI * 70; // ≈ 440
-    const chargesEl = document.getElementById('donut-charges');
-    const variableEl = document.getElementById('donut-variable');
-
-    if (totalIn <= 0) {
-      chargesEl.setAttribute('stroke-dasharray', '0 ' + circumference);
-      variableEl.setAttribute('stroke-dasharray', '0 ' + circumference);
-      return;
-    }
-
-    const chargesFrac = Math.min(totalFixes / totalIn, 1);
-    const varFrac = Math.min(totalVar / totalIn, 1 - chargesFrac);
-    const chargesLen = chargesFrac * circumference;
-    const varLen = varFrac * circumference;
-
-    chargesEl.setAttribute('stroke-dasharray', chargesLen + ' ' + (circumference - chargesLen));
-    chargesEl.setAttribute('stroke-dashoffset', '0');
-
-    // Variable starts after charges
-    variableEl.setAttribute('stroke-dasharray', varLen + ' ' + (circumference - varLen));
-    // Offset so it starts after the charges segment
-    const varOffset = -chargesLen;
-    variableEl.setAttribute('stroke-dashoffset', varOffset);
-  }
-
-  document.getElementById('s4-cta').addEventListener('click', () => {
-    showScreen(5);
+  postes.forEach(p => {
+    const economie     = Math.round(p.val * 0.15);
+    const annuel       = economie * 12;
+    const card = document.createElement('div');
+    card.className = 'levier-card';
+    card.innerHTML = `
+      <div class="levier-dot" style="background:${p.color};"></div>
+      <div class="levier-body">
+        <div class="levier-title">Réduire ${p.name} de ${formatEuro(economie)}/mois</div>
+        <div class="levier-sub">= <strong>${formatEuro(annuel)}</strong> récupérés sur l'année</div>
+      </div>
+    `;
+    container.appendChild(card);
   });
-  document.getElementById('s4-back').addEventListener('click', () => {
-    showScreen(1);
-  });
+}
 
-  /* ─────────────────── SCREEN 5 — Engagement ─────────────────── */
-  const engOptions = document.querySelectorAll('.eng-option');
+// ══════════════════════════════════════════════════════════════
+// SCREEN 3 — Dettes
+// ══════════════════════════════════════════════════════════════
+const DETTE_TYPES = [
+  { val:'credit_immo',           label:'Crédit immobilier' },
+  { val:'pret_etudiant',         label:'Prêt étudiant' },
+  { val:'credit_conso',          label:'Crédit conso' },
+  { val:'decouvert_regulier',    label:'Découvert régulier' },
+  { val:'credit_renouvelable',   label:'Crédit renouvelable' },
+  { val:'paiement_fractionne',   label:'Paiement fractionné' },
+  { val:'autre',                 label:'Autre' },
+];
 
-  engOptions.forEach((opt, i) => {
-    opt.addEventListener('click', (e) => {
-      // Don't toggle if clicking on inline input
-      if (e.target.classList.contains('eng-inline-input')) return;
-      engOptions.forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
-      selectedEngagement = parseInt(opt.dataset.idx, 10);
-      document.getElementById('s5-cta').disabled = false;
-    });
-  });
+const DETTE_CLASSIFICATION = {
+  credit_immo:          { badge:'vert',   emoji:'🟢', label:'Bonne dette',          msg:"Pas d'action urgente ici.", cta:null },
+  pret_etudiant:        { badge:'jaune',  emoji:'🟡', label:'Contexte spécifique',   msg:"À analyser selon ton TAEG.", cta:null },
+  credit_conso:         { badge:'orange', emoji:'🟠', label:'Alerte',                msg:"Ce crédit coûte cher.", cta:'brique-gestion-decouvert.html' },
+  decouvert_regulier:   { badge:'rouge',  emoji:'🔴', label:'Alerte forte',          msg:"L'un des pièges les plus coûteux.", cta:'brique-gestion-decouvert.html' },
+  credit_renouvelable:  { badge:'rouge',  emoji:'🔴', label:'Piège à intérêts',      msg:"Priorité absolue.", cta:'brique-gestion-decouvert.html' },
+  paiement_fractionne:  { badge:'rouge',  emoji:'🔴', label:'Alerte',                msg:"S'accumulent vite.", cta:'brique-paiements-fractionnes.html' },
+  autre:                { badge:'jaune',  emoji:'🟡', label:'À analyser',            msg:"Vérifie ton TAEG.", cta:null },
+};
 
-  // Allow inline inputs to not deselect option
-  document.querySelectorAll('.eng-inline-input').forEach(inp => {
-    inp.addEventListener('click', e => e.stopPropagation());
-    inp.addEventListener('focus', (e) => {
-      const opt = inp.closest('.eng-option');
-      if (opt) {
-        engOptions.forEach(o => o.classList.remove('selected'));
-        opt.classList.add('selected');
-        selectedEngagement = parseInt(opt.dataset.idx, 10);
-        document.getElementById('s5-cta').disabled = false;
+function buildScreen3() {
+  const list = document.getElementById('dettes-list');
+  if (!list) return;
+
+  // Pré-remplissage depuis profil (types seulement)
+  const profilDettes = (profil.dettes_types || []).filter(d => d !== 'aucun');
+  if (profilDettes.length > 0 && budgetData.dettes.length === 0) {
+    document.getElementById('dettes-confirm-bar').style.display = 'block';
+    profilDettes.forEach(type => {
+      if (!budgetData.dettes.find(d => d.type === type)) {
+        budgetData.dettes.push({ type, montant_mensuel: 0, taeg: null, classification: type, routing_cible: DETTE_CLASSIFICATION[type]?.cta || null });
       }
     });
+  }
+
+  renderDettes();
+}
+
+function renderDettes() {
+  const list = document.getElementById('dettes-list');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const noCard = document.getElementById('no-dette-card');
+  if (budgetData.dettes.length === 0) {
+    if (noCard) noCard.style.display = 'flex';
+    return;
+  }
+  if (noCard) noCard.style.display = 'none';
+
+  budgetData.dettes.forEach((d, idx) => {
+    const clf = DETTE_CLASSIFICATION[d.type] || DETTE_CLASSIFICATION['autre'];
+    const row = document.createElement('div');
+    row.className = 'dette-row';
+    row.innerHTML = `
+      <div class="dette-row-icon">${clf.emoji}</div>
+      <div class="dette-row-body">
+        <div class="dette-row-fields">
+          <select class="dette-row-select" onchange="updateDetteType(${idx},this.value)">
+            ${DETTE_TYPES.map(t => `<option value="${t.val}" ${t.val === d.type ? 'selected' : ''}>${t.label}</option>`).join('')}
+          </select>
+          <input type="number" class="dette-row-input" placeholder="Mensualité (€)" value="${d.montant_mensuel || ''}" min="0"
+            oninput="updateDetteMontant(${idx},this.value)" />
+        </div>
+        <div class="dette-row-fields" style="margin-top:0.25rem;">
+          <input type="number" class="dette-row-input" placeholder="TAEG % (optionnel)" value="${d.taeg || ''}" step="0.1" min="0"
+            oninput="updateDetteTaeg(${idx},this.value)" style="grid-column:span 2;" />
+        </div>
+        <div class="dette-classification">
+          <span class="badge-dette ${clf.badge}">${clf.label}</span>
+          <span class="dette-msg">${clf.msg}</span>
+          ${clf.cta ? `<a href="${clf.cta}" class="dette-cta">Voir la brique →</a>` : ''}
+        </div>
+      </div>
+      <button class="dette-row-delete" onclick="removeDette(${idx})" aria-label="Supprimer">×</button>
+    `;
+    list.appendChild(row);
   });
+}
 
-  document.getElementById('s5-cta').addEventListener('click', () => {
-    if (selectedEngagement === null) return;
+function addDette() {
+  budgetData.dettes.push({ type:'autre', montant_mensuel:0, taeg:null, classification:'autre', routing_cible:null });
+  renderDettes();
+}
 
-    let engText = '';
-    switch (selectedEngagement) {
-      case 0:
-        engText = 'Réduire les abonnements de ' + (document.getElementById('eng-abo-amount').value || '15') + ' €/mois';
-        break;
-      case 1:
-        engText = 'Surveiller les dépenses sorties pendant 14 jours';
-        break;
-      case 2:
-        engText = 'Viser ' + (document.getElementById('eng-marge-amount').value || '50') + ' € de marge en fin de mois';
-        break;
-      case 3:
-        engText = 'Mettre ' + (document.getElementById('eng-epargne-amount').value || '20') + ' € de côté';
-        break;
-    }
+function removeDette(idx) {
+  budgetData.dettes.splice(idx, 1);
+  renderDettes();
+}
 
-    const engagement = { label: engText, type: 'budget_engagement', idx: selectedEngagement };
-    commitmentCreated(BRICK_ID, engagement);
+function updateDetteType(idx, type) {
+  budgetData.dettes[idx].type = type;
+  budgetData.dettes[idx].classification = type;
+  budgetData.dettes[idx].routing_cible = DETTE_CLASSIFICATION[type]?.cta || null;
+  renderDettes();
+}
+
+function updateDetteMontant(idx, val) {
+  budgetData.dettes[idx].montant_mensuel = parseFloat(val) || 0;
+}
+
+function updateDetteTaeg(idx, val) {
+  budgetData.dettes[idx].taeg = parseFloat(val) || null;
+}
+
+function resetDettes() {
+  budgetData.dettes = [];
+  document.getElementById('dettes-confirm-bar').style.display = 'none';
+  renderDettes();
+}
+
+function toggleOublieTip() {
+  const tip = document.getElementById('dette-oublie-tip');
+  if (tip) tip.classList.toggle('visible');
+}
+
+// ══════════════════════════════════════════════════════════════
+// SCREEN 4 — Arbre de décision + engagement
+// ══════════════════════════════════════════════════════════════
+function buildScreen4() {
+  buildRecap();
+  buildReco();
+  buildEngagements();
+}
+
+function buildRecap() {
+  const grid = document.getElementById('recap-grid');
+  if (!grid) return;
+  const totalRev = budgetData.revenus + budgetData.aides;
+  const items = [
+    { label:'REVENUS',         val: totalRev,                   color:'var(--green)' },
+    { label:'CHARGES FIXES',   val: budgetData.total_besoins,   color:'var(--text)' },
+    { label:'DÉPENSES VARS.',  val: budgetData.total_envies,    color:'var(--text)' },
+    { label:'RESTE À VIVRE',   val: budgetData.reste_a_vivre,   color: budgetData.reste_a_vivre >= 0 ? 'var(--green)' : 'var(--red)' },
+  ];
+  grid.innerHTML = items.map(it => `
+    <div class="recap-block">
+      <div class="recap-val" style="color:${it.color};">${formatEuro(it.val)}</div>
+      <div class="recap-label">${it.label}</div>
+    </div>
+  `).join('');
+}
+
+function buildReco() {
+  const wrap = document.getElementById('reco-card-wrap');
+  if (!wrap) return;
+
+  // Logique routing
+  let target = null;
+  const totalRev = budgetData.revenus + budgetData.aides;
+  const hasDetteRouge = budgetData.dettes.some(d => ['decouvert_regulier','credit_renouvelable'].includes(d.type));
+  const hasFractionne = budgetData.dettes.some(d => d.type === 'paiement_fractionne');
+
+  if (totalRev > 0 && budgetData.total_depenses > totalRev) {
+    target = 'gestion_decouvert';
+  } else if (hasDetteRouge) {
+    target = 'gestion_decouvert';
+  } else if (hasFractionne) {
+    target = 'paiements_fractionnes';
+  } else if (budgetData.epargne === 0 && budgetData.reste_a_vivre > 100) {
+    target = 'fonds_urgence';
+  } else {
+    try { const next = getNextBrick(BRICK_ID); if (next) target = next.id; } catch(e) {}
+  }
+
+  if (!target) return;
+
+  const meta = (typeof BRIQUES_META !== 'undefined' ? BRIQUES_META[target] : null) || { nom: target, tagline:'', icon:'📋' };
+  const file = (typeof BRICK_FILES !== 'undefined' ? BRICK_FILES[target] : null) || (target + '.html');
+
+  budgetData.brique_recommandee = target;
+
+  const dotClass = meta.pack === 'Survie & stabilité' ? 'dot-survie' : meta.pack === 'Construction & projets' ? 'dot-construction' : 'dot-invest';
+  wrap.innerHTML = `
+    <div class="reco-card" data-glyph="${meta.icon || '📋'}">
+      <div class="reco-kicker">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--dot-survie);flex-shrink:0;"></div>
+        ${meta.pack || 'Survie & stabilité'}
+      </div>
+      <div class="reco-title">${meta.nom}</div>
+      <div class="reco-desc">${meta.tagline}</div>
+      <a href="${file}" class="btn-hero-primary" style="display:inline-flex;">
+        Commencer ${meta.nom} →
+      </a>
+    </div>
+  `;
+}
+
+let selectedEngIdx = null;
+
+function buildEngagements() {
+  const container = document.getElementById('engagement-options');
+  if (!container) return;
+  const btn = document.getElementById('btn-valider-engagement');
+
+  const aboEco = budgetData.abonnements_economies || 15;
+  const ralCible = Math.max(10, Math.round((budgetData.reste_a_vivre * 1.2) / 10) * 10);
+  const epargCible = Math.max(10, Math.round(budgetData.reste_a_vivre * 0.15 / 5) * 5);
+
+  const options = [
+    { idx:0, label:`Réduire mes abonnements de <input class="eng-montant-inline" type="number" value="${aboEco}" min="1" onclick="event.stopPropagation();" oninput="updateEngMontant(0,this.value)" /> €/mois`, type:'abonnements', montant: aboEco },
+    { idx:1, label:`Surveiller mes dépenses sorties pendant 14 jours`, type:'surveillance', montant: null },
+    { idx:2, label:`Viser <input class="eng-montant-inline" type="number" value="${ralCible}" min="1" onclick="event.stopPropagation();" oninput="updateEngMontant(2,this.value)" /> € de marge en fin de mois`, type:'marge', montant: ralCible },
+    { idx:3, label:`Mettre <input class="eng-montant-inline" type="number" value="${epargCible}" min="1" onclick="event.stopPropagation();" oninput="updateEngMontant(3,this.value)" /> € de côté dès la prochaine paie`, type:'epargne', montant: epargCible },
+  ];
+
+  container.innerHTML = options.map(o => `
+    <div class="eng-option" id="eng-opt-${o.idx}" onclick="selectEngagement(${o.idx})">
+      <div class="eng-option-radio"></div>
+      <div class="eng-option-body">
+        <div class="eng-option-label">${o.label}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Stocker les montants dans un tableau accessible
+  window._engOptions = options;
+
+  if (btn) btn.disabled = true;
+}
+
+function updateEngMontant(idx, val) {
+  if (window._engOptions && window._engOptions[idx]) {
+    window._engOptions[idx].montant = parseFloat(val) || 0;
+  }
+}
+
+function selectEngagement(idx) {
+  selectedEngIdx = idx;
+  document.querySelectorAll('.eng-option').forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+  const btn = document.getElementById('btn-valider-engagement');
+  if (btn) btn.disabled = false;
+}
+
+function validerEngagement() {
+  if (selectedEngIdx === null) return;
+  const opt = window._engOptions?.[selectedEngIdx];
+  if (!opt) return;
+
+  budgetData.engagement = {
+    label: opt.type === 'abonnements' ? `Réduire mes abonnements de ${opt.montant} €/mois`
+         : opt.type === 'surveillance' ? 'Surveiller mes dépenses sorties pendant 14 jours'
+         : opt.type === 'marge'        ? `Viser ${opt.montant} € de marge en fin de mois`
+         : `Mettre ${opt.montant} € de côté dès la prochaine paie`,
+    type: opt.type, idx: selectedEngIdx, montant: opt.montant
+  };
+
+  if (typeof commitmentCreated === 'function') commitmentCreated(BRICK_ID, budgetData.engagement);
+
+  // Sauvegarde finale
+  if (typeof completeBrickFull === 'function') {
     completeBrickFull(BRICK_ID, {
-      profileFields: ({
-        revenus_nets_mensuel:   budgetData.revenus || 0,
-        aides_mensuelles:       budgetData.aides || 0,
-        charges_fixes_total:    Object.values(budgetData.chargesFixes||{}).reduce((a,b)=>a+(parseFloat(b)||0),0),
-        depenses_variables_total: Object.values(budgetData.variable||{}).reduce((a,b)=>a+(parseFloat(b)||0),0),
-        reste_a_vivre:          (budgetData.revenus||0) + (budgetData.aides||0)
-                                  - Object.values(budgetData.chargesFixes||{}).reduce((a,b)=>a+(parseFloat(b)||0),0)
-                                  - Object.values(budgetData.variable||{}).reduce((a,b)=>a+(parseFloat(b)||0),0),
-        engagement_budget:      selectedEngagement ? { type: selectedEngagement } : null
-      }),
+      profileFields: {
+        revenus_nets_mensuel:     budgetData.revenus,
+        aides_mensuelles:         budgetData.aides,
+        loyer:                    budgetData.loyer,
+        charges_fixes_total:      budgetData.total_besoins,
+        depenses_variables_total: budgetData.total_envies,
+        epargne_mensuelle:        budgetData.epargne,
+        reste_a_vivre:            budgetData.reste_a_vivre,
+        abonnements_economies:    budgetData.abonnements_economies,
+        engagement_budget:        budgetData.engagement,
+        dettes:                   budgetData.dettes,
+      },
       rawData: budgetData,
-      engagements: [engagement],
-      insights: buildInsights(BRICK_ID, profil, budgetData)
-    });
-
-    buildExitScreen(engagement);
-    showScreen('exit');
-  });
-
-  /* ─────────────────── EXIT SCREEN ─────────────────── */
-  function buildExitScreen(engagement) {
-    const totalIn = budgetData.revenus + budgetData.aides;
-    const totalFixes = budgetData.totalFixes || 0;
-    const totalVar = budgetData.totalVariable || 0;
-    const reste = totalIn - totalFixes - totalVar;
-
-    const summaryEl = document.getElementById('exit-summary');
-    summaryEl.innerHTML = `
-      <div class="exit-item">
-        <span class="exit-item-icon">💰</span>
-        <span class="exit-item-text">Revenus estimés : <strong>${fmt(totalIn)}</strong></span>
-      </div>
-      <div class="exit-item">
-        <span class="exit-item-icon">🏠</span>
-        <span class="exit-item-text">Charges fixes : <strong>${fmt(totalFixes)}</strong></span>
-      </div>
-      <div class="exit-item">
-        <span class="exit-item-icon">🛒</span>
-        <span class="exit-item-text">Dépenses variables : <strong>${fmt(totalVar)}</strong></span>
-      </div>
-      <div class="exit-item">
-        <span class="exit-item-icon">${reste >= 0 ? '✨' : '⚡'}</span>
-        <span class="exit-item-text">Reste à vivre : <strong>${fmt(reste)}</strong></span>
-      </div>
-      <div class="exit-item" style="border-color:rgba(99,102,241,0.3);background:var(--indigo-dim);">
-        <span class="exit-item-icon">🎯</span>
-        <span class="exit-item-text">Ton engagement : <strong>${engagement.label}</strong></span>
-      </div>
-    `;
-
-    const btnsEl = document.getElementById('exit-btns');
-    const nextBrick = typeof getNextBrick === 'function' ? getNextBrick(BRICK_ID) : null;
-
-    let btnsHtml = '';
-    if (nextBrick) {
-      btnsHtml += `
-        <button class="exit-next" id="exit-next-btn">
-          <div class="exit-next-text">
-            <div class="exit-next-label">Prochaine étape</div>
-            <div class="exit-next-name">${nextBrick.nom || nextBrick.name || 'Brique suivante'} →</div>
-          </div>
-        </button>
-      `;
-    }
-    btnsHtml += `
-      <button class="btn-secondary" style="margin-top:0.625rem;" id="exit-dashboard-btn">Retour au dashboard</button>
-    `;
-    btnsEl.innerHTML = btnsHtml;
-
-    if (nextBrick) {
-      document.getElementById('exit-next-btn').addEventListener('click', () => {
-        window.location.href = nextBrick.file || 'dashboard.html';
-      });
-    }
-    document.getElementById('exit-dashboard-btn').addEventListener('click', () => {
-      window.location.href = 'dashboard.html';
+      engagements: [{ id:'eng_budget_' + Date.now(), type: budgetData.engagement.type, label: budgetData.engagement.label, brique_id: BRICK_ID }],
+      insights: typeof buildInsights === 'function' ? buildInsights(BRICK_ID, profil, budgetData) : []
     });
   }
 
-  /* ── Init first screen ── */
-  updateProgress(0);
-  screenViewed(BRICK_ID, 0);
+  buildExitScreen();
+  goToScreen('exit');
+}
 
-// ── PANEL PROGRESSION V3 ────────────────────────────────────────
-(function setupProgressPanel() {
-  // Récupère les noms d'écrans depuis les titres .brick-title ou .screen-title
-  function getScreenLabels() {
-    const screens = document.querySelectorAll('.screen');
-    const labels = [];
-    screens.forEach((s, i) => {
-      const t = s.querySelector('.brick-title, .screen-title, h2, h3');
-      labels.push(t ? t.textContent.trim().slice(0, 32) : 'Étape ' + (i + 1));
-    });
-    return labels;
-  }
+// ══════════════════════════════════════════════════════════════
+// SCREEN EXIT
+// ══════════════════════════════════════════════════════════════
+function buildExitScreen() {
+  const recap  = document.getElementById('exit-recap');
+  const actions = document.getElementById('exit-actions');
+  if (!recap || !actions) return;
 
-  function updatePanel(activeIdx) {
-    const screens = document.querySelectorAll('.screen');
-    const total = screens.length;
-    const labels = getScreenLabels();
-    const pct = total > 1 ? Math.round((activeIdx / (total - 1)) * 100) : 0;
-    const clampedPct = Math.min(pct, 100);
+  const totalRev = budgetData.revenus + budgetData.aides;
+  const lines = [
+    { label:'Revenus',       val: formatEuro(totalRev) },
+    { label:'Charges fixes', val: formatEuro(budgetData.total_besoins) },
+    { label:'Dépenses var.', val: formatEuro(budgetData.total_envies) },
+    { label:'Reste à vivre', val: formatEuro(budgetData.reste_a_vivre) },
+    { label:'Engagement',    val: budgetData.engagement?.label || '—' },
+  ];
+  recap.innerHTML = lines.map(l => `
+    <div class="exit-line">
+      <span class="exit-line-label">${l.label}</span>
+      <span class="exit-line-val">${l.val}</span>
+    </div>
+  `).join('');
 
-    // Ring
-    const arc = document.getElementById('bpc-ring-arc');
-    const pctEl = document.getElementById('bpc-ring-pct');
-    if (arc) {
-      const circ = 188.5;
-      arc.setAttribute('stroke-dashoffset', String(circ - (circ * clampedPct / 100)));
-    }
-    if (pctEl) pctEl.textContent = clampedPct + '%';
+  // CTA brique recommandée
+  const target = budgetData.brique_recommandee;
+  const meta   = target && typeof BRIQUES_META !== 'undefined' ? BRIQUES_META[target] : null;
+  const file   = target && typeof BRICK_FILES  !== 'undefined' ? BRICK_FILES[target]  : null;
 
-    // Title
-    const titleEl = document.getElementById('bpc-step-title');
-    if (titleEl) titleEl.textContent = labels[activeIdx] || 'Étape ' + (activeIdx + 1);
+  actions.innerHTML = `
+    ${meta && file ? `<a href="${file}" class="btn-hero-primary" style="justify-content:center;">Commencer ${meta.nom} →</a>` : ''}
+    <a href="dashboard.html" class="btn-hero-secondary" style="text-align:center;">Retour au dashboard</a>
+  `;
+}
 
-    // Steps list
-    const list = document.getElementById('bpc-steps-list');
-    if (list) {
-      list.innerHTML = '';
-      labels.slice(0, 7).forEach((label, i) => {
-        const div = document.createElement('div');
-        div.className = 'bpc-step' + (i < activeIdx ? ' done' : i === activeIdx ? ' active' : '');
-        const isDone = i < activeIdx;
-        const numContent = isDone
-          ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
-          : String(i + 1);
-        div.innerHTML = '<span class="bpc-step-num">' + numContent + '</span><span class="bpc-step-label">' + label + '</span>';
-        list.appendChild(div);
-      });
-    }
-  }
+// ══════════════════════════════════════════════════════════════
+// UTILITAIRES
+// ══════════════════════════════════════════════════════════════
+function formatEuro(val) {
+  if (typeof window.formatEuro === 'function' && window.formatEuro !== formatEuro) return window.formatEuro(val);
+  if (val === null || val === undefined || isNaN(val)) return '—';
+  return new Intl.NumberFormat('fr-FR', { style:'currency', currency:'EUR', minimumFractionDigits:0, maximumFractionDigits:0 }).format(val);
+}
 
-  // Observer l'écran actif
-  function getCurrentScreenIdx() {
-    const screens = Array.from(document.querySelectorAll('.screen'));
-    for (let i = 0; i < screens.length; i++) {
-      if (screens[i].style.display !== 'none') return i;
-    }
-    return 0;
-  }
+// Exposer goToScreen pour le panel (setupProgressPanel compat)
+window.goNext = () => { if (currentScreen < 5) goToScreen(currentScreen + 1); };
+window.goBack = () => { if (currentScreen > 0) goToScreen(currentScreen - 1); };
 
-  // Patch les fonctions de navigation existantes
-  const origGoNext = window.goNext;
-  const origGoBack = window.goBack;
-  const origGoToScreen = window.goToScreen;
-  window.goNext = function() { if (origGoNext) origGoNext.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
-  window.goBack = function() { if (origGoBack) origGoBack.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
-  window.goToScreen = function() { if (origGoToScreen) origGoToScreen.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
-
-  // Init
-  document.addEventListener('DOMContentLoaded', () => setTimeout(() => updatePanel(getCurrentScreenIdx()), 100));
-})();
+// Fermer popup avec Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePopupAbo();
+});
 </script>
-<script>
-  /* ══════════════════════════════════════════
-     UX AMÉLIORATIONS — injected
-  ══════════════════════════════════════════ */
-
-  /* ── 1. Indicateur Étape X/Y ──
-     Mise à jour à chaque changement d'écran.
-     Chaque brique doit appeler updateStepIndicator(idx) dans sa fn de navigation.
-     La fonction est no-op si totalSteps n'est pas défini. */
-  function updateStepIndicator(idx) {
-    const steps = typeof _UX_TOTAL_STEPS !== 'undefined' ? _UX_TOTAL_STEPS : null;
-    document.querySelectorAll('.step-indicator').forEach(el => {
-      if (steps && typeof idx === 'number' && idx > 0) {
-        el.textContent = 'Étape ' + idx + ' / ' + steps;
-        el.style.display = 'block';
-      } else {
-        el.style.display = 'none';
-      }
-    });
-  }
-
-  /* ── 2. Enter → déclenche le bouton primaire visible ── */
-  document.addEventListener('keydown', function(e) {
-    if (e.key !== 'Enter') return;
-    // Ignorer si focus dans textarea
-    if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;
-    // Trouver le bouton primaire de l'écran actif (visible, non-disabled)
-    const activeScreen = document.querySelector('.screen[style*="display: block"], .screen[style*="display:block"]');
-    if (!activeScreen) return;
-    const btn = activeScreen.querySelector('.btn-primary:not([disabled]):not([style*="display:none"])');
-    if (btn) {
-      e.preventDefault();
-      btn.click();
-    }
-  });
-
-  /* ── budget_base : totalSteps pour indicateur ── */
-  var _UX_TOTAL_STEPS = 5;
-  // Init indicateur sur écran 0 (pas d'étape affichée)
-  updateStepIndicator(0);
-</script>
-
 <script src="feedback-widget.js"></script>
 </body>
 </html>
