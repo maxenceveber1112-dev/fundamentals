@@ -782,34 +782,6 @@
   .priorite-cta { display:inline-flex; align-items:center; gap:0.3rem; margin-top:0.5rem; font-size:0.78rem; font-weight:600; color:var(--accent-strong); text-decoration:none; }
   html.dark .priorite-cta { color:#A78BFA; }
 
-  /* ── Screen Exit ── */
-  .exit-card {
-    padding:2rem; border-radius:1.25rem;
-    border:1px solid rgba(34,197,94,0.25);
-    background:rgba(34,197,94,0.04);
-  }
-  .exit-title { font-family:'Fraunces',serif; font-size:1.5rem; font-weight:400; color:var(--text); margin-bottom:0.5rem; }
-  .exit-subtitle { font-size:0.875rem; color:var(--text-muted); margin-bottom:1.5rem; line-height:1.55; }
-  .exit-recap { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
-  .exit-line { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-bottom:1px solid var(--border-subtle); font-size:0.875rem; }
-  .exit-line-label { color:var(--text-muted); }
-  .exit-line-val { font-weight:600; color:var(--text); }
-
-  .exit-impact-title { font-family:'Fraunces',serif; font-size:1.75rem; font-weight:400; color:var(--text); margin-bottom:0.25rem; line-height:1.2; }
-  .exit-impact-sub { font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem; }
-  .exit-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.625rem; margin-bottom:1.5rem; }
-  .exit-stat-card { background:var(--surface-2); border-radius:12px; padding:0.875rem 1rem; }
-  .exit-stat-val { font-size:1.375rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
-  .exit-stat-label { font-size:0.75rem; color:var(--text-muted); margin-top:0.2rem; }
-  .exit-stat-card.highlight { background:var(--accent-soft); border:1px solid var(--accent-fill); }
-  .exit-stat-card.highlight .exit-stat-val { color:var(--accent-strong); }
-  html.dark .exit-stat-card.highlight .exit-stat-val { color:#A78BFA; }
-  .exit-next-card { background:var(--cream-grad); border:1px solid var(--cream-border); border-radius:16px; padding:1.25rem 1.5rem; margin-bottom:0.75rem; }
-  .exit-next-kicker { font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.5rem; }
-  html.dark .exit-next-kicker { color:#A78BFA; }
-  .exit-next-name { font-family:'Fraunces',serif; font-size:1.25rem; font-weight:400; color:var(--text); margin-bottom:0.25rem; }
-  .exit-next-why { font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem; }
-
   /* ══════════════════════════════════════════════════════════════
      POPUP ABONNEMENTS (bottom sheet overlay)
   ══════════════════════════════════════════════════════════════ */
@@ -951,6 +923,71 @@
   .sankey-legend { display:flex; flex-wrap:wrap; gap:0.5rem 1rem; margin-top:0.625rem; }
   .sankey-leg-item { display:flex; align-items:center; gap:0.375rem; font-size:0.72rem; color:var(--text-muted); }
   .sankey-leg-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+
+/* ── Modale de fin ── */
+.modal-fin-overlay {
+  position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;padding:1rem;
+  opacity:0;transition:opacity 0.25s ease;
+}
+.modal-fin-overlay.visible{opacity:1;}
+.modal-fin-card {
+  background:var(--bg-elevated);border:1px solid var(--cream-border);border-radius:20px;
+  padding:2rem 1.75rem 1.5rem;max-width:420px;width:100%;
+  box-shadow:0 24px 64px rgba(0,0,0,0.18);
+  transform:translateY(12px) scale(0.97);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),opacity 0.25s ease;opacity:0;
+}
+.modal-fin-overlay.visible .modal-fin-card{transform:translateY(0) scale(1);opacity:1;}
+.modal-fin-header{text-align:center;margin-bottom:1.5rem;}
+.modal-fin-check {
+  display:inline-flex;align-items:center;justify-content:center;
+  width:48px;height:48px;border-radius:50%;
+  background:var(--accent-soft);color:var(--accent-strong);
+  font-size:1.25rem;font-weight:700;margin-bottom:0.75rem;
+}
+html.dark .modal-fin-check{color:#A78BFA;}
+.modal-fin-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:400;color:var(--text);margin:0 0 0.25rem;}
+.modal-fin-sub{font-size:0.875rem;color:var(--text-muted);margin:0;}
+.modal-fin-section{margin-bottom:1.25rem;}
+.modal-fin-section-label{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:0.625rem;}
+.modal-fin-pdf-btn {
+  display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;
+  padding:0.75rem 1rem;background:var(--accent-soft);border:1.5px solid var(--accent-fill);
+  border-radius:10px;color:var(--accent-strong);font-size:0.875rem;font-weight:600;cursor:pointer;transition:background 0.15s;
+}
+html.dark .modal-fin-pdf-btn{color:#A78BFA;border-color:rgba(167,139,250,0.35);background:rgba(167,139,250,0.12);}
+.modal-fin-pdf-btn:hover{background:rgba(196,181,253,0.35);}
+.modal-fin-pdf-hint{font-size:0.72rem;color:var(--text-faint);margin:0.375rem 0 0;text-align:center;}
+.modal-fin-next{margin-bottom:1rem;}
+.modal-fin-next-card{background:var(--cream-grad);border:1px solid var(--cream-border);border-radius:14px;padding:1rem 1.125rem;}
+.modal-fin-next-kicker{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:0.375rem;}
+html.dark .modal-fin-next-kicker{color:#A78BFA;}
+.modal-fin-next-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:400;color:var(--text);margin-bottom:0.25rem;}
+.modal-fin-next-why{font-size:0.8rem;color:var(--text-muted);line-height:1.5;margin-bottom:0.875rem;}
+.modal-fin-next-cta {
+  display:flex;align-items:center;justify-content:center;padding:0.625rem 1rem;border-radius:8px;
+  background:var(--accent-strong);color:#fff;font-size:0.8125rem;font-weight:600;text-decoration:none;transition:opacity 0.15s;
+}
+.modal-fin-next-cta:hover{opacity:0.88;}
+html.dark .modal-fin-next-cta{background:#7C3AED;}
+.modal-fin-dashboard{display:block;text-align:center;font-size:0.8125rem;color:var(--text-muted);text-decoration:none;padding-top:0.25rem;transition:color 0.15s;}
+.modal-fin-dashboard:hover{color:var(--text);}
+@media print {
+  body > *:not(#print-bilan){display:none!important;}
+  #print-bilan{display:block!important;font-family:'Inter',system-ui,sans-serif;color:#1C1917;background:#fff;max-width:680px;margin:0 auto;padding:2rem;}
+  #print-bilan h1{font-family:Georgia,serif;font-size:1.5rem;margin-bottom:0.25rem;}
+  #print-bilan .pb-date{font-size:0.8rem;color:#78716C;margin-bottom:1.5rem;}
+  #print-bilan .pb-section{margin-bottom:1.25rem;}
+  #print-bilan .pb-section-title{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#A8A29E;margin-bottom:0.5rem;border-bottom:1px solid #E7E5E4;padding-bottom:0.25rem;}
+  #print-bilan .pb-row{display:flex;justify-content:space-between;font-size:0.875rem;padding:0.2rem 0;}
+  #print-bilan .pb-row-label{color:#57534E;}
+  #print-bilan .pb-row-val{font-weight:600;color:#1C1917;}
+  #print-bilan .pb-priorite{margin-bottom:0.625rem;}
+  #print-bilan .pb-priorite-num{font-size:0.7rem;font-weight:700;color:#5B21B6;}
+  #print-bilan .pb-priorite-titre{font-size:0.875rem;font-weight:600;}
+  #print-bilan .pb-priorite-horizon{font-size:0.7rem;color:#78716C;}
+  #print-bilan .pb-footer{margin-top:2rem;font-size:0.72rem;color:#A8A29E;text-align:center;}
+}
 
   </style>
 </head>
@@ -1313,14 +1350,6 @@
           </div>
         </div><!-- /screen-4 -->
 
-        <!-- ═══ SCREEN EXIT ═══ -->
-        <div class="screen" id="screen-exit">
-          <div class="exit-card">
-            <div class="exit-impact" id="exit-impact"></div>
-            <div class="exit-next" id="exit-next"></div>
-            <a href="dashboard.html" class="btn-hero-secondary" style="text-align:center;margin-top:0.75rem;">Retour au tableau de bord</a>
-          </div>
-        </div>
 
       </div><!-- /brique-main -->
 
@@ -1473,6 +1502,27 @@
 
   </div>
 </div><!-- /popup-abo -->
+
+<!-- ── Modale de fin ─────────────────────────────────── -->
+<div class="modal-fin-overlay" id="modal-fin" role="dialog" aria-modal="true" aria-labelledby="modal-fin-title" style="display:none;">
+  <div class="modal-fin-card">
+    <div class="modal-fin-header">
+      <div class="modal-fin-check" aria-hidden="true">✓</div>
+      <h2 class="modal-fin-title" id="modal-fin-title">Brique complétée.</h2>
+      <p class="modal-fin-sub" id="modal-fin-sub">Ton budget est maintenant cartographié.</p>
+    </div>
+    <div class="modal-fin-section">
+      <div class="modal-fin-section-label">Garde une trace</div>
+      <button class="modal-fin-pdf-btn" onclick="imprimerBilan()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger mon bilan budget
+      </button>
+      <p class="modal-fin-pdf-hint">Un récap PDF de ta situation, tes dettes et tes 3 priorités.</p>
+    </div>
+    <div class="modal-fin-next" id="modal-fin-next"></div>
+    <a href="dashboard.html" class="modal-fin-dashboard">Retour au tableau de bord</a>
+  </div>
+</div>
 
 <!-- Scripts (ordre invariant) -->
 <script src="sidebar.js"></script>
@@ -1801,7 +1851,7 @@ function goToScreen(n) {
   if (n === 4) { collectBudgetData(); buildScreen4(); }
 
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const target = document.getElementById('screen-' + (n === 'exit' ? 'exit' : n));
+  const target = document.getElementById('screen-' + n);
   if (target) target.classList.add('active');
 
   currentScreen = typeof n === 'number' ? n : 5;
@@ -1851,8 +1901,7 @@ const STEP_TITLES = [
   'Ce qui rentre et ce qui part.',
   'Tes engagements financiers.',
   'Ton argent en clair.',
-  'Ta prochaine action.',
-  'C\'est noté. 🎉'
+  'Ta prochaine action.'
 ];
 
 function updateProgressPanel(screenIdx) {
@@ -2695,96 +2744,7 @@ function validerEngagement() {
     });
   }
 
-  buildExitScreen();
-  goToScreen('exit');
-}
-
-// ══════════════════════════════════════════════════════════════
-// SCREEN EXIT
-// ══════════════════════════════════════════════════════════════
-function buildExitScreen() {
-  const impactEl = document.getElementById('exit-impact');
-  const nextEl   = document.getElementById('exit-next');
-  if (!impactEl || !nextEl) return;
-
-  const totalRev  = budgetData.revenus + budgetData.aides;
-  const reste     = budgetData.reste_a_vivre;
-  const ratio     = totalRev > 0 ? reste / totalRev : 0;
-  const nonAlloue = Math.max(0, reste - (budgetData.epargne || 0));
-
-  // Titre dynamique selon situation
-  let titre, sousTitre;
-  if (reste < 0) {
-    titre = 'Ton budget a besoin d\'attention.';
-    sousTitre = `Tu dépenses ${formatEuro(Math.abs(reste))}/mois de plus que tu ne gagnes. La prochaine étape t'aide à inverser ça.`;
-  } else if (ratio < 0.1) {
-    titre = 'Ton budget est serré, mais c\'est déjà clair.';
-    sousTitre = `Il te reste ${formatEuro(reste)}/mois — chaque euro compte. On va les orienter.`;
-  } else if (ratio < 0.2) {
-    titre = 'Tu es à l\'équilibre. Voyons comment aller plus loin.';
-    sousTitre = `${formatEuro(reste)}/mois disponibles. Bien orientés, ils peuvent changer la donne.`;
-  } else {
-    titre = 'Tu as une vraie marge de manœuvre.';
-    sousTitre = `${formatEuro(reste)}/mois non alloués — voici comment leur donner un cap.`;
-  }
-
-  // Stat cards
-  const totalDettes = budgetData.dettes.reduce((s, d) => s + (d.montant_mensuel || 0), 0);
-  const pctBesoins  = totalRev > 0 ? Math.round((budgetData.total_besoins / totalRev) * 100) : 0;
-  const pctEnvies   = totalRev > 0 ? Math.round((budgetData.total_envies  / totalRev) * 100) : 0;
-  const pctReste    = totalRev > 0 ? Math.round((Math.max(0,reste) / totalRev) * 100) : 0;
-
-  impactEl.innerHTML = `
-    <div class="exit-impact-title">${titre}</div>
-    <p class="exit-impact-sub">${sousTitre}</p>
-    <div class="exit-stat-grid">
-      <div class="exit-stat-card">
-        <div class="exit-stat-val">${formatEuro(totalRev)}</div>
-        <div class="exit-stat-label">Revenus / mois</div>
-      </div>
-      <div class="exit-stat-card ${reste >= 0 ? 'highlight' : ''}">
-        <div class="exit-stat-val">${formatEuro(reste)}</div>
-        <div class="exit-stat-label">Reste à vivre</div>
-      </div>
-      <div class="exit-stat-card">
-        <div class="exit-stat-val">${pctBesoins}%</div>
-        <div class="exit-stat-label">En charges fixes (50/30/20 : 50%)</div>
-      </div>
-      ${totalDettes > 0 ? `
-      <div class="exit-stat-card">
-        <div class="exit-stat-val">${formatEuro(totalDettes)}</div>
-        <div class="exit-stat-label">Mensualités dettes</div>
-      </div>` : `
-      <div class="exit-stat-card">
-        <div class="exit-stat-val">${pctReste}%</div>
-        <div class="exit-stat-label">Disponible (50/30/20 : 20%)</div>
-      </div>`}
-    </div>
-  `;
-
-  // Brique recommandée contextuelle
-  const target = budgetData.brique_recommandee;
-  const meta   = target && typeof BRIQUES_META !== 'undefined' ? BRIQUES_META[target] : null;
-  const file   = target && typeof BRICK_FILES  !== 'undefined' ? BRICK_FILES[target]  : null;
-
-  // Message contextuel selon routing
-  const whyMessages = {
-    'fonds_urgence':          'Tu as de la marge — c\'est le moment idéal pour construire un filet de sécurité avant tout investissement.',
-    'gestion_decouvert':      'Ton découvert régulier ou tes crédits coûtent cher. Cette brique t\'aide à reprendre le contrôle.',
-    'paiements_fractionnes':  'Les paiements fractionnés s\'accumulent silencieusement. Cette brique fait le point.',
-    'premiers_pas_bancaires': 'Optimiser tes frais bancaires peut libérer 15 à 30€/mois sans effort.',
-  };
-
-  const whyMsg = whyMessages[target] || 'La prochaine étape logique de ton parcours financier.';
-
-  nextEl.innerHTML = `
-    <div class="exit-next-card">
-      <div class="exit-next-kicker">Prochaine étape recommandée</div>
-      <div class="exit-next-name">${meta ? meta.nom : 'Continuer ton parcours'}</div>
-      <div class="exit-next-why">${whyMsg}</div>
-      ${meta && file ? `<a href="${file}" class="btn-hero-primary" style="justify-content:center;">Commencer ${meta.nom} \u2192</a>` : '<a href="dashboard.html" class="btn-hero-primary" style="justify-content:center;">Voir mon tableau de bord \u2192</a>'}
-    </div>
-  `;
+  openModalFin();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2804,6 +2764,85 @@ window.goBack = () => { if (currentScreen > 0) goToScreen(currentScreen - 1); };
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closePopupAbo();
 });
+
+// ── Modale de fin ──────────────────────────────────────────
+function openModalFin() {
+  const overlay = document.getElementById('modal-fin');
+  if (!overlay) return;
+  const totalRev = budgetData.revenus + budgetData.aides;
+  const reste    = budgetData.reste_a_vivre;
+  const subEl    = document.getElementById('modal-fin-sub');
+  if (subEl) {
+    if (reste < 0)
+      subEl.textContent = 'Déficit de ' + formatEuro(Math.abs(reste)) + '/mois identifié — la prochaine brique t\'aide à le résorber.';
+    else if (reste < totalRev * 0.10)
+      subEl.textContent = 'Budget serré mais cartographié. ' + formatEuro(reste) + '/mois de marge — on va l\'optimiser.';
+    else
+      subEl.textContent = formatEuro(reste) + '/mois disponibles. Voici comment les orienter intelligemment.';
+  }
+  const nextEl = document.getElementById('modal-fin-next');
+  if (nextEl) {
+    const target = budgetData.brique_recommandee;
+    const file   = target && typeof BRICK_FILES !== 'undefined' ? BRICK_FILES[target] : null;
+    const whyMessages = {
+      'fonds_urgence':         'Tu as de la marge — c\'est le moment idéal pour construire un filet de sécurité.',
+      'gestion_decouvert':     'Tes crédits pèsent sur ton budget. Cette brique t\'aide à reprendre le contrôle.',
+      'paiements_fractionnes': 'Les paiements fractionnés s\'accumulent silencieusement. Cette brique fait le point.',
+      'premiers_pas_bancaires':'Optimiser tes frais bancaires libère 15–30€/mois sans effort.',
+    };
+    const briquesNoms = {
+      'fonds_urgence':         'Fonds d\'urgence',
+      'gestion_decouvert':     'Gestion du découvert',
+      'paiements_fractionnes': 'Paiements fractionnés',
+      'premiers_pas_bancaires':'Premiers pas bancaires',
+    };
+    const nom  = briquesNoms[target]  || 'Continuer ton parcours';
+    const why  = whyMessages[target]  || 'La prochaine étape logique de ton parcours.';
+    const href = file || 'dashboard.html';
+    const cta  = file ? 'Commencer ' + nom + ' →' : 'Voir mon tableau de bord →';
+    nextEl.innerHTML = '<div class="modal-fin-section-label" style="margin-bottom:0.625rem;">Prochaine étape</div><div class="modal-fin-next-card"><div class="modal-fin-next-kicker">Recommandé pour toi</div><div class="modal-fin-next-name">' + nom + '</div><div class="modal-fin-next-why">' + why + '</div><a href="' + href + '" class="modal-fin-next-cta">' + cta + '</a></div>';
+  }
+  overlay.style.display = 'flex';
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ overlay.classList.add('visible'); }); });
+  overlay.addEventListener('click', function handler(e) {
+    if (e.target === overlay) {
+      overlay.classList.remove('visible');
+      setTimeout(function(){ overlay.style.display = 'none'; }, 250);
+      overlay.removeEventListener('click', handler);
+    }
+  });
+}
+
+function imprimerBilan() {
+  var el = document.getElementById('print-bilan');
+  if (!el) { el = document.createElement('div'); el.id = 'print-bilan'; el.style.display = 'none'; document.body.appendChild(el); }
+  var totalRev    = budgetData.revenus + budgetData.aides;
+  var reste       = budgetData.reste_a_vivre;
+  var totalDettes = budgetData.dettes.reduce(function(s,d){ return s + (d.montant_mensuel||0); }, 0);
+  var now = new Date().toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
+  var prioritesHtml = (budgetData.priorites || []).map(function(p,i){
+    return '<div class="pb-priorite"><div class="pb-priorite-num">Priorité '+(i+1)+'</div><div class="pb-priorite-titre">'+p.titre+'</div><div class="pb-priorite-horizon">'+p.horizon+'</div></div>';
+  }).join('');
+  el.innerHTML = '<h1>Mon bilan budget</h1><div class="pb-date">Établi le '+now+' — Fundamental</div>'
+    +'<div class="pb-section"><div class="pb-section-title">Revenus</div>'
+    +'<div class="pb-row"><span class="pb-row-label">Revenus nets</span><span class="pb-row-val">'+formatEuro(budgetData.revenus||0)+'/mois</span></div>'
+    +(budgetData.aides>0?'<div class="pb-row"><span class="pb-row-label">Aides / allocations</span><span class="pb-row-val">'+formatEuro(budgetData.aides)+'/mois</span></div>':'')
+    +'<div class="pb-row"><span class="pb-row-label">Total revenus</span><span class="pb-row-val">'+formatEuro(totalRev)+'/mois</span></div></div>'
+    +'<div class="pb-section"><div class="pb-section-title">Charges et dépenses</div>'
+    +'<div class="pb-row"><span class="pb-row-label">Charges fixes</span><span class="pb-row-val">'+formatEuro(budgetData.total_besoins||0)+'/mois</span></div>'
+    +'<div class="pb-row"><span class="pb-row-label">Dépenses variables</span><span class="pb-row-val">'+formatEuro(budgetData.total_envies||0)+'/mois</span></div>'
+    +(budgetData.abonnements_total>0?'<div class="pb-row"><span class="pb-row-label">dont abonnements</span><span class="pb-row-val">'+formatEuro(budgetData.abonnements_total)+'/mois</span></div>':'')
+    +(totalDettes>0?'<div class="pb-row"><span class="pb-row-label">Mensualités dettes</span><span class="pb-row-val">'+formatEuro(totalDettes)+'/mois</span></div>':'')
+    +'</div>'
+    +'<div class="pb-section"><div class="pb-section-title">Résultat</div>'
+    +'<div class="pb-row"><span class="pb-row-label">Reste à vivre</span><span class="pb-row-val">'+formatEuro(reste)+'/mois</span></div>'
+    +(budgetData.epargne>0?'<div class="pb-row"><span class="pb-row-label">Épargne mensuelle</span><span class="pb-row-val">'+formatEuro(budgetData.epargne)+'/mois</span></div>':'')
+    +'<div class="pb-row"><span class="pb-row-label">Charges fixes (réf. 50/30/20)</span><span class="pb-row-val">'+(totalRev>0?Math.round((budgetData.total_besoins/totalRev)*100):0)+'% (cible : 50%)</span></div>'
+    +'</div>'
+    +(prioritesHtml?'<div class="pb-section"><div class="pb-section-title">Mes 3 priorités</div>'+prioritesHtml+'</div>':'')
+    +'<div class="pb-footer">Généré par Fundamental · fundamentals-beta.netlify.app · Ce document est à titre indicatif.</div>';
+  window.print();
+}
 </script>
 <script src="feedback-widget.js"></script>
 </body>
