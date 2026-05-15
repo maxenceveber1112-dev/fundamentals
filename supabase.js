@@ -177,8 +177,27 @@ function loadFromStorage(key) {
 
 // Charge les données depuis Supabase au démarrage de la page et remplit _MEM
 async function hydrateFromSupabase() {
+  const user = await getCurrentUser();
   const [profil, dash] = await Promise.all([loadProfile(), loadDashboard()]);
   if (profil) _MEM['fund_profil'] = profil;
   if (dash)   _MEM['fund_dashboard'] = dash;
+
+  // Charger toutes les brick_data depuis Supabase
+  if (user) {
+    const sb = getClient();
+    const { data: bricks } = await sb.from('brick_data')
+      .select('brick_id, data, completed, screen_courant')
+      .eq('user_id', user.id);
+    if (bricks) {
+      bricks.forEach(b => {
+        _MEM['fund_brick_' + b.brick_id] = {
+          screen: b.screen_courant || 0,
+          data: b.data || {},
+          completed: b.completed,
+          ts: Date.now()
+        };
+      });
+    }
+  }
   return { profil, dash };
 }

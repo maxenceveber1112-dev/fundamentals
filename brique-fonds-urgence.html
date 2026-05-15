@@ -1620,21 +1620,22 @@ function buildScreen2() {
   var jaugeWrap = document.getElementById('jauge-wrap');
 
   if (atteintSolide) {
-    // All targets reached
+    // All targets reached — route to next brick
     var bigSurplus = epargne > calcResult.palierSecuriteSolide * 1.5;
     var surplus = epargne - calcResult.palierSecuriteSolide;
+    var nextBriqueSolide = getNextBrique();
     if (atteintBlock) {
       atteintBlock.style.display = 'block';
       if (bigSurplus) {
         document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
-        document.getElementById('atteint-sub').innerHTML = 'Tu as ' + formatEuro(surplus) + ' au-delà de ton objectif.<br>C\'est le bon moment pour commencer à faire travailler cet argent.';
+        document.getElementById('atteint-sub').innerHTML = 'Tu as ' + formatEuro(surplus) + ' au-delà de ton objectif.<br>C\'est le bon moment de passer à la suite.';
         document.getElementById('atteint-actions').innerHTML =
-          '<a href="dashboard.html" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Voir les prochaines briques →</a>';
+          '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
       } else {
         document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
-        document.getElementById('atteint-sub').innerHTML = 'Ton épargne de sécurité est en place.<br>La prochaine étape : faire travailler cet argent.';
+        document.getElementById('atteint-sub').innerHTML = 'Ton épargne de sécurité est en place.<br>Tu peux passer à la suite.';
         document.getElementById('atteint-actions').innerHTML =
-          '<a href="dashboard.html" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Voir les prochaines briques →</a>';
+          '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
       }
     }
     if (resultCard) resultCard.style.display = 'none';
@@ -2004,6 +2005,31 @@ function updatePlacementCards() {
 
 
 /* ══════════════════════════════════════════════════════════════
+   getNextBrique — routing vers la brique suivante selon le profil
+   ══════════════════════════════════════════════════════════════ */
+function getNextBrique() {
+  var profil = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_profil') : null) || {};
+  var budgetData = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_budget_base') : null);
+  var budget = (budgetData && budgetData.data) ? budgetData.data : (budgetData || {});
+
+  // Priorité 1 : découvert récurrent
+  var hasDecouvert = profil.has_decouvert || (budget.solde_moyen != null && budget.solde_moyen < 0)
+    || (profil.dettes_types && profil.dettes_types.includes('decouvert_regulier'));
+  if (hasDecouvert) return { url: 'brique-decouvert.html', label: 'Gérer mon découvert' };
+
+  // Priorité 2 : dettes importantes
+  var totalDettes = budget.total_dettes || 0;
+  if (totalDettes > 500) return { url: 'brique-desendettement.html', label: 'Plan de désendettement' };
+
+  // Priorité 3 : paiements fractionnés
+  var hasFractionne = budget.has_paiements_fractionnes || false;
+  if (hasFractionne) return { url: 'brique-paiements-fractionnes.html', label: 'Maîtriser les paiements fractionnés' };
+
+  // Par défaut : investissement long terme
+  return { url: 'brique-investissement.html', label: 'Commencer à investir' };
+}
+
+/* ══════════════════════════════════════════════════════════════
    lancerMatelas — opens modal
    ══════════════════════════════════════════════════════════════ */
 function lancerMatelas() {
@@ -2028,20 +2054,21 @@ function lancerMatelas() {
     var epargne = calcResult.epargneDisponible;
     var solideAmt = calcResult.palierSecuriteSolide;
     var nextBriqueHtml = '';
+    var nextBrique = getNextBrique();
 
     if (resteModal <= 0 && epargne >= solideAmt) {
       nextBriqueHtml =
         '<div class="modal-next-invest">' +
           '<div class="modal-next-kicker">Et maintenant ?</div>' +
-          '<p class="modal-next-msg">Ton matelas est en place. C\'est le bon moment pour commencer à faire travailler ton argent — investir pour ton avenir, pas seulement le sécuriser.</p>' +
-          '<a href="dashboard.html" class="btn-hero-primary modal-next-cta">Voir les briques investissement →</a>' +
+          '<p class="modal-next-msg">Ton matelas est en place. C\'est le bon moment de passer à la suite.</p>' +
+          '<a href="' + escapeHtml(nextBrique.url) + '" class="btn-hero-primary modal-next-cta">Prochaine étape : ' + escapeHtml(nextBrique.label) + ' →</a>' +
         '</div>';
-    } else if (calcResult.hasDecouvert) {
+    } else if (resteModal <= 0) {
       nextBriqueHtml =
         '<div class="modal-next-invest">' +
           '<div class="modal-next-kicker">Prochaine étape</div>' +
-          '<p class="modal-next-msg">Avec ton matelas en place, il est temps de sortir du découvert. C\'est ce qui coûte le plus cher chaque mois.</p>' +
-          '<a href="brique-gestion-decouvert.html" class="btn-hero-primary modal-next-cta">Gérer mon découvert →</a>' +
+          '<p class="modal-next-msg">Ton palier est atteint. Tu peux passer à la suite.</p>' +
+          '<a href="' + escapeHtml(nextBrique.url) + '" class="btn-hero-primary modal-next-cta">Prochaine étape : ' + escapeHtml(nextBrique.label) + ' →</a>' +
         '</div>';
     } else if (resteModal > 0) {
       var palierLabel = selectedPalier === 'coussin' ? 'premier coussin'
@@ -2050,7 +2077,8 @@ function lancerMatelas() {
       nextBriqueHtml =
         '<div class="modal-next-invest">' +
           '<div class="modal-next-kicker">En route</div>' +
-          '<p class="modal-next-msg">Ton engagement est actif. Une fois ton ' + escapeHtml(palierLabel) + ' atteint, tu pourras commencer à faire fructifier ton épargne.</p>' +
+          '<p class="modal-next-msg">Ton engagement est actif. Une fois ton ' + escapeHtml(palierLabel) + ' atteint, tu pourras passer à la suite.</p>' +
+          '<a href="' + escapeHtml(nextBrique.url) + '" class="btn-hero-primary modal-next-cta" style="margin-top:0.5rem;">Prochaine étape : ' + escapeHtml(nextBrique.label) + ' →</a>' +
         '</div>';
     }
     summaryEl.innerHTML += nextBriqueHtml;

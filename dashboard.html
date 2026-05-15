@@ -824,6 +824,15 @@
     <div id="briques-sections"></div>
   </div>
 
+  <!-- ── Mes données (premier bloc après hero) ──────────── -->
+  <section class="mes-briques-section" id="mes-briques-section" style="display:none;">
+    <div class="mes-briques-header">
+      <h2 class="section-title">Mes données</h2>
+      <p class="mes-briques-sub">Mis à jour à chaque brique · Objectifs et projets bientôt disponibles</p>
+    </div>
+    <div class="mes-briques-grid" id="mes-briques-grid"></div>
+  </section>
+
   <!-- ════════════════════════════════════════════════════════════
        ZONE 3 — INSIGHT ÉDITORIAL
   ════════════════════════════════════════════════════════════ -->
@@ -837,15 +846,6 @@
       </a>
     </div>
   </div>
-
-  <!-- ── Mes briques ───────────────────────────────────── -->
-  <section class="mes-briques-section" id="mes-briques-section" style="display:none;">
-    <div class="mes-briques-header">
-      <h2 class="section-title">Mes données</h2>
-      <p class="mes-briques-sub">Mis à jour à chaque brique · Objectifs et projets bientôt disponibles</p>
-    </div>
-    <div class="mes-briques-grid" id="mes-briques-grid"></div>
-  </section>
 
   <!-- ════════════════════════════════════════════════════════════
        ZONE 4 — EXPLORER
@@ -931,7 +931,10 @@
 
   async function loadData() {
     try {
-      const [dbProfil, dbDash] = await Promise.all([loadProfile(), loadDashboard()]);
+      // Hydrate _MEM (profil, dashboard, AND brick_data) from Supabase
+      const { profil: hydProfil, dash: hydDash } = await hydrateFromSupabase();
+      const dbProfil = hydProfil;
+      const dbDash = hydDash;
 
       if (dbProfil && dbProfil.briques_recommandees && dbProfil.briques_recommandees.length > 0) {
         profil = dbProfil;
