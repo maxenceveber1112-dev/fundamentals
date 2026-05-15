@@ -314,7 +314,11 @@
   html.dark .resume-card .resume-kicker{color:#A78BFA}
   .resume-card .resume-text{font-size:0.875rem;color:var(--text-secondary);margin-bottom:0.75rem}
   .resume-card .resume-actions{display:flex;gap:0.75rem;flex-wrap:wrap}
-  /* ── Responsive ── */
+  /* ── Range slider ── */
+  input[type=range]{height:6px;-webkit-appearance:none;appearance:none;background:var(--track);border-radius:9999px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent-strong);cursor:pointer;border:2px solid var(--bg-elevated);box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent-strong);cursor:pointer;border:2px solid var(--bg-elevated);box-shadow:0 1px 4px rgba(0,0,0,0.15)}
+    /* ── Responsive ── */
   @media(max-width:900px){.brique-2col-wrapper{grid-template-columns:1fr;gap:1.5rem;padding:1rem 1rem 5rem}.brique-side-panel{position:static;order:-1}}
   @media(max-width:640px){.brick-card{padding:1.5rem 1.25rem}.data-cards-grid{grid-template-columns:1fr}.placement-visual{grid-template-columns:1fr}.nav-btns{flex-wrap:wrap}.nav-btns .btn-hero-primary{width:100%;justify-content:center;order:-1}.ctx-header{margin-bottom:1rem}}
   /* ── Print ── */
@@ -508,60 +512,43 @@
         </div>
       </div>
 
-      <!-- ═══ SCREEN 3 — Les livrets d'epargne ═══ -->
+      <!-- ═══ SCREEN 3 — Mon profil livrets ═══ -->
       <div id="screen-3" class="screen" style="display:none">
         <div class="brick-card">
-          <div class="brick-kicker">ETAPE 3 / 6 · TES LIVRETS</div>
-          <h2 class="brick-title">Choisis le bon livret pour le bon usage.</h2>
-          <p class="brick-subtitle">Chaque support a un role. On va trouver lequel verifier en premier.</p>
+          <div class="brick-kicker">ÉTAPE 3 / 6 · TES LIVRETS</div>
+          <h2 class="brick-title">Ton profil livrets.</h2>
+          <p class="brick-subtitle">Réponds à 3 questions, on te recommande les livrets adaptés.</p>
 
-          <!-- Assistant livret -->
           <div id="assistant-livret" style="margin-bottom:1.25rem">
-            <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.75rem">Quel livret verifier en premier ?</div>
+            <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.75rem">Quel livret vérifier en premier ?</div>
             <div id="assistant-q1" class="option-cards">
               <div class="option-card" onclick="assistantAnswer(1,'oui')" role="button" aria-label="Moins de 25 ans">
-                <div class="option-card-info"><div class="option-card-title">J'ai moins de 25 ans</div></div>
+                <div class="option-card-info"><div class="option-card-title">J’ai moins de 25 ans</div></div>
               </div>
               <div class="option-card" onclick="assistantAnswer(1,'non')" role="button" aria-label="25 ans ou plus">
-                <div class="option-card-info"><div class="option-card-title">J'ai 25 ans ou plus</div></div>
+                <div class="option-card-info"><div class="option-card-title">J’ai 25 ans ou plus</div></div>
               </div>
             </div>
             <div id="assistant-q2" style="display:none" class="option-cards">
-              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.5rem">Penses-tu etre eligible au LEP ?</div>
+              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.5rem">Penses-tu être éligible au LEP ?</div>
               <div class="option-card" onclick="assistantAnswer(2,'oui')" role="button"><div class="option-card-info"><div class="option-card-title">Oui</div></div></div>
               <div class="option-card" onclick="assistantAnswer(2,'nsp')" role="button"><div class="option-card-info"><div class="option-card-title">Je ne sais pas</div></div></div>
               <div class="option-card" onclick="assistantAnswer(2,'non')" role="button"><div class="option-card-info"><div class="option-card-title">Probablement pas</div></div></div>
             </div>
             <div id="assistant-q3" style="display:none" class="option-cards">
-              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.5rem">As-tu deja un Livret A ?</div>
+              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.5rem">As-tu déjà un Livret A ?</div>
               <div class="option-card" onclick="assistantAnswer(3,'oui')" role="button"><div class="option-card-info"><div class="option-card-title">Oui</div></div></div>
               <div class="option-card" onclick="assistantAnswer(3,'non')" role="button"><div class="option-card-info"><div class="option-card-title">Non</div></div></div>
             </div>
-            <div id="assistant-result" style="display:none;margin:1rem 0">
-              <div class="sim-output">
-                <div class="sim-output-label">A verifier en priorite</div>
-                <div class="sim-output-value" id="assistant-result-name"></div>
-                <div style="font-size:0.78rem;color:var(--text-muted);margin-top:0.25rem" id="assistant-result-why"></div>
-              </div>
-            </div>
           </div>
 
-          <!-- Filters -->
-          <div class="livret-filters" id="livret-filters">
-            <button class="livret-filter active" data-filter="all" onclick="filterLivrets('all')">Tous</button>
-            <button class="livret-filter" data-filter="matelas" onclick="filterLivrets('matelas')">Adapte au matelas</button>
-            <button class="livret-filter" data-filter="disponible" onclick="filterLivrets('disponible')">Disponible</button>
-            <button class="livret-filter" data-filter="verifier" onclick="filterLivrets('verifier')">A verifier</button>
+          <div id="s3-reco-panel" style="display:none">
+            <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.75rem">🎯 Livrets recommandés pour toi</div>
+            <div id="s3-reco-cards" class="livret-grid"></div>
+            <button onclick="openAllLivretsModal()" style="display:inline-flex;align-items:center;gap:0.3rem;margin-top:0.75rem;font-size:0.82rem;font-weight:500;color:var(--accent-strong);background:none;border:none;cursor:pointer;padding:0.25rem 0" aria-label="Voir tous les supports">Voir tous les supports →</button>
           </div>
 
-          <!-- Livret cards -->
-          <div class="livret-grid" id="livret-grid">
-            <!-- Built by JS from SAVINGS_PRODUCTS_CONFIG -->
-          </div>
-
-          <div style="font-size:0.72rem;color:var(--text-faint);margin-top:1rem;line-height:1.5">
-            Les taux et plafonds peuvent evoluer. Verifie les conditions au moment d'ouvrir ou d'utiliser le produit.
-          </div>
+          <div style="font-size:0.72rem;color:var(--text-faint);margin-top:1rem;line-height:1.5">Les taux et plafonds peuvent évoluer. Vérifie les conditions au moment d’ouvrir ou d’utiliser le produit.</div>
 
           <div class="nav-btns">
             <button class="btn-back" onclick="goToScreen(2)" aria-label="Retour">&larr; Retour</button>
@@ -570,117 +557,13 @@
         </div>
       </div>
 
-      <!-- ═══ SCREEN 4 — Audit frais & découvert ═══ -->
+      <!-- ═══ SCREEN 4 — Tes 3 actions bancaires ═══ -->
       <div id="screen-4" class="screen" style="display:none">
         <div class="brick-card">
-          <div class="brick-kicker">ETAPE 4 / 6 · TES FRAIS</div>
-          <h2 class="brick-title">Repere ce qui peut te couter cher.</h2>
-          <p class="brick-subtitle">Un audit rapide pour traquer les frais evitables.</p>
-
-          <div style="display:flex;flex-direction:column;gap:1.25rem" id="fields-s4">
-
-            <div class="field-group">
-              <label class="field-label" for="input-frais-tenue">Frais de tenue de compte (&#8364;/mois)
-                <span class="badge-prefilled" id="badge-frais-tenue" style="display:none">&#10003; Pre-rempli</span>
-              </label>
-              <div class="euro-wrap">
-                <input type="number" id="input-frais-tenue" class="field-input" placeholder="ex : 2" min="0" step="0.01" inputmode="decimal" aria-label="Frais tenue de compte"/>
-                <span class="euro-suffix">&#8364;</span>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-prix-carte">Prix carte (&#8364;)</label>
-              <div style="display:flex;gap:0.5rem;align-items:center">
-                <div class="euro-wrap" style="flex:1">
-                  <input type="number" id="input-prix-carte" class="field-input" placeholder="ex : 45" min="0" step="0.01" inputmode="decimal" aria-label="Prix carte"/>
-                  <span class="euro-suffix">&#8364;</span>
-                </div>
-                <select id="input-carte-periode" class="field-select" style="width:auto;min-width:100px" aria-label="Periode carte">
-                  <option value="mois">/mois</option>
-                  <option value="an" selected>/an</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-retraits-hors">Retraits hors reseau factures</label>
-              <select id="input-retraits-hors" class="field-select" aria-label="Retraits hors reseau">
-                <option value="">Selectionner...</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-                <option value="nsp">Je ne sais pas</option>
-              </select>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-frais-decouvert-recents">Frais de découvert récents</label>
-              <select id="input-frais-decouvert-recents" class="field-select" aria-label="Frais de découvert récents">
-                <option value="">Selectionner...</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-                <option value="nsp">Je ne sais pas</option>
-              </select>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-commissions">Commissions d'intervention recentes</label>
-              <select id="input-commissions" class="field-select" aria-label="Commissions intervention">
-                <option value="">Selectionner...</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-                <option value="nsp">Je ne sais pas</option>
-              </select>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-rejets">Rejets de prelevement recents</label>
-              <select id="input-rejets" class="field-select" aria-label="Rejets prelevement">
-                <option value="">Selectionner...</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-                <option value="nsp">Je ne sais pas</option>
-              </select>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-fractionnes">Paiements fractionnés en cours</label>
-              <select id="input-fractionnes" class="field-select" aria-label="Paiements fractionnes">
-                <option value="">Selectionner...</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-                <option value="nsp">Je ne sais pas</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Calcul en temps reel -->
-          <div style="margin-top:1.5rem">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
-              <span style="font-size:0.82rem;font-weight:600;color:var(--text)">Frais bancaires estimes</span>
-              <span id="audit-status-badge" style="font-size:0.7rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:9999px">---</span>
-            </div>
-            <div class="sim-output" style="margin:0">
-              <div style="display:flex;justify-content:center;gap:2rem">
-                <div><div style="font-size:0.72rem;color:var(--text-faint)">Par mois</div><div style="font-size:1.25rem;font-weight:700;color:var(--text)" id="audit-mensuel">0 &#8364;</div></div>
-                <div><div style="font-size:0.72rem;color:var(--text-faint)">Par an</div><div style="font-size:1.25rem;font-weight:700;color:var(--text)" id="audit-annuel">0 &#8364;</div></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Frais evitables -->
-          <div id="frais-evitables" style="margin-top:1.25rem;display:none">
-            <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-faint);margin-bottom:0.5rem">Frais evitables detectes</div>
-            <div id="frais-evitables-list" style="display:flex;flex-direction:column;gap:0.25rem"></div>
-          </div>
-
-          <div class="callout-cite" style="margin-top:1.25rem">
-            Cherche "recapitulatif annuel des frais" dans ton application bancaire.
-          </div>
-          <div class="callout-cite">
-            Un rejet de prelevement coute souvent plus cher que le prelevement lui-meme.
-          </div>
-
+          <div class="brick-kicker">ÉTAPE 4 / 6 · TES ACTIONS</div>
+          <h2 class="brick-title">Tes 3 actions bancaires.</h2>
+          <p class="brick-subtitle">Concrètes, personnalisées, basées sur ce qu’on sait déjà.</p>
+          <div id="s4-actions" style="display:flex;flex-direction:column;gap:0.75rem;margin:1.25rem 0"></div>
           <div class="nav-btns">
             <button class="btn-back" onclick="goToScreen(3)" aria-label="Retour">&larr; Retour</button>
             <button class="btn-hero-primary" onclick="goToScreen(5)" aria-label="Continuer">Continuer &rarr;</button>
@@ -688,80 +571,22 @@
         </div>
       </div>
 
-      <!-- ═══ SCREEN 5 — Plan de virements automatiques ═══ -->
+      <!-- ═══ SCREEN 5 — Plan virement auto calculé ═══ -->
       <div id="screen-5" class="screen" style="display:none">
         <div class="brick-card">
-          <div class="brick-kicker">ETAPE 5 / 6 · AUTOMATISATION</div>
-          <h2 class="brick-title">Automatise avant de depenser.</h2>
-          <p class="brick-subtitle">Programme tes virements pour que l'epargne passe avant les depenses.</p>
-
-          <!-- Flux visualisation -->
-          <div class="flux-container" id="flux-container">
-            <!-- Built by JS -->
+          <div class="brick-kicker">ÉTAPE 5 / 6 · AUTOMATISATION</div>
+          <h2 class="brick-title">Ton plan d’épargne automatique.</h2>
+          <p class="brick-subtitle">On a calculé un plan à partir de tes données. Ajuste le curseur.</p>
+          <div class="data-cards-grid" style="margin-bottom:1.25rem">
+            <div class="data-card"><div class="data-card-value" id="s5-objectif-val">—</div><div class="data-card-label">Objectif matelas</div></div>
+            <div class="data-card"><div class="data-card-value" id="s5-duree-val">—</div><div class="data-card-label">Durée estimée</div></div>
           </div>
-
-          <!-- Inputs -->
-          <div style="display:flex;flex-direction:column;gap:1.25rem;margin-top:1.5rem" id="fields-s5">
-
-            <div class="field-group">
-              <label class="field-label" for="input-vir-matelas">Virement vers matelas (&#8364;/mois)
-                <span class="badge-prefilled" id="badge-vir-matelas" style="display:none">&#10003; Pre-rempli</span>
-              </label>
-              <div class="euro-wrap">
-                <input type="number" id="input-vir-matelas" class="field-input" placeholder="ex : 100" min="0" inputmode="numeric" aria-label="Virement matelas"/>
-                <span class="euro-suffix">&#8364;</span>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-vir-projet">Virement vers projet (&#8364;/mois, optionnel)</label>
-              <div class="euro-wrap">
-                <input type="number" id="input-vir-projet" class="field-input" placeholder="optionnel" min="0" inputmode="numeric" aria-label="Virement projet"/>
-                <span class="euro-suffix">&#8364;</span>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-vir-invest">Virement investissement (&#8364;/mois)</label>
-              <div class="euro-wrap">
-                <input type="number" id="input-vir-invest" class="field-input" placeholder="optionnel" min="0" inputmode="numeric" aria-label="Virement investissement"/>
-                <span class="euro-suffix">&#8364;</span>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-marge-min">Marge minimale sur compte (&#8364;)</label>
-              <div class="euro-wrap">
-                <input type="number" id="input-marge-min" class="field-input" placeholder="ex : 200" min="0" inputmode="numeric" aria-label="Marge minimale"/>
-                <span class="euro-suffix">&#8364;</span>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-jour-revenu">Jour de reception du revenu (1-31)</label>
-              <input type="number" id="input-jour-revenu" class="field-input" placeholder="ex : 28" min="1" max="31" inputmode="numeric" aria-label="Jour reception revenu"/>
-            </div>
+          <div style="margin:1.5rem 0">
+            <label style="font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.75rem" for="s5-slider">Montant mensuel : <strong id="s5-slider-val">50 €</strong></label>
+            <input type="range" id="s5-slider" min="10" max="500" value="50" step="5" style="width:100%;accent-color:var(--accent-strong)" aria-label="Montant mensuel virement"/>
+            <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-faint);margin-top:0.25rem"><span id="s5-slider-min">10 €</span><span id="s5-slider-max">500 €</span></div>
           </div>
-
-          <!-- Presets -->
-          <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin:1.25rem 0 0.5rem">Profil d'automatisation</div>
-          <div class="preset-chips" id="preset-chips">
-            <button class="preset-chip" data-preset="prudent" onclick="applyPreset('prudent')">Prudent</button>
-            <button class="preset-chip active" data-preset="equilibre" onclick="applyPreset('equilibre')">Equilibre</button>
-            <button class="preset-chip" data-preset="ambitieux" onclick="applyPreset('ambitieux')">Ambitieux</button>
-            <button class="preset-chip" data-preset="libre" onclick="applyPreset('libre')">Montant libre</button>
-          </div>
-
-          <!-- Output dynamique -->
-          <div id="s5-output" style="margin-top:1.25rem">
-            <div class="sim-output" style="text-align:left">
-              <div style="display:flex;flex-direction:column;gap:0.5rem" id="s5-output-lines"></div>
-            </div>
-          </div>
-
-          <div class="sim-warning orange" id="s5-warning-rav">&laquo; Attention : ton reste a vivre serait trop bas apres automatisation. Reduis tes virements. &raquo;</div>
-          <div class="sim-warning orange" id="s5-warning-invest">&laquo; Investissement non recommande tant que ton matelas est incomplet ou que tu utilises le decouvert. &raquo;</div>
-
+          <div class="sim-output" id="s5-recap" style="text-align:left"><div style="display:flex;flex-direction:column;gap:0.5rem" id="s5-recap-lines"></div></div>
           <div class="nav-btns">
             <button class="btn-back" onclick="goToScreen(4)" aria-label="Retour">&larr; Retour</button>
             <button class="btn-hero-primary" onclick="goToScreen(6)" aria-label="Continuer">Continuer &rarr;</button>
@@ -769,33 +594,16 @@
         </div>
       </div>
 
-      <!-- ═══ SCREEN 6 — Securite & routine ═══ -->
+      <!-- ═══ SCREEN 6 — Setup en 3 clics ═══ -->
       <div id="screen-6" class="screen" style="display:none">
         <div class="brick-card">
-          <div class="brick-kicker">ETAPE 6 / 6 · SECURITE & ROUTINE</div>
-          <h2 class="brick-title">Les réglages qui évitent les galères.</h2>
-          <p class="brick-subtitle">Coche ce que tu as deja fait. On gardera la trace.</p>
-
-          <div class="check-progress" id="check-progress"><strong>0</strong> / <span id="check-total">0</span> réglages cochés</div>
-
-          <div id="checklist-container">
-            <!-- Built by JS -->
-          </div>
-
-          <!-- Score securite -->
-          <div style="margin-top:1.5rem">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
-              <span style="font-size:0.82rem;font-weight:600;color:var(--text)">Score securite</span>
-              <span id="secu-status" style="font-size:0.75rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:9999px"></span>
-            </div>
-            <div class="jauge-bar">
-              <div class="jauge-fill" id="secu-fill" style="width:0%"></div>
-            </div>
-          </div>
-
+          <div class="brick-kicker">ÉTAPE 6 / 6 · SETUP FINAL</div>
+          <h2 class="brick-title">Setup en 3 clics.</h2>
+          <p class="brick-subtitle">3 réglages prioritaires à activer maintenant.</p>
+          <div id="s6-setup-cards" style="display:flex;flex-direction:column;gap:0.75rem;margin:1.25rem 0"></div>
           <div class="nav-btns" style="margin-top:1.5rem">
             <button class="btn-back" onclick="goToScreen(5)" aria-label="Retour">&larr; Retour</button>
-            <button class="btn-hero-primary" id="btn-finaliser" onclick="openModalFin()" aria-label="Voir mon bilan">Voir mon bilan &rarr;</button>
+            <button class="btn-hero-primary" id="btn-finaliser" onclick="openModalFin()" disabled aria-label="Terminer">Terminer &rarr;</button>
           </div>
         </div>
       </div>
@@ -823,9 +631,9 @@
           <div class="bpc-step active" id="bpc-step-1"><div class="bpc-step-num">1</div><div class="bpc-step-label">Ton système actuel</div></div>
           <div class="bpc-step" id="bpc-step-2"><div class="bpc-step-num">2</div><div class="bpc-step-label">Compte courant</div></div>
           <div class="bpc-step" id="bpc-step-3"><div class="bpc-step-num">3</div><div class="bpc-step-label">Livrets d'epargne</div></div>
-          <div class="bpc-step" id="bpc-step-4"><div class="bpc-step-num">4</div><div class="bpc-step-label">Audit frais</div></div>
-          <div class="bpc-step" id="bpc-step-5"><div class="bpc-step-num">5</div><div class="bpc-step-label">Automatisation</div></div>
-          <div class="bpc-step" id="bpc-step-6"><div class="bpc-step-num">6</div><div class="bpc-step-label">Securite & routine</div></div>
+          <div class="bpc-step" id="bpc-step-4"><div class="bpc-step-num">4</div><div class="bpc-step-label">Tes 3 actions</div></div>
+          <div class="bpc-step" id="bpc-step-5"><div class="bpc-step-num">5</div><div class="bpc-step-label">Épargne auto</div></div>
+          <div class="bpc-step" id="bpc-step-6"><div class="bpc-step-num">6</div><div class="bpc-step-label">Setup final</div></div>
         </div>
 
         <div class="bpc-nav">
@@ -853,6 +661,17 @@
   <div class="lexique-title">Lexique bancaire</div>
   <div id="lexique-list">
     <!-- Built by JS -->
+  </div>
+</div>
+
+<!-- ALL LIVRETS MODAL -->
+<div class="modal-fin-overlay" id="modal-all-livrets" style="display:none">
+  <div class="modal-fin-card" style="max-width:540px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
+      <h3 style="font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;font-style:italic;color:var(--text);margin:0">Tous les supports</h3>
+      <button onclick="closeAllLivretsModal()" style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;color:var(--text-muted)" aria-label="Fermer">&times;</button>
+    </div>
+    <div id="modal-all-livrets-list" class="livret-grid" style="max-height:60vh;overflow-y:auto"></div>
   </div>
 </div>
 
@@ -927,10 +746,10 @@ var currentScreen = 1;
 var STEP_TITLES = {
   1:'Ton système bancaire actuel',
   2:'Compte courant & lexique',
-  3:'Livrets d\'epargne',
-  4:'Audit frais & découvert',
-  5:'Plan de virements',
-  6:'Securite & routine'
+  3:'Mon profil livrets',
+  4:'Tes 3 actions',
+  5:'Plan épargne auto',
+  6:'Setup en 3 clics'
 };
 
 /* ── SAVINGS PRODUCTS CONFIG ── */
@@ -1015,11 +834,11 @@ var CHECKLIST_SECTIONS = [
 
 /* ── PLACEMENT VISUAL DATA ── */
 var PLACEMENT_VISUAL = [
-  {icon:'\uD83D\uDCB3',title:'Argent du mois',support:'Compte courant',dispo:'\uD83D\uDFE2 Immediat',note:'Charges fixes + depenses courantes'},
-  {icon:'\uD83D\uDEE1\uFE0F',title:'Matelas de securite',support:'Livret A, LDDS, LEP si eligible',dispo:'\uD83D\uDFE2 Immediat',note:'Reserve pour les coups durs'},
-  {icon:'\uD83C\uDFAF',title:'Projet court terme',support:'Livret disponible',dispo:'\uD83D\uDFE1 Quelques jours',note:'Vacances, achat prevu, permis...'},
-  {icon:'\uD83C\uDF31',title:'Investissement long terme',support:'PEA, assurance-vie...',dispo:'\uD83D\uDD34 Long terme',note:'Brique dediee'},
-  {icon:'\uD83D\uDD12',title:'Argent a ne pas utiliser',support:'Compte separe',dispo:'\uD83D\uDFE2 Immediat',note:'Distinct du quotidien',fw:true}
+  {icon:'\uD83D\uDCB3',title:'Argent du mois',support:'Compte courant',note:'Paie tes charges et d\u00e9penses courantes \u2014 rien de plus.',badge:'D\u00e9penses'},
+  {icon:'\uD83D\uDEE1\uFE0F',title:'Matelas de s\u00e9curit\u00e9',support:'Livret A, LDDS, LEP si \u00e9ligible',note:'Ta r\u00e9serve pour absorber les impr\u00e9vus sans stress.',badge:'S\u00e9curit\u00e9'},
+  {icon:'\uD83C\uDFAF',title:'Projet court terme',support:'Livret disponible',note:'Mets de c\u00f4t\u00e9 pour un objectif pr\u00e9cis : vacances, permis, achat.',badge:'Projet'},
+  {icon:'\uD83C\uDF31',title:'Investissement long terme',support:'PEA, assurance-vie\u2026',note:'Fais travailler ton argent sur le long terme.',badge:'Croissance'},
+  {icon:'\uD83D\uDD12',title:'Argent \u00e0 ne pas toucher',support:'Compte s\u00e9par\u00e9',note:'Isole ce qui ne doit pas \u00eatre d\u00e9pens\u00e9 par r\u00e9flexe.',badge:'S\u00e9curit\u00e9',fw:true}
 ];
 
 
@@ -1301,7 +1120,7 @@ function buildScreen2() {
           det.style.display = '';
           document.getElementById('pv-detail-icon').textContent = p.icon;
           document.getElementById('pv-detail-support').innerHTML = '<span style="color:var(--accent-strong);font-weight:600;">' + p.support + '</span>';
-          document.getElementById('pv-detail-dispo').innerHTML = p.dispo;
+          document.getElementById('pv-detail-dispo').innerHTML = p.badge ? '<span style="display:inline-block;padding:0.2rem 0.6rem;border-radius:9999px;background:var(--accent-soft);color:var(--accent-strong);font-size:0.7rem;font-weight:700;letter-spacing:0.04em">' + p.badge + '</span>' : '';
           document.getElementById('pv-detail-note').textContent = p.note;
           det.classList.remove('pv-detail-in');
           void det.offsetWidth;
@@ -1341,11 +1160,6 @@ function updateSimulateur() {
    buildScreen3 — Livrets
    ══════════════════════════════════════════════════════════════ */
 function buildScreen3() {
-  var grid = document.getElementById('livret-grid');
-  if (grid && !grid.dataset.built) {
-    renderLivrets('all');
-    grid.dataset.built = '1';
-  }
   buildLexique();
 }
 
@@ -1355,81 +1169,79 @@ function assistantAnswer(q, val) {
   if (q === 1) {
     assistantState.q1 = val;
     document.getElementById('assistant-q1').style.display = 'none';
-    if (val === 'oui') {
-      showAssistantResult('Livret Jeune', 'Taux minimum garanti au niveau du Livret A, souvent superieur. Ouvre-le tant que tu es eligible.');
-    } else {
-      document.getElementById('assistant-q2').style.display = '';
-    }
+    if (val === 'oui') { finishAssistant('jeune'); }
+    else { document.getElementById('assistant-q2').style.display = ''; }
   } else if (q === 2) {
     assistantState.q2 = val;
     document.getElementById('assistant-q2').style.display = 'none';
-    if (val === 'oui' || val === 'nsp') {
-      showAssistantResult('LEP', 'Meilleur taux des livrets reglementes. Verifie ton eligibilite sur le site de ta banque.');
-    } else {
-      document.getElementById('assistant-q3').style.display = '';
-    }
+    if (val === 'oui' || val === 'nsp') { finishAssistant('securite'); }
+    else { document.getElementById('assistant-q3').style.display = ''; }
   } else if (q === 3) {
     assistantState.q3 = val;
     document.getElementById('assistant-q3').style.display = 'none';
-    if (val === 'non') {
-      showAssistantResult('Livret A', 'Le livret de base a ouvrir. Disponible immediatement, sans frais, exonere d\'impots.');
-    } else {
-      showAssistantResult('LDDS', 'Tu as deja un Livret A. Le LDDS est le complement naturel, meme taux, meme fiscalite.');
-    }
+    if (val === 'non') { finishAssistant('default'); }
+    else { finishAssistant('complement'); }
   }
 }
 
-function showAssistantResult(name, why) {
-  document.getElementById('assistant-result').style.display = '';
-  document.getElementById('assistant-result-name').textContent = name;
-  document.getElementById('assistant-result-why').textContent = why;
-  mData.livret_prioritaire = name;
+function finishAssistant(goal) {
+  var recs = [];
+  var livretA = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='livret_a';});
+  if (livretA) recs.push({product:livretA,usage:'S\u00e9curit\u00e9'});
+
+  if (goal==='jeune') {
+    var lj = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='livret_jeune';});
+    if (lj) recs.unshift({product:lj,usage:'S\u00e9curit\u00e9'});
+    mData.livret_prioritaire = 'Livret Jeune';
+  } else if (goal==='securite') {
+    var lep = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='lep';});
+    if (lep) recs.unshift({product:lep,usage:'S\u00e9curit\u00e9'});
+    mData.livret_prioritaire = 'LEP';
+  } else if (goal==='complement') {
+    var ldds = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='ldds';});
+    if (ldds) recs.push({product:ldds,usage:'S\u00e9curit\u00e9'});
+    mData.livret_prioritaire = 'LDDS';
+  } else {
+    var ldds2 = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='ldds';});
+    if (ldds2) recs.push({product:ldds2,usage:'S\u00e9curit\u00e9'});
+    mData.livret_prioritaire = 'Livret A';
+  }
+
+  var panel = document.getElementById('s3-reco-panel');
+  var cards = document.getElementById('s3-reco-cards');
+  if (!panel||!cards) return;
+  cards.innerHTML = '';
+  recs.forEach(function(r) {
+    var p = r.product;
+    cards.innerHTML += '<div class="livret-card'+(p.nom===mData.livret_prioritaire?' highlight':'')+'"><div class="livret-card-header"><span class="livret-card-name">'+escapeHtml(p.nom)+'</span><span class="livret-card-badge" style="background:var(--accent-soft);color:var(--accent-strong)">'+escapeHtml(r.usage)+'</span></div><div class="livret-card-row"><span>Taux</span><span>'+escapeHtml(p.taux)+'</span></div><div class="livret-card-usage">'+escapeHtml(p.usage_recommande)+'</div></div>';
+  });
+  panel.style.display = '';
+  document.getElementById('assistant-livret').style.display = 'none';
 }
 
-function filterLivrets(filter) {
-  document.querySelectorAll('.livret-filter').forEach(function(f) {
-    f.classList.toggle('active', f.getAttribute('data-filter') === filter);
-  });
-  renderLivrets(filter);
-}
-
-function renderLivrets(filter) {
-  var grid = document.getElementById('livret-grid');
-  if (!grid) return;
-  grid.innerHTML = '';
-
-  var products = SAVINGS_PRODUCTS_CONFIG.filter(function(p) {
-    if (filter === 'all') return true;
-    if (filter === 'matelas') return p.badge === 'Adapte au matelas';
-    if (filter === 'disponible') return p.disponible;
-    if (filter === 'verifier') return p.badge === 'A verifier en priorite';
-    return true;
-  });
-
-  products.sort(function(a,b) { return a.priorite - b.priorite; });
-
+function renderLivretsFull(container) {
+  if (!container) return;
+  container.innerHTML = '';
+  var products = SAVINGS_PRODUCTS_CONFIG.slice().sort(function(a,b){return a.priorite-b.priorite;});
   products.forEach(function(p) {
-    var badgeColor = p.badge === 'Adapte au matelas' ? 'background:var(--green-soft);color:var(--green);border:1px solid var(--green-border)'
-      : p.badge === 'A verifier en priorite' ? 'background:var(--orange-soft);color:var(--orange)'
-      : p.badge === 'Argent bloque' ? 'background:var(--red-soft);color:var(--red)'
-      : 'background:var(--accent-soft);color:var(--accent-strong)';
-
-    var highlight = mData.livret_prioritaire && p.nom === mData.livret_prioritaire ? ' highlight' : '';
-
-    grid.innerHTML +=
-      '<div class="livret-card' + highlight + '">' +
-        '<div class="livret-card-header">' +
-          '<span class="livret-card-name">' + escapeHtml(p.nom) + '</span>' +
-          '<span class="livret-card-badge" style="' + badgeColor + '">' + escapeHtml(p.badge) + '</span>' +
-        '</div>' +
-        '<div class="livret-card-row"><span>Taux</span><span>' + escapeHtml(p.taux) + '</span></div>' +
-        '<div class="livret-card-row"><span>Plafond</span><span>' + escapeHtml(p.plafond) + '</span></div>' +
-        '<div class="livret-card-row"><span>Fiscalite</span><span>' + escapeHtml(p.fiscalite) + '</span></div>' +
-        '<div class="livret-card-row"><span>Conditions</span><span>' + escapeHtml(p.conditions) + '</span></div>' +
-        '<div class="livret-card-usage">' + escapeHtml(p.usage_recommande) + '</div>' +
-        '<div class="livret-card-erreur">\u26A0 ' + escapeHtml(p.erreur) + '</div>' +
-      '</div>';
+    var bc = p.badge==='Adapte au matelas'?'background:var(--green-soft);color:var(--green);border:1px solid var(--green-border)':p.badge==='A verifier en priorite'?'background:var(--orange-soft);color:var(--orange)':p.badge==='Argent bloque'?'background:var(--red-soft);color:var(--red)':'background:var(--accent-soft);color:var(--accent-strong)';
+    container.innerHTML += '<div class="livret-card"><div class="livret-card-header"><span class="livret-card-name">'+escapeHtml(p.nom)+'</span><span class="livret-card-badge" style="'+bc+'">'+escapeHtml(p.badge)+'</span></div><div class="livret-card-row"><span>Taux</span><span>'+escapeHtml(p.taux)+'</span></div><div class="livret-card-row"><span>Plafond</span><span>'+escapeHtml(p.plafond)+'</span></div><div class="livret-card-usage">'+escapeHtml(p.usage_recommande)+'</div></div>';
   });
+}
+
+function openAllLivretsModal() {
+  renderLivretsFull(document.getElementById('modal-all-livrets-list'));
+  var o = document.getElementById('modal-all-livrets');
+  if (!o) return;
+  o.style.display = 'flex';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){o.classList.add('visible');});});
+  o.addEventListener('click',function h(e){if(e.target===o){closeAllLivretsModal();o.removeEventListener('click',h);}});
+}
+function closeAllLivretsModal() {
+  var o = document.getElementById('modal-all-livrets');
+  if (!o) return;
+  o.classList.remove('visible');
+  setTimeout(function(){o.style.display='none';},250);
 }
 
 
@@ -1437,84 +1249,47 @@ function renderLivrets(filter) {
    buildScreen4 — Audit frais
    ══════════════════════════════════════════════════════════════ */
 function buildScreen4() {
-  bindInput('input-frais-tenue', 'frais_tenue', 'number');
-  bindInput('input-prix-carte', 'prix_carte', 'number');
-  bindSelect('input-carte-periode', 'carte_periode');
-  bindSelect('input-retraits-hors', 'retraits_hors');
-  bindSelect('input-frais-decouvert-recents', 'frais_decouvert_recents');
-  bindSelect('input-commissions', 'commissions');
-  bindSelect('input-rejets', 'rejets');
-  bindSelect('input-fractionnes', 'fractionnes');
-
-  /* Pre-fill from screen 1 */
-  if (mData.frais_mensuels > 0) {
-    var inp = document.getElementById('input-frais-tenue');
-    if (inp && !inp.value) { inp.value = mData.frais_mensuels; inp.classList.add('prefilled'); showBadge('badge-frais-tenue'); }
+  if (!mData.s4_actions) mData.s4_actions = {};
+  var container = document.getElementById('s4-actions');
+  if (!container) return;
+  container.innerHTML = '';
+  var frais = parseNum(mData.frais_mensuels);
+  var livretReco = mData.livret_prioritaire || 'Livret A';
+  var livretProd = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.nom===livretReco;})||SAVINGS_PRODUCTS_CONFIG[0];
+  var virAuto = mData.virement_auto_epargne;
+  var actions = [];
+  if (frais > 5) {
+    actions.push({id:'frais',icon:'\uD83D\uDCB8',title:'N\u00e9gocier tes frais bancaires',desc:'Tu paies '+frais+'\u00a0\u20ac/mois, soit '+(frais*12)+'\u00a0\u20ac/an. Beaucoup de banques offrent 0\u00a0\u20ac de frais.',done:false});
+  } else {
+    actions.push({id:'frais',icon:'\u2705',title:'Super, '+frais+'\u00a0\u20ac de frais',desc:'Tes frais sont d\u00e9j\u00e0 bas. Rien \u00e0 faire ici.',done:true});
   }
-
-  /* Bind recalc */
-  ['input-frais-tenue','input-prix-carte','input-carte-periode','input-retraits-hors','input-frais-decouvert-recents','input-commissions','input-rejets','input-fractionnes'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener('input', updateAudit);
-    if (el) el.addEventListener('change', updateAudit);
+  actions.push({id:'livret',icon:'\uD83C\uDFE6',title:'Ouvrir ton '+livretProd.nom,desc:'Taux actuel : '+livretProd.taux+'. Id\u00e9al pour '+(livretProd.usage_recommande.split(',')[0].toLowerCase())+'.',done:false});
+  if (virAuto==='oui') {
+    actions.push({id:'virement',icon:'\u2705',title:'Virement automatique en place',desc:'Tu as d\u00e9j\u00e0 un virement automatique. Bien jou\u00e9.',done:true});
+  } else {
+    actions.push({id:'virement',icon:'\uD83D\uDD04',title:'Automatiser ton \u00e9pargne',desc:'Un virement automatique mensuel supprime la tentation de d\u00e9penser.',done:false});
+  }
+  actions.forEach(function(a){
+    var state = mData.s4_actions[a.id]||(a.done?'done':'pending');
+    container.innerHTML += buildActionCard(a, state);
   });
-
-  updateAudit();
 }
-
-function updateAudit() {
-  var tenue = parseNum(mData.frais_tenue);
-  var prixCarte = parseNum(mData.prix_carte);
-  var periode = mData.carte_periode || 'an';
-  var carteMensuel = periode === 'an' ? Math.round(prixCarte / 12 * 100) / 100 : prixCarte;
-
-  var mensuel = tenue + carteMensuel;
-  if (mData.retraits_hors === 'oui') mensuel += 3;
-  if (mData.frais_decouvert_recents === 'oui') mensuel += 10;
-  if (mData.commissions === 'oui') mensuel += 8;
-  if (mData.rejets === 'oui') mensuel += 15;
-  if (mData.fractionnes === 'oui') mensuel += 5;
-
-  var annuel = Math.round(mensuel * 12);
-  mData.frais_mensuels_estimes = Math.round(mensuel * 100) / 100;
-  mData.frais_annuels_estimes = annuel;
-
-  var elMen = document.getElementById('audit-mensuel');
-  var elAn = document.getElementById('audit-annuel');
-  if (elMen) elMen.textContent = formatEuro(Math.round(mensuel));
-  if (elAn) elAn.textContent = formatEuro(annuel);
-
-  /* Status badge */
-  var badge = document.getElementById('audit-status-badge');
-  if (badge) {
-    if (annuel <= 60) { badge.textContent = 'Sain'; badge.style.background = 'var(--green-soft)'; badge.style.color = 'var(--green)'; }
-    else if (annuel <= 200) { badge.textContent = 'À surveiller'; badge.style.background = 'var(--orange-soft)'; badge.style.color = 'var(--orange)'; }
-    else { badge.textContent = 'À corriger'; badge.style.background = 'var(--red-soft)'; badge.style.color = 'var(--red)'; }
+function buildActionCard(action, state) {
+  var isDone = state==='done'||action.done;
+  var isDismissed = state==='dismissed';
+  var opacity = isDismissed?'opacity:0.5;':'';
+  var bg = isDone?'background:var(--green-soft);border-color:var(--green-border);':'';
+  var buttons = '';
+  if (!action.done && state!=='done' && state!=='dismissed') {
+    buttons = '<div style="display:flex;gap:0.5rem;margin-top:0.75rem"><button onclick="markS4Action(\''+action.id+'\',\'done\')" class="btn-hero-primary" style="padding:0.5rem 1rem;font-size:0.78rem">Fait \u2713</button><button onclick="markS4Action(\''+action.id+'\',\'dismissed\')" class="btn-hero-secondary" style="font-size:0.78rem">Plus tard \u2192</button></div>';
+  } else if (isDone) {
+    buttons = '<div style="margin-top:0.5rem;font-size:0.78rem;font-weight:600;color:var(--green)">\u2713 Fait</div>';
   }
-
-  /* Frais evitables */
-  var evitables = [];
-  if (mData.frais_decouvert_recents === 'oui') evitables.push({label:'Frais de decouvert',action:'Mettre en place une alerte solde bas'});
-  if (mData.commissions === 'oui') evitables.push({label:'Commissions d\'intervention',action:'Ne pas depasser le decouvert autorise'});
-  if (mData.rejets === 'oui') evitables.push({label:'Rejets de prelevement',action:'Verifier les dates et provisionner le compte'});
-  if (mData.retraits_hors === 'oui') evitables.push({label:'Retraits hors reseau',action:'Privilegier les distributeurs du reseau'});
-  if (mData.fractionnes === 'oui') evitables.push({label:'Paiements fractionnes',action:'Terminer les echeances en cours'});
-
-  var evitablesCont = document.getElementById('frais-evitables');
-  var evitablesList = document.getElementById('frais-evitables-list');
-  if (evitablesCont && evitablesList) {
-    if (evitables.length > 0) {
-      evitablesCont.style.display = '';
-      evitablesList.innerHTML = evitables.map(function(e) {
-        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.75rem;background:var(--surface-2);border-radius:var(--r-md);font-size:0.8rem">' +
-          '<span style="color:var(--text)">' + escapeHtml(e.label) + '</span>' +
-          '<span style="color:var(--accent-strong);font-size:0.72rem;font-weight:600">' + escapeHtml(e.action) + '</span>' +
-        '</div>';
-      }).join('');
-    } else {
-      evitablesCont.style.display = 'none';
-    }
-  }
+  return '<div class="livret-card" style="'+bg+opacity+'"><div style="display:flex;align-items:flex-start;gap:0.75rem"><div style="font-size:1.25rem;flex-shrink:0;margin-top:0.1rem">'+action.icon+'</div><div style="flex:1;min-width:0"><div style="font-size:0.875rem;font-weight:600;color:var(--text)">'+escapeHtml(action.title)+'</div><div style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-top:0.2rem">'+escapeHtml(action.desc)+'</div>'+buttons+'</div></div></div>';
+}
+function markS4Action(id, state) {
+  mData.s4_actions[id] = state;
+  buildScreen4();
 }
 
 
@@ -1522,116 +1297,44 @@ function updateAudit() {
    buildScreen5 — Automatisation
    ══════════════════════════════════════════════════════════════ */
 function buildScreen5() {
-  bindInput('input-vir-matelas', 'vir_matelas', 'number');
-  bindInput('input-vir-projet', 'vir_projet', 'number');
-  bindInput('input-vir-invest', 'vir_invest', 'number');
-  bindInput('input-marge-min', 'marge_min', 'number');
-  bindInput('input-jour-revenu', 'jour_revenu', 'number');
-
-  /* Pre-fill from previous data */
-  var capEpargne = mData.capacite_epargne || 0;
-  if (capEpargne > 0 && !mData.vir_matelas) {
-    mData.vir_matelas = Math.round(capEpargne * 0.6);
+  var revenus = mData.revenus||0;
+  var objectif = mData.objectif_matelas||0;
+  if (objectif<=0) { var ch = mData.charges_fixes_total||mData.total_besoins||0; objectif = ch>0?ch*3:3000; }
+  var sliderMax = Math.min(500,Math.round(revenus*0.3));
+  if (sliderMax<10) sliderMax = 500;
+  var defaultVal = 50;
+  if (mData.virement_auto_epargne==='oui'&&mData.vir_matelas>0) defaultVal = parseNum(mData.vir_matelas);
+  else if (mData.capacite_epargne>0) defaultVal = Math.min(sliderMax,Math.max(10,Math.round(mData.capacite_epargne*0.5)));
+  defaultVal = Math.max(10,Math.min(sliderMax,defaultVal));
+  var objEl = document.getElementById('s5-objectif-val');
+  if (objEl) objEl.textContent = formatEuro(objectif);
+  var slider = document.getElementById('s5-slider');
+  if (slider) {
+    slider.min=10; slider.max=sliderMax; slider.value=defaultVal;
+    var minL=document.getElementById('s5-slider-min'), maxL=document.getElementById('s5-slider-max');
+    if (minL) minL.textContent='10 \u20ac';
+    if (maxL) maxL.textContent=sliderMax+' \u20ac';
+    slider.oninput = function(){updateS5Recap(objectif);};
   }
-  var inp = document.getElementById('input-vir-matelas');
-  if (inp && !inp.value && mData.vir_matelas > 0) {
-    inp.value = mData.vir_matelas; inp.classList.add('prefilled'); showBadge('badge-vir-matelas');
-  }
-
-  /* Bind recalc */
-  ['input-vir-matelas','input-vir-projet','input-vir-invest','input-marge-min','input-jour-revenu'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.addEventListener('input', updateFlux);
-  });
-
-  applyPreset('equilibre');
-  updateFlux();
+  updateS5Recap(objectif);
 }
-
-function applyPreset(preset) {
-  document.querySelectorAll('.preset-chip').forEach(function(c) {
-    c.classList.toggle('active', c.getAttribute('data-preset') === preset);
-  });
-
-  if (preset === 'libre') return;
-
-  var capEpargne = mData.capacite_epargne || mData.reste_a_vivre || 0;
-  var matIncomplet = (mData.matelas_actuel || 0) < (mData.objectif_matelas || 1);
-  var decouvertFrequent = mData.utilisation_decouvert === 'souvent' || mData.utilisation_decouvert === 'plusieurs';
-
-  var matelas = 0, projet = 0, invest = 0;
-  if (preset === 'prudent') {
-    matelas = Math.round(capEpargne * 0.3);
-    projet = 0; invest = 0;
-  } else if (preset === 'equilibre') {
-    matelas = Math.round(capEpargne * 0.5);
-    projet = Math.round(capEpargne * 0.1);
-    invest = matIncomplet || decouvertFrequent ? 0 : Math.round(capEpargne * 0.1);
-  } else if (preset === 'ambitieux') {
-    matelas = Math.round(capEpargne * 0.6);
-    projet = Math.round(capEpargne * 0.1);
-    invest = matIncomplet || decouvertFrequent ? 0 : Math.round(capEpargne * 0.2);
+function updateS5Recap(objectif) {
+  var slider = document.getElementById('s5-slider');
+  if (!slider) return;
+  var amount = parseInt(slider.value,10);
+  mData.vir_matelas = amount;
+  var valEl = document.getElementById('s5-slider-val');
+  if (valEl) valEl.textContent = amount+' \u20ac';
+  var already = mData.matelas_actuel||0;
+  var remaining = Math.max(0,objectif-already);
+  var duree = amount>0?Math.ceil(remaining/amount):0;
+  var dureeEl = document.getElementById('s5-duree-val');
+  if (dureeEl) dureeEl.textContent = duree>0?duree+' mois':'\u2014';
+  var recapEl = document.getElementById('s5-recap-lines');
+  if (recapEl) {
+    var livret = mData.livret_prioritaire||'Livret A';
+    recapEl.innerHTML = '<div style="font-size:0.82rem;color:var(--text-muted)">\u2713 Virement vers '+escapeHtml(livret)+' : <strong style="color:var(--text)">'+formatEuro(amount)+'/mois</strong></div><div style="font-size:0.82rem;color:var(--text-muted)">\u2713 Objectif atteint en <strong style="color:var(--text)">'+duree+' mois</strong></div>';
   }
-
-  setInputVal('input-vir-matelas', matelas); mData.vir_matelas = matelas;
-  setInputVal('input-vir-projet', projet); mData.vir_projet = projet;
-  setInputVal('input-vir-invest', invest); mData.vir_invest = invest;
-  updateFlux();
-}
-
-function updateFlux() {
-  var revenus = mData.revenus || 0;
-  var charges = mData.charges_fixes_total || mData.total_besoins || 0;
-  var matelas = parseNum(mData.vir_matelas);
-  var projet = parseNum(mData.vir_projet);
-  var invest = parseNum(mData.vir_invest);
-  var margeMin = parseNum(mData.marge_min) || 200;
-  var totalVir = matelas + projet + invest;
-  var rav = revenus - charges - totalVir;
-
-  /* Flux visualisation */
-  var cont = document.getElementById('flux-container');
-  if (cont) {
-    cont.innerHTML = '';
-    var steps = [
-      {icon:'\uD83D\uDCB0',label:'Salaire',amount:revenus,dest:'Chaque mois',bg:'var(--green-soft)',color:'var(--green)'},
-      {icon:'\uD83C\uDFE0',label:'Charges fixes',amount:charges,dest:'Loyer, abos, assurances...',bg:'var(--orange-soft)',color:'var(--orange)'},
-      {icon:'\uD83D\uDEE1\uFE0F',label:'Matelas',amount:matelas,dest:'Livret A / LDDS / LEP',bg:'var(--accent-soft)',color:'var(--accent-strong)'}
-    ];
-    if (projet > 0) steps.push({icon:'\uD83C\uDFAF',label:'Projet',amount:projet,dest:'Livret dedie',bg:'var(--accent-soft)',color:'var(--accent-strong)'});
-    if (invest > 0) steps.push({icon:'\uD83C\uDF31',label:'Investissement',amount:invest,dest:'PEA / AV',bg:'var(--accent-soft)',color:'var(--accent-strong)'});
-    steps.push({icon:'\uD83D\uDCB3',label:'Reste a vivre',amount:Math.max(0,rav),dest:'Depenses libres',bg:rav < 0 ? 'var(--red-soft)' : 'var(--green-soft)',color:rav < 0 ? 'var(--red)' : 'var(--green)'});
-
-    steps.forEach(function(st) {
-      cont.innerHTML +=
-        '<div class="flux-step">' +
-          '<div class="flux-step-icon" style="background:' + st.bg + ';color:' + st.color + '">' + st.icon + '</div>' +
-          '<div class="flux-step-info">' +
-            '<div class="flux-step-label">' + escapeHtml(st.label) + '</div>' +
-            '<div class="flux-step-amount">' + formatEuro(st.amount) + '</div>' +
-          '</div>' +
-          '<div class="flux-step-dest">' + escapeHtml(st.dest) + '</div>' +
-        '</div>';
-    });
-  }
-
-  /* Output lines */
-  var outputEl = document.getElementById('s5-output-lines');
-  if (outputEl) {
-    var lines = [];
-    lines.push('<div style="font-size:0.82rem;color:var(--text-muted)">Laisse environ <strong style="color:var(--text)">' + formatEuro(charges + margeMin) + '</strong> sur ton compte courant</div>');
-    if (matelas > 0) lines.push('<div style="font-size:0.82rem;color:var(--text-muted)">Programme <strong style="color:var(--text)">' + formatEuro(matelas) + '</strong> vers ton matelas' + (mData.jour_revenu ? ' le ' + mData.jour_revenu + 'e du mois' : '') + '</div>');
-    lines.push('<div style="font-size:0.82rem;color:var(--text-muted)">Reste a vivre estime : <strong style="color:' + (rav < 0 ? 'var(--red)' : 'var(--text)') + '">' + formatEuro(Math.max(0,rav)) + '</strong></div>');
-    outputEl.innerHTML = lines.join('');
-  }
-
-  /* Warnings */
-  var matIncomplet = (mData.matelas_actuel || 0) < (mData.objectif_matelas || 1);
-  var decouvertFrequent = mData.utilisation_decouvert === 'souvent' || mData.utilisation_decouvert === 'plusieurs';
-  var warnRav = document.getElementById('s5-warning-rav');
-  var warnInvest = document.getElementById('s5-warning-invest');
-  if (warnRav) warnRav.classList.toggle('visible', rav < charges * 0.1 && charges > 0);
-  if (warnInvest) warnInvest.classList.toggle('visible', invest > 0 && (matIncomplet || decouvertFrequent));
 }
 
 
@@ -1639,65 +1342,49 @@ function updateFlux() {
    buildScreen6 — Checklist
    ══════════════════════════════════════════════════════════════ */
 function buildScreen6() {
-  var container = document.getElementById('checklist-container');
-  if (!container || container.dataset.built) { updateCheckProgress(); return; }
-
-  var totalItems = 0;
+  if (!mData.s6_setup) mData.s6_setup = {};
+  var container = document.getElementById('s6-setup-cards');
+  if (!container) return;
   container.innerHTML = '';
-  CHECKLIST_SECTIONS.forEach(function(sec) {
-    var html = '<div class="check-section"><div class="check-section-title">' + escapeHtml(sec.title) + '</div>';
-    sec.items.forEach(function(item) {
-      totalItems++;
-      var checked = mData.checklist_checked[item.id] ? ' checked' : '';
-      html += '<div class="check-item' + checked + '" data-check-id="' + item.id + '" onclick="toggleCheck(this)" role="checkbox" aria-checked="' + (checked ? 'true' : 'false') + '" aria-label="' + escapeHtml(item.label) + '">' +
-        '<div class="check-box"></div>' +
-        '<div class="check-label">' + escapeHtml(item.label) + '</div>' +
-      '</div>';
-    });
-    html += '</div>';
-    container.innerHTML += html;
-  });
-
-  document.getElementById('check-total').textContent = totalItems;
-  container.dataset.built = '1';
-  updateCheckProgress();
-}
-
-function toggleCheck(el) {
-  var id = el.getAttribute('data-check-id');
-  el.classList.toggle('checked');
-  var isChecked = el.classList.contains('checked');
-  el.setAttribute('aria-checked', isChecked ? 'true' : 'false');
-  mData.checklist_checked[id] = isChecked;
-  updateCheckProgress();
-}
-
-function updateCheckProgress() {
-  var checked = mData.checklist_checked || {};
-  var total = 0, done = 0;
-  CHECKLIST_SECTIONS.forEach(function(sec) {
-    sec.items.forEach(function(item) {
-      total++;
-      if (checked[item.id]) done++;
-    });
-  });
-
-  var progEl = document.getElementById('check-progress');
-  if (progEl) progEl.innerHTML = '<strong>' + done + '</strong> / ' + total + ' réglages cochés';
-
-  /* Security score */
-  var pct = total > 0 ? Math.round(done / total * 100) : 0;
-  var fillEl = document.getElementById('secu-fill');
-  var statusEl = document.getElementById('secu-status');
-  if (fillEl) {
-    fillEl.style.width = pct + '%';
-    fillEl.style.background = pct >= 70 ? 'var(--green)' : pct >= 40 ? 'var(--orange)' : 'var(--red)';
+  var alerteSeuil = parseNum(mData.sim_recommended_buffer)||200;
+  var cards = [
+    {id:'alerte_solde',icon:'\uD83D\uDD14',title:'Activer l\u2019alerte solde bas',desc:'Re\u00e7ois une notification quand ton solde passe sous '+alerteSeuil+'\u00a0\u20ac.'},
+    {id:'lep_eligible',icon:'\uD83C\uDFE6',title:'Ouvrir un LEP',desc:'Taux 3,5\u00a0% \u2014 le meilleur livret r\u00e9glement\u00e9. \u00c9ligible si revenus < 21\u00a0393\u00a0\u20ac/an.'},
+    {id:'beneficiaire',icon:'\uD83D\uDD17',title:'Ajouter ton livret comme b\u00e9n\u00e9ficiaire',desc:'Pour automatiser les virements depuis ton appli bancaire.'}
+  ];
+  if (typeof assistantState!=='undefined' && assistantState && assistantState.q2==='non') {
+    cards[1] = {id:'optimiser_livret',icon:'\uD83D\uDCCA',title:'Optimiser ton livret',desc:'V\u00e9rifie que ton livret est au bon taux et au bon plafond.'};
   }
-  if (statusEl) {
-    if (pct >= 70) { statusEl.textContent = 'Solide'; statusEl.style.background = 'var(--green-soft)'; statusEl.style.color = 'var(--green)'; }
-    else if (pct >= 40) { statusEl.textContent = 'Correct'; statusEl.style.background = 'var(--orange-soft)'; statusEl.style.color = 'var(--orange)'; }
-    else { statusEl.textContent = 'Faible'; statusEl.style.background = 'var(--red-soft)'; statusEl.style.color = 'var(--red)'; }
+  cards.forEach(function(c2){
+    var state = mData.s6_setup[c2.id]||'pending';
+    container.innerHTML += buildSetupCard(c2,state);
+  });
+  updateS6FinButton();
+}
+function buildSetupCard(card, state) {
+  var isDone = state==='done';
+  var isDismissed = state==='dismissed';
+  var bg = isDone?'background:var(--green-soft);border-color:var(--green-border);':'';
+  var opacity = isDismissed?'opacity:0.5;':'';
+  var buttons = '';
+  if (state==='pending') {
+    buttons = '<div style="display:flex;gap:0.5rem;margin-top:0.75rem"><button onclick="markS6Setup(\''+card.id+'\',\'done\')" class="btn-hero-primary" style="padding:0.5rem 1rem;font-size:0.78rem">Fait \u2713</button><button onclick="markS6Setup(\''+card.id+'\',\'dismissed\')" class="btn-hero-secondary" style="font-size:0.78rem">Plus tard \u2192</button></div>';
+  } else if (isDone) {
+    buttons = '<div style="margin-top:0.5rem;font-size:0.78rem;font-weight:600;color:var(--green)">\u2713 Fait</div>';
   }
+  return '<div class="livret-card" style="'+bg+opacity+'"><div style="display:flex;align-items:flex-start;gap:0.75rem"><div style="font-size:1.25rem;flex-shrink:0;margin-top:0.1rem">'+card.icon+'</div><div style="flex:1;min-width:0"><div style="font-size:0.875rem;font-weight:600;color:var(--text)">'+escapeHtml(card.title)+'</div><div style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-top:0.2rem">'+escapeHtml(card.desc)+'</div>'+buttons+'</div></div></div>';
+}
+function markS6Setup(id, state) {
+  mData.s6_setup[id] = state;
+  if (id==='alerte_solde'&&state==='done') mData.checklist_checked['alerte_solde_bas'] = true;
+  if (id==='beneficiaire'&&state==='done') mData.checklist_checked['beneficiaire_livret'] = true;
+  buildScreen6();
+}
+function updateS6FinButton() {
+  var setup = mData.s6_setup||{};
+  var interacted = Object.keys(setup).filter(function(k){return setup[k]==='done'||setup[k]==='dismissed';}).length;
+  var btn = document.getElementById('btn-finaliser');
+  if (btn) btn.disabled = interacted<3;
 }
 
 
@@ -1767,7 +1454,7 @@ function openModalFin() {
       buildModalRow('Livret prioritaire', mData.livret_prioritaire || 'Non defini') +
       buildModalRow('Frais estimes', mData.frais_annuels_estimes ? formatEuro(mData.frais_annuels_estimes) + '/an' : 'Non calcule') +
       buildModalRow('Virement automatique', mData.vir_matelas ? formatEuro(parseNum(mData.vir_matelas)) + '/mois' : 'À créer') +
-      buildModalRow('Score securite', getSecuStatusText());
+      buildModalRow('Setup final', getSecuStatusText());
   }
 
   /* Actions prioritaires */
@@ -1832,7 +1519,10 @@ function getActionsFromData() {
 }
 
 function getSecuStatusText() {
-  var checked = mData.checklist_checked || {};
+  var setup = mData.s6_setup||{};
+  var done = Object.keys(setup).filter(function(k){return setup[k]==='done';}).length;
+  return done+'/3 réglages';
+};
   var total = 0, done = 0;
   CHECKLIST_SECTIONS.forEach(function(s) { s.items.forEach(function(i) { total++; if (checked[i.id]) done++; }); });
   return done + '/' + total + ' réglages';
