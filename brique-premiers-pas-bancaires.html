@@ -231,15 +231,33 @@
   .lex-item-example{font-size:0.75rem;color:var(--text-faint);font-style:italic;padding-bottom:0.75rem}
   /* ── Placement cards (screen 2) ── */
   .placement-visual{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1.25rem 0}
-  .pv-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem;text-align:center;transition:border-color var(--t)}
-  .pv-card:hover{border-color:var(--border-hover)}
-  .pv-card-icon{font-size:1.25rem;margin-bottom:0.375rem}
-  .pv-card-title{font-size:0.78rem;font-weight:700;color:var(--text);margin-bottom:0.2rem}
-  .pv-card-support{font-size:0.72rem;color:var(--accent-strong);margin-bottom:0.2rem}
-  html.dark .pv-card-support{color:#A78BFA}
-  .pv-card-dispo{font-size:0.68rem;font-weight:600;margin-bottom:0.15rem}
-  .pv-card-note{font-size:0.68rem;color:var(--text-faint);line-height:1.35}
-  .pv-card.full-width{grid-column:1/-1}
+  /* pv-card legacy — kept for compat but replaced by chips */
+  .placement-visual{display:none}
+
+  /* Lexique pill button */
+  .lexique-pill{display:flex;align-items:center;gap:0.625rem;width:100%;padding:0.875rem 1.125rem;background:var(--accent-soft);border:1px solid rgba(196,181,253,0.35);border-radius:var(--r-lg);color:var(--accent-strong);font-size:0.875rem;font-weight:600;cursor:pointer;transition:background var(--t),border-color var(--t);margin-bottom:1.25rem;text-align:left}
+  .lexique-pill:hover{background:rgba(196,181,253,0.32);border-color:rgba(196,181,253,0.55)}
+  html.dark .lexique-pill{color:#C4B5FD;background:rgba(196,181,253,0.12);border-color:rgba(196,181,253,0.2)}
+  .lexique-pill-icon{font-size:1.125rem;flex-shrink:0}
+  .lexique-pill-arrow{margin-left:auto;opacity:0.6;font-size:0.8rem}
+
+  /* Chips placement argent */
+  .pv-chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.875rem}
+  .pv-chip{display:flex;align-items:center;gap:0.4rem;padding:0.425rem 0.875rem;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);font-size:0.78rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all var(--t);white-space:nowrap}
+  .pv-chip:hover{border-color:var(--accent);color:var(--text)}
+  .pv-chip.active{background:var(--accent-soft);border-color:rgba(196,181,253,0.5);color:var(--accent-strong);font-weight:600}
+  html.dark .pv-chip.active{color:#C4B5FD;background:rgba(196,181,253,0.14);border-color:rgba(196,181,253,0.3)}
+  .pv-chip-icon{font-size:0.9rem}
+  .pv-chip-label{font-size:0.75rem}
+
+  /* Détail chip */
+  .pv-detail{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:0.3rem}
+  .pv-detail-icon{font-size:1.75rem;margin-bottom:0.25rem}
+  .pv-detail-support{font-size:0.82rem}
+  .pv-detail-dispo{font-size:0.75rem;color:var(--text-muted)}
+  .pv-detail-note{font-size:0.78rem;color:var(--text-secondary);line-height:1.4}
+  .pv-detail-in{animation:fadeSlideIn 0.18s ease both}
+  @keyframes fadeSlideIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
   /* ── Simulateur ── */
   .sim-output{background:var(--cream-grad);border:1px solid var(--cream-border);border-radius:var(--r-lg);padding:1.25rem;text-align:center;margin:1rem 0}
   html.dark .sim-output{background:var(--surface-2);border-color:var(--border)}
@@ -351,34 +369,6 @@
           <div style="display:flex;flex-direction:column;gap:1.25rem;" id="fields-s1">
 
             <div class="field-group">
-              <label class="field-label" for="input-banque">Banque principale
-                <span class="badge-prefilled" id="badge-banque" style="display:none">&#10003; Pre-rempli</span>
-              </label>
-              <input type="text" id="input-banque" class="field-input" placeholder="ex : Boursorama, CIC, La Banque Postale" aria-label="Banque principale"/>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-type-carte">Type de carte</label>
-              <select id="input-type-carte" class="field-select" aria-label="Type de carte">
-                <option value="">Selectionner...</option>
-                <option value="classique">Classique</option>
-                <option value="premium">Premium (Gold, Visa Premier...)</option>
-                <option value="autorisation_systematique">A autorisation systematique</option>
-                <option value="nsp">Je ne sais pas</option>
-              </select>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-type-debit">Type de debit</label>
-              <select id="input-type-debit" class="field-select" aria-label="Type de debit">
-                <option value="">Selectionner...</option>
-                <option value="immediat">Immediat</option>
-                <option value="differe">Differe</option>
-                <option value="nsp">Je ne sais pas</option>
-              </select>
-            </div>
-
-            <div class="field-group">
               <label class="field-label" for="input-frais-mensuels">Frais bancaires mensuels (&#8364;)
                 <span class="badge-prefilled" id="badge-frais" style="display:none">&#10003; Pre-rempli</span>
               </label>
@@ -390,36 +380,7 @@
             </div>
 
             <div class="field-group">
-              <label class="field-label" for="input-decouvert">Découvert autorisé</label>
-              <select id="input-decouvert" class="field-select" aria-label="Découvert autorisé">
-                <option value="">Selectionner...</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-                <option value="nsp">Je ne sais pas</option>
-              </select>
-            </div>
-
-            <div class="field-group" id="group-montant-decouvert" style="display:none">
-              <label class="field-label" for="input-montant-decouvert">Montant découvert autorisé (&#8364;)</label>
-              <div class="euro-wrap">
-                <input type="number" id="input-montant-decouvert" class="field-input" placeholder="ex : 300" min="0" inputmode="numeric" aria-label="Montant découvert autorisé"/>
-                <span class="euro-suffix">&#8364;</span>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-utilisation-decouvert">Utilisation découvert (3 derniers mois)</label>
-              <select id="input-utilisation-decouvert" class="field-select" aria-label="Utilisation découvert">
-                <option value="">Selectionner...</option>
-                <option value="jamais">Jamais</option>
-                <option value="1_fois">1 fois</option>
-                <option value="plusieurs">Plusieurs fois</option>
-                <option value="souvent">Souvent</option>
-              </select>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-alerte-solde">Alerte solde bas activee</label>
+              <label class="field-label" for="input-alerte-solde">Alerte solde bas activée</label>
               <select id="input-alerte-solde" class="field-select" aria-label="Alerte solde bas">
                 <option value="">Selectionner...</option>
                 <option value="oui">Oui</option>
@@ -429,7 +390,7 @@
             </div>
 
             <div class="field-group">
-              <label class="field-label" for="input-virement-auto">Virement auto epargne</label>
+              <label class="field-label" for="input-virement-auto">Virement automatique épargne</label>
               <select id="input-virement-auto" class="field-select" aria-label="Virement automatique epargne">
                 <option value="">Selectionner...</option>
                 <option value="oui">Oui</option>
@@ -487,22 +448,26 @@
           <h2 class="brick-title">Ton compte courant n'est pas un coffre.</h2>
           <p class="brick-subtitle">Il sert a recevoir, payer et faire circuler. L'argent qui dort dessus doit avoir une raison.</p>
 
-          <!-- Lexique button -->
-          <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
-            <button class="btn-hero-secondary" onclick="openLexique()" style="font-size:0.8rem;color:var(--accent-strong)">
-              Lexique bancaire &rarr;
-            </button>
-          </div>
+          <!-- Lexique button — prominent -->
+          <button class="lexique-pill" onclick="openLexique()" aria-label="Ouvrir le lexique bancaire">
+            <span class="lexique-pill-icon">📖</span>
+            <span>Lexique bancaire</span>
+            <span class="lexique-pill-arrow">→</span>
+          </button>
 
           <!-- Pedagogique block -->
           <div class="callout-cite">
             Ton compte courant est fait pour les flux du mois : salaire, loyer, courses, abonnements. Ce qui depasse tes besoins courants devrait avoir une destination precise.
           </div>
 
-          <!-- Ou doit aller ton argent -->
-          <h3 style="font-size:0.875rem;font-weight:700;color:var(--text);margin:1.5rem 0 0.75rem">Ou doit aller ton argent ?</h3>
-          <div class="placement-visual" id="pv-grid">
-            <!-- Built by JS -->
+          <!-- Où doit aller ton argent — chips interactifs -->
+          <h3 style="font-size:0.875rem;font-weight:700;color:var(--text);margin:1.5rem 0 0.75rem">Où doit aller ton argent ?</h3>
+          <div class="pv-chips" id="pv-chips" role="tablist" aria-label="Catégories de placement"></div>
+          <div class="pv-detail" id="pv-detail" style="display:none">
+            <div class="pv-detail-icon" id="pv-detail-icon"></div>
+            <div class="pv-detail-support" id="pv-detail-support"></div>
+            <div class="pv-detail-dispo" id="pv-detail-dispo"></div>
+            <div class="pv-detail-note" id="pv-detail-note"></div>
           </div>
 
           <!-- Mini simulateur -->
@@ -534,8 +499,7 @@
             <div class="sim-output-label">a laisser sur ton compte courant</div>
           </div>
 
-          <div class="sim-warning orange" id="sim-warning-trop">&laquo; Trop d'argent dort sur ton compte. Place le surplus sur un livret. &raquo;</div>
-          <div class="sim-warning orange" id="sim-warning-bas">&laquo; Ton solde risque d'etre trop juste. Verifie tes dates de prelevements. &raquo;</div>
+          <!-- warnings supprimés — trop d'information à ce stade -->
 
           <div class="nav-btns">
             <button class="btn-back" onclick="goToScreen(1)" aria-label="Retour">&larr; Retour</button>
@@ -1309,6 +1273,46 @@ function buildScreen2() {
     inputSimMarge.value = marge;
     inputSimMarge.classList.add('prefilled');
     showBadge('badge-sim-marge');
+  }
+
+  /* Wire btn-s2-next */
+  var btnS2Next = document.getElementById('btn-s2-next');
+  if (btnS2Next && !btnS2Next._wired) {
+    btnS2Next.onclick = function() { goToScreen(3); };
+    btnS2Next._wired = true;
+  }
+
+  /* Build chips interactifs */
+  var chipsEl = document.getElementById('pv-chips');
+  if (chipsEl && !chipsEl.dataset.built) {
+    chipsEl.innerHTML = '';
+    PLACEMENT_VISUAL.forEach(function(p, i) {
+      var chip = document.createElement('button');
+      chip.className = 'pv-chip';
+      chip.setAttribute('role', 'tab');
+      chip.setAttribute('aria-selected', 'false');
+      chip.innerHTML = '<span class="pv-chip-icon">' + p.icon + '</span><span class="pv-chip-label">' + p.title + '</span>';
+      chip.addEventListener('click', function() {
+        document.querySelectorAll('.pv-chip').forEach(function(c) { c.classList.remove('active'); c.setAttribute('aria-selected','false'); });
+        chip.classList.add('active');
+        chip.setAttribute('aria-selected','true');
+        var det = document.getElementById('pv-detail');
+        if (det) {
+          det.style.display = '';
+          document.getElementById('pv-detail-icon').textContent = p.icon;
+          document.getElementById('pv-detail-support').innerHTML = '<span style="color:var(--accent-strong);font-weight:600;">' + p.support + '</span>';
+          document.getElementById('pv-detail-dispo').innerHTML = p.dispo;
+          document.getElementById('pv-detail-note').textContent = p.note;
+          det.classList.remove('pv-detail-in');
+          void det.offsetWidth;
+          det.classList.add('pv-detail-in');
+        }
+      });
+      chipsEl.appendChild(chip);
+    });
+    // Activer le premier par défaut
+    if (chipsEl.children[0]) chipsEl.children[0].click();
+    chipsEl.dataset.built = '1';
   }
 
   if (inputSimCharges) inputSimCharges.oninput = updateSimulateur;
