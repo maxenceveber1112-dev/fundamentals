@@ -692,6 +692,55 @@
     @media(max-width:480px) {
       .hero-actions { flex-direction:column; align-items:flex-start; gap:0.875rem; }
     }
+
+    /* ── Mes briques / Mes données ── */
+    .mes-briques-section { margin: 2rem 0; }
+    .mes-briques-header { margin-bottom: 1.25rem; }
+    .mes-briques-sub { font-size: 0.8125rem; color: var(--text-muted); margin: 0.25rem 0 0; }
+    .mes-briques-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; }
+
+    .mb-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle, rgba(28,25,23,0.07));
+      border-radius: 14px;
+      padding: 1rem 1.125rem;
+      box-shadow: var(--shadow-card);
+      display: flex; flex-direction: column; gap: 0.5rem;
+      transition: box-shadow 0.15s;
+    }
+    .mb-card:hover { box-shadow: 0 2px 8px rgba(20,20,30,0.08), 0 8px 24px rgba(20,20,30,0.06); }
+    .mb-card-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    .mb-card-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); }
+    .mb-card-status { font-size: 0.68rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 20px; }
+    .mb-card-status.atteint { background: var(--green-soft, rgba(34,197,94,0.12)); color: var(--green); }
+    .mb-card-status.en-cours { background: var(--accent-soft); color: var(--accent-strong); }
+    html.dark .mb-card-status.en-cours { color: #A78BFA; }
+    .mb-card-status.complet { background: var(--surface-2); color: var(--text-muted); }
+
+    .mb-card-value { font-family: 'Fraunces', serif; font-size: 1.375rem; font-weight: 400; color: var(--text); line-height: 1.1; }
+    .mb-card-value span { font-family: 'Inter', sans-serif; font-size: 0.8125rem; font-weight: 400; color: var(--text-muted); margin-left: 0.25rem; }
+
+    .mb-card-rows { display: flex; flex-direction: column; gap: 0.2rem; }
+    .mb-card-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; }
+    .mb-card-row-label { color: var(--text-muted); }
+    .mb-card-row-val { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+    .mb-card-row-val.green { color: var(--green); }
+    .mb-card-row-val.orange { color: #F97316; }
+    .mb-card-row-val.red { color: #EF4444; }
+
+    .mb-progress { margin-top: 0.25rem; }
+    .mb-progress-bar { height: 4px; background: var(--track, #E7E5E4); border-radius: 2px; overflow: hidden; }
+    .mb-progress-fill { height: 100%; border-radius: 2px; background: var(--accent-strong); transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
+    .mb-progress-fill.green { background: var(--green); }
+    .mb-progress-labels { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-faint); margin-top: 0.25rem; }
+
+    .mb-card-cta { margin-top: 0.25rem; font-size: 0.75rem; color: var(--accent-strong); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; }
+    html.dark .mb-card-cta { color: #A78BFA; }
+    .mb-card-cta:hover { opacity: 0.8; }
+
+    @media (max-width: 640px) {
+      .mes-briques-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -785,6 +834,15 @@
     <div class="section-divider"></div>
     <div class="explorer-cols" id="explorer-cols"></div>
   </div>
+
+  <!-- ── Mes briques ───────────────────────────────────── -->
+  <section class="mes-briques-section" id="mes-briques-section" style="display:none;">
+    <div class="mes-briques-header">
+      <h2 class="section-title">Mes données</h2>
+      <p class="mes-briques-sub">Ce que les briques ont révélé sur ta situation.</p>
+    </div>
+    <div class="mes-briques-grid" id="mes-briques-grid"></div>
+  </section>
 
 </main>
 
@@ -1359,12 +1417,195 @@
     save(); closeEngModal();
   }
 
+  // ── Mes briques / Mes données ─────────────────────────────
+  function renderMesBriques() {
+    const section = document.getElementById('mes-briques-section');
+    const grid    = document.getElementById('mes-briques-grid');
+    if (!section || !grid) return;
+
+    const cards = [];
+
+    // ── BRIQUE BUDGET BASE ──────────────────────────────────
+    const budgetRaw = loadFromStorage('fund_brick_budget_base');
+    const budgetData = budgetRaw?.data || budgetRaw || null;
+    if (budgetData && (budgetData.revenus > 0 || budgetData.total_besoins > 0)) {
+      const revenus      = (budgetData.revenus || 0) + (budgetData.aides || 0);
+      const reste        = budgetData.reste_a_vivre ?? (revenus - (budgetData.total_besoins || 0) - (budgetData.total_envies || 0));
+      const pctBesoins   = revenus > 0 ? Math.round((budgetData.total_besoins || 0) / revenus * 100) : 0;
+      const situation    = reste < 0 ? 'deficit'
+                         : reste < revenus * 0.10 ? 'tendu'
+                         : reste < revenus * 0.20 ? 'equilibre'
+                         : reste < revenus * 0.35 ? 'aise' : 'confortable';
+      const situationLabels = { deficit:'Déficit', tendu:'Budget serré', equilibre:'À l\'équilibre', aise:'À l\'aise', confortable:'Confortable' };
+      const resteColor   = reste < 0 ? 'red' : reste < revenus * 0.1 ? 'orange' : 'green';
+
+      cards.push({
+        title: 'Budget mensuel',
+        brique: 'budget_base',
+        status: 'complet',
+        statusLabel: situationLabels[situation],
+        value: formatEuro(revenus),
+        valueLabel: '/ mois',
+        rows: [
+          { label: 'Charges fixes',     val: formatEuro(budgetData.total_besoins || 0) + '/mois', color: '' },
+          { label: 'Dépenses var.',     val: formatEuro(budgetData.total_envies  || 0) + '/mois', color: '' },
+          { label: 'Reste à vivre',     val: formatEuro(reste) + '/mois',                          color: resteColor },
+          { label: 'Ratio 50/30/20',    val: pctBesoins + '% charges',                             color: pctBesoins > 60 ? 'orange' : '' },
+        ],
+        progress: null,
+        cta: { href: 'brique-budget-base.html', label: 'Voir le budget' }
+      });
+    }
+
+    // ── BRIQUE FONDS URGENCE / MATELAS ─────────────────────
+    const fondsRaw  = loadFromStorage('fund_brick_fonds_urgence');
+    const fondsData = fondsRaw?.data || fondsRaw || null;
+    if (fondsData && (fondsData.fonds_urgence_objectif > 0 || fondsData.fonds_urgence_actuel >= 0)) {
+      const objectif = fondsData.fonds_urgence_objectif || 0;
+      const actuel   = fondsData.fonds_urgence_actuel   || fondsData.epargne_liquide_total || 0;
+      const rythme   = fondsData.fonds_urgence_rythme_mensuel || 0;
+      const dateEst  = fondsData.fonds_urgence_date_estimee || '';
+      const atteint  = actuel >= objectif;
+      const pct      = objectif > 0 ? Math.min(100, Math.round(actuel / objectif * 100)) : 0;
+
+      cards.push({
+        title: 'Matelas de sécurité',
+        brique: 'fonds_urgence',
+        status: atteint ? 'atteint' : 'en-cours',
+        statusLabel: atteint ? 'Atteint' : 'En cours',
+        value: formatEuro(actuel),
+        valueLabel: '/ ' + formatEuro(objectif) + ' objectif',
+        rows: [
+          { label: 'Reste à construire', val: atteint ? '—' : formatEuro(Math.max(0, objectif - actuel)),  color: '' },
+          { label: 'Rythme',             val: rythme > 0 ? formatEuro(rythme) + '/mois' : '—',              color: '' },
+          ...(dateEst && !atteint ? [{ label: 'Date estimée',    val: dateEst,                              color: '' }] : []),
+        ],
+        progress: { pct, green: atteint },
+        progressLabels: { left: formatEuro(actuel), right: formatEuro(objectif) },
+        cta: { href: 'brique-fonds-urgence.html', label: atteint ? 'Voir le matelas' : 'Reprendre' }
+      });
+    }
+
+    // ── BRIQUE GESTION DECOUVERT ────────────────────────────
+    const decouvertRaw  = loadFromStorage('fund_brick_gestion_decouvert');
+    const decouvertData = decouvertRaw?.data || decouvertRaw || null;
+    if (decouvertData && decouvertData.decouvert_montant > 0) {
+      const montant  = decouvertData.decouvert_montant || 0;
+      const objectif = decouvertData.decouvert_objectif || 0;
+      const rythme   = decouvertData.decouvert_rythme   || 0;
+      const atteint  = decouvertData.decouvert_atteint  || false;
+      const pct      = montant > 0 && objectif > 0 ? Math.min(100, Math.round((montant - objectif) / montant * 100)) : 0;
+
+      cards.push({
+        title: 'Gestion du découvert',
+        brique: 'gestion_decouvert',
+        status: atteint ? 'atteint' : 'en-cours',
+        statusLabel: atteint ? 'Soldé' : 'En cours',
+        value: formatEuro(montant),
+        valueLabel: 'de découvert',
+        rows: [
+          { label: 'Effort mensuel', val: rythme > 0 ? formatEuro(rythme) + '/mois' : '—', color: '' },
+        ],
+        progress: null,
+        cta: { href: 'brique-gestion-decouvert.html', label: 'Reprendre' }
+      });
+    }
+
+    // ── BRIQUE PAIEMENTS FRACTIONNES ────────────────────────
+    const fractRaw  = loadFromStorage('fund_brick_paiements_fractionnes');
+    const fractData = fractRaw?.data || fractRaw || null;
+    if (fractData && fractData.total_fractionne > 0) {
+      cards.push({
+        title: 'Paiements fractionnés',
+        brique: 'paiements_fractionnes',
+        status: 'complet',
+        statusLabel: formatEuro(fractData.total_fractionne) + '/mois',
+        value: formatEuro(fractData.total_fractionne),
+        valueLabel: '/ mois',
+        rows: [
+          { label: 'Nb de paiements', val: (fractData.nb_fractionnes || '—') + '', color: '' },
+        ],
+        progress: null,
+        cta: { href: 'brique-paiements-fractionnes.html', label: 'Voir' }
+      });
+    }
+
+    // ── BRIQUE PREMIERS PAS BANCAIRES ───────────────────────
+    const bancRaw  = loadFromStorage('fund_brick_premiers_pas_bancaires');
+    const bancData = bancRaw?.data || bancRaw || null;
+    if (bancData && bancData.frais_bancaires_total > 0) {
+      const economie = bancData.frais_bancaires_economie || 0;
+      cards.push({
+        title: 'Frais bancaires',
+        brique: 'premiers_pas_bancaires',
+        status: economie > 0 ? 'atteint' : 'complet',
+        statusLabel: economie > 0 ? formatEuro(economie) + ' éco./mois' : 'Analysé',
+        value: formatEuro(bancData.frais_bancaires_total),
+        valueLabel: '/ mois de frais',
+        rows: [
+          ...(economie > 0 ? [{ label: 'Économie possible', val: formatEuro(economie) + '/mois', color: 'green' }] : []),
+        ],
+        progress: null,
+        cta: { href: 'brique-premiers-pas-bancaires.html', label: 'Voir' }
+      });
+    }
+
+    // ── Render ──────────────────────────────────────────────
+    if (cards.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+
+    grid.innerHTML = cards.map(card => `
+      <div class="mb-card">
+        <div class="mb-card-header">
+          <span class="mb-card-title">${card.title}</span>
+          <span class="mb-card-status ${card.status}">${card.statusLabel}</span>
+        </div>
+        <div class="mb-card-value">${card.value}<span>${card.valueLabel}</span></div>
+        ${card.rows.length > 0 ? `
+          <div class="mb-card-rows">
+            ${card.rows.map(r => `
+              <div class="mb-card-row">
+                <span class="mb-card-row-label">${r.label}</span>
+                <span class="mb-card-row-val ${r.color || ''}">${r.val}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
+        ${card.progress ? `
+          <div class="mb-progress">
+            <div class="mb-progress-bar">
+              <div class="mb-progress-fill ${card.progress.green ? 'green' : ''}" style="width:${card.progress.pct}%"></div>
+            </div>
+            ${card.progressLabels ? `
+              <div class="mb-progress-labels">
+                <span>${card.progressLabels.left}</span>
+                <span>${card.progressLabels.right}</span>
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+        ${card.cta ? `<a href="${card.cta.href}" class="mb-card-cta">${card.cta.label} →</a>` : ''}
+      </div>
+    `).join('');
+  }
+
+  window.addEventListener('storage', function(e) {
+    if (e.key && e.key.startsWith('fund_brick_')) {
+      renderMesBriques();
+    }
+  });
+
   /* ─── RENDER ALL ─────────────────────────────────────── */
   function renderAll() {
     renderHero();
     renderBriquesGrid();
     renderInsight();
     renderExplorer();
+    renderMesBriques();
     renderQuizLink();
   }
 
