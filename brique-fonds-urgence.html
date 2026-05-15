@@ -805,6 +805,20 @@
   }
   .modal-fin-secondary:hover { color:var(--text); }
 
+  /* ── Modal next-brick routing ── */
+  .modal-next-invest { margin:1rem 0 0.5rem; padding:1rem; background:var(--accent-soft); border-radius:12px; }
+  .modal-next-kicker { font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.375rem; }
+  html.dark .modal-next-kicker { color:#A78BFA; }
+  .modal-next-msg { font-size:0.8rem; color:var(--text-muted); line-height:1.55; margin:0 0 0.75rem; }
+  .modal-next-cta { display:flex; align-items:center; justify-content:center; }
+
+  /* ── Palier atteint card ── */
+  .pac-icon { font-size:1.5rem; margin-bottom:0.5rem; }
+  .pac-title { font-family:'Fraunces',serif; font-size:1.125rem; font-weight:400; font-style:italic; color:var(--text); margin:0 0 0.375rem; }
+  .pac-sub { font-size:0.8125rem; color:var(--text-muted); margin:0 0 0.25rem; line-height:1.5; }
+  .palier-atteint-card { text-align:center; padding:1.5rem; }
+  .palier-solide-atteint { background:var(--green-soft); border-color:var(--green-border); }
+
   /* ══════════════════════════════════════════════════════════════
      RESUME CARD
   ══════════════════════════════════════════════════════════════ */
@@ -1596,62 +1610,89 @@ function buildScreen2() {
   calcResult = calculateMatelasSecurity(mData);
 
   var epargne = calcResult.epargneDisponible;
-  var cible = calcResult.cibleRecommandee;
-  var reste = calcResult.resteAConstruire;
+  var atteintCoussin = epargne >= calcResult.palierPremierCoussin;
+  var atteintUtile   = epargne >= calcResult.palierSecuriteUtile;
+  var atteintSolide  = epargne >= calcResult.palierSecuriteSolide;
 
   // Atteint block
   var atteintBlock = document.getElementById('atteint-block');
   var resultCard = document.getElementById('palier-result-card');
   var jaugeWrap = document.getElementById('jauge-wrap');
 
-  if (epargne >= calcResult.palierSecuriteSolide) {
+  if (atteintSolide) {
     // All targets reached
+    var bigSurplus = epargne > calcResult.palierSecuriteSolide * 1.5;
+    var surplus = epargne - calcResult.palierSecuriteSolide;
     if (atteintBlock) {
       atteintBlock.style.display = 'block';
-      document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
-      document.getElementById('atteint-sub').textContent = 'Tu as ' + formatEuro(epargne) + ' — au-delà de ton palier solide (' + formatEuro(calcResult.palierSecuriteSolide) + ').';
-      document.getElementById('atteint-actions').innerHTML =
-        '<a href="dashboard.html" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Retour au tableau de bord →</a>';
+      if (bigSurplus) {
+        document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
+        document.getElementById('atteint-sub').innerHTML = 'Tu as ' + formatEuro(surplus) + ' au-delà de ton objectif.<br>C\'est le bon moment pour commencer à faire travailler cet argent.';
+        document.getElementById('atteint-actions').innerHTML =
+          '<a href="dashboard.html" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Voir les prochaines briques →</a>';
+      } else {
+        document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
+        document.getElementById('atteint-sub').innerHTML = 'Ton épargne de sécurité est en place.<br>La prochaine étape : faire travailler cet argent.';
+        document.getElementById('atteint-actions').innerHTML =
+          '<a href="dashboard.html" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Voir les prochaines briques →</a>';
+      }
     }
     if (resultCard) resultCard.style.display = 'none';
     if (jaugeWrap) jaugeWrap.style.display = 'none';
-  } else if (epargne >= calcResult.palierSecuriteUtile) {
+    selectedPalier = 'solide';
+  } else if (atteintUtile) {
     // Utile reached, show option for solide
+    selectedPalier = 'solide';
     if (atteintBlock) {
       atteintBlock.style.display = 'block';
       document.getElementById('atteint-title').textContent = 'Palier utile atteint.';
       document.getElementById('atteint-sub').textContent = 'Tu peux viser le palier solide (' + formatEuro(calcResult.palierSecuriteSolide) + ').';
       document.getElementById('atteint-actions').innerHTML =
         '<button class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;" ' +
-        'onclick="selectedPalier=\'solide\';calcResult.cibleRecommandee=calcResult.palierSecuriteSolide;calcResult.resteAConstruire=Math.max(0,calcResult.palierSecuriteSolide-calcResult.epargneDisponible);refreshScreen2();">' +
+        'onclick="selectPalier(\'solide\'); goToScreen(3);">' +
         'Viser le palier solide →</button>';
     }
+    var palierAmt = getSelectedPalierAmount();
+    var resteS = getSelectedPalierReste();
     if (resultCard) resultCard.style.display = 'block';
     if (jaugeWrap) jaugeWrap.style.display = 'block';
-    renderResultCard(reste, epargne, cible);
+    renderResultCard(resteS, epargne, palierAmt);
+  } else if (atteintCoussin) {
+    selectedPalier = 'utile';
+    if (atteintBlock) {
+      atteintBlock.style.display = 'block';
+      document.getElementById('atteint-title').textContent = 'Premier coussin atteint.';
+      document.getElementById('atteint-sub').textContent = 'Prochaine cible : sécurité utile (' + formatEuro(calcResult.palierSecuriteUtile) + ').';
+      document.getElementById('atteint-actions').innerHTML =
+        '<button class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;" ' +
+        'onclick="selectPalier(\'utile\'); goToScreen(3);">' +
+        'Viser la sécurité utile →</button>';
+    }
+    var palierAmtC = getSelectedPalierAmount();
+    var resteC = getSelectedPalierReste();
+    if (resultCard) resultCard.style.display = 'block';
+    if (jaugeWrap) jaugeWrap.style.display = 'block';
+    renderResultCard(resteC, epargne, palierAmtC);
   } else {
     if (atteintBlock) atteintBlock.style.display = 'none';
+    if (calcResult.hasDecouvert) selectedPalier = 'coussin';
+    else selectedPalier = 'utile';
     if (resultCard) resultCard.style.display = 'block';
     if (jaugeWrap) jaugeWrap.style.display = 'block';
 
+    var palierAmtD = getSelectedPalierAmount();
+    var resteD = getSelectedPalierReste();
     if (epargne === 0) {
-      // Zero start
-      renderResultCard(cible, 0, cible);
+      renderResultCard(palierAmtD, 0, palierAmtD);
       var subEl = document.getElementById('palier-result-sub');
       if (subEl) subEl.textContent = 'Tu pars de zéro. Aucun problème — on y va pas à pas.';
     } else {
-      renderResultCard(reste, epargne, cible);
+      renderResultCard(resteD, epargne, palierAmtD);
     }
   }
 
-  // Gauge
-  var pct = cible > 0 ? Math.min(100, Math.round(epargne / cible * 100)) : 0;
-  var fillEl = document.getElementById('jauge-fill');
-  if (fillEl) fillEl.style.width = pct + '%';
-  var actuelLabel = document.getElementById('jauge-actuel-label');
-  if (actuelLabel) actuelLabel.textContent = 'Actuel : ' + formatEuro(epargne);
-  var cibleLabel = document.getElementById('jauge-cible-label');
-  if (cibleLabel) cibleLabel.textContent = 'Cible : ' + formatEuro(cible);
+  // Gauge — use selected palier
+  updateGauge();
 
   // Palier cards
   renderPalierCards();
@@ -1659,12 +1700,24 @@ function buildScreen2() {
   // Raisons
   renderRaisons();
 
-  // CTA
+  // CTA — allow advancing unless all paliers reached
   var btnRythme = document.getElementById('btn-choisir-rythme');
   if (btnRythme) {
     btnRythme.onclick = function() { goToScreen(3); };
-    btnRythme.disabled = reste <= 0 && epargne < calcResult.palierSecuriteSolide;
+    btnRythme.disabled = atteintSolide;
   }
+}
+
+function updateGauge() {
+  if (!calcResult) return;
+  var palierAmt = getSelectedPalierAmount();
+  var fillPct = palierAmt > 0 ? Math.min(100, Math.round(calcResult.epargneDisponible / palierAmt * 100)) : 0;
+  var fillEl = document.getElementById('jauge-fill');
+  if (fillEl) fillEl.style.width = fillPct + '%';
+  var actuelLabel = document.getElementById('jauge-actuel-label');
+  if (actuelLabel) actuelLabel.textContent = 'Actuel : ' + formatEuro(calcResult.epargneDisponible);
+  var cibleLabel = document.getElementById('jauge-cible-label');
+  if (cibleLabel) cibleLabel.textContent = 'Cible : ' + formatEuro(palierAmt);
 }
 
 function refreshScreen2() {
@@ -1691,9 +1744,9 @@ function renderPalierCards() {
 
   var epargne = calcResult.epargneDisponible;
   var paliers = [
-    { key: 'coussin', title: 'Premier coussin', amount: calcResult.palierPremierCoussin, desc: 'Juste assez pour le prochain imprévu.' },
-    { key: 'utile', title: 'Sécurité utile', amount: calcResult.palierSecuriteUtile, desc: 'Environ 1 mois de charges vitales.' },
-    { key: 'solide', title: 'Sécurité solide', amount: calcResult.palierSecuriteSolide, desc: 'Sérénité : plusieurs mois de charges couvertes.' }
+    { key: 'coussin', title: 'Premier coussin', amount: calcResult.palierPremierCoussin, desc: getPalierDescription('coussin', calcResult) },
+    { key: 'utile', title: 'Sécurité utile', amount: calcResult.palierSecuriteUtile, desc: getPalierDescription('utile', calcResult) },
+    { key: 'solide', title: 'Sécurité solide', amount: calcResult.palierSecuriteSolide, desc: getPalierDescription('solide', calcResult) }
   ];
 
   // Determine default selection
@@ -1726,20 +1779,14 @@ function renderPalierCards() {
 
 function selectPalier(key) {
   selectedPalier = key;
-  var amts = { coussin: calcResult.palierPremierCoussin, utile: calcResult.palierSecuriteUtile, solide: calcResult.palierSecuriteSolide };
-  var newCible = amts[key] || calcResult.palierSecuriteUtile;
-  calcResult.cibleRecommandee = newCible;
-  calcResult.resteAConstruire = Math.max(0, newCible - calcResult.epargneDisponible);
 
-  // Re-render
-  renderResultCard(calcResult.resteAConstruire, calcResult.epargneDisponible, newCible);
+  // Re-render result card
+  var palierAmt = getSelectedPalierAmount();
+  var reste = getSelectedPalierReste();
+  renderResultCard(reste, calcResult.epargneDisponible, palierAmt);
 
   // Update gauge
-  var pct = newCible > 0 ? Math.min(100, Math.round(calcResult.epargneDisponible / newCible * 100)) : 0;
-  var fillEl = document.getElementById('jauge-fill');
-  if (fillEl) fillEl.style.width = pct + '%';
-  var cibleLabel = document.getElementById('jauge-cible-label');
-  if (cibleLabel) cibleLabel.textContent = 'Cible : ' + formatEuro(newCible);
+  updateGauge();
 
   // Update cards highlight
   document.querySelectorAll('.palier-card').forEach(function(c) {
@@ -1748,9 +1795,9 @@ function selectPalier(key) {
     if (k === key && !c.classList.contains('atteint')) c.classList.add('active');
   });
 
-  // Update CTA
+  // Update CTA — enable if there's something left to build
   var btn = document.getElementById('btn-choisir-rythme');
-  if (btn) btn.disabled = calcResult.resteAConstruire <= 0;
+  if (btn) btn.disabled = reste <= 0;
 }
 
 function renderRaisons() {
@@ -1770,12 +1817,38 @@ function renderRaisons() {
 function buildScreen3() {
   if (!calcResult) calcResult = calculateMatelasSecurity(mData);
 
-  var reste = calcResult.resteAConstruire;
+  var resteEffectif = getSelectedPalierReste();
+  var palierAmt = getSelectedPalierAmount();
+
+  // Update header summary
   var s3Reste = document.getElementById('s3-reste');
-  if (s3Reste) s3Reste.textContent = formatEuro(reste);
+  var headerSummary = document.getElementById('header-summary-s3');
+  if (s3Reste && headerSummary) {
+    if (resteEffectif <= 0) {
+      headerSummary.innerHTML = 'Objectif déjà atteint pour ce palier.';
+    } else {
+      headerSummary.innerHTML = 'Il reste <strong>' + formatEuro(resteEffectif) + '</strong> à construire.';
+    }
+  }
 
   // Reset selection
   selectedRythme = 'recommande';
+
+  // Compute dates from resteEffectif (not calcResult.resteAConstruire)
+  function moisEstimesLocal(rythme) {
+    if (rythme <= 0 || resteEffectif <= 0) return 0;
+    return Math.ceil(resteEffectif / rythme);
+  }
+  function dateLabelLocal(mois) {
+    if (mois <= 0) return 'Déjà atteint';
+    var d = new Date();
+    d.setMonth(d.getMonth() + mois);
+    return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  }
+
+  var moisP = moisEstimesLocal(calcResult.rythmePrudent);
+  var moisR = moisEstimesLocal(calcResult.rythmeRecommande);
+  var moisRapide = moisEstimesLocal(calcResult.rythmeRapide);
 
   var container = document.getElementById('rythme-cards');
   if (!container) return;
@@ -1785,16 +1858,16 @@ function buildScreen3() {
       key: 'prudent',
       label: 'Prudent',
       amount: calcResult.rythmePrudent,
-      mois: calcResult.moisPrudent,
-      date: calcResult.dateEstimeePrudent,
+      mois: moisP,
+      date: dateLabelLocal(moisP),
       desc: 'Rythme léger.'
     },
     {
       key: 'recommande',
       label: 'Recommandé',
       amount: calcResult.rythmeRecommande,
-      mois: calcResult.moisRecommande,
-      date: calcResult.dateEstimeeRecommande,
+      mois: moisR,
+      date: dateLabelLocal(moisR),
       desc: 'Bon équilibre.',
       badge: true
     },
@@ -1802,8 +1875,8 @@ function buildScreen3() {
       key: 'rapide',
       label: 'Rapide',
       amount: calcResult.rythmeRapide,
-      mois: calcResult.moisRapide,
-      date: calcResult.dateEstimeeRapide,
+      mois: moisRapide,
+      date: dateLabelLocal(moisRapide),
       desc: 'Si ton budget le permet.'
     }
   ];
@@ -1811,7 +1884,7 @@ function buildScreen3() {
   container.innerHTML = rythmes.map(function(r) {
     var isSelected = r.key === selectedRythme;
     var cls = 'rythme-card' + (isSelected ? ' selected' : '');
-    var dateText = r.mois > 0 ? 'Atteint dans ' + r.mois + ' mois' : 'Déjà atteint';
+    var dateText = r.mois > 0 ? 'Atteint ' + r.date : 'Déjà atteint';
     var badge = r.badge ? '<span class="rythme-card-badge">recommandé</span>' : '';
 
     return '<div class="' + cls + '" data-rythme="' + r.key + '" onclick="selectRythme(\'' + r.key + '\')" role="button" aria-label="Rythme ' + escapeHtml(r.label) + '">' +
@@ -1936,23 +2009,10 @@ function updatePlacementCards() {
 function lancerMatelas() {
   if (!calcResult) calcResult = calculateMatelasSecurity(mData);
 
-  var rythme = getRythmeValue();
-  var palierAmt = getPalierAmount();
-
-  var dateEstimee = selectedRythme === 'prudent' ? calcResult.dateEstimeePrudent
-                  : selectedRythme === 'rapide'  ? calcResult.dateEstimeeRapide
-                  : calcResult.dateEstimeeRecommande;
-
-  if (selectedRythme === 'custom' && customRythme > 0) {
-    var mois = calcResult.resteAConstruire > 0 ? Math.ceil(calcResult.resteAConstruire / customRythme) : 0;
-    if (mois > 0) {
-      var dt = new Date();
-      dt.setMonth(dt.getMonth() + mois);
-      dateEstimee = dt.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-    } else {
-      dateEstimee = 'Déjà atteint';
-    }
-  }
+  var rythme = getRythmeChoisi();
+  var palierAmt = getSelectedPalierAmount();
+  var resteModal = getSelectedPalierReste();
+  var dateEstimee = getDateEstimee();
 
   // Populate modal summary
   var summaryEl = document.getElementById('modal-fin-summary');
@@ -1960,14 +2020,45 @@ function lancerMatelas() {
     summaryEl.innerHTML =
       buildModalRow('Objectif', formatEuro(palierAmt)) +
       buildModalRow('Actuel', formatEuro(calcResult.epargneDisponible)) +
-      buildModalRow('Reste', formatEuro(calcResult.resteAConstruire)) +
+      buildModalRow('Reste', formatEuro(resteModal)) +
       buildModalRow('Rythme', formatEuro(rythme) + '/mois') +
       buildModalRow('Date estimée', dateEstimee);
+
+    // Post-matelas routing message
+    var epargne = calcResult.epargneDisponible;
+    var solideAmt = calcResult.palierSecuriteSolide;
+    var nextBriqueHtml = '';
+
+    if (resteModal <= 0 && epargne >= solideAmt) {
+      nextBriqueHtml =
+        '<div class="modal-next-invest">' +
+          '<div class="modal-next-kicker">Et maintenant ?</div>' +
+          '<p class="modal-next-msg">Ton matelas est en place. C\'est le bon moment pour commencer à faire travailler ton argent — investir pour ton avenir, pas seulement le sécuriser.</p>' +
+          '<a href="dashboard.html" class="btn-hero-primary modal-next-cta">Voir les briques investissement →</a>' +
+        '</div>';
+    } else if (calcResult.hasDecouvert) {
+      nextBriqueHtml =
+        '<div class="modal-next-invest">' +
+          '<div class="modal-next-kicker">Prochaine étape</div>' +
+          '<p class="modal-next-msg">Avec ton matelas en place, il est temps de sortir du découvert. C\'est ce qui coûte le plus cher chaque mois.</p>' +
+          '<a href="brique-gestion-decouvert.html" class="btn-hero-primary modal-next-cta">Gérer mon découvert →</a>' +
+        '</div>';
+    } else if (resteModal > 0) {
+      var palierLabel = selectedPalier === 'coussin' ? 'premier coussin'
+                      : selectedPalier === 'solide'  ? 'palier solide'
+                      : 'sécurité utile';
+      nextBriqueHtml =
+        '<div class="modal-next-invest">' +
+          '<div class="modal-next-kicker">En route</div>' +
+          '<p class="modal-next-msg">Ton engagement est actif. Une fois ton ' + escapeHtml(palierLabel) + ' atteint, tu pourras commencer à faire fructifier ton épargne.</p>' +
+        '</div>';
+    }
+    summaryEl.innerHTML += nextBriqueHtml;
   }
 
   var subEl = document.getElementById('modal-fin-sub');
   if (subEl) {
-    if (calcResult.resteAConstruire <= 0) {
+    if (resteModal <= 0) {
       subEl.textContent = 'Ton matelas est déjà en place.';
     } else {
       subEl.textContent = formatEuro(rythme) + '/mois vers ' + dateEstimee + '.';
@@ -2008,23 +2099,10 @@ function buildModalRow(label, val) {
 async function validerEngagement() {
   if (!calcResult) calcResult = calculateMatelasSecurity(mData);
 
-  var rythme = getRythmeValue();
-  var palierAmt = getPalierAmount();
-
-  var dateEstimee = selectedRythme === 'prudent' ? calcResult.dateEstimeePrudent
-                  : selectedRythme === 'rapide'  ? calcResult.dateEstimeeRapide
-                  : calcResult.dateEstimeeRecommande;
-
-  if (selectedRythme === 'custom' && customRythme > 0) {
-    var mois = calcResult.resteAConstruire > 0 ? Math.ceil(calcResult.resteAConstruire / customRythme) : 0;
-    if (mois > 0) {
-      var dt = new Date();
-      dt.setMonth(dt.getMonth() + mois);
-      dateEstimee = dt.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-    } else {
-      dateEstimee = 'Déjà atteint';
-    }
-  }
+  var palierAmt = getSelectedPalierAmount();
+  var resteVal  = getSelectedPalierReste();
+  var rythme    = getRythmeChoisi();
+  var dateEstimee = getDateEstimee();
 
   var profileFields = {
     fonds_urgence_objectif:       palierAmt,
@@ -2038,7 +2116,7 @@ async function validerEngagement() {
     matelas_palier_utile:         calcResult.palierSecuriteUtile,
     matelas_palier_solide:        calcResult.palierSecuriteSolide,
     matelas_stabilite_profil:     calcResult.stabiliteProfil,
-    matelas_reste_a_construire:   calcResult.resteAConstruire,
+    matelas_reste_a_construire:   resteVal,
     matelas_raisons_calcul:       calcResult.raisonsPersonnalisation
   };
 
@@ -2142,7 +2220,7 @@ function buildPrintBilan(palierAmt, rythme, dateEstimee) {
     '<div class="pb-section">' +
       '<div class="pb-section-title">Plan</div>' +
       '<div class="pb-row"><span class="pb-row-label">Objectif</span><span class="pb-row-val">' + formatEuro(palierAmt) + '</span></div>' +
-      '<div class="pb-row"><span class="pb-row-label">Reste à construire</span><span class="pb-row-val">' + formatEuro(calcResult.resteAConstruire) + '</span></div>' +
+      '<div class="pb-row"><span class="pb-row-label">Reste à construire</span><span class="pb-row-val">' + formatEuro(getSelectedPalierReste()) + '</span></div>' +
       '<div class="pb-row"><span class="pb-row-label">Rythme</span><span class="pb-row-val">' + formatEuro(rythme) + '/mois</span></div>' +
       '<div class="pb-row"><span class="pb-row-label">Date estimée</span><span class="pb-row-val">' + escapeHtml(dateEstimee) + '</span></div>' +
       '<div class="pb-row"><span class="pb-row-label">Placement</span><span class="pb-row-val">' + escapeHtml(placementLabels[selectedPlacement] || selectedPlacement) + '</span></div>' +
@@ -2173,6 +2251,60 @@ function getPalierAmount() {
   if (selectedPalier === 'coussin') return calcResult.palierPremierCoussin;
   if (selectedPalier === 'solide') return calcResult.palierSecuriteSolide;
   return calcResult.palierSecuriteUtile;
+}
+
+function getSelectedPalierAmount() {
+  if (!calcResult) return 0;
+  if (selectedPalier === 'coussin') return calcResult.palierPremierCoussin;
+  if (selectedPalier === 'solide')  return calcResult.palierSecuriteSolide;
+  return calcResult.palierSecuriteUtile;
+}
+
+function getSelectedPalierReste() {
+  if (!calcResult) return 0;
+  return Math.max(0, getSelectedPalierAmount() - calcResult.epargneDisponible);
+}
+
+function getPalierDescription(palierType, cr) {
+  var cv = cr.chargesVitalesMensuelles;
+  if (palierType === 'coussin') {
+    return 'Juste assez pour le prochain imprévu.';
+  }
+  if (palierType === 'utile') {
+    if (cv > 0) {
+      var mois = Math.round((cr.palierSecuriteUtile / cv) * 10) / 10;
+      var moisLabel = mois <= 1.2 ? '1 mois' : mois <= 1.7 ? '1,5 mois' : mois <= 2.2 ? '2 mois' : mois <= 2.7 ? '2,5 mois' : Math.round(mois) + ' mois';
+      return 'Environ ' + moisLabel + ' de charges vitales.';
+    }
+    return 'Un mois de charges couvertes.';
+  }
+  if (palierType === 'solide') {
+    if (cv > 0) {
+      var moisS = Math.round((cr.palierSecuriteSolide / cv) * 10) / 10;
+      var moisLabelS = moisS <= 2.2 ? '2 mois' : moisS <= 2.7 ? '2,5 mois' : moisS <= 3.2 ? '3 mois' : moisS <= 4 ? Math.round(moisS) + ' mois' : Math.round(moisS) + ' mois';
+      return 'Sérénité : environ ' + moisLabelS + ' de charges couvertes.';
+    }
+    return 'Sérénité : plusieurs mois de charges couvertes.';
+  }
+  return '';
+}
+
+function getRythmeChoisi() {
+  if (selectedRythme === 'custom')    return customRythme;
+  if (selectedRythme === 'prudent')   return calcResult.rythmePrudent;
+  if (selectedRythme === 'rapide')    return calcResult.rythmeRapide;
+  return calcResult.rythmeRecommande;
+}
+
+function getDateEstimee() {
+  var rythme = getRythmeChoisi();
+  var reste  = getSelectedPalierReste();
+  if (reste <= 0) return 'Déjà atteint';
+  if (rythme <= 0) return 'À définir';
+  var mois = Math.ceil(reste / rythme);
+  var d = new Date();
+  d.setMonth(d.getMonth() + mois);
+  return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 }
 
 function parseNum(v) {
