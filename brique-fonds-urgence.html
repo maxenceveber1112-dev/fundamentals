@@ -239,7 +239,7 @@
     display:flex; align-items:center; justify-content:center;
     margin-bottom:1.25rem;
   }
-  .bpc-ring { transform:rotate(-90deg); }
+  .bpc-ring { }
   .bpc-ring-bg { fill:none; stroke:var(--v3-track); stroke-width:6; }
   .bpc-ring-fill {
     fill:none; stroke:var(--v3-accent-strong); stroke-width:6;
@@ -1158,7 +1158,7 @@
           <svg class="bpc-ring" width="80" height="80" aria-hidden="true">
             <circle class="bpc-ring-bg" cx="40" cy="40" r="32"/>
             <circle class="bpc-ring-fill" id="bpc-ring-fill" cx="40" cy="40" r="32"
-              stroke-dasharray="201" stroke-dashoffset="201"/>
+              stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
             <text class="bpc-ring-pct" id="bpc-ring-pct" x="40" y="40"
               text-anchor="middle" dominant-baseline="central">0%</text>
           </svg>

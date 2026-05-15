@@ -78,7 +78,7 @@
   .bpc-kicker{font-size:0.6875rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--v3-accent-strong);margin-bottom:0.625rem}
   .bpc-title{font-family:'Fraunces',serif;font-size:0.9375rem;font-weight:400;font-style:italic;color:var(--v3-text);margin-bottom:1.25rem;line-height:1.35}
   .bpc-ring-wrap{display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem}
-  .bpc-ring{transform:rotate(-90deg)}
+  .bpc-ring{}
   .bpc-ring-bg{fill:none;stroke:var(--v3-track);stroke-width:6}
   .bpc-ring-fill{fill:none;stroke:var(--v3-accent-strong);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .8s var(--ease-out)}
   .bpc-ring-pct{font-family:'Fraunces',serif;font-size:1.125rem;font-weight:400;fill:var(--v3-text)}
@@ -278,7 +278,7 @@
   html.dark .callout-cite{border-left-color:#A78BFA}
   /* ── Score card (modal) ── */
   .score-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:0.5rem;margin:1rem 0}
-  .score-ring{transform:rotate(-90deg)}
+  .score-ring{}
   .score-ring-bg{fill:none;stroke:var(--track);stroke-width:8}
   .score-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s var(--ease-out)}
   .score-ring-text{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;fill:var(--text)}
@@ -814,7 +814,7 @@
         <div class="bpc-ring-wrap">
           <svg class="bpc-ring" width="80" height="80" aria-hidden="true">
             <circle class="bpc-ring-bg" cx="40" cy="40" r="32"/>
-            <circle class="bpc-ring-fill" id="bpc-ring-fill" cx="40" cy="40" r="32" stroke-dasharray="201" stroke-dashoffset="201"/>
+            <circle class="bpc-ring-fill" id="bpc-ring-fill" cx="40" cy="40" r="32" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
             <text class="bpc-ring-pct" id="bpc-ring-pct" x="40" y="40" text-anchor="middle" dominant-baseline="central">0%</text>
           </svg>
         </div>
@@ -871,7 +871,7 @@
     <div class="score-ring-wrap">
       <svg class="score-ring" width="100" height="100" aria-label="Score bancaire">
         <circle class="score-ring-bg" cx="50" cy="50" r="40"/>
-        <circle class="score-ring-fill" id="modal-score-fill" cx="50" cy="50" r="40" stroke-dasharray="251" stroke-dashoffset="251"/>
+        <circle class="score-ring-fill" id="modal-score-fill" cx="50" cy="50" r="40" stroke-dasharray="251" stroke-dashoffset="251" transform="rotate(-90 50 50)"/>
         <text class="score-ring-text" id="modal-score-text" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text>
       </svg>
       <div class="score-status" id="modal-score-status"></div>
