@@ -617,6 +617,10 @@
   .levier-body { flex:1; min-width:0; }
   .levier-title { font-size:0.875rem; font-weight:600; color:var(--text); }
   .levier-sub { font-size:0.78rem; color:var(--text-faint); margin-top:0.15rem; }
+  .levier-icon { font-size:1.375rem; flex-shrink:0; margin-top:2px; }
+  .levier-cta { display:inline-block; margin-top:0.4rem; font-size:0.78rem; font-weight:600; color:var(--accent-strong); text-decoration:none; }
+  html.dark .levier-cta { color:#A78BFA; }
+  #leviers-kicker { font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:0.75rem; display:none; }
 
   /* ── Screen 3 — Dettes ── */
   .dette-row {
@@ -805,6 +809,21 @@
   .exit-line { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0; border-bottom:1px solid var(--border-subtle); font-size:0.875rem; }
   .exit-line-label { color:var(--text-muted); }
   .exit-line-val { font-weight:600; color:var(--text); }
+
+  .exit-impact-title { font-family:'Fraunces',serif; font-size:1.75rem; font-weight:400; color:var(--text); margin-bottom:0.25rem; line-height:1.2; }
+  .exit-impact-sub { font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem; }
+  .exit-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.625rem; margin-bottom:1.5rem; }
+  .exit-stat-card { background:var(--surface-2); border-radius:12px; padding:0.875rem 1rem; }
+  .exit-stat-val { font-size:1.375rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; }
+  .exit-stat-label { font-size:0.75rem; color:var(--text-muted); margin-top:0.2rem; }
+  .exit-stat-card.highlight { background:var(--accent-soft); border:1px solid var(--accent-fill); }
+  .exit-stat-card.highlight .exit-stat-val { color:var(--accent-strong); }
+  html.dark .exit-stat-card.highlight .exit-stat-val { color:#A78BFA; }
+  .exit-next-card { background:var(--cream-grad); border:1px solid var(--cream-border); border-radius:16px; padding:1.25rem 1.5rem; margin-bottom:0.75rem; }
+  .exit-next-kicker { font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.5rem; }
+  html.dark .exit-next-kicker { color:#A78BFA; }
+  .exit-next-name { font-family:'Fraunces',serif; font-size:1.25rem; font-weight:400; color:var(--text); margin-bottom:0.25rem; }
+  .exit-next-why { font-size:0.85rem; color:var(--text-muted); line-height:1.5; margin-bottom:1rem; }
 
   /* ══════════════════════════════════════════════════════════════
      POPUP ABONNEMENTS (bottom sheet overlay)
@@ -1150,7 +1169,7 @@
                 </div>
               </div>
               <button class="btn-hero-primary" id="btn-suivant-1" onclick="goToScreen(2)" style="flex-shrink:0;">
-                Voir l'analyse →
+                Continuer →
               </button>
             </div>
 
@@ -1166,48 +1185,10 @@
 
         </div><!-- /screen-1 -->
 
-        <!-- ═══ SCREEN 2 — Analyse ═══ -->
+        <!-- ═══ SCREEN 2 — Dettes ═══ -->
         <div class="screen" id="screen-2">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 2 / 4 · TON ARGENT EN CLAIR</div>
-            <h2 class="brick-title">Voilà où part ton argent.</h2>
-
-            <!-- Double donut SVG -->
-            <div class="donuts-wrap" id="donuts-wrap">
-              <!-- Généré par JS -->
-            </div>
-
-            <!-- Barres proportionnelles (remplace Sankey D3) -->
-            <div class="sankey-block" id="sankey-block" style="margin-top:1rem;">
-              <!-- Généré par JS -->
-            </div>
-
-            <!-- Messages contextuels -->
-            <div id="msg-cards" style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1.5rem;"></div>
-
-            <!-- Leviers rapides -->
-            <div style="margin-top:1.5rem;">
-              <div class="brick-kicker" style="margin-bottom:0.75rem;">3 LEVIERS RAPIDES</div>
-              <div class="leviers-grid" id="leviers-grid"></div>
-            </div>
-
-          </div>
-
-          <div class="nav-btns">
-            <button class="btn-back" onclick="goToScreen(1)">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-              Modifier
-            </button>
-            <button class="btn-hero-primary" onclick="goToScreen(3)">
-              Tes dettes →
-            </button>
-          </div>
-        </div><!-- /screen-2 -->
-
-        <!-- ═══ SCREEN 3 — Dettes ═══ -->
-        <div class="screen" id="screen-3">
-          <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 3 / 4 · TES ENGAGEMENTS FINANCIERS</div>
+            <div class="brick-kicker">ÉTAPE 2 / 4 · TES ENGAGEMENTS FINANCIERS</div>
             <h2 class="brick-title">Parlons de ce que tu dois.</h2>
 
             <!-- Confirmation si pré-rempli -->
@@ -1246,6 +1227,45 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Ajouter une dette / crédit
             </button>
+
+          </div>
+
+          <div class="nav-btns">
+            <button class="btn-back" onclick="goToScreen(1)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              Modifier
+            </button>
+            <button class="btn-hero-primary" onclick="goToScreen(3)">
+              Voir l'analyse →
+            </button>
+          </div>
+        </div><!-- /screen-2 -->
+
+        <!-- ═══ SCREEN 3 — Analyse ═══ -->
+        <div class="screen" id="screen-3">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 3 / 4 · TON ARGENT EN CLAIR</div>
+            <h2 class="brick-title">Voilà où part ton argent.</h2>
+
+            <!-- Double donut SVG -->
+            <div class="donuts-wrap" id="donuts-wrap">
+              <!-- Généré par JS -->
+            </div>
+
+            <!-- Barres proportionnelles (remplace Sankey D3) -->
+            <div class="sankey-block" id="sankey-block" style="margin-top:1rem;">
+              <!-- Généré par JS -->
+            </div>
+
+            <!-- Messages contextuels -->
+            <div id="msg-cards" style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1.5rem;"></div>
+
+            <!-- Leviers rapides -->
+            <div style="margin-top:1.5rem;">
+              <div class="brick-kicker" style="margin-bottom:0.75rem;">3 LEVIERS RAPIDES</div>
+              <div id="leviers-kicker"></div>
+              <div class="leviers-grid" id="leviers-grid"></div>
+            </div>
 
           </div>
 
@@ -1295,11 +1315,9 @@
         <!-- ═══ SCREEN EXIT ═══ -->
         <div class="screen" id="screen-exit">
           <div class="exit-card">
-            <div style="font-size:2rem;margin-bottom:0.75rem;">✅</div>
-            <h2 class="exit-title">C'est noté.</h2>
-            <p class="exit-subtitle">Ton budget est posé. La prochaine étape t'attend.</p>
-            <div class="exit-recap" id="exit-recap"></div>
-            <div style="display:flex;flex-direction:column;gap:0.75rem;" id="exit-actions"></div>
+            <div class="exit-impact" id="exit-impact"></div>
+            <div class="exit-next" id="exit-next"></div>
+            <a href="dashboard.html" class="btn-hero-secondary" style="text-align:center;margin-top:0.75rem;">Retour au tableau de bord</a>
           </div>
         </div>
 
@@ -1333,11 +1351,11 @@
             </div>
             <div class="bpc-step" id="bpc-step-2">
               <div class="bpc-step-num">2</div>
-              <div class="bpc-step-label">Ton argent en clair</div>
+              <div class="bpc-step-label">Tes engagements financiers</div>
             </div>
             <div class="bpc-step" id="bpc-step-3">
               <div class="bpc-step-num">3</div>
-              <div class="bpc-step-label">Tes engagements financiers</div>
+              <div class="bpc-step-label">Ton argent en clair</div>
             </div>
             <div class="bpc-step" id="bpc-step-4">
               <div class="bpc-step-num">4</div>
@@ -1658,7 +1676,7 @@ function checkBloc2Reveal() {
   const ids = ['f-revenus','f-aides','f-loyer','f-courses','f-transport'];
   const filled = ids.filter(id => {
     const el = document.getElementById(id);
-    return el && el.style.display !== 'none' && parseFloat(el.value) > 0;
+    return el && parseFloat(el.value) > 0;
   });
   if (filled.length >= 3) {
     bloc2Shown = true;
@@ -1763,18 +1781,22 @@ function collectBudgetData() {
   budgetData.total_envies    = budgetData.abonnements_total + budgetData.sorties + budgetData.repas + budgetData.shopping + budgetData.transport_variable + budgetData.autres;
   budgetData.total_depenses  = budgetData.total_besoins + budgetData.total_envies + budgetData.epargne;
   budgetData.reste_a_vivre   = totalRev - budgetData.total_depenses;
+  // Integrate debt monthly payments into total_besoins
+  const totalMensualitesDettes = budgetData.dettes.reduce((s, d) => s + (d.montant_mensuel || 0), 0);
+  budgetData.total_besoins_sans_dettes = budgetData.total_besoins;
+  budgetData.total_besoins += totalMensualitesDettes;
+  budgetData.total_dettes_mensuel = totalMensualitesDettes;
+  budgetData.total_depenses  = budgetData.total_besoins + budgetData.total_envies + budgetData.epargne;
+  budgetData.reste_a_vivre   = totalRev - budgetData.total_depenses;
+
   budgetData.pct_besoins     = totalRev > 0 ? Math.round(budgetData.total_besoins / totalRev * 100) : 0;
   budgetData.pct_envies      = totalRev > 0 ? Math.round(budgetData.total_envies  / totalRev * 100) : 0;
   budgetData.pct_investissement = totalRev > 0 ? Math.round(budgetData.epargne    / totalRev * 100) : 0;
-
-  // Dettes : montants mensuels depuis screen 3
-  const detteTotal = budgetData.dettes.reduce((s, d) => s + (d.montant_mensuel || 0), 0);
-  budgetData.total_besoins += detteTotal;
 }
 
 // ── Navigation écrans ─────────────────────────────────────────
 function goToScreen(n) {
-  if (n === 2) collectBudgetData();
+  if (n === 3) collectBudgetData();
   if (n === 4) { collectBudgetData(); buildScreen4(); }
 
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1826,8 +1848,8 @@ function updateProgBar(screenIdx) {
 const STEP_TITLES = [
   'On va poser ton mois, sans jugement.',
   'Ce qui rentre et ce qui part.',
-  'Ton argent en clair.',
   'Tes engagements financiers.',
+  'Ton argent en clair.',
   'Ta prochaine action.',
   'C\'est noté. 🎉'
 ];
@@ -1991,10 +2013,14 @@ function validerPopupAbo() {
   budgetData.abonnements_detail = detail;
 
   const aboInput = document.getElementById('f-abonnements');
-  if (aboInput) aboInput.value = total;
+  if (aboInput) {
+    aboInput.value = total;
+    aboInput.dispatchEvent(new Event('input', {bubbles:true}));
+  }
 
   closePopupAbo();
   updateStickyBar();
+  checkBloc2Reveal();
 }
 
 // Fermer overlay au clic extérieur
@@ -2003,9 +2029,30 @@ document.getElementById('popup-abo')?.addEventListener('click', function(e) {
 });
 
 // ══════════════════════════════════════════════════════════════
-// SCREEN 2 — Analyse + visualisations
+// SCREEN 2 — Dettes
 // ══════════════════════════════════════════════════════════════
 function buildScreen2() {
+  const list = document.getElementById('dettes-list');
+  if (!list) return;
+
+  // Pré-remplissage depuis profil (types seulement)
+  const profilDettes = (profil.dettes_types || []).filter(d => d !== 'aucun');
+  if (profilDettes.length > 0 && budgetData.dettes.length === 0) {
+    document.getElementById('dettes-confirm-bar').style.display = 'block';
+    profilDettes.forEach(type => {
+      if (!budgetData.dettes.find(d => d.type === type)) {
+        budgetData.dettes.push({ type, montant_mensuel: 0, taeg: null, classification: type, routing_cible: DETTE_CLASSIFICATION[type]?.cta || null });
+      }
+    });
+  }
+
+  renderDettes();
+}
+
+// ══════════════════════════════════════════════════════════════
+// SCREEN 3 — Analyse + visualisations
+// ══════════════════════════════════════════════════════════════
+function buildScreen3() {
   if (typeof resultViewed === 'function') resultViewed(BRICK_ID);
   buildDonuts();
   buildSankeyBars();
@@ -2167,31 +2214,75 @@ function buildMsgCards() {
   });
 }
 
-// ── Leviers rapides ───────────────────────────────────────────
+// ── Leviers adaptatifs ────────────────────────────────────────
 function buildLeviers() {
   const container = document.getElementById('leviers-grid');
   if (!container) return;
   container.innerHTML = '';
 
-  const postes = [
-    { name:'Loyer / logement', val:budgetData.loyer,              color:'var(--accent-strong)' },
-    { name:'Abonnements',       val:budgetData.abonnements_total, color:'var(--purple)' },
-    { name:'Sorties / loisirs', val:budgetData.sorties,           color:'var(--purple)' },
-    { name:'Shopping',          val:budgetData.shopping,          color:'var(--purple)' },
-    { name:'Courses',           val:budgetData.courses,           color:'var(--accent-strong)' },
-    { name:'Transport',         val:budgetData.transport,         color:'var(--accent-strong)' },
-  ].filter(p => p.val > 20).sort((a,b) => b.val - a.val).slice(0,3);
+  const totalRev = budgetData.revenus + budgetData.aides;
+  const reste = budgetData.reste_a_vivre;
+  const ratio = totalRev > 0 ? reste / totalRev : 0;
 
-  postes.forEach(p => {
-    const economie     = Math.round(p.val * 0.15);
-    const annuel       = economie * 12;
+  // Déterminer la situation
+  let situation;
+  if (reste < 0)        situation = 'deficit';
+  else if (ratio < 0.1) situation = 'tendu';
+  else if (ratio < 0.2) situation = 'equilibre';
+  else if (ratio < 0.35) situation = 'aise';
+  else                  situation = 'confortable';
+
+  // Leviers selon situation
+  const leviersConfig = {
+    deficit: [
+      { icon:'\u{1F6A8}', title:'Identifier les charges coupables', sub:`Ton budget est en déficit de ${formatEuro(Math.abs(reste))}/mois. Commence par lister les charges réductibles.`, color:'#EF4444', cta:'brique-gestion-decouvert.html', ctaLabel:'Gérer mon découvert' },
+      { icon:'\u{1F4F5}', title:'Suspendre les abonnements non essentiels', sub: budgetData.abonnements_total > 0 ? `Tes abonnements (${formatEuro(budgetData.abonnements_total)}/mois) sont le levier le plus rapide.` : 'Les abonnements sont souvent le levier le plus rapide à activer.', color:'#F97316' },
+      { icon:'\u{1F4B3}', title:'Prioriser le remboursement des dettes coûteuses', sub:'Découvert, crédit renouvelable — ce sont eux qui creusent le trou. Voir la brique dédiée.', color:'#EF4444', cta:'brique-gestion-decouvert.html', ctaLabel:'Voir la brique dettes' },
+    ],
+    tendu: [
+      { icon:'\u{1F50D}', title:'Optimiser les abonnements', sub: budgetData.abonnements_total > 0 ? `${formatEuro(budgetData.abonnements_total)}/mois d'abonnements — y a-t-il des doublons ou inutilisés ?` : 'Passe en revue tes abonnements récurrents.', color:'#F97316' },
+      { icon:'\u{1F3AF}', title:'Viser un fonds de sécurité de 1 mois', sub:`Avec ${formatEuro(reste)}/mois de marge, commence par mettre de côté l'équivalent d'un mois de charges.`, color:'#EAB308', cta:'brique-fonds-urgence.html', ctaLabel:'Commencer le fonds' },
+      { icon:'\u{1F4CA}', title:'Réduire les dépenses variables de 10%', sub:`Un gain de ${formatEuro(Math.round(budgetData.total_envies * 0.1))}/mois est réaliste sans impacter ton confort.`, color:'#8B5CF6' },
+    ],
+    equilibre: [
+      { icon:'\u{1F3E6}', title:'Automatiser une épargne de précaution', sub: budgetData.epargne === 0 ? `Tu as ${formatEuro(reste)}/mois de marge — mets-en au moins la moitié en épargne automatique dès le 1er.` : `Tu éparges déjà ${formatEuro(budgetData.epargne)}/mois. Peux-tu augmenter ?`, color:'#22C55E', cta:'brique-fonds-urgence.html', ctaLabel:'Brique fonds d\'urgence' },
+      { icon:'\u{1F4C9}', title:'Réduire 1 poste de dépenses variables', sub:`Choisir un seul poste à réduire de 15% libère ${formatEuro(Math.round(budgetData.total_envies * 0.15))}/mois.`, color:'#8B5CF6' },
+      { icon:'\u{1F4A1}', title:'Vérifier tes frais bancaires', sub:'Carte, découvert autorisé, assurances redondantes — souvent 15 à 30€/mois invisibles.', color:'#6366F1', cta:'brique-premiers-pas-bancaires.html', ctaLabel:'Optimiser mes frais' },
+    ],
+    aise: [
+      { icon:'\u{1F4B0}', title:'Automatiser l\'épargne dès le 1er du mois', sub: budgetData.epargne === 0 ? `Tu as ${formatEuro(reste)}/mois disponibles — l'épargne automatique est la meilleure décision que tu puisses prendre.` : `Tu éparges ${formatEuro(budgetData.epargne)}/mois. Peux-tu viser ${formatEuro(Math.round(reste * 0.5))}/mois ?`, color:'#22C55E', cta:'brique-fonds-urgence.html', ctaLabel:'Brique épargne' },
+      { icon:'\u{1F4C8}', title:'Commencer à investir', sub:`Avec ${formatEuro(reste)}/mois de marge, même 50€/mois investi régulièrement crée un effet boule de neige.`, color:'#6366F1' },
+      { icon:'\u{1F3E0}', title:'Anticiper un projet moyen terme', sub:'Immobilier, véhicule, voyage — planifier maintenant optimise le financement.', color:'#8B5CF6' },
+    ],
+    confortable: [
+      { icon:'\u{1F4C8}', title:'Investir une part fixe chaque mois', sub:`${formatEuro(Math.round(reste * 0.4))}/mois investis régulièrement = un capital solide à 10 ans.`, color:'#22C55E' },
+      { icon:'\u{1F3E0}', title:'Réfléchir à un projet immobilier', sub:`Avec ${formatEuro(reste)}/mois de capacité d'épargne, l'accès au crédit immobilier est réaliste.`, color:'#6366F1' },
+      { icon:'\u{1F6E1}\uFE0F', title:'Optimiser ta fiscalité', sub:'PEA, assurance-vie, PER — les enveloppes fiscales font une vraie différence à ce niveau de revenus.', color:'#8B5CF6' },
+    ],
+  };
+
+  const leviers = leviersConfig[situation] || leviersConfig.equilibre;
+  const situationLabels = { deficit:'Budget en déficit', tendu:'Budget tendu', equilibre:'Budget à l\'équilibre', aise:'Budget à l\'aise', confortable:'Budget confortable' };
+
+  // Ajouter un kicker situationnel
+  const kicker = document.getElementById('leviers-kicker');
+  if (kicker) {
+    const colors = { deficit:'#EF4444', tendu:'#F97316', equilibre:'#EAB308', aise:'#22C55E', confortable:'#6366F1' };
+    kicker.textContent = situationLabels[situation];
+    kicker.style.color = colors[situation];
+    kicker.style.display = 'block';
+  }
+
+  leviers.forEach(l => {
     const card = document.createElement('div');
     card.className = 'levier-card';
+    const ctaHtml = l.cta ? `<a href="${l.cta}" class="levier-cta">${l.ctaLabel} \u2192</a>` : '';
     card.innerHTML = `
-      <div class="levier-dot" style="background:${p.color};"></div>
+      <div class="levier-icon" style="color:${l.color};">${l.icon}</div>
       <div class="levier-body">
-        <div class="levier-title">Réduire ${p.name} de ${formatEuro(economie)}/mois</div>
-        <div class="levier-sub">= <strong>${formatEuro(annuel)}</strong> récupérés sur l'année</div>
+        <div class="levier-title">${l.title}</div>
+        <div class="levier-sub">${l.sub}</div>
+        ${ctaHtml}
       </div>
     `;
     container.appendChild(card);
@@ -2199,7 +2290,7 @@ function buildLeviers() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// SCREEN 3 — Dettes
+// DETTES — Types & Classification
 // ══════════════════════════════════════════════════════════════
 const DETTE_TYPES = [
   { val:'credit_immo',           label:'Crédit immobilier' },
@@ -2220,24 +2311,6 @@ const DETTE_CLASSIFICATION = {
   paiement_fractionne:  { badge:'rouge',  emoji:'🔴', label:'Alerte',                msg:"S'accumulent vite.", cta:'brique-paiements-fractionnes.html' },
   autre:                { badge:'jaune',  emoji:'🟡', label:'À analyser',            msg:"Vérifie ton TAEG.", cta:null },
 };
-
-function buildScreen3() {
-  const list = document.getElementById('dettes-list');
-  if (!list) return;
-
-  // Pré-remplissage depuis profil (types seulement)
-  const profilDettes = (profil.dettes_types || []).filter(d => d !== 'aucun');
-  if (profilDettes.length > 0 && budgetData.dettes.length === 0) {
-    document.getElementById('dettes-confirm-bar').style.display = 'block';
-    profilDettes.forEach(type => {
-      if (!budgetData.dettes.find(d => d.type === type)) {
-        budgetData.dettes.push({ type, montant_mensuel: 0, taeg: null, classification: type, routing_cible: DETTE_CLASSIFICATION[type]?.cta || null });
-      }
-    });
-  }
-
-  renderDettes();
-}
 
 function renderDettes() {
   const list = document.getElementById('dettes-list');
@@ -2481,33 +2554,87 @@ function validerEngagement() {
 // SCREEN EXIT
 // ══════════════════════════════════════════════════════════════
 function buildExitScreen() {
-  const recap  = document.getElementById('exit-recap');
-  const actions = document.getElementById('exit-actions');
-  if (!recap || !actions) return;
+  const impactEl = document.getElementById('exit-impact');
+  const nextEl   = document.getElementById('exit-next');
+  if (!impactEl || !nextEl) return;
 
-  const totalRev = budgetData.revenus + budgetData.aides;
-  const lines = [
-    { label:'Revenus',       val: formatEuro(totalRev) },
-    { label:'Charges fixes', val: formatEuro(budgetData.total_besoins) },
-    { label:'Dépenses var.', val: formatEuro(budgetData.total_envies) },
-    { label:'Reste à vivre', val: formatEuro(budgetData.reste_a_vivre) },
-    { label:'Engagement',    val: budgetData.engagement?.label || '—' },
-  ];
-  recap.innerHTML = lines.map(l => `
-    <div class="exit-line">
-      <span class="exit-line-label">${l.label}</span>
-      <span class="exit-line-val">${l.val}</span>
+  const totalRev  = budgetData.revenus + budgetData.aides;
+  const reste     = budgetData.reste_a_vivre;
+  const ratio     = totalRev > 0 ? reste / totalRev : 0;
+  const nonAlloue = Math.max(0, reste - (budgetData.epargne || 0));
+
+  // Titre dynamique selon situation
+  let titre, sousTitre;
+  if (reste < 0) {
+    titre = 'Ton budget a besoin d\'attention.';
+    sousTitre = `Tu dépenses ${formatEuro(Math.abs(reste))}/mois de plus que tu ne gagnes. La prochaine étape t'aide à inverser ça.`;
+  } else if (ratio < 0.1) {
+    titre = 'Ton budget est serré, mais c\'est déjà clair.';
+    sousTitre = `Il te reste ${formatEuro(reste)}/mois — chaque euro compte. On va les orienter.`;
+  } else if (ratio < 0.2) {
+    titre = 'Tu es à l\'équilibre. Voyons comment aller plus loin.';
+    sousTitre = `${formatEuro(reste)}/mois disponibles. Bien orientés, ils peuvent changer la donne.`;
+  } else {
+    titre = 'Tu as une vraie marge de manœuvre.';
+    sousTitre = `${formatEuro(reste)}/mois non alloués — voici comment leur donner un cap.`;
+  }
+
+  // Stat cards
+  const totalDettes = budgetData.dettes.reduce((s, d) => s + (d.montant_mensuel || 0), 0);
+  const pctBesoins  = totalRev > 0 ? Math.round((budgetData.total_besoins / totalRev) * 100) : 0;
+  const pctEnvies   = totalRev > 0 ? Math.round((budgetData.total_envies  / totalRev) * 100) : 0;
+  const pctReste    = totalRev > 0 ? Math.round((Math.max(0,reste) / totalRev) * 100) : 0;
+
+  impactEl.innerHTML = `
+    <div class="exit-impact-title">${titre}</div>
+    <p class="exit-impact-sub">${sousTitre}</p>
+    <div class="exit-stat-grid">
+      <div class="exit-stat-card">
+        <div class="exit-stat-val">${formatEuro(totalRev)}</div>
+        <div class="exit-stat-label">Revenus / mois</div>
+      </div>
+      <div class="exit-stat-card ${reste >= 0 ? 'highlight' : ''}">
+        <div class="exit-stat-val">${formatEuro(reste)}</div>
+        <div class="exit-stat-label">Reste à vivre</div>
+      </div>
+      <div class="exit-stat-card">
+        <div class="exit-stat-val">${pctBesoins}%</div>
+        <div class="exit-stat-label">En charges fixes (50/30/20 : 50%)</div>
+      </div>
+      ${totalDettes > 0 ? `
+      <div class="exit-stat-card">
+        <div class="exit-stat-val">${formatEuro(totalDettes)}</div>
+        <div class="exit-stat-label">Mensualités dettes</div>
+      </div>` : `
+      <div class="exit-stat-card">
+        <div class="exit-stat-val">${pctReste}%</div>
+        <div class="exit-stat-label">Disponible (50/30/20 : 20%)</div>
+      </div>`}
     </div>
-  `).join('');
+  `;
 
-  // CTA brique recommandée
+  // Brique recommandée contextuelle
   const target = budgetData.brique_recommandee;
   const meta   = target && typeof BRIQUES_META !== 'undefined' ? BRIQUES_META[target] : null;
   const file   = target && typeof BRICK_FILES  !== 'undefined' ? BRICK_FILES[target]  : null;
 
-  actions.innerHTML = `
-    ${meta && file ? `<a href="${file}" class="btn-hero-primary" style="justify-content:center;">Commencer ${meta.nom} →</a>` : ''}
-    <a href="dashboard.html" class="btn-hero-secondary" style="text-align:center;">Retour au dashboard</a>
+  // Message contextuel selon routing
+  const whyMessages = {
+    'fonds_urgence':          'Tu as de la marge — c\'est le moment idéal pour construire un filet de sécurité avant tout investissement.',
+    'gestion_decouvert':      'Ton découvert régulier ou tes crédits coûtent cher. Cette brique t\'aide à reprendre le contrôle.',
+    'paiements_fractionnes':  'Les paiements fractionnés s\'accumulent silencieusement. Cette brique fait le point.',
+    'premiers_pas_bancaires': 'Optimiser tes frais bancaires peut libérer 15 à 30€/mois sans effort.',
+  };
+
+  const whyMsg = whyMessages[target] || 'La prochaine étape logique de ton parcours financier.';
+
+  nextEl.innerHTML = `
+    <div class="exit-next-card">
+      <div class="exit-next-kicker">Prochaine étape recommandée</div>
+      <div class="exit-next-name">${meta ? meta.nom : 'Continuer ton parcours'}</div>
+      <div class="exit-next-why">${whyMsg}</div>
+      ${meta && file ? `<a href="${file}" class="btn-hero-primary" style="justify-content:center;">Commencer ${meta.nom} \u2192</a>` : '<a href="dashboard.html" class="btn-hero-primary" style="justify-content:center;">Voir mon tableau de bord \u2192</a>'}
+    </div>
   `;
 }
 
