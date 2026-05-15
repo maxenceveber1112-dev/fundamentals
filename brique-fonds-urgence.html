@@ -1,1313 +1,2228 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fundamental — Fonds d'urgence</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <script>
-(function() {
-  var saved = localStorage.getItem('fundamental-theme');
-  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
-})();
-</script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Fundamental — Matelas de sécurité</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+
+  <!-- THEME BOOTSTRAP — synchronous, before CSS -->
+  <script>(function(){var s=localStorage.getItem('fundamental-theme');var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');})()</script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
   <style>
-/* ════ FUNDAMENTAL V3 · DESIGN SYSTEM TOKENS (shared) ════ */
-:root {
-  /* Override/complement des tokens brique avec le design system V3 */
-  --v3-bg-elevated: #FFFFFF;
-  --v3-border-subtle: rgba(28,25,23,.07);
-  --v3-text: #1C1917;
-  --v3-text-secondary: #57534E;
-  --v3-text-muted: #78716C;
-  --v3-text-faint: #A8A29E;
-  --v3-accent-strong: #5B21B6;
-  --v3-accent-soft: rgba(196,181,253,.22);
-  --v3-nav-bg: rgba(250,248,245,.88);
-  --v3-track: #E7E5E4;
-  --v3-dot-survie: #E8A6A0;
-  --v3-dot-construction: #E5B66A;
-  --v3-dot-invest: #8FB59A;
-  --v3-shadow-card: 0 1px 2px rgba(20,20,30,.04), 0 4px 16px rgba(20,20,30,.04);
-}
-html.dark {
-  --v3-bg-elevated: #161824;
-  --v3-border-subtle: rgba(255,255,255,.08);
-  --v3-text: #F5F5F4;
-  --v3-text-secondary: #D4D4D8;
-  --v3-text-muted: #A1A1AA;
-  --v3-text-faint: #71717A;
-  --v3-accent-strong: #A78BFA;
-  --v3-accent-soft: rgba(167,139,250,.14);
-  --v3-nav-bg: rgba(11,11,26,.82);
-  --v3-track: rgba(255,255,255,.08);
-  --v3-dot-survie: #F472B6;
-  --v3-dot-construction: #FBBF24;
-  --v3-dot-invest: #34D399;
-  --v3-shadow-card: 0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
-}
-/* ════ FIN TOKENS V3 ════ */
+  /* ══════════════════════════════════════════════════════════════
+     TOKENS — dashboard V2 (light + dark)
+  ══════════════════════════════════════════════════════════════ */
+  :root {
+    --bg:              #FAF8F5;
+    --bg-elevated:     #FFFFFF;
+    --cream-grad:      linear-gradient(180deg,#F6F1E8 0%,#EFE7D8 100%);
+    --cream-border:    rgba(184,159,113,0.18);
 
-/* ── SIDEBAR SHELL (injecté par sidebar.js, CSS compat) ── */
-.f-sidebar-shell { display:flex; min-height:100dvh; }
+    --text:            #1C1917;
+    --text-secondary:  #57534E;
+    --text-muted:      #78716C;
+    --text-faint:      #A8A29E;
 
-/* ── BRIQUE LAYOUT 2-COL 60/40 ── */
-.brique-2col-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 2.5rem;
-  align-items: start;
-  padding: 2rem 2rem 4rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-.brique-main-col { min-width: 0; }
-.brique-side-panel {
-  position: sticky;
-  top: 72px; /* ctx-header 56px + gap */
-}
+    --accent:          #C4B5FD;
+    --accent-strong:   #5B21B6;
+    --accent-fill:     #C4B5FD;
+    --accent-soft:     rgba(196,181,253,0.22);
+    --accent-pill-text:#2E1065;
 
-/* ── PROGRESS CARD (colonne droite) ── */
-.brique-progress-card {
-  background: var(--v3-bg-elevated);
-  border: 1px solid var(--v3-border-subtle);
-  border-radius: 18px;
-  padding: 1.5rem;
-  box-shadow: var(--v3-shadow-card);
-}
-html.dark .brique-progress-card {
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-.bpc-kicker {
-  font-size: 10px; font-weight: 600;
-  letter-spacing: .14em; text-transform: uppercase;
-  color: var(--v3-text-faint); margin-bottom: 0.875rem;
-}
-.bpc-title {
-  font-family: 'Fraunces', 'Instrument Serif', Georgia, serif;
-  font-style: italic; font-weight: 400;
-  font-size: 20px; color: var(--v3-text); margin-bottom: 1.25rem;
-  line-height: 1.2;
-}
-.bpc-steps { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
-.bpc-step {
-  display:flex; align-items:center; gap:0.75rem;
-  padding:0.625rem 0.75rem; border-radius:10px;
-  font-size:13px; color:var(--v3-text-muted);
-  transition: background .15s;
-}
-.bpc-step.active { background:var(--v3-accent-soft); color:var(--v3-text); }
-.bpc-step.done { color:var(--v3-text-muted); }
-.bpc-step-num {
-  width:22px; height:22px; border-radius:50%;
-  background:var(--v3-track);
-  color:var(--v3-text-faint);
-  font-size:11px; font-weight:600;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  transition: background .2s, color .2s;
-}
-.bpc-step.active .bpc-step-num { background:var(--v3-accent-strong); color:#fff; }
-.bpc-step.done .bpc-step-num {
-  background:var(--v3-accent-soft); color:var(--v3-accent-strong);
-}
-html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
-.bpc-step-label { font-size:13px; font-weight:500; min-width:0; line-height:1.3; }
-.bpc-step.active .bpc-step-label { color:var(--v3-text); font-weight:600; }
+    --track:           #E7E5E4;
 
-/* Progress ring */
-.bpc-ring-wrap {
-  display:flex; align-items:center; justify-content:center;
-  margin-bottom:1.25rem;
-  position:relative; width:72px; height:72px; margin-left:auto; margin-right:auto;
-}
-.bpc-ring { transform:rotate(-90deg); }
-.bpc-ring-pct {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:13px; font-weight:700; color:var(--v3-text);
-}
+    --shadow-card:     0 1px 2px rgba(20,20,30,0.04),0 4px 16px rgba(20,20,30,0.04);
 
-/* Nav buttons */
-.bpc-nav {
-  border-top:1px solid var(--v3-border-subtle);
-  padding-top:1rem; display:flex; flex-direction:column; gap:0.625rem;
-  margin-top:1rem;
-}
-.bpc-btn-back {
-  display:flex; align-items:center; gap:0.4rem;
-  font-size:13px; color:var(--v3-text-muted);
-  background:none; border:none; cursor:pointer; font-family:inherit;
-  padding:0.4rem 0; transition:color .15s;
-}
-.bpc-btn-back:hover { color:var(--v3-text); }
+    --green:           #22C55E;
+    --green-soft:      rgba(34,197,94,0.12);
+    --green-border:    rgba(34,197,94,0.25);
 
-/* Dashboard link */
-.bpc-dashboard-link {
-  display:flex; align-items:center; gap:0.4rem;
-  font-size:12px; color:var(--v3-text-faint);
-  text-decoration:none; transition:color .15s;
-  padding:0.3rem 0;
-}
-.bpc-dashboard-link:hover { color:var(--v3-accent-strong); }
+    --surface:         #FFFFFF;
+    --surface-2:       #F5F5F4;
+    --surface-3:       #EDEBE8;
 
-/* Responsive — stack sur mobile */
-@media(max-width: 900px) {
-  .brique-2col-wrapper { grid-template-columns:1fr; gap:1.5rem; }
-  .brique-side-panel { position:static; }
-}
+    --border-subtle:   rgba(28,25,23,0.07);
+    --border:          rgba(28,25,23,0.10);
+    --border-mid:      rgba(28,25,23,0.11);
+    --border-hover:    rgba(28,25,23,0.18);
 
+    --orange:          #F97316;
+    --orange-soft:     rgba(249,115,22,0.10);
+    --red:             #EF4444;
+    --red-soft:        rgba(239,68,68,0.10);
+    --purple:          #C084FC;
 
-    /* ─── TOKENS ─── */
-    :root {
-      --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
-      --border:#252845;--border-hover:#363a68;
-      --text:#e2e4f0;--text-muted:#8b90b8;--text-faint:#444868;
-      --violet:#818cf8;--purple:#c084fc;--indigo:#6366f1;
-      --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
-      --violet-glow:rgba(129,140,248,0.10);
-      --green:#4ade80;--green-dim:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.3);
-      --orange:#fb923c;--orange-dim:rgba(251,146,60,0.12);--orange-border:rgba(251,146,60,0.3);
-      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
-      --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1.25rem;--r-xl:1.75rem;--r-full:9999px;
-      --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
+    /* Compat tokens for nav-avatar.js */
+    --indigo:          #6366F1;
+    --indigo-dim:      rgba(99,102,241,0.14);
+    --indigo-glow:     rgba(99,102,241,0.22);
+    --violet:          #818CF8;
+    --violet-glow:     rgba(129,140,248,0.10);
+
+    --r-sm:0.5rem; --r-md:0.875rem; --r-lg:1rem; --r-xl:1.5rem; --r-full:9999px;
+    --ease-out:cubic-bezier(0.16,1,0.3,1); --t:180ms;
+
+    /* V3 compat tokens */
+    --v3-bg-elevated:  #FFFFFF;
+    --v3-border-subtle:rgba(28,25,23,.07);
+    --v3-text:         #1C1917;
+    --v3-text-secondary:#57534E;
+    --v3-text-muted:   #78716C;
+    --v3-text-faint:   #A8A29E;
+    --v3-accent-strong:#5B21B6;
+    --v3-accent-soft:  rgba(196,181,253,.22);
+    --v3-track:        #E7E5E4;
+    --v3-shadow-card:  0 1px 2px rgba(20,20,30,.04),0 4px 16px rgba(20,20,30,.04);
+  }
+
+  html.dark {
+    --bg:              #0B0B1A;
+    --bg-elevated:     #161824;
+    --cream-grad:      linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+    --cream-border:    rgba(255,255,255,0.08);
+
+    --text:            #F5F5F4;
+    --text-secondary:  #D4D4D8;
+    --text-muted:      #A1A1AA;
+    --text-faint:      #71717A;
+
+    --accent:          linear-gradient(90deg,#8B5CF6 0%,#6366F1 60%,#3B82F6 100%);
+    --accent-strong:   #A78BFA;
+    --accent-soft:     rgba(167,139,250,0.14);
+    --accent-fill:     rgba(167,139,250,0.35);
+    --accent-pill-text:#FFFFFF;
+
+    --track:           rgba(255,255,255,0.08);
+
+    --surface:         #161824;
+    --surface-2:       #1E2030;
+    --surface-3:       #252840;
+
+    --border-subtle:   rgba(255,255,255,0.06);
+    --border:          rgba(255,255,255,0.08);
+    --border-mid:      rgba(255,255,255,0.10);
+    --border-hover:    rgba(255,255,255,0.16);
+
+    --green:           #4ADE80;
+    --green-soft:      rgba(74,222,128,0.10);
+    --green-border:    rgba(74,222,128,0.25);
+
+    --shadow-card:     0 1px 2px rgba(0,0,0,0.4),0 4px 24px rgba(0,0,0,0.20);
+
+    /* Compat tokens dark */
+    --indigo:          #818CF8;
+    --violet:          #A78BFA;
+    --indigo-dim:      rgba(99,102,241,0.14);
+    --indigo-glow:     rgba(99,102,241,0.22);
+
+    --v3-bg-elevated:  #161824;
+    --v3-border-subtle:rgba(255,255,255,.08);
+    --v3-text:         #F5F5F4;
+    --v3-text-secondary:#D4D4D8;
+    --v3-text-muted:   #A1A1AA;
+    --v3-text-faint:   #71717A;
+    --v3-accent-strong:#A78BFA;
+    --v3-accent-soft:  rgba(167,139,250,.14);
+    --v3-track:        rgba(255,255,255,.08);
+    --v3-shadow-card:  0 1px 2px rgba(0,0,0,.4),0 4px 24px rgba(0,0,0,.20);
+  }
+
+  /* ── Reset ── */
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  html { -webkit-font-smoothing:antialiased; }
+  body {
+    min-height:100dvh;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    font-size:1rem; line-height:1.6;
+    overflow-x:hidden;
+    transition:background 0.3s ease, color 0.3s ease;
+  }
+  html.dark body {
+    background:radial-gradient(1100px 600px at 70% -5%,#1E1B4B 0%,transparent 55%),
+               linear-gradient(180deg,#0B0B1A 0%,#050507 100%);
+    background-attachment:fixed;
+  }
+  button { cursor:pointer; background:none; border:none; font:inherit; color:inherit; }
+  a { color:inherit; text-decoration:none; }
+  :focus-visible { outline:2px solid var(--accent-strong); outline-offset:3px; border-radius:var(--r-sm); }
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+
+  /* ── Animations ── */
+  @keyframes fadeSlideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  @keyframes countUp { from{opacity:0;transform:scale(0.92)} to{opacity:1;transform:scale(1)} }
+
+  /* ══════════════════════════════════════════════════════════════
+     SIDEBAR SHELL
+  ══════════════════════════════════════════════════════════════ */
+  .f-sidebar-shell { display:flex; min-height:100dvh; }
+
+  /* ══════════════════════════════════════════════════════════════
+     2-COLUMN LAYOUT
+  ══════════════════════════════════════════════════════════════ */
+  .brique-2col-wrapper {
+    display:grid;
+    grid-template-columns:1fr 320px;
+    gap:2rem;
+    max-width:1080px;
+    margin:0 auto;
+    padding:2rem 2rem 6rem;
+    align-items:start;
+  }
+  .brique-main-col { min-width:0; }
+  .brique-side-panel { position:sticky; top:5rem; }
+
+  /* ══════════════════════════════════════════════════════════════
+     CTX HEADER (top nav)
+  ══════════════════════════════════════════════════════════════ */
+  .ctx-header {
+    margin-bottom:1.5rem;
+  }
+  #ctx-nav {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0.75rem 0;
+  }
+  .wordmark {
+    display:inline-flex; align-items:center; gap:0.5rem;
+    text-decoration:none;
+  }
+  .wordmark-icon {
+    width:28px; height:28px; border-radius:8px;
+    background:var(--accent-soft); color:var(--accent-strong);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-style:italic; font-weight:400;
+    font-size:15px; line-height:1;
+  }
+  html.dark .wordmark-icon {
+    background:linear-gradient(135deg,#8B5CF6,#3B82F6); color:#fff;
+  }
+  .wordmark span {
+    font-size:15px; font-weight:600; letter-spacing:-0.01em; color:var(--text);
+  }
+  .nav-right { display:flex; align-items:center; gap:1rem; }
+
+  /* ══════════════════════════════════════════════════════════════
+     PROGRESS PANEL (right column)
+  ══════════════════════════════════════════════════════════════ */
+  .brique-progress-card {
+    background:var(--v3-bg-elevated);
+    border:1px solid var(--v3-border-subtle);
+    border-radius:1.25rem;
+    box-shadow:var(--v3-shadow-card);
+    padding:1.5rem;
+  }
+  html.dark .brique-progress-card { backdrop-filter:blur(12px); }
+
+  .bpc-kicker {
+    font-size:0.6875rem; font-weight:600;
+    letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--v3-accent-strong);
+    margin-bottom:0.625rem;
+  }
+  .bpc-title {
+    font-family:'Fraunces',serif;
+    font-size:0.9375rem; font-weight:400;
+    font-style:italic;
+    color:var(--v3-text);
+    margin-bottom:1.25rem;
+    line-height:1.35;
+  }
+
+  /* Ring SVG */
+  .bpc-ring-wrap {
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:1.25rem;
+  }
+  .bpc-ring { transform:rotate(-90deg); }
+  .bpc-ring-bg { fill:none; stroke:var(--v3-track); stroke-width:6; }
+  .bpc-ring-fill {
+    fill:none; stroke:var(--v3-accent-strong); stroke-width:6;
+    stroke-linecap:round;
+    transition:stroke-dashoffset 0.8s var(--ease-out);
+  }
+  .bpc-ring-pct {
+    font-family:'Fraunces',serif;
+    font-size:1.125rem; font-weight:400;
+    fill:var(--v3-text);
+  }
+
+  /* Steps list */
+  .bpc-steps { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+  .bpc-step {
+    display:flex; align-items:flex-start; gap:0.625rem;
+    padding:0.5rem 0.625rem; border-radius:0.625rem;
+    color:var(--v3-text-faint); font-size:13px;
+    transition:background .15s, color .15s;
+  }
+  .bpc-step.active { background:var(--v3-accent-soft); color:var(--v3-text); }
+  .bpc-step.done   { color:var(--v3-text-muted); }
+  .bpc-step-num {
+    width:20px; height:20px; border-radius:50%;
+    background:var(--v3-track); color:var(--v3-text-faint);
+    font-size:10px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition:background .2s, color .2s;
+  }
+  .bpc-step.active .bpc-step-num { background:var(--v3-accent-strong); color:#fff; }
+  .bpc-step.done   .bpc-step-num { background:var(--v3-accent-soft); color:var(--v3-accent-strong); }
+  html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
+  .bpc-step-label { font-size:13px; font-weight:500; min-width:0; line-height:1.3; }
+  .bpc-step.active .bpc-step-label { color:var(--v3-text); font-weight:600; }
+
+  /* Nav links bottom */
+  .bpc-nav {
+    display:flex; flex-direction:column; gap:0.375rem;
+    padding-top:1rem; border-top:1px solid var(--v3-border-subtle);
+  }
+  .bpc-btn-back {
+    display:flex; align-items:center; gap:0.4rem;
+    font-size:13px; color:var(--v3-text-muted);
+    background:none; border:none; cursor:pointer; font-family:inherit;
+    padding:0.4rem 0; transition:color .15s;
+  }
+  .bpc-btn-back:hover { color:var(--v3-text); }
+  .bpc-dashboard-link {
+    display:flex; align-items:center; gap:0.4rem;
+    font-size:12px; color:var(--v3-text-faint);
+    text-decoration:none; transition:color .15s;
+    padding:0.3rem 0;
+  }
+  .bpc-dashboard-link:hover { color:var(--v3-accent-strong); }
+
+  /* ══════════════════════════════════════════════════════════════
+     SCREENS
+  ══════════════════════════════════════════════════════════════ */
+  .screen {
+    display:none; flex-direction:column; gap:1.5rem;
+    animation:fadeSlideUp 0.3s ease both;
+  }
+  .screen.active-screen { display:flex; }
+
+  /* ── Brick card ── */
+  .brick-card {
+    background:var(--bg-elevated);
+    border:1px solid var(--border-subtle);
+    border-radius:1.25rem;
+    box-shadow:var(--shadow-card);
+    padding:2rem 2.25rem;
+    position:relative; overflow:hidden;
+    transition:background 0.3s ease, border-color 0.3s ease;
+  }
+  html.dark .brick-card { backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+  .brick-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:280px;
+    background:radial-gradient(ellipse 60% 40% at 50% 0%,var(--accent-soft) 0%,transparent 100%);
+    opacity:0.06; pointer-events:none;
+  }
+
+  .brick-kicker {
+    font-size:0.6875rem; font-weight:600;
+    letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--text-muted); margin-bottom:0.875rem;
+  }
+  html.dark .brick-kicker { color:#A5B4FC; }
+
+  .brick-title {
+    font-family:'Fraunces','Instrument Serif',Georgia,serif;
+    font-size:clamp(1.5rem,3.5vw,2rem);
+    font-weight:400; font-style:italic;
+    line-height:1.15; letter-spacing:-0.02em;
+    color:var(--text); margin-bottom:0.625rem;
+  }
+  .brick-subtitle {
+    font-size:0.9rem; color:var(--text-muted);
+    margin-bottom:1.75rem; line-height:1.55;
+  }
+
+  /* ── Fields ── */
+  .field-group { display:flex; flex-direction:column; gap:0.375rem; margin-bottom:1.25rem; }
+  .field-label {
+    font-size:0.82rem; font-weight:600; color:var(--text);
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .field-help { font-size:0.75rem; color:var(--text-faint); margin-top:0.2rem; }
+
+  .field-input {
+    width:100%; padding:0.75rem 1rem;
+    background:var(--surface-2);
+    border:1.5px solid var(--border-mid);
+    border-radius:var(--r-md);
+    color:var(--text); font-size:0.95rem; font-family:inherit;
+    transition:border-color var(--t), box-shadow var(--t);
+  }
+  .field-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+  .field-input::placeholder { color:var(--text-faint); }
+  .field-input.prefilled { border-color:rgba(34,197,94,0.3); }
+  .field-input.prefilled:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,0.1); }
+
+  .euro-wrap { position:relative; display:flex; align-items:center; }
+  .euro-wrap .field-input { padding-right:2.5rem; }
+  .euro-suffix { position:absolute; right:0.875rem; font-size:0.9rem; color:var(--text-muted); pointer-events:none; font-weight:600; }
+
+  .badge-prefilled {
+    font-size:0.6rem; font-weight:600; letter-spacing:0.06em;
+    color:var(--green); background:rgba(34,197,94,0.08);
+    border-radius:9999px; padding:0.15rem 0.45rem;
+    white-space:nowrap;
+  }
+
+  .badge-source {
+    display:inline-flex; align-items:center;
+    padding:0.2rem 0.55rem; border-radius:9999px;
+    font-size:0.65rem; font-weight:600; letter-spacing:0.04em;
+    background:var(--accent-soft); color:var(--accent-strong);
+    white-space:nowrap;
+  }
+  html.dark .badge-source { color:#C4B5FD; }
+
+  /* ── Buttons ── */
+  .btn-hero-primary {
+    display:inline-flex; align-items:center; gap:0.5rem;
+    padding:0.75rem 1.375rem; border-radius:9999px;
+    background:var(--accent); color:var(--accent-pill-text);
+    font-size:0.875rem; font-weight:600; border:none; cursor:pointer;
+    transition:filter 0.2s ease, transform 0.12s ease;
+  }
+  html.dark .btn-hero-primary {
+    box-shadow:0 8px 28px -10px rgba(99,102,241,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .btn-hero-primary:hover { filter:brightness(0.95); }
+  html.dark .btn-hero-primary:hover { filter:brightness(1.08); }
+  .btn-hero-primary:active { transform:scale(0.98); }
+  .btn-hero-primary:disabled { opacity:0.45; cursor:not-allowed; filter:none; }
+
+  .btn-hero-secondary {
+    font-size:0.8125rem; font-weight:500; color:var(--text-muted);
+    text-decoration:none; cursor:pointer;
+    transition:color var(--t);
+    background:none; border:none;
+  }
+  .btn-hero-secondary:hover { color:var(--text); }
+
+  .btn-back {
+    display:flex; align-items:center; gap:0.375rem;
+    font-size:0.8125rem; font-weight:500; color:var(--text-muted);
+    padding:0.5rem 0; cursor:pointer;
+    transition:color var(--t);
+  }
+  .btn-back:hover { color:var(--text); }
+
+  .nav-btns {
+    display:flex; justify-content:space-between; align-items:center;
+    gap:1rem; padding-top:0.5rem;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     DATA CARDS (screen 1)
+  ══════════════════════════════════════════════════════════════ */
+  .data-cards-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;
+    margin-bottom:1.5rem;
+  }
+  .data-card {
+    background:var(--cream-grad);
+    border:1px solid var(--cream-border);
+    border-radius:var(--r-lg);
+    padding:1rem;
+    display:flex; flex-direction:column; gap:0.25rem;
+    position:relative;
+    transition:border-color var(--t);
+  }
+  html.dark .data-card {
+    background:var(--surface-2);
+    border-color:var(--border);
+  }
+  .data-card-value {
+    font-size:1.25rem; font-weight:700; color:var(--text);
+    line-height:1.2;
+  }
+  .data-card-label {
+    font-size:0.78rem; color:var(--text-muted); line-height:1.3;
+  }
+  .data-card-badge {
+    position:absolute; top:0.625rem; right:0.625rem;
+  }
+  .data-card-micro {
+    font-size:0.7rem; color:var(--text-faint); margin-top:0.15rem;
+  }
+  .data-card.full-width { grid-column:1 / -1; }
+
+  /* ══════════════════════════════════════════════════════════════
+     JAUGE (progress gauge)
+  ══════════════════════════════════════════════════════════════ */
+  .jauge-wrap { margin:1.5rem 0; }
+  .jauge-bar {
+    position:relative;
+    height:10px; border-radius:9999px;
+    background:var(--track);
+    overflow:hidden;
+  }
+  .jauge-fill {
+    height:100%; border-radius:9999px;
+    background:var(--green);
+    transition:width 0.6s cubic-bezier(0.16,1,0.3,1);
+    min-width:0;
+  }
+  .jauge-cursor {
+    position:absolute; top:-3px;
+    width:4px; height:16px; border-radius:2px;
+    background:var(--text);
+    transition:left 0.6s cubic-bezier(0.16,1,0.3,1);
+    display:none;
+  }
+  .jauge-labels {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:0.5rem;
+    font-size:0.72rem; color:var(--text-faint);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     PALIER CARDS (screen 2)
+  ══════════════════════════════════════════════════════════════ */
+  .palier-cards { display:flex; flex-direction:column; gap:0.75rem; margin:1.5rem 0; }
+  .palier-card {
+    background:var(--surface-2);
+    border:1.5px solid var(--border);
+    border-radius:var(--r-lg);
+    padding:1rem 1.125rem;
+    cursor:pointer;
+    transition:all var(--t);
+    display:flex; align-items:center; gap:1rem;
+  }
+  .palier-card:hover { border-color:var(--border-hover); background:var(--surface-3); }
+  .palier-card.active {
+    background:var(--accent-soft);
+    border-color:var(--accent-strong);
+  }
+  html.dark .palier-card.active { border-color:rgba(167,139,250,0.5); }
+  .palier-card.atteint {
+    background:var(--green-soft);
+    border-color:var(--green-border);
+  }
+  .palier-card-info { flex:1; min-width:0; }
+  .palier-card-title {
+    font-size:0.82rem; font-weight:600; color:var(--text);
+    margin-bottom:0.15rem;
+  }
+  .palier-card-amount {
+    font-size:1.1rem; font-weight:700; color:var(--text);
+    margin-bottom:0.1rem;
+  }
+  .palier-card-desc {
+    font-size:0.75rem; color:var(--text-muted); line-height:1.4;
+  }
+  .palier-card-badge {
+    flex-shrink:0;
+    font-size:0.65rem; font-weight:700;
+    padding:0.2rem 0.5rem; border-radius:9999px;
+    white-space:nowrap;
+  }
+  .palier-card-badge.atteint-badge {
+    background:var(--green-soft); color:var(--green); border:1px solid var(--green-border);
+  }
+  .palier-card-badge.recommande-badge {
+    background:var(--accent-soft); color:var(--accent-strong);
+  }
+  html.dark .palier-card-badge.recommande-badge { color:#C4B5FD; }
+
+  /* ══════════════════════════════════════════════════════════════
+     PALIER RESULT CARD (screen 2 — big number)
+  ══════════════════════════════════════════════════════════════ */
+  .palier-result-card {
+    background:var(--cream-grad);
+    border:1px solid var(--cream-border);
+    border-radius:1.25rem;
+    padding:2rem;
+    text-align:center;
+    margin-bottom:1.25rem;
+    position:relative; overflow:hidden;
+  }
+  html.dark .palier-result-card {
+    background:var(--surface-2);
+    border-color:var(--border);
+    backdrop-filter:blur(12px);
+  }
+  .palier-result-amount {
+    font-size:clamp(2.5rem,8vw,3.5rem);
+    font-weight:700; color:var(--text);
+    line-height:1;
+    animation:countUp 0.5s var(--ease-out) both;
+  }
+  .palier-result-label {
+    font-size:0.875rem; color:var(--text-muted);
+    margin-top:0.375rem;
+  }
+  .palier-result-sub {
+    font-size:0.82rem; color:var(--text-faint);
+    margin-top:0.625rem;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     RAISONS BLOCK
+  ══════════════════════════════════════════════════════════════ */
+  .raisons-block { margin:1.25rem 0; }
+  .raisons-block-title {
+    font-size:0.75rem; font-weight:700;
+    letter-spacing:0.07em; text-transform:uppercase;
+    color:var(--text-faint); margin-bottom:0.625rem;
+  }
+  .raison-item {
+    display:flex; align-items:flex-start; gap:0.5rem;
+    padding:0.5rem 0.75rem;
+    font-size:0.82rem; color:var(--text-muted); line-height:1.45;
+  }
+  .raison-item::before {
+    content:''; flex-shrink:0;
+    width:5px; height:5px; border-radius:50%;
+    background:var(--accent-strong);
+    margin-top:0.45em;
+  }
+  html.dark .raison-item::before { background:#A78BFA; }
+
+  /* ══════════════════════════════════════════════════════════════
+     RYTHME CARDS (screen 3)
+  ══════════════════════════════════════════════════════════════ */
+  .rythme-cards { display:flex; flex-direction:column; gap:0.75rem; margin:1.25rem 0; }
+  .rythme-card {
+    background:var(--surface-2);
+    border:1.5px solid var(--border);
+    border-radius:var(--r-lg);
+    padding:1rem 1.125rem;
+    cursor:pointer;
+    transition:all var(--t);
+    display:flex; align-items:center; gap:1rem;
+  }
+  .rythme-card:hover { border-color:var(--border-hover); background:var(--surface-3); }
+  .rythme-card.selected {
+    background:var(--accent-soft);
+    border-color:var(--accent-strong);
+  }
+  html.dark .rythme-card.selected { border-color:rgba(167,139,250,0.5); }
+  .rythme-card-info { flex:1; min-width:0; }
+  .rythme-card-amount {
+    font-size:1.1rem; font-weight:700; color:var(--text);
+    margin-bottom:0.1rem;
+  }
+  .rythme-card-amount small { font-size:0.75rem; font-weight:500; color:var(--text-muted); }
+  .rythme-card-label {
+    font-size:0.82rem; font-weight:600; color:var(--text-secondary);
+    margin-bottom:0.1rem;
+  }
+  .rythme-card-desc {
+    font-size:0.75rem; color:var(--text-muted); line-height:1.4;
+  }
+  .rythme-card-badge {
+    flex-shrink:0;
+    font-size:0.65rem; font-weight:700;
+    padding:0.2rem 0.5rem; border-radius:9999px;
+    background:var(--accent-soft); color:var(--accent-strong);
+    white-space:nowrap;
+  }
+  html.dark .rythme-card-badge { color:#C4B5FD; }
+
+  .custom-rythme-wrap {
+    margin-top:0.75rem;
+    padding:0.875rem 1rem;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:var(--r-md);
+    display:none;
+  }
+  .custom-rythme-wrap.visible { display:block; }
+
+  .warning-serre {
+    display:none; align-items:flex-start; gap:0.5rem;
+    padding:0.875rem 1rem;
+    background:var(--orange-soft);
+    border:1px solid rgba(249,115,22,0.2);
+    border-radius:var(--r-md);
+    font-size:0.82rem; color:var(--orange);
+    line-height:1.5;
+    margin-top:0.75rem;
+  }
+  .warning-serre.visible { display:flex; }
+
+  /* ══════════════════════════════════════════════════════════════
+     PLACEMENT CARDS (screen 4)
+  ══════════════════════════════════════════════════════════════ */
+  .placement-cards { display:flex; flex-direction:column; gap:0.75rem; margin:1.25rem 0; }
+  .placement-card {
+    background:var(--surface-2);
+    border:1.5px solid var(--border);
+    border-radius:var(--r-lg);
+    padding:1rem 1.125rem;
+    cursor:pointer;
+    transition:all var(--t);
+    display:flex; align-items:center; gap:1rem;
+  }
+  .placement-card:hover { border-color:var(--border-hover); background:var(--surface-3); }
+  .placement-card.selected {
+    background:var(--accent-soft);
+    border-color:var(--accent-strong);
+  }
+  html.dark .placement-card.selected { border-color:rgba(167,139,250,0.5); }
+  .placement-card-info { flex:1; min-width:0; }
+  .placement-card-title {
+    font-size:0.875rem; font-weight:600; color:var(--text);
+    margin-bottom:0.15rem;
+  }
+  .placement-card-desc {
+    font-size:0.78rem; color:var(--text-muted); line-height:1.4;
+  }
+  .placement-card-badge {
+    flex-shrink:0;
+    font-size:0.65rem; font-weight:700;
+    padding:0.2rem 0.5rem; border-radius:9999px;
+    background:var(--green-soft); color:var(--green); border:1px solid var(--green-border);
+    white-space:nowrap;
+  }
+
+  .placement-detected {
+    background:var(--cream-grad);
+    border:1px solid var(--cream-border);
+    border-radius:var(--r-lg);
+    padding:1.25rem;
+    margin-bottom:1.25rem;
+    text-align:center;
+  }
+  html.dark .placement-detected {
+    background:var(--surface-2);
+    border-color:var(--border);
+  }
+  .placement-detected p {
+    font-size:0.875rem; color:var(--text-secondary);
+    margin:0.75rem 0 1rem;
+  }
+  .placement-detected .badge-source { margin-bottom:0.25rem; }
+
+  /* ══════════════════════════════════════════════════════════════
+     HEADER SUMMARY (screen 3)
+  ══════════════════════════════════════════════════════════════ */
+  .header-summary {
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    border-radius:var(--r-md);
+    padding:0.75rem 1rem;
+    margin-bottom:1.25rem;
+    font-size:0.875rem; color:var(--text-secondary);
+  }
+  .header-summary strong { color:var(--text); font-weight:700; }
+
+  /* ══════════════════════════════════════════════════════════════
+     ATTEINT BLOCK (when target already reached)
+  ══════════════════════════════════════════════════════════════ */
+  .atteint-block {
+    background:var(--green-soft);
+    border:1px solid var(--green-border);
+    border-radius:var(--r-lg);
+    padding:1.25rem;
+    text-align:center;
+    margin:1.25rem 0;
+  }
+  .atteint-block-title {
+    font-family:'Fraunces',serif; font-style:italic; font-weight:400;
+    font-size:1.25rem; color:var(--text);
+    margin-bottom:0.5rem;
+  }
+  .atteint-block-sub {
+    font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     CUSTOM CHIP
+  ══════════════════════════════════════════════════════════════ */
+  .chip-custom {
+    display:inline-flex; align-items:center; gap:0.375rem;
+    padding:0.4rem 0.875rem; border-radius:9999px;
+    background:var(--surface-2); border:1.5px solid var(--border);
+    font-size:0.8rem; color:var(--text-muted); cursor:pointer;
+    transition:all var(--t);
+  }
+  .chip-custom:hover { border-color:var(--border-hover); color:var(--text); }
+  .chip-custom.active { background:var(--accent-soft); border-color:var(--accent-strong); color:var(--accent-strong); }
+
+  /* ══════════════════════════════════════════════════════════════
+     MODAL FIN
+  ══════════════════════════════════════════════════════════════ */
+  .modal-fin-overlay {
+    position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,0.55); backdrop-filter:blur(4px);
+    display:flex; align-items:center; justify-content:center; padding:1rem;
+    opacity:0; transition:opacity 0.25s ease;
+  }
+  .modal-fin-overlay.visible { opacity:1; }
+  .modal-fin-card {
+    background:var(--bg-elevated); border:1px solid var(--cream-border); border-radius:20px;
+    padding:2rem 1.75rem 1.5rem; max-width:420px; width:100%;
+    box-shadow:0 24px 64px rgba(0,0,0,0.18);
+    transform:translateY(12px) scale(0.97);
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+    opacity:0;
+  }
+  .modal-fin-overlay.visible .modal-fin-card { transform:translateY(0) scale(1); opacity:1; }
+  .modal-fin-header { text-align:center; margin-bottom:1.5rem; }
+  .modal-fin-check {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:48px; height:48px; border-radius:50%;
+    background:var(--accent-soft); color:var(--accent-strong);
+    font-size:1.25rem; font-weight:700; margin-bottom:0.75rem;
+  }
+  html.dark .modal-fin-check { color:#A78BFA; }
+  .modal-fin-title {
+    font-family:'Fraunces',serif; font-size:1.5rem; font-weight:400;
+    color:var(--text); margin:0 0 0.25rem;
+  }
+  .modal-fin-sub { font-size:0.875rem; color:var(--text-muted); margin:0; }
+
+  .modal-fin-summary {
+    display:flex; flex-direction:column; gap:0.5rem;
+    margin-bottom:1.25rem;
+  }
+  .modal-fin-row {
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.82rem; padding:0.35rem 0;
+    border-bottom:1px solid var(--border-subtle);
+  }
+  .modal-fin-row:last-child { border-bottom:none; }
+  .modal-fin-row-label { color:var(--text-muted); }
+  .modal-fin-row-val { font-weight:600; color:var(--text); }
+
+  .modal-fin-actions {
+    display:flex; flex-direction:column; gap:0.625rem;
+    margin-top:1.25rem;
+  }
+  .modal-fin-actions .btn-hero-primary { width:100%; justify-content:center; }
+  .modal-fin-secondary {
+    display:block; text-align:center;
+    font-size:0.8125rem; color:var(--text-muted);
+    text-decoration:none; padding:0.375rem 0;
+    transition:color 0.15s;
+  }
+  .modal-fin-secondary:hover { color:var(--text); }
+
+  /* ══════════════════════════════════════════════════════════════
+     RESUME CARD
+  ══════════════════════════════════════════════════════════════ */
+  .resume-card {
+    background:var(--cream-grad);
+    border:1px solid var(--cream-border);
+    border-radius:var(--r-lg);
+    padding:1.125rem;
+    margin-bottom:1.25rem;
+    display:none;
+  }
+  html.dark .resume-card {
+    background:var(--surface-2);
+    border-color:var(--border);
+  }
+  .resume-card .resume-kicker {
+    font-size:0.7rem; font-weight:700;
+    letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--accent-strong); margin-bottom:0.375rem;
+  }
+  html.dark .resume-card .resume-kicker { color:#A78BFA; }
+  .resume-card .resume-text {
+    font-size:0.875rem; color:var(--text-secondary);
+    margin-bottom:0.75rem;
+  }
+  .resume-card .resume-actions { display:flex; gap:0.75rem; flex-wrap:wrap; }
+
+  /* ══════════════════════════════════════════════════════════════
+     COUNTER ANIMATION
+  ══════════════════════════════════════════════════════════════ */
+  .counter-animate {
+    animation:countUp 0.5s var(--ease-out) both;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     RESPONSIVE
+  ══════════════════════════════════════════════════════════════ */
+  @media(max-width:900px) {
+    .brique-2col-wrapper { grid-template-columns:1fr; gap:1.5rem; padding:1rem 1rem 5rem; }
+    .brique-side-panel { position:static; order:-1; }
+  }
+  @media(max-width:640px) {
+    .brick-card { padding:1.5rem 1.25rem; }
+    .data-cards-grid { grid-template-columns:1fr; }
+    .palier-result-card { padding:1.5rem; }
+    .nav-btns { flex-wrap:wrap; }
+    .nav-btns .btn-hero-primary { width:100%; justify-content:center; order:-1; }
+    .ctx-header { margin-bottom:1rem; }
+    .placement-detected { padding:1rem; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     PRINT
+  ══════════════════════════════════════════════════════════════ */
+  @media print {
+    body > *:not(#print-bilan) { display:none!important; }
+    #print-bilan {
+      display:block!important; font-family:'Inter',system-ui,sans-serif;
+      color:#1C1917; background:#fff; max-width:680px; margin:0 auto; padding:2rem;
     }
-
-    /* ─── RESET ─── */
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{-webkit-font-smoothing:antialiased;}
-    body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;line-height:1.6;overflow-x:hidden;}
-    button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
-    :focus-visible{outline:2px solid var(--violet);outline-offset:3px;border-radius:var(--r-sm);}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important;}}
-    #bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.18;}
-
-    /* ─── NAV ─── */
-    nav{position:sticky;top:0;z-index:100;background:rgba(11,13,23,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;}
-    .logo{display:flex;align-items:center;gap:0.5rem;font-weight:800;font-size:1rem;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
-    .nav-right{display:flex;align-items:center;gap:1rem;}
-    .nav-link{font-size:0.8rem;color:var(--text-muted);text-decoration:none;padding:0.35rem 0.75rem;border-radius:var(--r-full);border:1px solid var(--border);transition:color var(--t),border-color var(--t);}
-    .nav-link:hover{color:var(--violet);border-color:var(--violet);}
-
-    /* ─── LAYOUT ─── */
-    main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:2rem 1.5rem 6rem;}
-
-    /* ─── PROGRESS ─── */
-    .brick-progress{display:flex;gap:0.35rem;margin-bottom:2rem;}
-    .bp-dot{flex:1;height:4px;border-radius:var(--r-full);background:var(--surface-3);transition:background 0.3s var(--ease-out);}
-    .bp-dot.done{background:linear-gradient(90deg,var(--indigo),var(--purple));}
-    .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
-
-    /* ─── SCREEN ─── */
-
-    /* ── Indicateur Étape X/Y ── */
-    .step-indicator{font-size:0.72rem;font-weight:600;color:var(--text-faint);letter-spacing:0.05em;margin-bottom:0.75rem;display:none;}
-    .screen.active-screen .step-indicator{display:block;}
-
-    .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
-    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-
-    /* ─── CARD ─── */
-    .brick-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;position:relative;overflow:hidden;}
-    .brick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
-
-    /* ─── TITLES ─── */
-    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.5rem;}
-    .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5;}
-
-    /* ─── REASSURANCE ─── */
-    .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-dim);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green);margin-bottom:1.25rem;}
-
-    /* ─── INPUTS ─── */
-    .field-group{margin-bottom:1.25rem;}
-    .field-label{font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.4rem;}
-    .field-help{font-size:0.75rem;color:var(--text-faint);margin-top:0.3rem;}
-    .field-input{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
-    .field-input:focus{border-color:var(--violet);outline:none;}
-    .field-input::placeholder{color:var(--text-faint);}
-
-    /* ─── EURO INPUT WRAPPER ─── */
-    .euro-wrap{position:relative;display:flex;align-items:center;}
-    .euro-wrap .field-input{padding-right:2.5rem;}
-    .euro-suffix{position:absolute;right:0.875rem;font-size:0.9rem;color:var(--text-muted);pointer-events:none;font-weight:600;}
-
-    /* ─── CHIPS ─── */
-    .chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem;}
-    .chip{padding:0.5rem 1rem;border-radius:var(--r-full);background:var(--surface-2);border:1.5px solid var(--border);font-size:0.85rem;color:var(--text-muted);cursor:pointer;transition:all var(--t);}
-    .chip:hover{border-color:var(--border-hover);color:var(--text);}
-    .chip.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);color:#a5b4fc;font-weight:600;}
-
-    /* ─── BUTTONS ─── */
-    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
-    .btn-primary:hover{box-shadow:0 0 40px rgba(99,102,241,0.5),0 6px 20px rgba(0,0,0,0.5);}
-    .btn-primary:active{transform:scale(0.98);}
-    .btn-primary:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
-    .btn-secondary{display:flex;align-items:center;justify-content:center;gap:0.4rem;width:100%;padding:0.75rem;font-size:0.82rem;color:var(--text-faint);text-decoration:underline;text-underline-offset:3px;transition:color var(--t);margin-top:0.5rem;}
-    .btn-secondary:hover{color:var(--text-muted);}
-
-    /* ─── SLIDER ─── */
-    .range-wrap{position:relative;margin:0.75rem 0;}
-    .range-wrap input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:var(--surface-3);border-radius:var(--r-full);outline:none;}
-    .range-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:linear-gradient(135deg,var(--indigo),var(--purple));border-radius:50%;cursor:pointer;box-shadow:0 0 10px rgba(99,102,241,0.4);}
-    .range-labels{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-faint);margin-top:0.25rem;}
-
-    /* ─── STICKY TOTAL ─── */
-    .sticky-total{position:sticky;bottom:0;background:rgba(11,13,23,0.92);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:0.875rem 1rem;display:flex;justify-content:space-between;align-items:center;margin:1.5rem -1.5rem -6rem;z-index:50;}
-    .sticky-label{font-size:0.82rem;color:var(--text-muted);}
-    .sticky-value{font-size:1.1rem;font-weight:800;color:#fff;transition:color 0.3s;}
-
-    /* ─── EXIT ─── */
-    .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
-    .exit-icon{font-size:2.5rem;margin-bottom:1rem;}
-    .exit-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
-    .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
-    .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
-    .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
-    .exit-item-icon{flex-shrink:0;margin-top:0.1em;}
-    .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
-    .exit-item-value{font-size:0.85rem;font-weight:700;color:var(--text);}
-    .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
-    .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
-    .exit-next-text{flex:1;}
-    .exit-next-label{font-size:0.7rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;font-weight:700;}
-    .exit-next-name{font-size:0.9rem;font-weight:600;color:var(--text);}
-
-    /* ─── EXAMPLE CARDS (Screen 1) ─── */
-    .example-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1.25rem 0;}
-    .example-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem 0.875rem;display:flex;flex-direction:column;gap:0.35rem;transition:border-color var(--t);}
-    .example-card:hover{border-color:var(--border-hover);}
-    .example-card-icon{font-size:1.4rem;line-height:1;}
-    .example-card-text{font-size:0.82rem;font-weight:600;color:var(--text);}
-
-    /* ─── SUB-TEXT ─── */
-    .sub-text{font-size:0.85rem;color:var(--text-muted);line-height:1.5;margin-bottom:0.75rem;}
-    .nudge-text{font-size:0.82rem;color:var(--text-faint);font-style:italic;padding:0.75rem 1rem;border-left:3px solid var(--indigo-glow);border-radius:0 var(--r-sm) var(--r-sm) 0;background:var(--indigo-dim);line-height:1.5;margin-top:0.5rem;}
-
-    /* ─── BADGE ─── */
-    .badge{display:inline-flex;align-items:center;padding:0.2rem 0.55rem;border-radius:var(--r-full);font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;}
-    .badge-essentiel{background:var(--orange-dim);border:1px solid var(--orange-border);color:var(--orange);}
-
-    /* ─── FIELD ROW WITH BADGE ─── */
-    .field-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;}
-    .field-row .field-label{margin-bottom:0;}
-
-    /* ─── TIP BOX ─── */
-    .tip-box{display:flex;align-items:flex-start;gap:0.5rem;padding:0.75rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:1.25rem;}
-    .tip-icon{font-size:0.9rem;flex-shrink:0;margin-top:0.1em;}
-    .tip-text{font-size:0.78rem;color:var(--text-muted);line-height:1.4;}
-
-    /* ─── TARGET CARD ─── */
-    .target-card{background:var(--indigo-dim);border:1.5px solid rgba(99,102,241,0.3);border-radius:var(--r-xl);padding:1.5rem;text-align:center;margin:1.25rem 0;}
-    .target-label{font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.35rem;}
-    .target-amount{font-size:clamp(2rem,8vw,3rem);font-weight:900;background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
-    .target-sublabel{font-size:0.8rem;color:var(--text-muted);margin-top:0.35rem;}
-
-    /* ─── PROJECTION ─── */
-    .projection-box{background:var(--surface-2);border:1px solid var(--green-border);border-radius:var(--r-lg);padding:1rem 1.125rem;margin:1rem 0;display:flex;align-items:center;gap:0.625rem;}
-    .projection-text{font-size:0.82rem;color:var(--green);line-height:1.45;flex:1;}
-    .micro-msg{font-size:0.8rem;color:var(--violet);font-weight:600;text-align:center;padding:0.5rem;margin-top:0.25rem;}
-
-    /* ─── SOURCE CARDS ─── */
-    .source-list{display:flex;flex-direction:column;gap:0.625rem;margin:1.25rem 0;}
-    .source-card{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:0.875rem 1rem;display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:all var(--t);}
-    .source-card:hover{border-color:var(--border-hover);background:var(--surface-3);}
-    .source-card.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);}
-    .source-card-icon{font-size:1.2rem;flex-shrink:0;}
-    .source-card-text{font-size:0.875rem;font-weight:600;color:var(--text);flex:1;}
-    .source-card-check{width:18px;height:18px;border-radius:50%;background:var(--indigo);display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transition:opacity var(--t);}
-    .source-card.selected .source-card-check{opacity:1;}
-
-    /* ─── SUMMARY BLOCKS ─── */
-    .summary-blocks{display:flex;flex-direction:column;gap:0.75rem;margin:1.5rem 0;}
-    .summary-block{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;}
-    .summary-block-label{font-size:0.72rem;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.25rem;}
-    .summary-block-value{font-size:1.05rem;font-weight:700;color:var(--text);}
-
-    /* ─── ADJUST TARGET ─── */
-    .adjust-area{margin-top:0.75rem;padding:1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);display:none;}
-    .adjust-area.visible{display:block;}
-
-    /* ─── ERROR ─── */
-    .error-msg{font-size:0.78rem;color:var(--orange);background:var(--orange-dim);border:1px solid var(--orange-border);border-radius:var(--r-md);padding:0.5rem 0.875rem;margin-top:0.5rem;display:none;}
-    .error-msg.visible{display:block;}
-
-    /* ─── PRECARIOUS BANNER ─── */
-    .precarious-banner{background:var(--orange-dim);border:1px solid var(--orange-border);border-radius:var(--r-lg);padding:0.875rem 1rem;margin-bottom:1.25rem;font-size:0.82rem;color:var(--orange);line-height:1.5;display:none;}
-    .precarious-banner.visible{display:flex;gap:0.5rem;}
-
-    /* ─── RESPONSIVE ─── */
-    @media(max-width:520px){
-      nav{padding:0.875rem 1rem;}
-      main{padding:1.5rem 1rem 5rem;}
-      .brick-card{padding:1.5rem;}
-      .example-grid{grid-template-columns:1fr 1fr;}
-      .sticky-total{margin:1.5rem -1rem -5rem;}
+    #print-bilan h1 { font-family:Georgia,serif; font-size:1.5rem; margin-bottom:0.25rem; }
+    #print-bilan .pb-date { font-size:0.8rem; color:#78716C; margin-bottom:1.5rem; }
+    #print-bilan .pb-section { margin-bottom:1.25rem; }
+    #print-bilan .pb-section-title {
+      font-size:0.65rem; font-weight:700; letter-spacing:0.08em;
+      text-transform:uppercase; color:#A8A29E;
+      margin-bottom:0.5rem; border-bottom:1px solid #E7E5E4; padding-bottom:0.25rem;
     }
+    #print-bilan .pb-row { display:flex; justify-content:space-between; font-size:0.875rem; padding:0.2rem 0; }
+    #print-bilan .pb-row-label { color:#57534E; }
+    #print-bilan .pb-row-val { font-weight:600; color:#1C1917; }
+    #print-bilan .pb-footer { margin-top:2rem; font-size:0.72rem; color:#A8A29E; text-align:center; }
+  }
 
-    @keyframes popIn{from{transform:scale(0.4);opacity:0;}to{transform:scale(1);opacity:1;}}
-    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
   </style>
 </head>
 <body>
-<canvas id="bg-canvas"></canvas>
 
+<!-- SIDEBAR injected by sidebar.js -->
+<div class="f-sidebar-shell">
 
+  <!-- MAIN CONTENT WRAPPER -->
+  <div class="brique-2col-wrapper" id="brique-wrapper">
 
+    <!-- ════════════════════════════════════════════════════════
+         LEFT COL: main brick content
+    ════════════════════════════════════════════════════════ -->
+    <div class="brique-main-col" id="main-col">
 
-<div class="brique-2col-wrapper">
-  <!-- Colonne gauche 60% — contenu de la brique -->
-  <main class="brique-main-col">
-  <!-- PROGRESS BAR -->
-  <div class="brick-progress" id="progress-bar">
-    <div class="bp-dot active" id="dot-0"></div>
-    <div class="bp-dot" id="dot-1"></div>
-    <div class="bp-dot" id="dot-2"></div>
-    <div class="bp-dot" id="dot-3"></div>
-    <div class="bp-dot" id="dot-4"></div>
-    <div class="bp-dot" id="dot-5"></div>
-    <div class="bp-dot" id="dot-6"></div>
+      <!-- CTX HEADER -->
+      <div class="ctx-header">
+        <nav id="ctx-nav">
+          <a href="dashboard.html" class="wordmark">
+            <div class="wordmark-icon">f</div>
+            <span>Fundamental</span>
+          </a>
+          <div class="nav-right" id="nav-right-slot"></div>
+        </nav>
+      </div>
+
+      <!-- ═══ SCREEN 1 — Ce qu'on sait déjà ═══ -->
+      <div id="screen-1" class="screen active-screen">
+        <div class="brick-card">
+          <div class="brick-kicker">ÉTAPE 1 / 4 · CE QU'ON SAIT DÉJÀ</div>
+          <h2 class="brick-title">On reprend ton profil.</h2>
+          <p class="brick-subtitle">Tu peux corriger. Le calcul s'ajuste.</p>
+
+          <!-- Resume card (hidden by default, shown if saved session exists) -->
+          <div class="resume-card" id="resume-card">
+            <div class="resume-kicker">Reprendre où tu t'es arrêté·e</div>
+            <p class="resume-text">Tu avais commencé cette brique. <em>Continuer ?</em></p>
+            <div class="resume-actions">
+              <button class="btn-hero-primary" id="btn-resume" style="padding:0.5rem 1.125rem;font-size:0.825rem;">Reprendre →</button>
+              <button class="btn-hero-secondary" onclick="dismissResume()">Recommencer</button>
+            </div>
+          </div>
+
+          <!-- Data cards grid -->
+          <div class="data-cards-grid" id="data-cards-grid">
+            <!-- Populated by buildScreen1() -->
+          </div>
+
+          <!-- Editable fields -->
+          <div style="display:flex;flex-direction:column;gap:1.25rem;" id="fields-s1">
+
+            <!-- Épargne disponible -->
+            <div class="field-group">
+              <label class="field-label" for="input-epargne">
+                Épargne disponible (€)
+                <span class="badge-prefilled" id="badge-epargne" style="display:none">✓ Pré-rempli</span>
+              </label>
+              <div class="euro-wrap">
+                <input type="number" id="input-epargne" class="field-input" placeholder="ex : 500" min="0" inputmode="numeric" aria-label="Épargne disponible en euros"/>
+                <span class="euro-suffix">€</span>
+              </div>
+              <div class="field-help">Livrets, comptes accessibles immédiatement</div>
+            </div>
+
+            <!-- Charges vitales -->
+            <div class="field-group">
+              <label class="field-label" for="input-charges-vitales">
+                Charges vitales estimées (€/mois)
+                <span class="badge-prefilled" id="badge-charges" style="display:none">✓ Pré-rempli</span>
+              </label>
+              <div class="euro-wrap">
+                <input type="number" id="input-charges-vitales" class="field-input" placeholder="ex : 900" min="0" inputmode="numeric" aria-label="Charges vitales mensuelles"/>
+                <span class="euro-suffix">€</span>
+              </div>
+              <div class="field-help">Loyer, courses, transport, santé — le strict nécessaire</div>
+            </div>
+
+            <!-- Épargne mensuelle (optional) -->
+            <div class="field-group">
+              <label class="field-label" for="input-epargne-mensuelle">
+                Ce que tu mets déjà de côté (€/mois)
+              </label>
+              <div class="euro-wrap">
+                <input type="number" id="input-epargne-mensuelle" class="field-input" placeholder="optionnel" min="0" inputmode="numeric" aria-label="Épargne mensuelle actuelle"/>
+                <span class="euro-suffix">€</span>
+              </div>
+              <div class="field-help">Facultatif — même 5 € ça compte</div>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="nav-btns" style="margin-top:1.5rem;">
+            <span></span>
+            <button class="btn-hero-primary" id="btn-calculer" aria-label="Calculer mon palier">
+              Calculer mon palier →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SCREEN 2 — Ton prochain palier ═══ -->
+      <div id="screen-2" class="screen" style="display:none">
+        <div class="brick-card">
+          <div class="brick-kicker">ÉTAPE 2 / 4 · TON PROCHAIN PALIER</div>
+          <h2 class="brick-title">Pas besoin de tout construire d'un coup.</h2>
+          <p class="brick-subtitle">On vise le montant utile maintenant.</p>
+
+          <!-- Central result card -->
+          <div class="palier-result-card" id="palier-result-card">
+            <div class="palier-result-amount counter-animate" id="palier-result-amount">0 €</div>
+            <div class="palier-result-label" id="palier-result-label">à construire</div>
+            <div class="palier-result-sub" id="palier-result-sub"></div>
+          </div>
+
+          <!-- Atteint block (hidden unless already reached) -->
+          <div class="atteint-block" id="atteint-block" style="display:none">
+            <div class="atteint-block-title" id="atteint-title"></div>
+            <div class="atteint-block-sub" id="atteint-sub"></div>
+            <div id="atteint-actions"></div>
+          </div>
+
+          <!-- Progress gauge -->
+          <div class="jauge-wrap" id="jauge-wrap">
+            <div class="jauge-bar">
+              <div class="jauge-fill" id="jauge-fill" style="width:0%"></div>
+            </div>
+            <div class="jauge-labels">
+              <span>0 €</span>
+              <span id="jauge-actuel-label">Actuel : 0 €</span>
+              <span id="jauge-cible-label">Cible : 0 €</span>
+            </div>
+          </div>
+
+          <!-- 3 palier cards -->
+          <div class="palier-cards" id="palier-cards">
+            <!-- Populated by buildScreen2() -->
+          </div>
+
+          <!-- Raisons block -->
+          <div class="raisons-block" id="raisons-block">
+            <div class="raisons-block-title">Pourquoi ce montant ?</div>
+            <div id="raisons-list">
+              <!-- Populated by buildScreen2() -->
+            </div>
+          </div>
+
+          <div class="nav-btns">
+            <button class="btn-back" onclick="goToScreen(1)" aria-label="Retour">← Retour</button>
+            <button class="btn-hero-primary" id="btn-choisir-rythme" aria-label="Choisir mon rythme">
+              Choisir mon rythme →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SCREEN 3 — Ton rythme ═══ -->
+      <div id="screen-3" class="screen" style="display:none">
+        <div class="brick-card">
+          <div class="brick-kicker">ÉTAPE 3 / 4 · TON RYTHME</div>
+          <h2 class="brick-title">Choisis un montant tenable.</h2>
+          <p class="brick-subtitle">Le bon rythme, c'est celui que tu gardes.</p>
+
+          <!-- Header summary -->
+          <div class="header-summary" id="header-summary-s3">
+            Il reste <strong id="s3-reste">0 €</strong> à construire.
+          </div>
+
+          <!-- 3 rythme cards -->
+          <div class="rythme-cards" id="rythme-cards">
+            <!-- Populated by buildScreen3() -->
+          </div>
+
+          <!-- Custom amount -->
+          <button class="chip-custom" id="chip-custom-rythme" aria-label="Autre montant">
+            Autre montant
+          </button>
+          <div class="custom-rythme-wrap" id="custom-rythme-wrap">
+            <div class="field-group" style="margin-bottom:0">
+              <label class="field-label" for="input-rythme-custom">Montant personnalisé (€/mois)</label>
+              <div class="euro-wrap">
+                <input type="number" id="input-rythme-custom" class="field-input" placeholder="ex : 75" min="1" inputmode="numeric" aria-label="Rythme personnalisé"/>
+                <span class="euro-suffix">€</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Budget serré warning -->
+          <div class="warning-serre" id="warning-serre">
+            <span>⚠</span>
+            <span>Ton budget est serré. On garde un rythme bas. Le but est de tenir.</span>
+          </div>
+
+          <div class="nav-btns">
+            <button class="btn-back" onclick="goToScreen(2)" aria-label="Retour">← Retour</button>
+            <button class="btn-hero-primary" id="btn-valider-rythme" aria-label="Valider ce rythme">
+              Valider ce rythme →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ SCREEN 4 — Où le garder ═══ -->
+      <div id="screen-4" class="screen" style="display:none">
+        <div class="brick-card">
+          <div class="brick-kicker">ÉTAPE 4 / 4 · OÙ LE GARDER</div>
+          <h2 class="brick-title">Disponible. Séparé. Sans prise de risque.</h2>
+          <p class="brick-subtitle" id="s4-subtitle">L'endroit où ton matelas sera le plus utile.</p>
+
+          <!-- Livret detected -->
+          <div class="placement-detected" id="placement-detected" style="display:none">
+            <span class="badge-source">Tu as un livret déclaré</span>
+            <p>C'est l'endroit cohérent pour ce matelas.</p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+              <button class="btn-hero-primary" style="width:100%;justify-content:center;" onclick="selectPlacement('livret');lancerMatelas();" aria-label="Confirmer le livret">Confirmer →</button>
+              <button class="btn-hero-secondary" onclick="showAllPlacements()" aria-label="Choisir autrement">Choisir autrement</button>
+            </div>
+          </div>
+
+          <!-- All placement cards -->
+          <div class="placement-cards" id="placement-cards" style="display:none">
+            <div class="placement-card selected" data-placement="livret" onclick="selectPlacement('livret')" role="button" aria-label="Livret disponible">
+              <div class="placement-card-info">
+                <div class="placement-card-title">Livret disponible</div>
+                <div class="placement-card-desc">Accessible. Séparé du quotidien. Adapté au matelas.</div>
+              </div>
+              <span class="placement-card-badge">recommandé</span>
+            </div>
+            <div class="placement-card" data-placement="compte_separe" onclick="selectPlacement('compte_separe')" role="button" aria-label="Compte séparé">
+              <div class="placement-card-info">
+                <div class="placement-card-title">Compte séparé</div>
+                <div class="placement-card-desc">Utile si tu veux éviter d'y toucher.</div>
+              </div>
+            </div>
+            <div class="placement-card" data-placement="compte_courant" onclick="selectPlacement('compte_courant')" role="button" aria-label="Compte courant temporaire">
+              <div class="placement-card-info">
+                <div class="placement-card-title">Compte courant temporaire</div>
+                <div class="placement-card-desc">Possible au début. Moins idéal si tu dépenses vite.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-btns" id="nav-btns-s4">
+            <button class="btn-back" onclick="goToScreen(3)" aria-label="Retour">← Retour</button>
+            <button class="btn-hero-primary" id="btn-lancer" aria-label="Lancer mon matelas" onclick="lancerMatelas()">
+              Lancer mon matelas →
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- end .brique-main-col -->
+
+    <!-- ════════════════════════════════════════════════════════
+         RIGHT COL: progress panel
+    ════════════════════════════════════════════════════════ -->
+    <div class="brique-side-panel" id="side-panel">
+      <div class="brique-progress-card" id="progress-card">
+        <div class="bpc-kicker">TA PROGRESSION</div>
+        <div class="bpc-title" id="bpc-step-title">On reprend ton profil…</div>
+
+        <div class="bpc-ring-wrap">
+          <svg class="bpc-ring" width="80" height="80" aria-hidden="true">
+            <circle class="bpc-ring-bg" cx="40" cy="40" r="32"/>
+            <circle class="bpc-ring-fill" id="bpc-ring-fill" cx="40" cy="40" r="32"
+              stroke-dasharray="201" stroke-dashoffset="201"/>
+            <text class="bpc-ring-pct" id="bpc-ring-pct" x="40" y="40"
+              text-anchor="middle" dominant-baseline="central">0%</text>
+          </svg>
+        </div>
+
+        <div class="bpc-steps" id="bpc-steps-list">
+          <div class="bpc-step active" id="bpc-step-1">
+            <div class="bpc-step-num">1</div>
+            <div class="bpc-step-label">Ce qu'on sait déjà</div>
+          </div>
+          <div class="bpc-step" id="bpc-step-2">
+            <div class="bpc-step-num">2</div>
+            <div class="bpc-step-label">Ton prochain palier</div>
+          </div>
+          <div class="bpc-step" id="bpc-step-3">
+            <div class="bpc-step-num">3</div>
+            <div class="bpc-step-label">Ton rythme</div>
+          </div>
+          <div class="bpc-step" id="bpc-step-4">
+            <div class="bpc-step-num">4</div>
+            <div class="bpc-step-label">Où le garder</div>
+          </div>
+        </div>
+
+        <div class="bpc-nav">
+          <a href="plan.html" class="bpc-dashboard-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            Retour au plan
+          </a>
+          <a href="dashboard.html" class="bpc-dashboard-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- end .brique-side-panel -->
+
   </div>
+  <!-- end .brique-2col-wrapper -->
+</div>
+<!-- end .f-sidebar-shell -->
 
-  <!-- ══════════════════════════════════════════
-       SCREEN 0 — Intro
-  ══════════════════════════════════════════ -->
-  <div class="screen" id="screen-0">
-    <div class="brick-card">
-      <div style="font-size:2.5rem;margin-bottom:1.25rem;line-height:1;">🛡️</div>
-      <h1 class="brick-title">Un imprévu n'a pas besoin de devenir une crise.</h1>
-      <p class="brick-subtitle">On va construire ton coussin de sécurité, petit à petit.</p>
 
-      <!-- Dynamic precarious banner -->
-      <div class="precarious-banner" id="precarious-banner-0">
-        <span>⚡</span>
-        <span>On ne vise pas 1 000 € tout de suite. On vise d'abord le prochain petit choc.</span>
-      </div>
+<!-- ══════════════════════════════════════════════════════════════
+     COMPLETION MODAL
+══════════════════════════════════════════════════════════════ -->
+<div class="modal-fin-overlay" id="modal-fin" style="display:none">
+  <div class="modal-fin-card">
+    <div class="modal-fin-header">
+      <div class="modal-fin-check" aria-hidden="true">✓</div>
+      <h2 class="modal-fin-title">Matelas lancé.</h2>
+      <p class="modal-fin-sub" id="modal-fin-sub">Ton plan est en place.</p>
+    </div>
 
-      <div class="reassurance" id="already-saving-msg" style="display:none;">
-        ✓ Tu épargnes déjà — vérifions si ton coussin est suffisant.
-      </div>
+    <div class="modal-fin-summary" id="modal-fin-summary">
+      <!-- Populated by lancerMatelas() -->
+    </div>
 
-      <div style="display:flex;flex-direction:column;gap:0.625rem;margin:1.25rem 0;">
-        <div style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);">
-          <span style="font-size:1.1rem;flex-shrink:0;">🎯</span>
-          <div>
-            <div style="font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:0.15rem;">Un vrai objectif à portée de main</div>
-            <div style="font-size:0.78rem;color:var(--text-muted);">Même 100 € de côté changent tout en cas de pépin.</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);">
-          <span style="font-size:1.1rem;flex-shrink:0;">⏱️</span>
-          <div>
-            <div style="font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:0.15rem;">~10 minutes</div>
-            <div style="font-size:0.78rem;color:var(--text-muted);">Pour repartir avec un plan concret et réaliste.</div>
-          </div>
-        </div>
-      </div>
-
-      <button class="btn-primary" onclick="goToScreen(1)">
-        Définir mon coussin →
+    <div class="modal-fin-actions">
+      <button class="btn-hero-primary" onclick="validerEngagement()" aria-label="Ajouter à mon dashboard">
+        Ajouter à mon dashboard
       </button>
+      <a href="plan.html" class="modal-fin-secondary">Voir mon plan</a>
+      <a href="dashboard.html" class="modal-fin-secondary">Retour au tableau de bord</a>
     </div>
   </div>
-
-  <!-- ══════════════════════════════════════════
-       SCREEN 1 — À quoi ça sert
-  ══════════════════════════════════════════ -->
-  <div class="screen" id="screen-1" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 1 / 5</div>
-      <h1 class="brick-title">Le but n'est pas d'être "parfait". Le but, c'est d'éviter le prochain trou.</h1>
-      <p class="brick-subtitle" style="margin-bottom:0.5rem;">Le coussin d'urgence, c'est pour des moments comme ça :</p>
-
-      <div class="example-grid" id="example-grid-1">
-        <!-- Cards filled by JS based on profile -->
-      </div>
-
-      <p class="sub-text">Même 100 ou 300 € peuvent déjà changer beaucoup de choses.</p>
-
-      <div class="nudge-text">
-        L'idée n'est pas de constituer un gros matelas du premier coup. On commence par un <strong>mini fonds</strong> — juste assez pour encaisser le prochain imprévu sans tomber dans le rouge.
-      </div>
-
-      <button class="btn-primary" onclick="goToScreen(2)">Continuer →</button>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       SCREEN 2 — Charges vitales
-  ══════════════════════════════════════════ -->
-  <div class="screen" id="screen-2" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 2 / 5</div>
-      <h1 class="brick-title">Commençons par le strict nécessaire.</h1>
-      <p class="brick-subtitle">Le coussin d'urgence protège d'abord tes dépenses vitales.</p>
-
-      <div class="tip-box">
-        <span class="tip-icon">💡</span>
-        <span class="tip-text">Pas besoin d'être exact. On cherche une base utile.</span>
-      </div>
-
-      <!-- Logement -->
-      <div class="field-group">
-        <div class="field-row">
-          <label class="field-label" for="charge-logement">Logement</label>
-          <span class="badge badge-essentiel">essentiel</span>
-        </div>
-        <div class="euro-wrap">
-          <input type="number" id="charge-logement" class="field-input" placeholder="ex : 650" min="0" oninput="updateVitalTotal()" />
-          <span class="euro-suffix">€</span>
-        </div>
-        <div class="field-help">Loyer, charges, électricité, eau…</div>
-      </div>
-
-      <!-- Nourriture -->
-      <div class="field-group">
-        <div class="field-row">
-          <label class="field-label" for="charge-nourriture">Nourriture</label>
-          <span class="badge badge-essentiel">essentiel</span>
-        </div>
-        <div class="euro-wrap">
-          <input type="number" id="charge-nourriture" class="field-input" placeholder="ex : 300" min="0" oninput="updateVitalTotal()" />
-          <span class="euro-suffix">€</span>
-        </div>
-        <div class="field-help">Courses, repas essentiels</div>
-      </div>
-
-      <!-- Transport -->
-      <div class="field-group">
-        <div class="field-row">
-          <label class="field-label" for="charge-transport">Transport</label>
-          <span class="badge badge-essentiel">essentiel</span>
-        </div>
-        <div class="euro-wrap">
-          <input type="number" id="charge-transport" class="field-input" placeholder="ex : 80" min="0" oninput="updateVitalTotal()" />
-          <span class="euro-suffix">€</span>
-        </div>
-        <div class="field-help">Abonnement, carburant, entretien</div>
-      </div>
-
-      <!-- Santé -->
-      <div class="field-group">
-        <div class="field-row">
-          <label class="field-label" for="charge-sante">Santé</label>
-          <span class="badge badge-essentiel">essentiel</span>
-        </div>
-        <div class="euro-wrap">
-          <input type="number" id="charge-sante" class="field-input" placeholder="ex : 30" min="0" oninput="updateVitalTotal()" />
-          <span class="euro-suffix">€</span>
-        </div>
-        <div class="field-help">Mutuelle, médicaments, soins réguliers</div>
-      </div>
-
-      <!-- Autres essentiels -->
-      <div class="field-group">
-        <div class="field-row">
-          <label class="field-label" for="charge-autres">Autres essentiels</label>
-          <span class="badge badge-essentiel">essentiel</span>
-        </div>
-        <div class="euro-wrap">
-          <input type="number" id="charge-autres" class="field-input" placeholder="ex : 50" min="0" oninput="updateVitalTotal()" />
-          <span class="euro-suffix">€</span>
-        </div>
-        <div class="field-help">Téléphone, internet, autres dépenses vitales</div>
-      </div>
-
-      <div class="error-msg" id="error-charges">Ajoute au moins une estimation. Même large.</div>
-
-      <button class="btn-primary" onclick="validateCharges()">Calculer ma cible →</button>
-
-      <!-- Sticky total -->
-      <div class="sticky-total">
-        <span class="sticky-label">Total charges vitales :</span>
-        <span class="sticky-value" id="vital-total">0 €/mois</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       SCREEN 3 — Target proposal
-  ══════════════════════════════════════════ -->
-  <div class="screen" id="screen-3" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 3 / 5</div>
-      <h1 class="brick-title">Voici une cible réaliste pour toi.</h1>
-
-      <div class="target-card" id="target-card">
-        <div class="target-label" id="target-label">Cible de départ recommandée</div>
-        <div class="target-amount" id="target-amount">500 €</div>
-        <div class="target-sublabel" id="target-sublabel">selon ton profil et tes charges vitales</div>
-      </div>
-
-      <p class="sub-text" id="target-angle-text">L'idée n'est pas de tout faire d'un coup. L'idée est de pouvoir encaisser le prochain imprévu.</p>
-
-      <div class="nudge-text" id="target-nudge">
-        Tu n'as pas besoin d'atteindre 3 mois de charges dès le départ. On commence par une étape réaliste — et on avance.
-      </div>
-
-      <button class="btn-primary" onclick="goToScreen(4)">Choisir mon rythme →</button>
-      <button class="btn-secondary" onclick="toggleAdjust()">Ajuster ma cible</button>
-
-      <div class="adjust-area" id="adjust-area">
-        <label class="field-label" for="custom-target" style="margin-bottom:0.5rem;">Définir une cible personnalisée</label>
-        <div class="euro-wrap">
-          <input type="number" id="custom-target" class="field-input" placeholder="ex : 400" min="0" oninput="applyCustomTarget()" />
-          <span class="euro-suffix">€</span>
-        </div>
-        <div class="field-help">Tu pourras toujours la revoir plus tard.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       SCREEN 4 — Rhythm choice
-  ══════════════════════════════════════════ -->
-  <div class="screen" id="screen-4" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 4 / 5</div>
-      <h1 class="brick-title">Quel rythme peux-tu vraiment tenir ?</h1>
-      <p class="brick-subtitle">Choisis un montant que tu es sûr(e) de mettre de côté, régulièrement.</p>
-
-      <p style="font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.75rem;">Suggestions</p>
-      <div class="chips" id="rhythm-chips">
-        <button class="chip" data-weekly="5" data-monthly="21" data-label="5 €/semaine" onclick="selectRhythmChip(this)">5 €/semaine</button>
-        <button class="chip" data-weekly="10" data-monthly="43" data-label="10 €/semaine" onclick="selectRhythmChip(this)">10 €/semaine</button>
-        <button class="chip" data-weekly="20" data-monthly="86" data-label="20 €/semaine" onclick="selectRhythmChip(this)">20 €/semaine</button>
-        <button class="chip" data-weekly="12" data-monthly="50" data-label="50 €/mois" onclick="selectRhythmChip(this)">50 €/mois</button>
-        <button class="chip" data-weekly="0" data-monthly="0" data-label="Autre" onclick="selectRhythmChip(this)">Autre</button>
-      </div>
-
-      <!-- Custom amount for "Autre" -->
-      <div class="field-group" id="custom-rhythm-wrap" style="display:none;">
-        <label class="field-label" for="custom-rhythm">Montant mensuel personnalisé</label>
-        <div class="euro-wrap">
-          <input type="number" id="custom-rhythm" class="field-input" placeholder="ex : 30" min="1" oninput="updateProjection()" />
-          <span class="euro-suffix">€/mois</span>
-        </div>
-      </div>
-
-      <!-- Slider -->
-      <div class="range-wrap" id="rhythm-slider-wrap">
-        <input type="range" id="rhythm-slider" min="5" max="200" step="5" value="21" oninput="onSliderChange(this.value)" />
-        <div class="range-labels"><span>5 €/mois</span><span>200 €/mois</span></div>
-      </div>
-
-      <p class="sub-text" style="margin-top:0.5rem;">Petit mais régulier &gt; ambitieux puis abandonné.</p>
-
-      <!-- Projection -->
-      <div class="projection-box" id="projection-box" style="display:none;">
-        <span>📅</span>
-        <span class="projection-text" id="projection-text">À ce rythme, ton coussin atteint <strong id="proj-amount"></strong> le <strong id="proj-date"></strong>.</span>
-      </div>
-
-      <!-- Micro message for small amounts -->
-      <div class="micro-msg" id="micro-msg" style="display:none;">✨ Oui, ça compte vraiment.</div>
-
-      <!-- Warning for overly ambitious rhythm -->
-      <div class="error-msg" id="error-rhythm" style="display:none;margin-top:0.5rem;">Ce rythme semble ambitieux au vu de ton mois. Veux-tu tester un montant plus léger ?</div>
-
-      <button class="btn-primary" id="btn-validate-rhythm" onclick="validateRhythm()" disabled>Valider ce rythme →</button>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       SCREEN 5 — Where to find the money
-  ══════════════════════════════════════════ -->
-  <div class="screen" id="screen-5" style="display:none;">
-    <div class="brick-card">
-      <div class="step-indicator">Étape 5 / 5</div>
-      <h1 class="brick-title">On le prend où, concrètement ?</h1>
-      <p class="brick-subtitle">Choisis une source simple pour alimenter ton coussin.</p>
-
-      <div class="source-list">
-        <button class="source-card" data-source="marge_budget" onclick="selectSource(this)">
-          <span class="source-card-icon">🔍</span>
-          <span class="source-card-text">Une petite marge repérée dans ton budget</span>
-          <span class="source-card-check">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </button>
-        <button class="source-card" data-source="abonnement" onclick="selectSource(this)">
-          <span class="source-card-icon">✂️</span>
-          <span class="source-card-text">Un abonnement à revoir</span>
-          <span class="source-card-check">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </button>
-        <button class="source-card" data-source="virement_paie" onclick="selectSource(this)">
-          <span class="source-card-icon">🔄</span>
-          <span class="source-card-text">Un virement automatique le jour de la paie</span>
-          <span class="source-card-check">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </button>
-        <button class="source-card" data-source="reste_fin_mois" onclick="selectSource(this)">
-          <span class="source-card-icon">🌙</span>
-          <span class="source-card-text">Un reste de fin de mois</span>
-          <span class="source-card-check">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-        </button>
-      </div>
-
-      <button class="btn-primary" id="btn-create-plan" onclick="validateSource()" disabled>Créer mon plan →</button>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       SCREEN 6 — Final engagement + Exit
-  ══════════════════════════════════════════ -->
-  <div class="screen" id="screen-6" style="display:none;">
-    <div class="exit-card">
-      <div class="exit-icon" style="animation:popIn 0.5s var(--ease-spring) both;">🛡️</div>
-      <h2 class="exit-title">Ton coussin est lancé.</h2>
-      <p class="exit-subtitle">Tu viens de sécuriser ton prochain imprévu.</p>
-
-      <!-- Summary -->
-      <div class="summary-blocks">
-        <div class="summary-block">
-          <div class="summary-block-label">🎯 Objectif</div>
-          <div class="summary-block-value" id="exit-objectif">—</div>
-        </div>
-        <div class="summary-block">
-          <div class="summary-block-label">⏱️ Rythme</div>
-          <div class="summary-block-value" id="exit-rythme">—</div>
-        </div>
-        <div class="summary-block">
-          <div class="summary-block-label">💡 Première source</div>
-          <div class="summary-block-value" id="exit-source">—</div>
-        </div>
-        <div class="summary-block" id="exit-projection-block" style="display:none;">
-          <div class="summary-block-label">📅 Date estimée</div>
-          <div class="summary-block-value" id="exit-projection-date">—</div>
-        </div>
-      </div>
-
-      <button class="btn-primary" onclick="finalizeBrick()">Terminer ✓</button>
-
-      <!-- Exit navigation (shown after completeBrick) -->
-      <div id="exit-nav" style="display:none;margin-top:1rem;">
-        <button class="exit-next" id="btn-next-brick" style="display:none;" onclick="goToNextBrick()">
-          <span style="font-size:1.3rem;">🚀</span>
-          <div class="exit-next-text">
-            <div class="exit-next-label">Prochaine brique</div>
-            <div class="exit-next-name" id="next-brick-name">—</div>
-          </div>
-          <span style="color:var(--text-faint);">→</span>
-        </button>
-        <button class="exit-next" onclick="window.location.href='dashboard.html'">
-          <span style="font-size:1.3rem;">📊</span>
-          <div class="exit-next-text">
-            <div class="exit-next-label">Retour</div>
-            <div class="exit-next-name">Dashboard</div>
-          </div>
-          <span style="color:var(--text-faint);">→</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-</main>
-  <!-- Colonne droite 40% — panel de progression -->
-  <aside class="brique-side-panel">
-    <div class="brique-progress-card">
-      <div class="bpc-kicker">TA PROGRESSION</div>
-      <div class="bpc-title" id="bpc-step-title">Étape 1</div>
-      
-      <!-- Ring de progression -->
-      <div class="bpc-ring-wrap">
-        <svg class="bpc-ring" width="72" height="72" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r="30" stroke="var(--v3-track)" stroke-width="4" fill="none"/>
-          <circle id="bpc-ring-arc" cx="36" cy="36" r="30" stroke="var(--v3-accent-strong)" stroke-width="4" fill="none"
-                  stroke-dasharray="188.5" stroke-dashoffset="188.5" stroke-linecap="round"/>
-        </svg>
-        <div class="bpc-ring-pct" id="bpc-ring-pct">0%</div>
-      </div>
-
-      <!-- Steps list (remplie par JS) -->
-      <div class="bpc-steps" id="bpc-steps-list"></div>
-
-      <!-- Nav -->
-      <div class="bpc-nav">
-        <a href="plan.html" class="bpc-dashboard-link">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Retour au plan
-        </a>
-        <a href="dashboard.html" class="bpc-dashboard-link">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-          Dashboard
-        </a>
-      </div>
-    </div>
-  </aside>
 </div>
 
+
+<!-- ══════════════════════════════════════════════════════════════
+     PRINT BILAN (hidden, revealed @media print)
+══════════════════════════════════════════════════════════════ -->
+<div id="print-bilan" style="display:none"></div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCRIPTS — order is invariant
+══════════════════════════════════════════════════════════════ -->
 <script src="sidebar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
 <script src="nav-avatar.js"></script>
+
 <script>
-// ════════════════════════════════════════════════════════════════
-// FONDS D'URGENCE BRICK
-// ════════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
+   BRIQUE FONDS D'URGENCE — Matelas de sécurité V2
+   ══════════════════════════════════════════════════════════════ */
 
 const BRICK_ID = 'fonds_urgence';
-const TOTAL_SCREENS = 7;
 
-// ── State ──────────────────────────────────────────────────────
-let profil = loadFromStorage('profil') || getMockProfile();
-let currentScreen = 0;
+/* ── Application state ── */
+let mData = {};
+let calcResult = null;
+let selectedPalier = 'utile';   // 'coussin' | 'utile' | 'solide'
+let selectedRythme = 'recommande'; // 'prudent' | 'recommande' | 'rapide' | 'custom'
+let customRythme = 0;
+let selectedPlacement = 'livret';
+let currentScreen = 1;
 
-let state = {
-  vitalCharges: { logement: 0, nourriture: 0, transport: 0, sante: 0, autres: 0 },
-  totalVital: 0,
-  targetAmount: 500,
-  rhythmMonthly: 0,
-  rhythmLabel: '',
-  sourceKey: '',
-  sourceLabel: '',
-  isPrecarious: false,
-  isAlreadySaving: false,
-  projectionDate: null,
-  nextBrickMeta: null,
+const STEP_TITLES = {
+  1: 'On reprend ton profil…',
+  2: 'Ton prochain palier',
+  3: 'Ton rythme d\'épargne',
+  4: 'Où garder ton matelas'
 };
 
-// ── Profile analysis ───────────────────────────────────────────
-function analyzeProfile() {
-  const age = profil?.age || 25;
-  const situation = profil?.situation || 'jeune_actif';
-  const revenus = profil?.revenus || 1500;
-  const charges_connues = profil?.charges || 0;
-  const disponible = revenus - charges_connues;
+/* ══════════════════════════════════════════════════════════════
+   calculateMatelasSecurity
+   ══════════════════════════════════════════════════════════════ */
+function calculateMatelasSecurity(d) {
+  var epargneDisponible = Math.max(0, d.epargne_saisie || d.epargne_liquide_total || 0);
 
-  state.isPrecarious = (disponible < 200) || (revenus < 1000) || situation === 'etudiant';
-  state.isAlreadySaving = profil?.epargne_mensuelle > 0;
+  var chargesVitales = Math.max(0, d.charges_vitales_saisies || d.total_besoins || d.charges_fixes_total || 0);
+  var revenus = Math.max(0, (d.revenus || 0) + (d.aides || 0));
+  var chargesBase = chargesVitales > 0 ? chargesVitales : Math.round(revenus * 0.5);
 
-  return { age, situation, revenus, disponible };
-}
-
-// ── Profile-based target ───────────────────────────────────────
-function computeDefaultTarget(vitalTotal) {
-  const { situation } = analyzeProfile();
-  const age = profil?.age || 25;
-
-  if (state.isPrecarious || situation === 'etudiant' || age < 22) {
-    return { min: 100, max: 300, label: 'Mini coussin recommandé', angle: 'éviter le prochain trou de trésorerie' };
-  }
-  if (situation === 'independant' || profil?.independant) {
-    const t = Math.round(vitalTotal * 1.5 / 50) * 50;
-    return { min: t || 1500, max: t * 2 || 3000, label: 'Cible de départ recommandée', angle: 'absorber les creux de revenus' };
-  }
-  if (situation === 'famille' || (profil?.personnes_foyer || 1) > 2) {
-    const t = Math.max(vitalTotal, 1000);
-    return { min: t, max: t, label: 'Cible de départ recommandée', angle: 'protéger le foyer d\'un choc' };
-  }
-  // Jeune actif default
-  const base = vitalTotal > 0 ? Math.min(Math.max(vitalTotal, 300), 800) : 500;
-  return { min: base, max: base, label: 'Cible de départ recommandée', angle: 'éviter découvert et stress de fin de mois' };
-}
-
-// ── Example cards by profile ───────────────────────────────────
-function getExampleCards() {
-  const age = profil?.age || 25;
-  const isYoung = age < 24 || profil?.situation === 'etudiant';
-
-  if (isYoung) {
-    return [
-      { icon: '🏠', text: 'Une caution à avancer' },
-      { icon: '🚂', text: 'Un billet de train urgent' },
-      { icon: '💻', text: 'Réparation d\'ordi' },
-      { icon: '🔑', text: 'Dépôt de garantie' },
-    ];
-  }
-  return [
-    { icon: '📋', text: 'Une facture imprévue' },
-    { icon: '📱', text: 'Un téléphone à remplacer' },
-    { icon: '😓', text: 'Une semaine compliquée' },
-    { icon: '🚗', text: 'Un déplacement urgent' },
-  ];
-}
-
-// ── Source labels ──────────────────────────────────────────────
-const SOURCE_LABELS = {
-  marge_budget: 'Une marge repérée dans ton budget',
-  abonnement: 'Un abonnement à revoir',
-  virement_paie: 'Virement automatique à la paie',
-  reste_fin_mois: 'Le reste de fin de mois',
-};
-
-// ── Screen navigation ──────────────────────────────────────────
-function goToScreen(n) {
-  const prev = document.getElementById('screen-' + currentScreen);
-  const next = document.getElementById('screen-' + n);
-  if (!next) return;
-
-  prev.style.display = 'none';
-  next.style.display = 'block';
-  // re-trigger animation
-  next.style.animation = 'none';
-  void next.offsetWidth;
-  next.style.animation = '';
-
-  currentScreen = n;
-  updateProgress(n);
-  screenViewed(BRICK_ID, n);
-    autosaveBrickProgress(BRICK_ID, typeof idx === 'number' ? idx : (typeof n === 'number' ? n : currentScreen), state);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function updateProgress(n) {
-  for (let i = 0; i < TOTAL_SCREENS; i++) {
-    const dot = document.getElementById('dot-' + i);
-    if (!dot) continue;
-    dot.className = 'bp-dot';
-    if (i < n) dot.classList.add('done');
-    else if (i === n) dot.classList.add('active');
-  }
-}
-
-// ── Screen 1 — populate example cards ─────────────────────────
-function populateExampleCards() {
-  const grid = document.getElementById('example-grid-1');
-  const cards = getExampleCards();
-  grid.innerHTML = cards.map(c => `
-    <div class="example-card">
-      <span class="example-card-icon">${c.icon}</span>
-      <span class="example-card-text">${c.text}</span>
-    </div>
-  `).join('');
-}
-
-// ── Screen 2 — Live vital total ────────────────────────────────
-function updateVitalTotal() {
-  const fields = ['logement', 'nourriture', 'transport', 'sante', 'autres'];
-  let total = 0;
-  fields.forEach(f => {
-    const v = parseFloat(document.getElementById('charge-' + f).value) || 0;
-    state.vitalCharges[f] = v;
-    total += v;
+  var status = d.status_pro || '';
+  var dettes = d.dettes_types || [];
+  var hasDecouvert = dettes.includes('decouvert_regulier');
+  var hasDette = dettes.some(function(x) {
+    return ['credit_conso','credit_renouvelable','credit_immo'].includes(x);
   });
-  state.totalVital = total;
-  const el = document.getElementById('vital-total');
-  el.textContent = formatEuro(total) + '/mois';
-  el.style.color = total > 0 ? 'var(--violet)' : '#fff';
-}
+  var resteAVivre = d.reste_a_vivre || (revenus - chargesBase);
 
-function validateCharges() {
-  const err = document.getElementById('error-charges');
-  if (state.totalVital === 0) {
-    err.classList.add('visible');
-    return;
+  var stabilite = 'stable';
+  if (['etudiant','chomeur_inactif','indep_tpe','college_lycee'].includes(status)) stabilite = 'moins_stable';
+  else if (['sal_ouvrier_employe','sal_prof_inter'].includes(status) && !hasDecouvert) stabilite = 'stable';
+  else if (['cadre_prof_lib','retraite'].includes(status) && !hasDecouvert) stabilite = 'tres_stable';
+  if (hasDecouvert || resteAVivre < 0) stabilite = 'moins_stable';
+
+  var coeffMap = { tres_stable:[1,2], stable:[1.5,3], moins_stable:[2,5] };
+  var coefs = coeffMap[stabilite];
+  var coefMin = coefs[0], coefMax = coefs[1];
+
+  // Palier premier coussin
+  var palierPremierCoussin;
+  if (chargesBase > 0) palierPremierCoussin = Math.round(chargesBase * 0.5 / 50) * 50;
+  else palierPremierCoussin = 300;
+  palierPremierCoussin = Math.max(150, Math.min(palierPremierCoussin, 500));
+
+  // Sécurité utile (~1 mois charges)
+  var palierSecuriteUtile = chargesBase > 0
+    ? Math.round(chargesBase * coefMin / 50) * 50
+    : Math.round(palierPremierCoussin * 2.5 / 50) * 50;
+
+  // Sécurité solide (2-6 mois)
+  var palierSecuriteSolide = chargesBase > 0
+    ? Math.round(chargesBase * coefMax / 100) * 100
+    : Math.round(palierPremierCoussin * 6 / 100) * 100;
+
+  // Cible recommandée
+  var cibleRecommandee;
+  if (hasDecouvert) {
+    cibleRecommandee = palierPremierCoussin;
+  } else {
+    cibleRecommandee = palierSecuriteUtile;
   }
-  err.classList.remove('visible');
-  fieldCompleted(BRICK_ID, 'charges_vitales');
-  setupTargetScreen();
-  goToScreen(3);
-}
 
-// ── Screen 3 — Target setup ────────────────────────────────────
-function setupTargetScreen() {
-  const target = computeDefaultTarget(state.totalVital);
-  const chosenAmount = target.min === target.max ? target.min : Math.round((target.min + target.max) / 2 / 50) * 50;
-  state.targetAmount = Math.max(chosenAmount, 100);
+  var resteAConstruire = Math.max(0, cibleRecommandee - epargneDisponible);
 
-  document.getElementById('target-label').textContent = target.label;
-  document.getElementById('target-amount').textContent = formatEuro(state.targetAmount);
-  document.getElementById('target-sublabel').textContent =
-    state.totalVital > 0
-      ? `basé sur ${formatEuro(state.totalVital)} de charges vitales/mois`
-      : 'selon ton profil';
-  document.getElementById('target-angle-text').textContent =
-    'L\'idée n\'est pas de tout faire d\'un coup. L\'idée est de pouvoir encaisser le prochain imprévu.';
+  // Rythmes
+  var margeMensuelle = Math.max(0, resteAVivre);
+  var rythmePrudent, rythmeRecommande, rythmeRapide;
 
-  // Nudge by profile
-  const { situation } = analyzeProfile();
-  const nudges = {
-    etudiant: 'Pour toi, l\'objectif c\'est éviter le prochain trou de trésorerie. Même 150 ou 200 € changent déjà tout.',
-    independant: 'En tant qu\'indépendant, absorber les creux de revenus est essentiel. On vise 1 à 2 mois de charges vitales.',
-    famille: 'Pour protéger le foyer, on vise au moins un mois de charges vitales — un vrai filet de sécurité.',
-    jeune_actif: 'Pour éviter le découvert et le stress de fin de mois, 300 à 800 € est une bonne cible de départ.',
+  if (margeMensuelle <= 50) {
+    rythmePrudent = 5; rythmeRecommande = 10; rythmeRapide = 20;
+  } else if (margeMensuelle <= 150) {
+    rythmePrudent = 10; rythmeRecommande = 25; rythmeRapide = 50;
+  } else if (margeMensuelle <= 300) {
+    rythmePrudent = 20; rythmeRecommande = 50; rythmeRapide = 100;
+  } else if (margeMensuelle <= 600) {
+    rythmePrudent = 50; rythmeRecommande = 100; rythmeRapide = 150;
+  } else {
+    rythmePrudent = 100; rythmeRecommande = 150; rythmeRapide = 250;
+  }
+
+  function moisEstimes(rythme, reste) {
+    if (rythme <= 0 || reste <= 0) return 0;
+    return Math.ceil(reste / rythme);
+  }
+  function dateEstimee(mois) {
+    if (mois <= 0) return 'Déjà atteint';
+    var dt = new Date();
+    dt.setMonth(dt.getMonth() + mois);
+    return dt.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  }
+
+  var moisP = moisEstimes(rythmePrudent, resteAConstruire);
+  var moisR = moisEstimes(rythmeRecommande, resteAConstruire);
+  var moisRap = moisEstimes(rythmeRapide, resteAConstruire);
+
+  // Raisons personnalisation
+  var raisonsPersonnalisation = [];
+  var stabLabels = { tres_stable:'Revenus stables', stable:'Revenus réguliers', moins_stable:'Revenus variables ou situation fragile' };
+  raisonsPersonnalisation.push('Stabilité : ' + stabLabels[stabilite]);
+  if (chargesBase > 0) raisonsPersonnalisation.push('Charges vitales : ' + formatEuro(chargesBase) + '/mois');
+  if (epargneDisponible > 0) raisonsPersonnalisation.push('Déjà disponible : ' + formatEuro(epargneDisponible));
+  if (hasDecouvert) raisonsPersonnalisation.push('Découvert récurrent — mini-matelas anti-rechute prioritaire');
+
+  return {
+    epargneDisponible: epargneDisponible,
+    chargesVitalesMensuelles: chargesBase,
+    stabiliteProfil: stabilite,
+    palierPremierCoussin: palierPremierCoussin,
+    palierSecuriteUtile: palierSecuriteUtile,
+    palierSecuriteSolide: palierSecuriteSolide,
+    cibleRecommandee: cibleRecommandee,
+    resteAConstruire: resteAConstruire,
+    rythmePrudent: rythmePrudent,
+    rythmeRecommande: rythmeRecommande,
+    rythmeRapide: rythmeRapide,
+    dateEstimeePrudent: dateEstimee(moisP),
+    dateEstimeeRecommande: dateEstimee(moisR),
+    dateEstimeeRapide: dateEstimee(moisRap),
+    moisPrudent: moisP,
+    moisRecommande: moisR,
+    moisRapide: moisRap,
+    raisonsPersonnalisation: raisonsPersonnalisation,
+    revenus: revenus,
+    resteAVivre: margeMensuelle,
+    hasDecouvert: hasDecouvert,
+    hasDette: hasDette
   };
-  const nudge = nudges[situation] || nudges.jeune_actif;
-  document.getElementById('target-nudge').textContent = nudge;
-
-  resultViewed(BRICK_ID);
 }
 
-function toggleAdjust() {
-  const area = document.getElementById('adjust-area');
-  area.classList.toggle('visible');
-  if (area.classList.contains('visible')) {
-    document.getElementById('custom-target').value = state.targetAmount;
-    document.getElementById('custom-target').focus();
-  }
+
+/* ══════════════════════════════════════════════════════════════
+   COUNTER ANIMATION
+   ══════════════════════════════════════════════════════════════ */
+function animateCounter(el, target, duration) {
+  duration = duration || 800;
+  var start = performance.now();
+  requestAnimationFrame(function tick(now) {
+    var progress = Math.min((now - start) / duration, 1);
+    var ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = formatEuro(Math.round(target * ease));
+    if (progress < 1) requestAnimationFrame(tick);
+  });
 }
 
-function applyCustomTarget() {
-  const val = parseInt(document.getElementById('custom-target').value) || 0;
-  if (val > 0) {
-    state.targetAmount = val;
-    document.getElementById('target-amount').textContent = formatEuro(val);
-    document.getElementById('target-sublabel').textContent = 'cible personnalisée';
+
+/* ══════════════════════════════════════════════════════════════
+   INIT
+   ══════════════════════════════════════════════════════════════ */
+(async function init() {
+  if (typeof brickStarted === 'function') brickStarted(BRICK_ID);
+
+  // 1. Auth
+  if (typeof requireAuth === 'function') {
+    var user = await requireAuth();
+    if (!user) return;
   }
+
+  // 2. Hydrate
+  if (typeof hydrateFromSupabase === 'function') {
+    await hydrateFromSupabase().catch(function() { return { profil: null }; });
+  }
+
+  // 3. Load profile
+  var profilLocal = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_profil') : null)
+    || (typeof getMockProfile === 'function' ? getMockProfile() : {});
+
+  // 4. Load budget brick data
+  var budgetBrickStore = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_budget_base') : null) || {};
+  var budgetBrick = budgetBrickStore.data || {};
+
+  // 5. Resume session if exists
+  var savedState = null;
+  if (typeof loadBrickState === 'function') {
+    savedState = await loadBrickState(BRICK_ID);
+  }
+  if (savedState && savedState.data && !savedState.completed) {
+    mData = Object.assign({}, savedState.data);
+    var resumeCard = document.getElementById('resume-card');
+    if (resumeCard) {
+      resumeCard.style.display = 'block';
+      var btnResume = document.getElementById('btn-resume');
+      if (btnResume) {
+        btnResume.onclick = function() {
+          resumeCard.style.display = 'none';
+          if (savedState.screen && savedState.screen > 1) {
+            goToScreen(savedState.screen);
+          }
+        };
+      }
+    }
+  }
+
+  // 6. Pre-fill mData
+  if (mData.epargne_liquide_total == null) mData.epargne_liquide_total = profilLocal.epargne_liquide_total || 0;
+  if (mData.total_besoins == null) mData.total_besoins = budgetBrick.total_besoins || profilLocal.charges_fixes_total || 0;
+  if (mData.revenus == null) mData.revenus = budgetBrick.revenus || profilLocal.revenus_nets || profilLocal.revenus_nets_mensuel || 0;
+  if (mData.aides == null) mData.aides = budgetBrick.aides || profilLocal.aides_mensuelles || 0;
+  if (mData.reste_a_vivre == null) mData.reste_a_vivre = budgetBrick.reste_a_vivre || 0;
+  mData.status_pro = profilLocal.status_pro || '';
+  mData.dettes_types = profilLocal.dettes_types || [];
+  mData.logement_situation = profilLocal.logement_situation || '';
+  mData.produits_detenu = profilLocal.produits_detenu || [];
+  if (mData.epargne_mensuelle == null) mData.epargne_mensuelle = budgetBrick.epargne || 0;
+  if (mData.charges_vitales_saisies == null) mData.charges_vitales_saisies = mData.total_besoins;
+
+  // Pre-select placement
+  if (mData.produits_detenu.includes('livrets_seuls')) selectedPlacement = 'livret';
+
+  buildScreen1();
+  updateProgressPanel(1);
+})();
+
+
+/* ══════════════════════════════════════════════════════════════
+   buildScreen1
+   ══════════════════════════════════════════════════════════════ */
+function buildScreen1() {
+  var grid = document.getElementById('data-cards-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  // Épargne disponible card
+  var epargne = mData.epargne_liquide_total || 0;
+  var epargneSource = epargne > 0 ? 'repris du profil' : 'À compléter';
+  grid.innerHTML += buildDataCard(formatEuro(epargne), 'Épargne disponible', epargneSource);
+
+  // Stabilité card
+  var stabLabel = getStabiliteLabel(mData.status_pro);
+  grid.innerHTML += buildDataCard(stabLabel, 'Stabilité', 'profil');
+
+  // Logement card
+  if (mData.logement_situation) {
+    var logLabel = getLogementLabel(mData.logement_situation);
+    grid.innerHTML += buildDataCard(logLabel, 'Logement', 'profil');
+  }
+
+  // Prefill inputs
+  var inputEpargne = document.getElementById('input-epargne');
+  var inputCharges = document.getElementById('input-charges-vitales');
+  var inputEpargneMensuelle = document.getElementById('input-epargne-mensuelle');
+
+  if (inputEpargne) {
+    if (mData.epargne_liquide_total > 0) {
+      inputEpargne.value = mData.epargne_liquide_total;
+      inputEpargne.classList.add('prefilled');
+      showBadge('badge-epargne');
+    }
+    inputEpargne.oninput = function() {
+      mData.epargne_saisie = parseNum(this.value);
+      mData.epargne_liquide_total = mData.epargne_saisie;
+      recalculate();
+    };
+    inputEpargne.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') inputCharges && inputCharges.focus();
+    });
+  }
+
+  if (inputCharges) {
+    if (mData.charges_vitales_saisies > 0) {
+      inputCharges.value = mData.charges_vitales_saisies;
+      inputCharges.classList.add('prefilled');
+      showBadge('badge-charges');
+    }
+    inputCharges.oninput = function() {
+      mData.charges_vitales_saisies = parseNum(this.value);
+      recalculate();
+    };
+    inputCharges.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') inputEpargneMensuelle && inputEpargneMensuelle.focus();
+    });
+  }
+
+  if (inputEpargneMensuelle) {
+    if (mData.epargne_mensuelle > 0) {
+      inputEpargneMensuelle.value = mData.epargne_mensuelle;
+    }
+    inputEpargneMensuelle.oninput = function() {
+      mData.epargne_mensuelle = parseNum(this.value);
+    };
+    inputEpargneMensuelle.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        var btn = document.getElementById('btn-calculer');
+        if (btn && !btn.disabled) btn.click();
+      }
+    });
+  }
+
+  // CTA
+  var btnCalculer = document.getElementById('btn-calculer');
+  if (btnCalculer) {
+    btnCalculer.onclick = function() { goToScreen(2); };
+    updateCTAState();
+  }
+
+  recalculate();
 }
 
-// ── Screen 4 — Rhythm ──────────────────────────────────────────
-function selectRhythmChip(btn) {
-  document.querySelectorAll('#rhythm-chips .chip').forEach(c => c.classList.remove('selected'));
-  btn.classList.add('selected');
-
-  const monthly = parseInt(btn.dataset.monthly) || 0;
-  const isAutre = btn.dataset.label === 'Autre';
-
-  document.getElementById('custom-rhythm-wrap').style.display = isAutre ? 'block' : 'none';
-
-  if (!isAutre && monthly > 0) {
-    state.rhythmMonthly = monthly;
-    state.rhythmLabel = btn.dataset.label;
-    document.getElementById('rhythm-slider').value = Math.min(monthly, 200);
-    updateProjection();
-  } else if (isAutre) {
-    state.rhythmMonthly = 0;
-    document.getElementById('projection-box').style.display = 'none';
-    document.getElementById('micro-msg').style.display = 'none';
-    document.getElementById('btn-validate-rhythm').disabled = true;
-  }
+function buildDataCard(value, label, source) {
+  return '<div class="data-card">' +
+    '<div class="data-card-badge"><span class="badge-source">' + escapeHtml(source) + '</span></div>' +
+    '<div class="data-card-value">' + escapeHtml(value) + '</div>' +
+    '<div class="data-card-label">' + escapeHtml(label) + '</div>' +
+  '</div>';
 }
 
-function onSliderChange(val) {
-  state.rhythmMonthly = parseInt(val);
-  state.rhythmLabel = formatEuro(val) + '/mois';
-  // Deselect chips
-  document.querySelectorAll('#rhythm-chips .chip').forEach(c => c.classList.remove('selected'));
-  document.getElementById('custom-rhythm-wrap').style.display = 'none';
-  updateProjection();
+function recalculate() {
+  calcResult = calculateMatelasSecurity(mData);
+  updateCTAState();
 }
 
-function updateProjection() {
-  const customInput = document.getElementById('custom-rhythm');
-  if (document.getElementById('custom-rhythm-wrap').style.display !== 'none') {
-    const customVal = parseInt(customInput.value) || 0;
-    state.rhythmMonthly = customVal;
-    state.rhythmLabel = customVal > 0 ? formatEuro(customVal) + '/mois' : '';
+function updateCTAState() {
+  var btn = document.getElementById('btn-calculer');
+  if (!btn) return;
+  var charges = mData.charges_vitales_saisies || mData.total_besoins || 0;
+  var revenus = (mData.revenus || 0) + (mData.aides || 0);
+  var hasData = charges > 0 || revenus > 0;
+  btn.disabled = !hasData;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   goToScreen
+   ══════════════════════════════════════════════════════════════ */
+function goToScreen(n) {
+  document.querySelectorAll('.screen').forEach(function(s) {
+    s.style.display = 'none';
+    s.classList.remove('active-screen');
+  });
+  var el = document.getElementById('screen-' + n);
+  if (!el) return;
+  el.style.display = '';
+  el.classList.add('active-screen');
+  currentScreen = n;
+  updateProgressPanel(n);
+
+  if (typeof autosaveBrickProgress === 'function') {
+    autosaveBrickProgress(BRICK_ID, n, mData);
   }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  const monthly = state.rhythmMonthly;
-  const btnValidate = document.getElementById('btn-validate-rhythm');
-  const projBox = document.getElementById('projection-box');
-  const microMsg = document.getElementById('micro-msg');
-  const errRhythm = document.getElementById('error-rhythm');
+  if (n === 2) buildScreen2();
+  if (n === 3) buildScreen3();
+  if (n === 4) buildScreen4();
+}
 
-  if (monthly <= 0) {
-    projBox.style.display = 'none';
-    microMsg.style.display = 'none';
-    btnValidate.disabled = true;
-    return;
-  }
 
-  btnValidate.disabled = false;
+/* ══════════════════════════════════════════════════════════════
+   buildScreen2 — Ton prochain palier
+   ══════════════════════════════════════════════════════════════ */
+function buildScreen2() {
+  calcResult = calculateMatelasSecurity(mData);
 
-  // Projection date
-  const months = Math.ceil(state.targetAmount / monthly);
-  const d = new Date();
-  d.setMonth(d.getMonth() + months);
-  const opts = { month: 'long', year: 'numeric' };
-  const dateStr = d.toLocaleDateString('fr-FR', opts);
-  state.projectionDate = dateStr;
+  var epargne = calcResult.epargneDisponible;
+  var cible = calcResult.cibleRecommandee;
+  var reste = calcResult.resteAConstruire;
 
-  document.getElementById('proj-amount').textContent = formatEuro(state.targetAmount);
-  document.getElementById('proj-date').textContent = dateStr;
-  projBox.style.display = 'flex';
+  // Atteint block
+  var atteintBlock = document.getElementById('atteint-block');
+  var resultCard = document.getElementById('palier-result-card');
+  var jaugeWrap = document.getElementById('jauge-wrap');
 
-  // Micro message for small amounts
-  microMsg.style.display = monthly <= 20 ? 'block' : 'none';
-
-  // Warning if rhythm > available margin
-  const disponible = (profil?.revenus || 1500) - state.totalVital;
-  if (monthly > disponible * 0.4 && disponible > 0) {
-    errRhythm.style.display = 'block';
+  if (epargne >= calcResult.palierSecuriteSolide) {
+    // All targets reached
+    if (atteintBlock) {
+      atteintBlock.style.display = 'block';
+      document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
+      document.getElementById('atteint-sub').textContent = 'Tu as ' + formatEuro(epargne) + ' — au-delà de ton palier solide (' + formatEuro(calcResult.palierSecuriteSolide) + ').';
+      document.getElementById('atteint-actions').innerHTML =
+        '<a href="dashboard.html" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Retour au tableau de bord →</a>';
+    }
+    if (resultCard) resultCard.style.display = 'none';
+    if (jaugeWrap) jaugeWrap.style.display = 'none';
+  } else if (epargne >= calcResult.palierSecuriteUtile) {
+    // Utile reached, show option for solide
+    if (atteintBlock) {
+      atteintBlock.style.display = 'block';
+      document.getElementById('atteint-title').textContent = 'Palier utile atteint.';
+      document.getElementById('atteint-sub').textContent = 'Tu peux viser le palier solide (' + formatEuro(calcResult.palierSecuriteSolide) + ').';
+      document.getElementById('atteint-actions').innerHTML =
+        '<button class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;" ' +
+        'onclick="selectedPalier=\'solide\';calcResult.cibleRecommandee=calcResult.palierSecuriteSolide;calcResult.resteAConstruire=Math.max(0,calcResult.palierSecuriteSolide-calcResult.epargneDisponible);refreshScreen2();">' +
+        'Viser le palier solide →</button>';
+    }
+    if (resultCard) resultCard.style.display = 'block';
+    if (jaugeWrap) jaugeWrap.style.display = 'block';
+    renderResultCard(reste, epargne, cible);
   } else {
-    errRhythm.style.display = 'none';
+    if (atteintBlock) atteintBlock.style.display = 'none';
+    if (resultCard) resultCard.style.display = 'block';
+    if (jaugeWrap) jaugeWrap.style.display = 'block';
+
+    if (epargne === 0) {
+      // Zero start
+      renderResultCard(cible, 0, cible);
+      var subEl = document.getElementById('palier-result-sub');
+      if (subEl) subEl.textContent = 'Tu pars de zéro. Aucun problème — on y va pas à pas.';
+    } else {
+      renderResultCard(reste, epargne, cible);
+    }
+  }
+
+  // Gauge
+  var pct = cible > 0 ? Math.min(100, Math.round(epargne / cible * 100)) : 0;
+  var fillEl = document.getElementById('jauge-fill');
+  if (fillEl) fillEl.style.width = pct + '%';
+  var actuelLabel = document.getElementById('jauge-actuel-label');
+  if (actuelLabel) actuelLabel.textContent = 'Actuel : ' + formatEuro(epargne);
+  var cibleLabel = document.getElementById('jauge-cible-label');
+  if (cibleLabel) cibleLabel.textContent = 'Cible : ' + formatEuro(cible);
+
+  // Palier cards
+  renderPalierCards();
+
+  // Raisons
+  renderRaisons();
+
+  // CTA
+  var btnRythme = document.getElementById('btn-choisir-rythme');
+  if (btnRythme) {
+    btnRythme.onclick = function() { goToScreen(3); };
+    btnRythme.disabled = reste <= 0 && epargne < calcResult.palierSecuriteSolide;
   }
 }
 
-function validateRhythm() {
-  if (state.rhythmMonthly <= 0) return;
-  commitmentCreated(BRICK_ID, { type: 'rythme_epargne', montant: state.rhythmMonthly, label: state.rhythmLabel });
-  goToScreen(5);
+function refreshScreen2() {
+  buildScreen2();
 }
 
-// ── Screen 5 — Source ──────────────────────────────────────────
-function selectSource(btn) {
-  document.querySelectorAll('.source-card').forEach(c => c.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.sourceKey = btn.dataset.source;
-  state.sourceLabel = SOURCE_LABELS[state.sourceKey] || btn.querySelector('.source-card-text').textContent;
-  document.getElementById('btn-create-plan').disabled = false;
-}
+function renderResultCard(reste, epargne, cible) {
+  var amountEl = document.getElementById('palier-result-amount');
+  var labelEl = document.getElementById('palier-result-label');
+  var subEl = document.getElementById('palier-result-sub');
 
-function validateSource() {
-  if (!state.sourceKey) return;
-  fieldCompleted(BRICK_ID, 'source_epargne');
-  populateExitScreen();
-  goToScreen(6);
-}
-
-// ── Screen 6 — Exit ────────────────────────────────────────────
-function populateExitScreen() {
-  document.getElementById('exit-objectif').textContent = formatEuro(state.targetAmount);
-  document.getElementById('exit-rythme').textContent = state.rhythmLabel || formatEuro(state.rhythmMonthly) + '/mois';
-  document.getElementById('exit-source').textContent = state.sourceLabel;
-
-  if (state.projectionDate) {
-    document.getElementById('exit-projection-block').style.display = 'block';
-    document.getElementById('exit-projection-date').textContent = state.projectionDate;
+  if (amountEl) animateCounter(amountEl, reste);
+  if (labelEl) labelEl.textContent = 'à construire';
+  if (subEl && epargne > 0) {
+    subEl.textContent = 'Tu as déjà ' + formatEuro(epargne) + '. Cible : ' + formatEuro(cible) + '.';
+  } else if (subEl) {
+    subEl.textContent = 'Cible : ' + formatEuro(cible) + '.';
   }
 }
 
-function finalizeBrick() {
-  const engagements = [
+function renderPalierCards() {
+  var container = document.getElementById('palier-cards');
+  if (!container) return;
+
+  var epargne = calcResult.epargneDisponible;
+  var paliers = [
+    { key: 'coussin', title: 'Premier coussin', amount: calcResult.palierPremierCoussin, desc: 'Juste assez pour le prochain imprévu.' },
+    { key: 'utile', title: 'Sécurité utile', amount: calcResult.palierSecuriteUtile, desc: 'Environ 1 mois de charges vitales.' },
+    { key: 'solide', title: 'Sécurité solide', amount: calcResult.palierSecuriteSolide, desc: 'Sérénité : plusieurs mois de charges couvertes.' }
+  ];
+
+  // Determine default selection
+  if (epargne >= calcResult.palierSecuriteUtile) selectedPalier = 'solide';
+  else if (calcResult.hasDecouvert) selectedPalier = 'coussin';
+  else selectedPalier = 'utile';
+
+  container.innerHTML = paliers.map(function(p) {
+    var isAtteint = epargne >= p.amount;
+    var isSelected = p.key === selectedPalier;
+    var isRecommande = p.key === selectedPalier && !isAtteint;
+    var cls = 'palier-card';
+    if (isAtteint) cls += ' atteint';
+    else if (isSelected) cls += ' active';
+
+    var badge = '';
+    if (isAtteint) badge = '<span class="palier-card-badge atteint-badge">✓ Atteint</span>';
+    else if (isRecommande) badge = '<span class="palier-card-badge recommande-badge">recommandé</span>';
+
+    return '<div class="' + cls + '" data-palier="' + p.key + '" onclick="selectPalier(\'' + p.key + '\')" role="button" aria-label="' + escapeHtml(p.title) + '">' +
+      '<div class="palier-card-info">' +
+        '<div class="palier-card-title">' + escapeHtml(p.title) + '</div>' +
+        '<div class="palier-card-amount">' + formatEuro(p.amount) + '</div>' +
+        '<div class="palier-card-desc">' + escapeHtml(p.desc) + '</div>' +
+      '</div>' +
+      badge +
+    '</div>';
+  }).join('');
+}
+
+function selectPalier(key) {
+  selectedPalier = key;
+  var amts = { coussin: calcResult.palierPremierCoussin, utile: calcResult.palierSecuriteUtile, solide: calcResult.palierSecuriteSolide };
+  var newCible = amts[key] || calcResult.palierSecuriteUtile;
+  calcResult.cibleRecommandee = newCible;
+  calcResult.resteAConstruire = Math.max(0, newCible - calcResult.epargneDisponible);
+
+  // Re-render
+  renderResultCard(calcResult.resteAConstruire, calcResult.epargneDisponible, newCible);
+
+  // Update gauge
+  var pct = newCible > 0 ? Math.min(100, Math.round(calcResult.epargneDisponible / newCible * 100)) : 0;
+  var fillEl = document.getElementById('jauge-fill');
+  if (fillEl) fillEl.style.width = pct + '%';
+  var cibleLabel = document.getElementById('jauge-cible-label');
+  if (cibleLabel) cibleLabel.textContent = 'Cible : ' + formatEuro(newCible);
+
+  // Update cards highlight
+  document.querySelectorAll('.palier-card').forEach(function(c) {
+    var k = c.getAttribute('data-palier');
+    c.classList.remove('active');
+    if (k === key && !c.classList.contains('atteint')) c.classList.add('active');
+  });
+
+  // Update CTA
+  var btn = document.getElementById('btn-choisir-rythme');
+  if (btn) btn.disabled = calcResult.resteAConstruire <= 0;
+}
+
+function renderRaisons() {
+  var container = document.getElementById('raisons-list');
+  if (!container || !calcResult) return;
+
+  var raisons = calcResult.raisonsPersonnalisation.slice(0, 3);
+  container.innerHTML = raisons.map(function(r) {
+    return '<div class="raison-item">' + escapeHtml(r) + '</div>';
+  }).join('');
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   buildScreen3 — Ton rythme
+   ══════════════════════════════════════════════════════════════ */
+function buildScreen3() {
+  if (!calcResult) calcResult = calculateMatelasSecurity(mData);
+
+  var reste = calcResult.resteAConstruire;
+  var s3Reste = document.getElementById('s3-reste');
+  if (s3Reste) s3Reste.textContent = formatEuro(reste);
+
+  // Reset selection
+  selectedRythme = 'recommande';
+
+  var container = document.getElementById('rythme-cards');
+  if (!container) return;
+
+  var rythmes = [
     {
-      type: 'fonds_urgence',
-      montant_cible: state.targetAmount,
-      versement: state.rhythmMonthly,
-      rythme_label: state.rhythmLabel,
-      source: state.sourceKey,
-      source_label: state.sourceLabel,
-      date_cible: state.projectionDate,
+      key: 'prudent',
+      label: 'Prudent',
+      amount: calcResult.rythmePrudent,
+      mois: calcResult.moisPrudent,
+      date: calcResult.dateEstimeePrudent,
+      desc: 'Rythme léger.'
+    },
+    {
+      key: 'recommande',
+      label: 'Recommandé',
+      amount: calcResult.rythmeRecommande,
+      mois: calcResult.moisRecommande,
+      date: calcResult.dateEstimeeRecommande,
+      desc: 'Bon équilibre.',
+      badge: true
+    },
+    {
+      key: 'rapide',
+      label: 'Rapide',
+      amount: calcResult.rythmeRapide,
+      mois: calcResult.moisRapide,
+      date: calcResult.dateEstimeeRapide,
+      desc: 'Si ton budget le permet.'
     }
   ];
 
-  completeBrickFull(BRICK_ID, {
-    profileFields: {
-      charges_vitales_total:        state.totalVital || 0,
-      fonds_urgence_objectif:       state.targetAmount || 0,
-      fonds_urgence_rythme_mensuel: state.rhythmMonthly || 0,
-      fonds_urgence_source:         state.sourceKey || null,
-      fonds_urgence_date_estimee:   state.projectionDate
-                                      ? state.projectionDate.toISOString().split('T')[0]
-                                      : null
-    },
-    rawData: state,
-    engagements: engagements,
-    insights: buildInsights(BRICK_ID, profil, state)
-  });
+  container.innerHTML = rythmes.map(function(r) {
+    var isSelected = r.key === selectedRythme;
+    var cls = 'rythme-card' + (isSelected ? ' selected' : '');
+    var dateText = r.mois > 0 ? 'Atteint dans ' + r.mois + ' mois' : 'Déjà atteint';
+    var badge = r.badge ? '<span class="rythme-card-badge">recommandé</span>' : '';
 
-  // Show exit nav
-  document.getElementById('exit-nav').style.display = 'block';
-  const nextBrick = getNextBrick(BRICK_ID);
-  state.nextBrickMeta = nextBrick;
-  if (nextBrick) {
-    const btnNext = document.getElementById('btn-next-brick');
-    btnNext.style.display = 'flex';
-    document.getElementById('next-brick-name').textContent = nextBrick.nom;
-  }
+    return '<div class="' + cls + '" data-rythme="' + r.key + '" onclick="selectRythme(\'' + r.key + '\')" role="button" aria-label="Rythme ' + escapeHtml(r.label) + '">' +
+      '<div class="rythme-card-info">' +
+        '<div class="rythme-card-label">' + escapeHtml(r.label) + '</div>' +
+        '<div class="rythme-card-amount">' + formatEuro(r.amount) + ' <small>/mois</small></div>' +
+        '<div class="rythme-card-desc">' + escapeHtml(dateText) + ' · ' + escapeHtml(r.desc) + '</div>' +
+      '</div>' +
+      badge +
+    '</div>';
+  }).join('');
 
-  // Disable Terminer button
-  const btn = document.querySelector('#screen-6 .btn-primary');
-  if (btn) { btn.disabled = true; btn.textContent = 'Plan créé ✓'; }
-}
-
-function goToNextBrick() {
-  if (state.nextBrickMeta) {
-    // .file is set by getNextBrick() for the 5 priority bricks
-    window.location.href = state.nextBrickMeta.file || (state.nextBrickMeta.id.replace(/_/g, '-') + '.html');
-  } else {
-    window.location.href = 'dashboard.html';
-  }
-}
-
-// ════════════════════════════════════════════════════════════════
-// INIT
-// ════════════════════════════════════════════════════════════════
-(function init() {
-  initBgCanvas('bg-canvas');
-
-  /* ── Pré-remplissage depuis budget_base ──
-     Si le profil contient des données de budget_base, on pré-remplit
-     les champs de charges vitales pour éviter la double saisie. */
-  (function prefillFromBudgetBase() {
-    try {
-      const storedProfil = loadFromStorage('profil') || {};
-      // Mapping : profil budget_base → champs fonds_urgence
-      const prefillMap = {
-        'charge-logement': storedProfil.revenus_nets_mensuel ? null : null, // loyer seul n'est pas dans profil
-        'charge-transport': storedProfil.transport_total || null,
-        'charge-nourriture': null, // pas dans budget_base
-        'charge-sante': null,
-        'charge-autres': null,
-      };
-      // On récupère les données brutes de la brique budget_base depuis localStorage
-      const budgetRaw = loadFromStorage('fund_brick_budget_base') || null;
-      if (budgetRaw && budgetRaw.chargesFixes) {
-        const cf = budgetRaw.chargesFixes;
-        // Logement = loyer + charges loc
-        const logement = (cf.logement || 0);
-        const transport = (cf.transport || 0);
-        if (logement > 0) {
-          const el = document.getElementById('charge-logement');
-          if (el && !el.value) { el.value = logement; updateVitalTotal(); }
-        }
-        if (transport > 0) {
-          const el = document.getElementById('charge-transport');
-          if (el && !el.value) { el.value = transport; updateVitalTotal(); }
-        }
-        // Marquer les champs pré-remplis visuellement
-        ['charge-logement', 'charge-transport'].forEach(id => {
-          const el = document.getElementById(id);
-          if (el && el.value) {
-            el.style.borderColor = 'rgba(99,102,241,0.4)';
-            el.title = 'Pré-rempli depuis ton budget — tu peux modifier';
-          }
-        });
-      }
-    } catch(e) { /* silencieux */ }
-  })();
-  brickStarted(BRICK_ID);
-  // ── Reprise d'état depuis Supabase ──
-  (async function resumeIfNeeded() {
-    const saved = await loadBrickState('fonds_urgence');
-    if (saved && saved.data && Object.keys(saved.data).length > 0) {
-      // Restaurer les données dans l'état local
-      if (typeof restoreState === 'function') restoreState(saved.data);
-      // Ne pas sauter l'écran de démarrage si la brique est déjà terminée
-      if (!saved.completed && saved.screenCourant > 0) {
-        console.log('[Fund] Reprise brique fonds_urgence écran', saved.screenCourant);
-        // showScreen/goTo sera appelé après hydrateFromSupabase
-        window._brickResume_fonds_urgence = saved.screenCourant;
-      }
-    }
-  })();
-  screenViewed(BRICK_ID, 0);
-
-  const { isPrecarious, isAlreadySaving } = state;
-  analyzeProfile();
-
-  // Screen 0 — precarious banner
-  if (state.isPrecarious) {
-    document.getElementById('precarious-banner-0').classList.add('visible');
-  }
-  if (state.isAlreadySaving) {
-    document.getElementById('already-saving-msg').style.display = 'inline-flex';
-  }
-
-  // Screen 1 — example cards
-  populateExampleCards();
-})();
-
-// ── PANEL PROGRESSION V3 ────────────────────────────────────────
-(function setupProgressPanel() {
-  // Récupère les noms d'écrans depuis les titres .brick-title ou .screen-title
-  function getScreenLabels() {
-    const screens = document.querySelectorAll('.screen');
-    const labels = [];
-    screens.forEach((s, i) => {
-      const t = s.querySelector('.brick-title, .screen-title, h2, h3');
-      labels.push(t ? t.textContent.trim().slice(0, 32) : 'Étape ' + (i + 1));
-    });
-    return labels;
-  }
-
-  function updatePanel(activeIdx) {
-    const screens = document.querySelectorAll('.screen');
-    const total = screens.length;
-    const labels = getScreenLabels();
-    const pct = total > 1 ? Math.round((activeIdx / (total - 1)) * 100) : 0;
-    const clampedPct = Math.min(pct, 100);
-
-    // Ring
-    const arc = document.getElementById('bpc-ring-arc');
-    const pctEl = document.getElementById('bpc-ring-pct');
-    if (arc) {
-      const circ = 188.5;
-      arc.setAttribute('stroke-dashoffset', String(circ - (circ * clampedPct / 100)));
-    }
-    if (pctEl) pctEl.textContent = clampedPct + '%';
-
-    // Title
-    const titleEl = document.getElementById('bpc-step-title');
-    if (titleEl) titleEl.textContent = labels[activeIdx] || 'Étape ' + (activeIdx + 1);
-
-    // Steps list
-    const list = document.getElementById('bpc-steps-list');
-    if (list) {
-      list.innerHTML = '';
-      labels.slice(0, 7).forEach((label, i) => {
-        const div = document.createElement('div');
-        div.className = 'bpc-step' + (i < activeIdx ? ' done' : i === activeIdx ? ' active' : '');
-        const isDone = i < activeIdx;
-        const numContent = isDone
-          ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
-          : String(i + 1);
-        div.innerHTML = '<span class="bpc-step-num">' + numContent + '</span><span class="bpc-step-label">' + label + '</span>';
-        list.appendChild(div);
-      });
-    }
-  }
-
-  // Observer l'écran actif
-  function getCurrentScreenIdx() {
-    const screens = Array.from(document.querySelectorAll('.screen'));
-    for (let i = 0; i < screens.length; i++) {
-      if (screens[i].style.display !== 'none') return i;
-    }
-    return 0;
-  }
-
-  // Patch les fonctions de navigation existantes
-  const origGoNext = window.goNext;
-  const origGoBack = window.goBack;
-  const origGoToScreen = window.goToScreen;
-  window.goNext = function() { if (origGoNext) origGoNext.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
-  window.goBack = function() { if (origGoBack) origGoBack.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
-  window.goToScreen = function() { if (origGoToScreen) origGoToScreen.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
-
-  // Init
-  document.addEventListener('DOMContentLoaded', () => setTimeout(() => updatePanel(getCurrentScreenIdx()), 100));
-})();
-</script>
-<script>
-  /* ══════════════════════════════════════════
-     UX AMÉLIORATIONS — injected
-  ══════════════════════════════════════════ */
-
-  /* ── 1. Indicateur Étape X/Y ──
-     Mise à jour à chaque changement d'écran.
-     Chaque brique doit appeler updateStepIndicator(idx) dans sa fn de navigation.
-     La fonction est no-op si totalSteps n'est pas défini. */
-  function updateStepIndicator(idx) {
-    const steps = typeof _UX_TOTAL_STEPS !== 'undefined' ? _UX_TOTAL_STEPS : null;
-    document.querySelectorAll('.step-indicator').forEach(el => {
-      if (steps && typeof idx === 'number' && idx > 0) {
-        el.textContent = 'Étape ' + idx + ' / ' + steps;
-        el.style.display = 'block';
+  // Custom rythme chip
+  var chipCustom = document.getElementById('chip-custom-rythme');
+  var customWrap = document.getElementById('custom-rythme-wrap');
+  if (chipCustom) {
+    chipCustom.onclick = function() {
+      chipCustom.classList.toggle('active');
+      if (customWrap) customWrap.classList.toggle('visible');
+      if (chipCustom.classList.contains('active')) {
+        selectedRythme = 'custom';
+        deselectRythmeCards();
+        var input = document.getElementById('input-rythme-custom');
+        if (input) input.focus();
       } else {
-        el.style.display = 'none';
+        selectedRythme = 'recommande';
+        selectRythme('recommande');
+      }
+    };
+  }
+
+  var customInput = document.getElementById('input-rythme-custom');
+  if (customInput) {
+    customInput.oninput = function() {
+      customRythme = parseNum(this.value);
+      selectedRythme = 'custom';
+    };
+    customInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        var btn = document.getElementById('btn-valider-rythme');
+        if (btn && !btn.disabled) btn.click();
       }
     });
   }
 
-  /* ── 2. Enter → déclenche le bouton primaire visible ── */
-  document.addEventListener('keydown', function(e) {
-    if (e.key !== 'Enter') return;
-    // Ignorer si focus dans textarea
-    if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;
-    // Trouver le bouton primaire de l'écran actif (visible, non-disabled)
-    const activeScreen = document.querySelector('.screen[style*="display: block"], .screen[style*="display:block"]');
-    if (!activeScreen) return;
-    const btn = activeScreen.querySelector('.btn-primary:not([disabled]):not([style*="display:none"])');
-    if (btn) {
-      e.preventDefault();
-      btn.click();
-    }
+  // Budget serré warning
+  var warnEl = document.getElementById('warning-serre');
+  if (warnEl) {
+    warnEl.classList.toggle('visible', calcResult.resteAVivre < 200);
+  }
+
+  // CTA
+  var btnValider = document.getElementById('btn-valider-rythme');
+  if (btnValider) {
+    btnValider.onclick = function() { goToScreen(4); };
+  }
+}
+
+function selectRythme(key) {
+  selectedRythme = key;
+
+  // Update cards
+  document.querySelectorAll('.rythme-card').forEach(function(c) {
+    c.classList.toggle('selected', c.getAttribute('data-rythme') === key);
   });
 
-  /* ── fonds_urgence : totalSteps ── */
-  var _UX_TOTAL_STEPS = 5;
-  updateStepIndicator(0);
+  // Deactivate custom
+  var chipCustom = document.getElementById('chip-custom-rythme');
+  var customWrap = document.getElementById('custom-rythme-wrap');
+  if (chipCustom) chipCustom.classList.remove('active');
+  if (customWrap) customWrap.classList.remove('visible');
+}
+
+function deselectRythmeCards() {
+  document.querySelectorAll('.rythme-card').forEach(function(c) {
+    c.classList.remove('selected');
+  });
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   buildScreen4 — Où le garder
+   ══════════════════════════════════════════════════════════════ */
+function buildScreen4() {
+  var hasLivret = mData.produits_detenu && mData.produits_detenu.includes('livrets_seuls');
+  var detectedEl = document.getElementById('placement-detected');
+  var cardsEl = document.getElementById('placement-cards');
+
+  if (hasLivret) {
+    if (detectedEl) detectedEl.style.display = 'block';
+    if (cardsEl) cardsEl.style.display = 'none';
+  } else {
+    if (detectedEl) detectedEl.style.display = 'none';
+    if (cardsEl) cardsEl.style.display = 'flex';
+    updatePlacementCards();
+  }
+}
+
+function showAllPlacements() {
+  var detectedEl = document.getElementById('placement-detected');
+  var cardsEl = document.getElementById('placement-cards');
+  if (detectedEl) detectedEl.style.display = 'none';
+  if (cardsEl) cardsEl.style.display = 'flex';
+  updatePlacementCards();
+}
+
+function selectPlacement(key) {
+  selectedPlacement = key;
+  updatePlacementCards();
+}
+
+function updatePlacementCards() {
+  document.querySelectorAll('.placement-card').forEach(function(c) {
+    c.classList.toggle('selected', c.getAttribute('data-placement') === selectedPlacement);
+  });
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   lancerMatelas — opens modal
+   ══════════════════════════════════════════════════════════════ */
+function lancerMatelas() {
+  if (!calcResult) calcResult = calculateMatelasSecurity(mData);
+
+  var rythme = getRythmeValue();
+  var palierAmt = getPalierAmount();
+
+  var dateEstimee = selectedRythme === 'prudent' ? calcResult.dateEstimeePrudent
+                  : selectedRythme === 'rapide'  ? calcResult.dateEstimeeRapide
+                  : calcResult.dateEstimeeRecommande;
+
+  if (selectedRythme === 'custom' && customRythme > 0) {
+    var mois = calcResult.resteAConstruire > 0 ? Math.ceil(calcResult.resteAConstruire / customRythme) : 0;
+    if (mois > 0) {
+      var dt = new Date();
+      dt.setMonth(dt.getMonth() + mois);
+      dateEstimee = dt.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    } else {
+      dateEstimee = 'Déjà atteint';
+    }
+  }
+
+  // Populate modal summary
+  var summaryEl = document.getElementById('modal-fin-summary');
+  if (summaryEl) {
+    summaryEl.innerHTML =
+      buildModalRow('Objectif', formatEuro(palierAmt)) +
+      buildModalRow('Actuel', formatEuro(calcResult.epargneDisponible)) +
+      buildModalRow('Reste', formatEuro(calcResult.resteAConstruire)) +
+      buildModalRow('Rythme', formatEuro(rythme) + '/mois') +
+      buildModalRow('Date estimée', dateEstimee);
+  }
+
+  var subEl = document.getElementById('modal-fin-sub');
+  if (subEl) {
+    if (calcResult.resteAConstruire <= 0) {
+      subEl.textContent = 'Ton matelas est déjà en place.';
+    } else {
+      subEl.textContent = formatEuro(rythme) + '/mois vers ' + dateEstimee + '.';
+    }
+  }
+
+  // Show modal
+  var overlay = document.getElementById('modal-fin');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      overlay.classList.add('visible');
+    });
+  });
+
+  // Close on overlay click
+  overlay.addEventListener('click', function handler(e) {
+    if (e.target === overlay) {
+      overlay.classList.remove('visible');
+      setTimeout(function() { overlay.style.display = 'none'; }, 250);
+      overlay.removeEventListener('click', handler);
+    }
+  });
+}
+
+function buildModalRow(label, val) {
+  return '<div class="modal-fin-row">' +
+    '<span class="modal-fin-row-label">' + escapeHtml(label) + '</span>' +
+    '<span class="modal-fin-row-val">' + escapeHtml(val) + '</span>' +
+  '</div>';
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   validerEngagement
+   ══════════════════════════════════════════════════════════════ */
+async function validerEngagement() {
+  if (!calcResult) calcResult = calculateMatelasSecurity(mData);
+
+  var rythme = getRythmeValue();
+  var palierAmt = getPalierAmount();
+
+  var dateEstimee = selectedRythme === 'prudent' ? calcResult.dateEstimeePrudent
+                  : selectedRythme === 'rapide'  ? calcResult.dateEstimeeRapide
+                  : calcResult.dateEstimeeRecommande;
+
+  if (selectedRythme === 'custom' && customRythme > 0) {
+    var mois = calcResult.resteAConstruire > 0 ? Math.ceil(calcResult.resteAConstruire / customRythme) : 0;
+    if (mois > 0) {
+      var dt = new Date();
+      dt.setMonth(dt.getMonth() + mois);
+      dateEstimee = dt.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    } else {
+      dateEstimee = 'Déjà atteint';
+    }
+  }
+
+  var profileFields = {
+    fonds_urgence_objectif:       palierAmt,
+    fonds_urgence_actuel:         calcResult.epargneDisponible,
+    fonds_urgence_rythme_mensuel: rythme,
+    fonds_urgence_source:         selectedPlacement,
+    fonds_urgence_date_estimee:   dateEstimee,
+    charges_vitales_total:        calcResult.chargesVitalesMensuelles,
+    epargne_liquide_total:        calcResult.epargneDisponible,
+    matelas_palier_premier:       calcResult.palierPremierCoussin,
+    matelas_palier_utile:         calcResult.palierSecuriteUtile,
+    matelas_palier_solide:        calcResult.palierSecuriteSolide,
+    matelas_stabilite_profil:     calcResult.stabiliteProfil,
+    matelas_reste_a_construire:   calcResult.resteAConstruire,
+    matelas_raisons_calcul:       calcResult.raisonsPersonnalisation
+  };
+
+  var rawData = Object.assign({}, mData, profileFields, {
+    selectedPalier: selectedPalier,
+    selectedRythme: selectedRythme,
+    rythme_final: rythme
+  });
+
+  var eng = {
+    id:              'eng_fonds_urgence',
+    type:            'fonds_urgence',
+    label:           'Matelas de sécurité',
+    detail:          'Objectif ' + formatEuro(palierAmt) + ' · ' + formatEuro(rythme) + '/mois · vers ' + dateEstimee,
+    montant_actuel:  calcResult.epargneDisponible,
+    montant_cible:   palierAmt,
+    versement:       formatEuro(rythme) + '/mois',
+    brique_id:       BRICK_ID,
+    atteint:         calcResult.epargneDisponible >= palierAmt
+  };
+
+  var insights = typeof buildInsights === 'function'
+    ? buildInsights(BRICK_ID, {}, rawData)
+    : [];
+
+  if (typeof completeBrickFull === 'function') {
+    await completeBrickFull(BRICK_ID, {
+      profileFields: profileFields,
+      rawData: rawData,
+      engagements: [eng],
+      insights: insights
+    });
+  }
+
+  // Update dashboard engagement (prevent duplicates)
+  if (typeof loadFromStorage === 'function' && typeof saveToStorage === 'function') {
+    var dash = loadFromStorage('fund_dashboard') || (typeof getMockDashboard === 'function' ? getMockDashboard() : { engagements: [] });
+    if (!dash.engagements) dash.engagements = [];
+    var idx = dash.engagements.findIndex(function(x) { return x.id === 'eng_fonds_urgence'; });
+    if (idx >= 0) { dash.engagements[idx] = eng; } else { dash.engagements.push(eng); }
+    saveToStorage('fund_dashboard', dash);
+  }
+
+  // Build print bilan
+  buildPrintBilan(palierAmt, rythme, dateEstimee);
+
+  // Redirect
+  setTimeout(function() { window.location.href = 'dashboard.html'; }, 300);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   PROGRESS PANEL
+   ══════════════════════════════════════════════════════════════ */
+function updateProgressPanel(screenIdx) {
+  // Title
+  var titleEl = document.getElementById('bpc-step-title');
+  if (titleEl) titleEl.textContent = STEP_TITLES[screenIdx] || STEP_TITLES[1];
+
+  // Ring
+  var circ = 201;
+  var pct = Math.round((screenIdx / 4) * 100);
+  var offset = circ - (pct / 100) * circ;
+  var fill = document.getElementById('bpc-ring-fill');
+  var pctEl = document.getElementById('bpc-ring-pct');
+  if (fill) fill.style.strokeDashoffset = offset;
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  // Steps
+  for (var i = 1; i <= 4; i++) {
+    var step = document.getElementById('bpc-step-' + i);
+    if (!step) continue;
+    step.classList.remove('active', 'done');
+    if (i < screenIdx) step.classList.add('done');
+    else if (i === screenIdx) step.classList.add('active');
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   PRINT BILAN
+   ══════════════════════════════════════════════════════════════ */
+function buildPrintBilan(palierAmt, rythme, dateEstimee) {
+  var el = document.getElementById('print-bilan');
+  if (!el || !calcResult) return;
+
+  var now = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  var placementLabels = { livret:'Livret', compte_separe:'Compte séparé', compte_courant:'Compte courant' };
+
+  el.innerHTML =
+    '<h1>Matelas de sécurité — Bilan</h1>' +
+    '<div class="pb-date">' + now + '</div>' +
+
+    '<div class="pb-section">' +
+      '<div class="pb-section-title">Situation</div>' +
+      '<div class="pb-row"><span class="pb-row-label">Épargne disponible</span><span class="pb-row-val">' + formatEuro(calcResult.epargneDisponible) + '</span></div>' +
+      '<div class="pb-row"><span class="pb-row-label">Charges vitales / mois</span><span class="pb-row-val">' + formatEuro(calcResult.chargesVitalesMensuelles) + '</span></div>' +
+      '<div class="pb-row"><span class="pb-row-label">Stabilité</span><span class="pb-row-val">' + escapeHtml(getStabiliteLabel(calcResult.stabiliteProfil)) + '</span></div>' +
+    '</div>' +
+
+    '<div class="pb-section">' +
+      '<div class="pb-section-title">Plan</div>' +
+      '<div class="pb-row"><span class="pb-row-label">Objectif</span><span class="pb-row-val">' + formatEuro(palierAmt) + '</span></div>' +
+      '<div class="pb-row"><span class="pb-row-label">Reste à construire</span><span class="pb-row-val">' + formatEuro(calcResult.resteAConstruire) + '</span></div>' +
+      '<div class="pb-row"><span class="pb-row-label">Rythme</span><span class="pb-row-val">' + formatEuro(rythme) + '/mois</span></div>' +
+      '<div class="pb-row"><span class="pb-row-label">Date estimée</span><span class="pb-row-val">' + escapeHtml(dateEstimee) + '</span></div>' +
+      '<div class="pb-row"><span class="pb-row-label">Placement</span><span class="pb-row-val">' + escapeHtml(placementLabels[selectedPlacement] || selectedPlacement) + '</span></div>' +
+    '</div>' +
+
+    '<div class="pb-section">' +
+      '<div class="pb-section-title">Paliers</div>' +
+      '<div class="pb-row"><span class="pb-row-label">Premier coussin</span><span class="pb-row-val">' + formatEuro(calcResult.palierPremierCoussin) + '</span></div>' +
+      '<div class="pb-row"><span class="pb-row-label">Sécurité utile</span><span class="pb-row-val">' + formatEuro(calcResult.palierSecuriteUtile) + '</span></div>' +
+      '<div class="pb-row"><span class="pb-row-label">Sécurité solide</span><span class="pb-row-val">' + formatEuro(calcResult.palierSecuriteSolide) + '</span></div>' +
+    '</div>' +
+
+    '<div class="pb-footer">Fundamental — matelas de sécurité · ' + now + '</div>';
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   HELPERS
+   ══════════════════════════════════════════════════════════════ */
+function getRythmeValue() {
+  if (selectedRythme === 'custom') return customRythme || calcResult.rythmeRecommande;
+  if (selectedRythme === 'prudent') return calcResult.rythmePrudent;
+  if (selectedRythme === 'rapide') return calcResult.rythmeRapide;
+  return calcResult.rythmeRecommande;
+}
+
+function getPalierAmount() {
+  if (selectedPalier === 'coussin') return calcResult.palierPremierCoussin;
+  if (selectedPalier === 'solide') return calcResult.palierSecuriteSolide;
+  return calcResult.palierSecuriteUtile;
+}
+
+function parseNum(v) {
+  var n = parseFloat(v);
+  return isNaN(n) ? 0 : Math.max(0, n);
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  var str = String(s);
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showBadge(id) {
+  var el = document.getElementById(id);
+  if (el) el.style.display = 'inline-flex';
+}
+
+function dismissResume() {
+  var card = document.getElementById('resume-card');
+  if (card) card.style.display = 'none';
+}
+
+function getStabiliteLabel(status) {
+  var map = {
+    'tres_stable': 'Revenus stables',
+    'stable': 'Revenus réguliers',
+    'moins_stable': 'Revenus variables',
+    'cadre_prof_lib': 'Revenus stables',
+    'retraite': 'Revenus stables',
+    'sal_ouvrier_employe': 'Revenus réguliers',
+    'sal_prof_inter': 'Revenus réguliers',
+    'etudiant': 'Revenus variables',
+    'chomeur_inactif': 'Revenus variables',
+    'indep_tpe': 'Revenus variables',
+    'college_lycee': 'Revenus variables'
+  };
+  return map[status] || 'Non renseigné';
+}
+
+function getLogementLabel(situation) {
+  var map = {
+    'locataire': 'Locataire',
+    'proprietaire': 'Propriétaire',
+    'heberge': 'Hébergé·e',
+    'locataire_social': 'Logement social',
+    'sans_logement': 'Sans logement fixe'
+  };
+  return map[situation] || situation || '';
+}
 </script>
 
 <script src="feedback-widget.js"></script>
