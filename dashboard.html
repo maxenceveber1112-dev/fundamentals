@@ -738,6 +738,21 @@
     html.dark .mb-card-cta { color: #A78BFA; }
     .mb-card-cta:hover { opacity: 0.8; }
 
+    .mb-card-animate {
+      animation: mbFadeUp 0.35s ease both;
+      animation-delay: calc(var(--i, 0) * 80ms);
+    }
+    @keyframes mbFadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .mb-card-row-val {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
+    }
+
     @media (max-width: 640px) {
       .mes-briques-grid { grid-template-columns: 1fr; }
     }
@@ -823,6 +838,15 @@
     </div>
   </div>
 
+  <!-- ── Mes briques ───────────────────────────────────── -->
+  <section class="mes-briques-section" id="mes-briques-section" style="display:none;">
+    <div class="mes-briques-header">
+      <h2 class="section-title">Mes données</h2>
+      <p class="mes-briques-sub">Mis à jour à chaque brique · Objectifs et projets bientôt disponibles</p>
+    </div>
+    <div class="mes-briques-grid" id="mes-briques-grid"></div>
+  </section>
+
   <!-- ════════════════════════════════════════════════════════════
        ZONE 4 — EXPLORER
   ════════════════════════════════════════════════════════════ -->
@@ -835,14 +859,6 @@
     <div class="explorer-cols" id="explorer-cols"></div>
   </div>
 
-  <!-- ── Mes briques ───────────────────────────────────── -->
-  <section class="mes-briques-section" id="mes-briques-section" style="display:none;">
-    <div class="mes-briques-header">
-      <h2 class="section-title">Mes données</h2>
-      <p class="mes-briques-sub">Ce que les briques ont révélé sur ta situation.</p>
-    </div>
-    <div class="mes-briques-grid" id="mes-briques-grid"></div>
-  </section>
 
 </main>
 
@@ -1486,10 +1502,32 @@
       });
     }
 
+    // ── DETTES EN COURS ─────────────────────────────────────
+    const budgetForDettes = loadFromStorage('fund_brick_budget_base');
+    const budgetDettesData = budgetForDettes?.data || budgetForDettes || null;
+    const dettesRaw = budgetDettesData?.dettes || [];
+    const totalMensualites = dettesRaw.reduce((s, d) => s + (d.montant_mensuel || 0), 0);
+    const nbDettes = dettesRaw.length;
+    if (nbDettes > 0 && totalMensualites > 0) {
+      cards.push({
+        title: 'Dettes en cours',
+        brique: 'dettes',
+        status: 'en-cours',
+        statusLabel: nbDettes + ' dette' + (nbDettes > 1 ? 's' : ''),
+        value: formatEuro(totalMensualites),
+        valueLabel: '/ mois',
+        rows: [
+          { label: 'Mensualités totales', val: formatEuro(totalMensualites), color: 'orange' },
+        ],
+        progress: null,
+        cta: { href: 'brique-gestion-decouvert.html', label: 'Gérer mes dettes' }
+      });
+    }
+
     // ── BRIQUE GESTION DECOUVERT ────────────────────────────
     const decouvertRaw  = loadFromStorage('fund_brick_gestion_decouvert');
     const decouvertData = decouvertRaw?.data || decouvertRaw || null;
-    if (decouvertData && decouvertData.decouvert_montant > 0) {
+    if (decouvertData && !decouvertData.decouvert_atteint && decouvertData.decouvert_montant > 0) {
       const montant  = decouvertData.decouvert_montant || 0;
       const objectif = decouvertData.decouvert_objectif || 0;
       const rythme   = decouvertData.decouvert_rythme   || 0;
@@ -1514,7 +1552,7 @@
     // ── BRIQUE PAIEMENTS FRACTIONNES ────────────────────────
     const fractRaw  = loadFromStorage('fund_brick_paiements_fractionnes');
     const fractData = fractRaw?.data || fractRaw || null;
-    if (fractData && fractData.total_fractionne > 0) {
+    if (fractData && !fractData.fractionnes_soldes && fractData.total_fractionne > 0) {
       cards.push({
         title: 'Paiements fractionnés',
         brique: 'paiements_fractionnes',
@@ -1530,26 +1568,6 @@
       });
     }
 
-    // ── BRIQUE PREMIERS PAS BANCAIRES ───────────────────────
-    const bancRaw  = loadFromStorage('fund_brick_premiers_pas_bancaires');
-    const bancData = bancRaw?.data || bancRaw || null;
-    if (bancData && bancData.frais_bancaires_total > 0) {
-      const economie = bancData.frais_bancaires_economie || 0;
-      cards.push({
-        title: 'Frais bancaires',
-        brique: 'premiers_pas_bancaires',
-        status: economie > 0 ? 'atteint' : 'complet',
-        statusLabel: economie > 0 ? formatEuro(economie) + ' éco./mois' : 'Analysé',
-        value: formatEuro(bancData.frais_bancaires_total),
-        valueLabel: '/ mois de frais',
-        rows: [
-          ...(economie > 0 ? [{ label: 'Économie possible', val: formatEuro(economie) + '/mois', color: 'green' }] : []),
-        ],
-        progress: null,
-        cta: { href: 'brique-premiers-pas-bancaires.html', label: 'Voir' }
-      });
-    }
-
     // ── Render ──────────────────────────────────────────────
     if (cards.length === 0) {
       section.style.display = 'none';
@@ -1558,8 +1576,8 @@
 
     section.style.display = 'block';
 
-    grid.innerHTML = cards.map(card => `
-      <div class="mb-card">
+    grid.innerHTML = cards.map((card, i) => `
+      <div class="mb-card mb-card-animate" style="--i:${i}">
         <div class="mb-card-header">
           <span class="mb-card-title">${card.title}</span>
           <span class="mb-card-status ${card.status}">${card.statusLabel}</span>
@@ -1578,7 +1596,7 @@
         ${card.progress ? `
           <div class="mb-progress">
             <div class="mb-progress-bar">
-              <div class="mb-progress-fill ${card.progress.green ? 'green' : ''}" style="width:${card.progress.pct}%"></div>
+              <div class="mb-progress-fill ${card.progress.green ? 'green' : ''}" style="width:0%" data-pct="${card.progress.pct}"></div>
             </div>
             ${card.progressLabels ? `
               <div class="mb-progress-labels">
@@ -1591,6 +1609,14 @@
         ${card.cta ? `<a href="${card.cta.href}" class="mb-card-cta">${card.cta.label} →</a>` : ''}
       </div>
     `).join('');
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.mb-progress-fill[data-pct]').forEach(el => {
+          el.style.width = el.dataset.pct + '%';
+        });
+      });
+    });
   }
 
   window.addEventListener('storage', function(e) {
