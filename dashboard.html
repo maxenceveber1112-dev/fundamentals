@@ -1400,45 +1400,70 @@
 
   /* ─── ZONE 3 — INSIGHT ÉDITORIAL ────────────────────── */
   const INSIGHTS = [
+    // 1. Priorité budgétaire (difficile fin de mois)
     {
       trigger: (p, d) => p.revenu_sentiment === 'difficile_fin_mois' && !(d.briques||[]).find(b=>b.id==='budget_base'&&b.statut==='terminee'),
       kicker:'PRIORITÉ BUDGÉTAIRE',
-      text:'Commencer par la brique <strong>Budget de base</strong> te permettra de cartographier tes dépenses et identifier les premiers leviers d\'action.',
-      sub:'C\'est l\'étape fondatrice de tout parcours financier solide.',
+      text:'Commencer par la brique <strong>Budget de base</strong> te permettra de cartographier tes dépenses et identifier les premiers leviers d'action.',
+      sub:'C'est l'étape fondatrice de tout parcours financier solide.',
       cta:'Commencer Budget de base', ctaHref:'brique-budget-base.html'
     },
+    // 2. Découvert — STRICTEMENT si decouvert_regulier coché ET profil complet
     {
-      trigger: (p, d) => (p.dettes_types||[]).includes('decouvert_regulier') && !(d.briques||[]).find(b=>b.id==='gestion_decouvert'&&b.statut==='terminee'),
+      trigger: (p, d) => {
+        if (!(p.dettes_types||[]).includes('decouvert_regulier')) return false;
+        if ((d.briques||[]).find(b=>b.id==='gestion_decouvert'&&b.statut==='terminee')) return false;
+        if (!p.revenu_sentiment) return false; // profil incomplet = vieilles données
+        return true;
+      },
       kicker:'DÉCOUVERT BANCAIRE',
       text:'Tu as signalé un découvert régulier. La brique <strong>Sortir du découvert</strong> te donnera un plan concret pour repasser dans le vert durablement.',
       sub:null,
       cta:'Voir la brique', ctaHref:'brique-gestion-decouvert.html'
     },
+    // 3. Crédits conso/immo avec retards de paiement
+    {
+      trigger: (p, d) => {
+        var dettes = p.dettes_types || [];
+        return (dettes.includes('credit_conso') || dettes.includes('credit_immo')) &&
+          p.retards_paiement && p.retards_paiement !== 'aucun' &&
+          !(d.briques||[]).find(b=>b.id==='plan_desendettement'&&b.statut==='terminee') &&
+          !!p.revenu_sentiment;
+      },
+      kicker:'CRÉDITS EN COURS',
+      text:'Tu as des crédits actifs avec des retards. La brique <strong>Plan de désendettement</strong> te donne une stratégie pour les rembourser dans le bon ordre.',
+      sub:null,
+      cta:'Voir la brique', ctaHref:'brique-gestion-decouvert.html'
+    },
+    // 4. Investissement long terme
     {
       trigger: (p, d) => (p.objectifs||[]).includes('investir_long_terme') && (d.briques||[]).filter(b=>b.statut==='terminee').length >= 2,
-      kicker:'PRÊT POUR L\'INVESTISSEMENT',
-      text:'Tu progresses bien dans ton parcours. Les bases posées te permettront d\'aborder l\'<strong>investissement long terme</strong> sur des fondations solides.',
+      kicker:'PRÊT POUR L'INVESTISSEMENT',
+      text:'Tu progresses bien dans ton parcours. Les bases posées te permettront d'aborder l'<strong>investissement long terme</strong> sur des fondations solides.',
       sub:null, cta:null, ctaHref:null
     },
+    // 5. Projet immobilier
     {
       trigger: (p, d) => (p.objectifs||[]).includes('acheter_logement') && (d.briques||[]).filter(b=>b.statut==='terminee').length >= 1,
       kicker:'PARCOURS RÉSIDENCE PRINCIPALE',
-      text:'Ton objectif d\'achat immobilier est dans ton radar. Après la brique Projet Immobilier, un simulateur de capacité d\'emprunt sera disponible dans Explorer.',
+      text:'Ton objectif d'achat immobilier est dans ton radar. Après la brique Projet Immobilier, un simulateur de capacité d'emprunt sera disponible dans Explorer.',
       sub:null, cta:null, ctaHref:null
     },
+    // 6. Paiements fractionnés
     {
-      trigger: (p, d) => p.age_group === '18_24' || p.status_pro === 'etudiant',
-      kicker:'FONDATIONS FINANCIÈRES',
-      text:'Mettre en place de bonnes habitudes tôt est le levier le plus puissant. Tes premières briques te donnent une longueur d\'avance significative.',
-      sub:'Basé sur ton profil.',
-      cta:null, ctaHref:null
-    },
-    {
-      trigger: (p, d) => (p.dettes_types||[]).includes('paiement_fractionne_mini_credit'),
+      trigger: (p, d) => (p.dettes_types||[]).includes('paiement_fractionne_mini_credit') && !!p.revenu_sentiment,
       kicker:'PAIEMENTS FRACTIONNÉS',
-      text:'Les paiements en plusieurs fois s\'accumulent discrètement. La brique <strong>Paiements fractionnés</strong> explique comment reprendre le contrôle sur ces micro-dettes.',
+      text:'Les paiements en plusieurs fois s'accumulent discrètement. La brique <strong>Paiements fractionnés</strong> explique comment reprendre le contrôle sur ces micro-dettes.',
       sub:null,
       cta:'Voir la brique', ctaHref:'brique-paiements-fractionnes.html'
+    },
+    // 7. Jeune — fondations (profil complet requis)
+    {
+      trigger: (p, d) => (p.age_group === '18_24' || p.status_pro === 'etudiant') && !!p.revenu_sentiment,
+      kicker:'FONDATIONS FINANCIÈRES',
+      text:'Mettre en place de bonnes habitudes tôt est le levier le plus puissant. Tes premières briques te donnent une longueur d'avance significative.',
+      sub:'Basé sur ton profil.',
+      cta:null, ctaHref:null
     },
   ];
 
