@@ -362,13 +362,10 @@
     .q-hint-amount { font-size: 0.75rem; color: var(--text-faint); margin: 0.25rem 0 0; display: none; }
     .q-hint-amount.show { display: block; }
 
-    /* ─── NAV ROW (sticky bottom) ────────────────────────────────── */
+    /* ─── NAV ROW ───────────────────────────────────────────────── */
     .nav-row {
-      position: sticky; bottom: 0; left: 0; right: 0;
       display: flex; align-items: center; gap: 0.75rem;
-      padding: 1rem 0;
-      background: var(--bg);
-      z-index: 10;
+      padding: 2rem 0 0.5rem;
     }
     .btn-back {
       display: flex; align-items: center; gap: 0.4rem;
@@ -1139,17 +1136,17 @@ function computeBriques() {
 }
 
 // ─── PREVIEW PANEL ──────────────────────────────────────────────
-var STATUS_LABELS = {
+var ONB_STATUS_LABELS = {
   college_lycee:'Coll\u00e9gien/Lyc\u00e9en', etudiant:'\u00c9tudiant',
   sal_ouvrier_employe:'Salari\u00e9 employ\u00e9', sal_prof_inter:'Prof. interm\u00e9diaire',
   cadre_prof_lib:'Cadre/Prof. lib\u00e9rale', indep_tpe:'Ind\u00e9pendant',
   chomeur_inactif:'En recherche d\'emploi', retraite:'Retrait\u00e9', autre:'Autre'
 };
-var LOGEMENT_LABELS = {
+var ONB_LOGEMENT_LABELS = {
   chez_parents:'Chez les parents', colocation:'Colocation',
   locataire:'Locataire', proprietaire:'Propri\u00e9taire', heberge_autre:'H\u00e9berg\u00e9'
 };
-var OBJ_TO_BRIQUE = {
+var ONB_OBJ_TO_BRIQUE = {
   sortir_decouvert:'D\u00e9couvert', stabiliser_budget:'Budget', rembourser_dettes:'D\u00e9sendettement',
   financer_projet_court_terme:'Projet court terme', acheter_logement:'Immobilier',
   preparer_retraite:'Retraite', investir_long_terme:'Investissement',
@@ -1165,7 +1162,7 @@ function updatePreview() {
     items.push({ dot:'green', text:'Parcours adapt\u00e9 \u00e0 ton \u00e2ge' });
   }
   if (A.q_status_pro) {
-    items.push({ dot:'green', text:'Profil ' + (STATUS_LABELS[A.q_status_pro]||A.q_status_pro) + ' pris en compte' });
+    items.push({ dot:'green', text:'Profil ' + (ONB_STATUS_LABELS[A.q_status_pro]||A.q_status_pro) + ' pris en compte' });
   }
   if (A.q_revenu_sentiment === 'difficile_fin_mois') {
     items.push({ dot:'orange', text:'Brique prioritaire : D\u00e9couvert', badge:true });
@@ -1175,14 +1172,14 @@ function updatePreview() {
     items.push({ dot:'green', text:'Tu pars sur de bonnes bases' });
   }
   if (A.q_logement_situation) {
-    items.push({ dot:'green', text:'Logement : ' + (LOGEMENT_LABELS[A.q_logement_situation]||A.q_logement_situation) });
+    items.push({ dot:'green', text:'Logement : ' + (ONB_LOGEMENT_LABELS[A.q_logement_situation]||A.q_logement_situation) });
   }
   if (A.q_logement_projet === 'je_veux_acheter') {
     items.push({ dot:'accent', text:'Brique Immobilier activ\u00e9e', badge:true });
   }
   A.q_objectifs.forEach(function(o) {
-    if (OBJ_TO_BRIQUE[o]) {
-      items.push({ dot:'accent', text:'Brique ' + OBJ_TO_BRIQUE[o], badge:true });
+    if (ONB_OBJ_TO_BRIQUE[o]) {
+      items.push({ dot:'accent', text:'Brique ' + ONB_OBJ_TO_BRIQUE[o], badge:true });
     }
   });
   if (A.q_dettes_types.includes('decouvert_regulier')) {
