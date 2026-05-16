@@ -768,6 +768,9 @@
       .mes-briques-grid { grid-template-columns: 1fr; }
       .bq-card { min-width: 180px; max-width: 180px; }
     }
+  @keyframes wmFadeIn  { from { opacity:0; } to { opacity:1; } }
+  @keyframes wmFadeOut { from { opacity:1; } to { opacity:0; } }
+  @keyframes wmSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
   </style>
 </head>
 <body>
@@ -1662,6 +1665,7 @@
     if (!Array.isArray(dash.briques)) dash.briques = [];
     var fns = [renderHero, renderBriquesGrid, renderInsight, renderExplorer, renderMesBriques, renderQuizLink];
     fns.forEach(function(fn) { try { fn(); } catch(e) { console.warn('[dashboard] render error in', fn.name, e); } });
+    try { maybeShowWelcomeModal(); } catch(e) { console.warn('[dashboard] modal error:', e); }
   }
 
   function renderQuizLink() {
@@ -1672,6 +1676,71 @@
       quizLink.style.cssText = 'font-size:0.75rem;opacity:0.35;';
       quizLink.title = 'Refaire le questionnaire pour affiner ton profil';
     }
+  }
+
+
+  /* ─── Modal bienvenue (post-onboarding) ─────────────────────────────────── */
+  function maybeShowWelcomeModal() {
+    if (sessionStorage.getItem('show_welcome') !== '1') return;
+    if (!profil || !profil.briques_recommandees || !profil.briques_recommandees.length) return;
+    if (sessionStorage.getItem('_wm_shown')) return;
+    sessionStorage.removeItem('show_welcome');
+    sessionStorage.setItem('_wm_shown', '1');
+    localStorage.setItem('welcome_modal_seen', '1');
+    buildWelcomeModal();
+  }
+
+  function buildWelcomeModal() {
+    var p = profil || {};
+    var briques = p.briques_recommandees || [];
+    var nbBriques = briques.length;
+    var briqActive = (dash.briques || []).find(function(b) { return b.statut === 'en_cours'; }) || (dash.briques || [])[0];
+    var metaActive = briqActive ? (BRIQUES_META[briqActive.id] || null) : null;
+    var nomBrique  = metaActive ? metaActive.nom : 'ta première brique';
+    var urlBrique  = briqActive ? (BRICK_FILES[briqActive.id] || 'dashboard.html') : 'dashboard.html';
+    var ageLabel = {'18-24':'18–24 ans','25-34':'25–34 ans','35-44':'35–44 ans','45-54':'45–54 ans','55+':'55 ans et +'};
+    var proLabel = {'etudiant':'Étudiant·e','salarie':'Salarié·e','independant':'Indépendant·e','sans_emploi':'Sans emploi','retraite':'Retraité·e'};
+    var age = ageLabel[p.age_group] || '';
+    var pro = proLabel[p.status_pro] || '';
+    var old = document.getElementById('wm-overlay');
+    if (old) old.remove();
+    var chips = '';
+    if (age) chips += '<span style="font-size:0.78rem;padding:0.3rem 0.75rem;border-radius:999px;background:var(--accent-soft);color:var(--accent-strong);font-weight:500;">' + age + '</span>';
+    if (pro) chips += '<span style="font-size:0.78rem;padding:0.3rem 0.75rem;border-radius:999px;background:var(--accent-soft);color:var(--accent-strong);font-weight:500;">' + pro + '</span>';
+    var overlay = document.createElement('div');
+    overlay.id = 'wm-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);padding:1rem;animation:wmFadeIn 0.25s ease';
+    overlay.innerHTML =
+      '<div style="background:var(--bg-elevated);border-radius:1.25rem;padding:2rem 2rem 1.75rem;max-width:440px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.35);position:relative;animation:wmSlideUp 0.3s ease">'
+      + '<button id="wm-close" aria-label="Fermer" style="position:absolute;top:0.875rem;right:1rem;background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.5rem;line-height:1;padding:0.25rem;">&times;</button>'
+      + '<div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;">'
+      + '<div style="width:40px;height:40px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;">'
+      + '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+      + '</div>'
+      + '<div><p style="margin:0;font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Profil créé</p>'
+      + '<h2 style="margin:0;font-size:1.1rem;font-weight:700;color:var(--text);">Ton parcours est prêt !</h2></div>'
+      + '</div>'
+      + (chips ? '<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem;">' + chips + '</div>' : '')
+      + '<div style="background:var(--bg);border-radius:0.875rem;padding:1rem 1.25rem;margin-bottom:1.5rem;">'
+      + '<p style="margin:0 0 0.25rem;font-size:0.78rem;color:var(--text-muted);">Ton parcours personnalisé</p>'
+      + '<p style="margin:0;font-size:1rem;font-weight:600;color:var(--text);">' + nbBriques + ' brique' + (nbBriques > 1 ? 's' : '') + ' sélectionnée' + (nbBriques > 1 ? 's' : '') + '</p>'
+      + '</div>'
+      + '<div style="display:flex;gap:0.75rem;align-items:center;">'
+      + '<a href="' + urlBrique + '" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 1.25rem;background:var(--accent-strong);color:#fff;border-radius:999px;font-weight:600;font-size:0.875rem;text-decoration:none;">'
+      + 'Commencer : ' + nomBrique
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>'
+      + '</a>'
+      + '<button id="wm-later" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.85rem;white-space:nowrap;padding:0.5rem;">Plus tard</button>'
+      + '</div>'
+      + '</div>';
+    document.body.appendChild(overlay);
+    function closeModal() {
+      overlay.style.animation = 'wmFadeOut 0.2s ease forwards';
+      setTimeout(function() { if (overlay.parentNode) overlay.remove(); }, 210);
+    }
+    document.getElementById('wm-close').addEventListener('click', closeModal);
+    document.getElementById('wm-later').addEventListener('click', closeModal);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
   }
 
   /* ─── Compat (anciens alias) ─────────────────────────── */
