@@ -155,40 +155,53 @@
     }
     .preview-panel {
       position: sticky; top: 6rem;
-      background: var(--surface-2); border-radius: 1.25rem;
-      padding: 1.5rem;
-      display: flex; flex-direction: column; gap: 1rem;
+      background: linear-gradient(160deg, #F6F1E8 0%, #EDE4D4 100%);
+      border: 1px solid rgba(184,159,113,0.20);
+      border-radius: 1.375rem;
+      padding: 1.75rem 1.5rem 1.5rem;
+      overflow: hidden;
+      position: relative;
+      display: flex; flex-direction: column; gap: 1.25rem;
     }
-    .preview-title {
-      font-family: 'Fraunces', serif; font-style: italic; font-size: 1rem;
-      color: var(--text); font-weight: 400; margin-bottom: 0.25rem;
+    html.dark .preview-panel {
+      background: linear-gradient(160deg, #1A1730 0%, #0F0F20 100%);
+      border-color: rgba(139,92,246,0.15);
+      box-shadow: 0 4px 32px rgba(0,0,0,0.35);
     }
-    .preview-list { display: flex; flex-direction: column; gap: 0.5rem; }
-    .preview-item {
-      display: flex; align-items: flex-start; gap: 0.5rem;
-      font-size: 13px; color: var(--text-secondary); line-height: 1.5;
-      animation: fadeSlideUp 0.35s var(--ease-out) both;
+    .preview-panel::after {
+      content: 'f';
+      font-family: 'Instrument Serif', 'Fraunces', Georgia, serif;
+      font-style: italic; font-weight: 300;
+      position: absolute; right: -0.5rem; bottom: -2rem;
+      font-size: 11rem; line-height: 1;
+      color: rgba(196,181,253,0.12);
+      pointer-events: none; user-select: none;
     }
-    .preview-item.hidden { display: none; }
-    .preview-dot {
-      width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-      margin-top: 5px;
+    html.dark .preview-panel::after { color: rgba(139,92,246,0.10); }
+    .preview-kicker {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--accent-strong); opacity: 0.7;
     }
-    .preview-dot.green { background: var(--green); }
-    .preview-dot.accent { background: var(--accent-strong); }
-    html.dark .preview-dot.accent { background: #A78BFA; }
-    .preview-dot.orange { background: var(--orange); }
-    .preview-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 2px 8px; border-radius: var(--r-full);
-      background: var(--accent-soft); color: var(--accent-strong);
-      font-size: 11px; font-weight: 600;
+    html.dark .preview-kicker { color: #A78BFA; }
+    .pv-zone { display:flex; flex-direction:column; gap:0.375rem; animation: fadeSlideUp 0.4s var(--ease-out) both; }
+    .pv-zone-label { font-size:9.5px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-faint); }
+    .pv-zone-value { font-size:0.9375rem; font-weight:600; color:var(--text); line-height:1.3; }
+    .pv-pack-pill {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 10px; border-radius:var(--r-full);
+      background:var(--accent-soft); color:var(--accent-strong);
+      font-size:0.8rem; font-weight:600; width:fit-content;
     }
-    html.dark .preview-badge { color: #A78BFA; }
-    .preview-empty {
-      font-size: 12.5px; color: var(--text-faint); font-style: italic;
-      padding: 0.5rem 0;
+    html.dark .pv-pack-pill { color:#A78BFA; }
+    .pv-briques-list { display:flex; flex-wrap:wrap; gap:0.375rem; }
+    .pv-brique-tag {
+      display:inline-flex; align-items:center; gap:4px;
+      padding:3px 9px; border-radius:var(--r-full);
+      border:1px solid var(--border-mid);
+      font-size:0.75rem; font-weight:500; color:var(--text-secondary);
+      animation: fadeSlideUp 0.3s var(--ease-out) both;
     }
+    .pv-footer { font-size:12px; color:var(--text-faint); font-style:italic; margin-top:auto; padding-top:0.5rem; border-top:1px solid var(--border-subtle); }
 
     /* ─── STEP ──────────────────────────────────────────────────── */
     .step { display: none; flex-direction: column; gap: 2rem; width: 100%; }
@@ -364,8 +377,8 @@
 
     /* ─── NAV ROW ───────────────────────────────────────────────── */
     .nav-row {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding: 2rem 0 0.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+      padding: 2.5rem 0 0.5rem;
     }
     .btn-back {
       display: flex; align-items: center; gap: 0.4rem;
@@ -374,16 +387,21 @@
     }
     .btn-back:hover { color: var(--text); }
     .btn-next {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-      padding: 0.875rem 2rem;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.625rem;
+      width: 100%; max-width: 380px;
+      padding: 1rem 2rem;
       border-radius: var(--r-full);
-      background: var(--accent-fill);
-      font-size: 0.9rem; font-weight: 600; color: var(--accent-pill-text);
+      background: var(--accent-strong);
+      font-size: 0.9375rem; font-weight: 600; color: #fff;
       border: none;
-      transition: transform 0.15s var(--ease-out), box-shadow var(--t);
+      box-shadow: 0 4px 20px rgba(91,33,182,0.25);
+      transition: transform 0.15s var(--ease-out), box-shadow var(--t), filter 0.15s;
     }
-    html.dark .btn-next { background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%); color: #fff; }
-    .btn-next:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
+    html.dark .btn-next {
+      background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%);
+      box-shadow: 0 4px 24px rgba(139,92,246,0.35);
+    }
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,33,182,0.30); filter: brightness(1.05); }
     .btn-next:active { transform: scale(0.98); }
     .btn-next.pulse { animation: pulse 1.5s ease infinite; }
     .btn-back-hidden { visibility: hidden; pointer-events: none; }
@@ -424,7 +442,47 @@
     html.dark .btn-hero { background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%); color: #fff; }
     .btn-hero:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 
-    /* ─── RESPONSIVE ─────────────────────────────────────────────── */
+    /* ─── OBJ CARD (objectives grid) ────────────────────────────── */
+    .obj-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:0.625rem; }
+    .obj-card {
+      display:flex; align-items:flex-start; gap:0.75rem;
+      padding:1rem 1rem;
+      background:var(--surface-2); border:1.5px solid var(--border-subtle);
+      border-radius:var(--r-xl);
+      cursor:pointer; text-align:left;
+      transition: border-color var(--t), background var(--t), transform 0.12s var(--ease-spring), box-shadow var(--t);
+      user-select:none;
+    }
+    .obj-card:hover:not(.selected) {
+      border-color:var(--border-mid); background:var(--bg-elevated);
+      transform:translateY(-1px); box-shadow:var(--shadow-hover);
+    }
+    .obj-card.selected {
+      border-color:var(--accent-strong); background:var(--accent-soft);
+    }
+    .obj-card.shake { animation:shake 0.4s ease; }
+    .obj-card-icon {
+      width:32px; height:32px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:8px; background:var(--surface-3);
+      transition:background var(--t);
+    }
+    .obj-card.selected .obj-card-icon { background:rgba(91,33,182,0.12); }
+    html.dark .obj-card.selected .obj-card-icon { background:rgba(139,92,246,0.15); }
+    .obj-card-icon svg { width:16px; height:16px; stroke:var(--text-muted); }
+    .obj-card.selected .obj-card-icon svg { stroke:var(--accent-strong); }
+    html.dark .obj-card.selected .obj-card-icon svg { stroke:#A78BFA; }
+    .obj-card-body { display:flex; flex-direction:column; gap:2px; }
+    .obj-card-label { font-size:13.5px; font-weight:600; color:var(--text); line-height:1.3; }
+    .obj-card.selected .obj-card-label { color:var(--accent-strong); }
+    html.dark .obj-card.selected .obj-card-label { color:#A78BFA; }
+    .obj-card-desc { font-size:11.5px; color:var(--text-muted); line-height:1.4; }
+
+    /* ─── AGE GRID (larger chips for age) ────────────────────────── */
+    .age-grid { grid-template-columns: repeat(2, 1fr); }
+    .age-grid .sel-item { padding: 13px 16px; font-size: 14px; }
+
+        /* ─── RESPONSIVE ─────────────────────────────────────────────── */
     @media (max-width: 900px) {
       .onb-body { grid-template-columns: 1fr; }
       .onb-right { display: none; }
@@ -482,7 +540,7 @@
         <!-- Q: age_group -->
         <div class="q-block">
           <p class="q-label">Quelle est ta tranche d&#8217;&#226;ge ?<span class="req">*</span></p>
-          <div class="chip-grid" role="radiogroup" aria-label="Tranche d&#8217;&#226;ge">
+          <div class="chip-grid age-grid" role="radiogroup" aria-label="Tranche d&#8217;&#226;ge">
             <button class="sel-item" data-q="q_age_group" data-val="15_17" role="radio" aria-checked="false">15&#8211;17 ans</button>
             <button class="sel-item" data-q="q_age_group" data-val="18_24" role="radio" aria-checked="false">18&#8211;24 ans</button>
             <button class="sel-item" data-q="q_age_group" data-val="25_34" role="radio" aria-checked="false">25&#8211;34 ans</button>
@@ -618,17 +676,47 @@
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
             S&#233;lectionne jusqu&#8217;&#224; <span class="max-badge-count" id="cnt-obj">0</span> / 2
           </div>
-          <div class="chip-grid col2" role="group" aria-label="Objectifs">
-            <button class="sel-item" data-q="q_objectifs" data-val="sortir_decouvert" role="checkbox" aria-checked="false" data-excl="false">Sortir du d&#233;couvert</button>
-            <button class="sel-item" data-q="q_objectifs" data-val="stabiliser_budget" role="checkbox" aria-checked="false" data-excl="false">Stabiliser mon budget</button>
-            <button class="sel-item" data-q="q_objectifs" data-val="rembourser_dettes" role="checkbox" aria-checked="false" data-excl="false">Rembourser mes dettes</button>
-            <button class="sel-item" data-q="q_objectifs" data-val="financer_projet_court_terme" role="checkbox" aria-checked="false" data-excl="false">Financer un projet court terme</button>
-            <button class="sel-item" data-q="q_objectifs" data-val="acheter_logement" role="checkbox" aria-checked="false" data-excl="false">Acheter un logement</button>
-            <button class="sel-item" data-q="q_objectifs" data-val="preparer_retraite" role="checkbox" aria-checked="false" data-excl="false">Pr&#233;parer ma retraite</button>
-            <button class="sel-item" data-q="q_objectifs" data-val="investir_long_terme" role="checkbox" aria-checked="false" data-excl="false">Investir intelligemment</button>
-            <button class="sel-item" data-q="q_objectifs" data-val="mieux_comprendre_contrats" role="checkbox" aria-checked="false" data-excl="false">Comprendre mes contrats</button>
-            <button class="sel-item" data-q="q_objectifs" data-val="preparer_transmission" role="checkbox" aria-checked="false" data-excl="false">Pr&#233;parer ma transmission</button>
-            <button class="sel-item" data-q="q_objectifs" data-val="se_reperer" role="checkbox" aria-checked="false" data-excl="false">Juste m&#8217;y retrouver</button>
+          <div class="obj-grid" role="group" aria-label="Objectifs">
+            <button class="obj-card" data-q="q_objectifs" data-val="sortir_decouvert" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Sortir du d&#233;couvert</span><span class="obj-card-desc">Repasser dans le vert durablement</span></span>
+            </button>
+            <button class="obj-card" data-q="q_objectifs" data-val="stabiliser_budget" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7H6a2 2 0 00-2 2v9a2 2 0 002 2h9a2 2 0 002-2v-3M13 3h8m0 0v8m0-8L11 13"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Stabiliser mon budget</span><span class="obj-card-desc">Savoir o&#249; va chaque euro</span></span>
+            </button>
+            <button class="obj-card" data-q="q_objectifs" data-val="rembourser_dettes" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Rembourser mes dettes</span><span class="obj-card-desc">Plan structur&#233; pour s&#8217;en lib&#233;rer</span></span>
+            </button>
+            <button class="obj-card" data-q="q_objectifs" data-val="financer_projet_court_terme" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Financer un projet</span><span class="obj-card-desc">&#201;pargner avec un objectif concret</span></span>
+            </button>
+            <button class="obj-card" data-q="q_objectifs" data-val="acheter_logement" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Acheter un logement</span><span class="obj-card-desc">Pr&#233;parer son projet immobilier</span></span>
+            </button>
+            <button class="obj-card" data-q="q_objectifs" data-val="preparer_retraite" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Pr&#233;parer ma retraite</span><span class="obj-card-desc">Construire sur le long terme</span></span>
+            </button>
+            <button class="obj-card" data-q="q_objectifs" data-val="investir_long_terme" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Investir intelligemment</span><span class="obj-card-desc">Faire fructifier son &#233;pargne</span></span>
+            </button>
+            <button class="obj-card" data-q="q_objectifs" data-val="mieux_comprendre_contrats" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Comprendre mes contrats</span><span class="obj-card-desc">Assurances, baux, cr&#233;dits</span></span>
+            </button>
+            <button class="obj-card" data-q="q_objectifs" data-val="preparer_transmission" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Pr&#233;parer ma transmission</span><span class="obj-card-desc">Succession et h&#233;ritage</span></span>
+            </button>
+            <button class="obj-card" data-q="q_objectifs" data-val="se_reperer" role="checkbox" aria-checked="false" data-excl="false">
+              <span class="obj-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg></span>
+              <span class="obj-card-body"><span class="obj-card-label">Juste m&#8217;y retrouver</span><span class="obj-card-desc">Comprendre les bases</span></span>
+            </button>
           </div>
           <span class="field-error" id="e-objectifs" role="alert">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -807,10 +895,20 @@
     <!-- RIGHT — Preview panel -->
     <aside class="onb-right" id="onb-right-col">
       <div class="preview-panel">
-        <p class="preview-title">Ton parcours se dessine</p>
-        <div class="preview-list" id="preview-list">
-          <p class="preview-empty" id="preview-empty">R&#233;ponds aux questions pour voir ton parcours appara&#238;tre ici.</p>
+        <div class="preview-kicker">TON PARCOURS</div>
+        <div class="pv-zone" id="pv-profil" style="display:none">
+          <div class="pv-zone-label">PROFIL DÉTECTÉ</div>
+          <div class="pv-zone-value" id="pv-profil-text">—</div>
         </div>
+        <div class="pv-zone" id="pv-pack" style="display:none">
+          <div class="pv-zone-label">PACK RECOMMANDÉ</div>
+          <div class="pv-pack-pill" id="pv-pack-pill">—</div>
+        </div>
+        <div class="pv-zone" id="pv-briques" style="display:none">
+          <div class="pv-zone-label">BRIQUES ACTIVÉES</div>
+          <div class="pv-briques-list" id="pv-briques-list"></div>
+        </div>
+        <div class="pv-footer" id="pv-footer">Réponds aux questions pour voir ton parcours.</div>
       </div>
     </aside>
 
@@ -1154,62 +1252,62 @@ var ONB_OBJ_TO_BRIQUE = {
 };
 
 function updatePreview() {
-  var list = document.getElementById('preview-list');
-  var empty = document.getElementById('preview-empty');
-  var items = [];
+  // Zone 1 — Profil
+  var profZone = document.getElementById('pv-profil');
+  var profText = document.getElementById('pv-profil-text');
+  var ageLbl = { '15_17':'15\u201317 ans','18_24':'18\u201324 ans','25_34':'25\u201334 ans','35_54':'35\u201354 ans','55_64':'55\u201364 ans','65_plus':'65 ans+' };
+  var statusLbl = { college_lycee:'Lyc\u00e9en',etudiant:'\u00c9tudiant',sal_ouvrier_employe:'Salari\u00e9',sal_prof_inter:'Prof. interm\u00e9d.',cadre_prof_lib:'Cadre',indep_tpe:'Ind\u00e9pendant',chomeur_inactif:'En recherche',retraite:'Retrait\u00e9',autre:'Autre' };
+  if (A.q_age_group || A.q_status_pro) {
+    var parts = [];
+    if (A.q_age_group) parts.push(ageLbl[A.q_age_group] || A.q_age_group);
+    if (A.q_status_pro) parts.push(statusLbl[A.q_status_pro] || A.q_status_pro);
+    profText.textContent = parts.join(' \u00b7 ');
+    profZone.style.display = 'flex';
+  } else { profZone.style.display = 'none'; }
 
-  if (A.q_age_group) {
-    items.push({ dot:'green', text:'Parcours adapt\u00e9 \u00e0 ton \u00e2ge' });
+  // Zone 2 — Pack (d\u00e9duit depuis objectifs + situation)
+  var packZone = document.getElementById('pv-pack');
+  var packPill = document.getElementById('pv-pack-pill');
+  var PACK_RULES = [
+    { keys:['sortir_decouvert','rembourser_dettes'], label:'Survie & Stabilit\u00e9', dot:'#f87171' },
+    { keys:['stabiliser_budget','financer_projet_court_terme'], label:'Construction', dot:'#fb923c' },
+    { keys:['preparer_retraite','investir_long_terme','preparer_transmission'], label:'Investissement', dot:'#8FB59A' },
+    { keys:['acheter_logement'], label:'Immobilier', dot:'#60A5FA' },
+  ];
+  var detectedPack = null;
+  for (var pi=0; pi<PACK_RULES.length; pi++) {
+    var rule = PACK_RULES[pi];
+    if (A.q_objectifs.some(function(o){ return rule.keys.includes(o); })) { detectedPack = rule; break; }
   }
-  if (A.q_status_pro) {
-    items.push({ dot:'green', text:'Profil ' + (ONB_STATUS_LABELS[A.q_status_pro]||A.q_status_pro) + ' pris en compte' });
-  }
-  if (A.q_revenu_sentiment === 'difficile_fin_mois') {
-    items.push({ dot:'orange', text:'Brique prioritaire : D\u00e9couvert', badge:true });
-  } else if (A.q_revenu_sentiment === 'juste_juste') {
-    items.push({ dot:'orange', text:'Brique prioritaire : Budget de base', badge:true });
-  } else if (A.q_revenu_sentiment === 'a_l_aise') {
-    items.push({ dot:'green', text:'Tu pars sur de bonnes bases' });
-  }
-  if (A.q_logement_situation) {
-    items.push({ dot:'green', text:'Logement : ' + (ONB_LOGEMENT_LABELS[A.q_logement_situation]||A.q_logement_situation) });
-  }
-  if (A.q_logement_projet === 'je_veux_acheter') {
-    items.push({ dot:'accent', text:'Brique Immobilier activ\u00e9e', badge:true });
-  }
-  A.q_objectifs.forEach(function(o) {
-    if (ONB_OBJ_TO_BRIQUE[o]) {
-      items.push({ dot:'accent', text:'Brique ' + ONB_OBJ_TO_BRIQUE[o], badge:true });
-    }
-  });
-  if (A.q_dettes_types.includes('decouvert_regulier')) {
-    items.push({ dot:'orange', text:'Brique D\u00e9couvert activ\u00e9e', badge:true });
-  }
-  if (A.q_produits_detenu.includes('aucun_ou_je_sais_pas')) {
-    items.push({ dot:'accent', text:'Brique Premiers pas bancaires activ\u00e9e', badge:true });
-  }
+  if (!detectedPack && A.q_objectifs.length > 0) detectedPack = { label:'Fondamentaux', dot:'#A78BFA' };
+  if (detectedPack) {
+    packPill.innerHTML = '<span style="width:7px;height:7px;border-radius:50%;background:'+detectedPack.dot+';display:inline-block;flex-shrink:0"></span>' + detectedPack.label;
+    packZone.style.display = 'flex';
+  } else { packZone.style.display = 'none'; }
 
-  if (items.length === 0) {
-    if (empty) empty.style.display = '';
-    // Clear any existing items
-    list.querySelectorAll('.preview-item').forEach(function(el){el.remove();});
-    return;
-  }
+  // Zone 3 — Briques (max 3)
+  var bricZone = document.getElementById('pv-briques');
+  var bricList = document.getElementById('pv-briques-list');
+  var OBJ_BRIQUE = { sortir_decouvert:'Sortir du rouge',stabiliser_budget:'Budget base',rembourser_dettes:'D\u00e9sendettement',financer_projet_court_terme:'Projet court terme',acheter_logement:'Immobilier',preparer_retraite:'Retraite',investir_long_terme:'Investissement',mieux_comprendre_contrats:'Contrats',preparer_transmission:'Transmission',se_reperer:'Premiers pas' };
+  var bricTags = [];
+  A.q_objectifs.forEach(function(o){ if(OBJ_BRIQUE[o]) bricTags.push(OBJ_BRIQUE[o]); });
+  if (A.q_dettes_types.includes('decouvert_regulier') && !bricTags.includes('Sortir du rouge')) bricTags.push('Sortir du rouge');
+  if (A.q_produits_detenu.includes('aucun_ou_je_sais_pas') && !bricTags.includes('Premiers pas')) bricTags.push('Premiers pas');
+  bricTags = bricTags.slice(0,3);
+  if (bricTags.length > 0) {
+    bricList.innerHTML = bricTags.map(function(t){ return '<span class="pv-brique-tag">'+t+'</span>'; }).join('');
+    bricZone.style.display = 'flex';
+  } else { bricZone.style.display = 'none'; }
 
-  if (empty) empty.style.display = 'none';
-  // Rebuild
-  list.querySelectorAll('.preview-item').forEach(function(el){el.remove();});
-  items.forEach(function(item, i) {
-    var div = document.createElement('div');
-    div.className = 'preview-item';
-    div.style.animationDelay = (i * 60) + 'ms';
-    var dotHtml = '<span class="preview-dot ' + item.dot + '"></span>';
-    var textHtml = item.badge
-      ? '<span><span class="preview-badge">' + item.text + '</span></span>'
-      : '<span>' + item.text + '</span>';
-    div.innerHTML = dotHtml + textHtml;
-    list.appendChild(div);
-  });
+  // Footer
+  var footer = document.getElementById('pv-footer');
+  var filledZones = (profZone.style.display!=='none'?1:0) + (packZone.style.display!=='none'?1:0) + (bricZone.style.display!=='none'?1:0);
+  var remaining = 4 - current;
+  if (filledZones > 0 && footer) {
+    footer.textContent = remaining > 0 ? 'Encore ' + remaining + ' bloc' + (remaining>1?'s':'') + ' pour finaliser.' : 'Parcours pr\u00eat !';
+  } else if (footer) {
+    footer.textContent = 'R\u00e9ponds aux questions pour voir ton parcours.';
+  }
 }
 
 // ─── SUBMIT ──────────────────────────────────────────────────────
