@@ -85,7 +85,7 @@ async function saveProfile(profileData) {
     id: user.id,
     ...profileData
   });
-  if (error) console.error('[Fund] saveProfile error:', error.message);
+  if (error) console.error('[Fund] saveProfile error:', error.message, '| code:', error.code, '| details:', error.details, '| hint:', error.hint);
   return { error: error?.message };
 }
 

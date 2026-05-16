@@ -1099,8 +1099,8 @@
 
   /* ─── STATE ─────────────────────────────────────────── */
   let currentUser = null;
-  let dash   = typeof getMockDashboard === 'function' ? getMockDashboard() : { briques: [], engagements: [], streak: 0, modules_completes: 0 };
-  let profil = typeof getMockProfile === 'function' ? getMockProfile() : {};
+  let dash   = { briques: [], engagements: [], streak: 0, modules_completes: 0 };
+  let profil = {};
 
   /* ─── AUTH GATE + INIT ──────────────────────────────── */
   (async () => {
@@ -1136,7 +1136,7 @@
 
       if (dbBriques && dbBriques.length > 0) {
         if (Array.isArray(dbDash)) {
-          dash = getMockDashboard();
+          dash = { briques: [], engagements: [], streak: 0, modules_completes: 0 };
           dash.briques = dbBriques;
           dash.brique_active_id = dbBriques.find(b => b.statut === 'en_cours')?.id || dbBriques[0]?.id;
         } else {
@@ -1156,12 +1156,54 @@
           saveToStorage('fund_dashboard', dash);
         }
       }
+      // Guard : si aucune brique après hydration complète, afficher empty state
+      if (!profil.briques_recommandees || profil.briques_recommandees.length === 0) {
+        showEmptyState();
+        return;
+      }
       renderAll();
       maybeShowWelcomeModal();
     } catch(e) {
       console.warn('[dashboard] loadData error:', e);
       renderAll();
     }
+  }
+
+  function showEmptyState() {
+    const main = document.querySelector('.main-content') || document.querySelector('.content-area') || document.body;
+    if (!main) return;
+    // Supprimer les sections normales pour ne montrer que l'empty state
+    const sectionsToHide = ['#zone-hero', '#completed-banner', '#mes-briques-section', '#explorer-section', '.insight-card', '#nav-quiz-link'];
+    sectionsToHide.forEach(function(sel) {
+      const el = document.querySelector(sel);
+      if (el) el.style.display = 'none';
+    });
+    // Créer ou afficher le bloc empty state
+    let emptyEl = document.getElementById('empty-state-block');
+    if (!emptyEl) {
+      emptyEl = document.createElement('div');
+      emptyEl.id = 'empty-state-block';
+      emptyEl.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:1.25rem;padding:2rem;';
+      emptyEl.innerHTML = \`
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h2 style="font-size:1.25rem;font-weight:600;color:var(--text);margin:0;">Crée ton profil pour commencer</h2>
+        <p style="font-size:0.9rem;color:var(--text-secondary);max-width:340px;margin:0;line-height:1.6;">Réponds à quelques questions pour que Fundamentals te propose un parcours personnalisé.</p>
+        <a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;background:var(--accent-strong);color:#fff;border-radius:999px;font-weight:600;font-size:0.9rem;text-decoration:none;margin-top:0.5rem;">
+          Créer mon profil
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      \`;
+      // Insérer après le greeting ou au début de main
+      const greeting = document.querySelector('.greeting-row') || main.firstElementChild;
+      if (greeting && greeting.parentNode === main) {
+        greeting.insertAdjacentElement('afterend', emptyEl);
+      } else {
+        main.prepend(emptyEl);
+      }
+    }
+    emptyEl.style.display = 'flex';
   }
 
   function save() { saveToStorage('fund_dashboard', dash); saveDashboard(dash).catch(() => {}); }
