@@ -1125,6 +1125,9 @@
       if (dbProfil && dbProfil.briques_recommandees && dbProfil.briques_recommandees.length > 0) {
         profil = dbProfil;
         saveToStorage('fund_profil', profil);
+      } else if (dbProfil) {
+        // Profil existant mais sans briques (upsert raté antérieur) → forcer empty state
+        profil = dbProfil; // garder les données du profil mais sans briques
       }
 
       let dbBriques = null;
@@ -1239,12 +1242,20 @@
     document.getElementById('completed-banner').classList.remove('show');
     document.getElementById('zone-hero').style.display = '';
 
+    // Filtrer les briques dont l'ID n'existe pas dans BRIQUES_META (données corrompues/obsolètes)
+    const briquesValides = (dash.briques || []).filter(b => !!BRIQUES_META[b.id]);
+    if (briquesValides.length > 0 && briquesValides.length !== dash.briques.length) {
+      dash.briques = briquesValides;
+      if (!dash.briques.find(b => b.id === dash.brique_active_id)) {
+        dash.brique_active_id = briquesValides[0].id;
+      }
+    }
     const briqData = dash.briques.find(b => b.statut === 'en_cours')
                   || dash.briques.find(b => b.statut === 'a_faire')
                   || dash.briques[0];
-    if (!briqData) return;
+    if (!briqData) { showEmptyState(); return; }
     const meta = BRIQUES_META[briqData.id];
-    if (!meta) return;
+    if (!meta) { showEmptyState(); return; }
 
     /* Kicker contextuel selon le kind */
     const kickerLabelEl = document.getElementById('hero-kicker-label');
