@@ -271,29 +271,35 @@
     /* ─── RADIO CARD (sentiment) ─────────────────────────────────── */
     .radio-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
     .radio-card {
-      display: flex; flex-direction: column; align-items: center; gap: 0.625rem;
-      padding: 1.25rem 0.75rem;
+      display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem;
+      padding: 1.25rem 1.125rem 1rem;
       background: var(--surface-2);
       border: 1.5px solid var(--border-subtle);
       border-radius: var(--r-xl);
-      cursor: pointer;
+      cursor: pointer; text-align: left;
       transition: border-color var(--t), background var(--t), transform 0.12s var(--ease-spring), box-shadow var(--t);
-      text-align: center; user-select: none;
+      user-select: none; -webkit-user-select: none;
     }
     .radio-card:hover:not(.selected) {
       border-color: var(--border-mid);
-      box-shadow: var(--shadow-hover);
-      transform: translateY(-2px);
+      background: var(--surface-3);
+      transform: translateY(-2px); box-shadow: var(--shadow-hover);
     }
     .radio-card:active { transform: scale(0.97); }
     .radio-card.selected {
       border-color: var(--accent-strong);
       background: var(--accent-soft);
     }
+    html.dark .radio-card { background: rgba(255,255,255,0.05); }
+    html.dark .radio-card:hover:not(.selected) { background: rgba(255,255,255,0.08); }
+    html.dark .radio-card.selected { background: rgba(139,92,246,0.15); border-color: #A78BFA; }
     .radio-card.shake { animation: shake 0.4s ease; }
-    .radio-card-icon { width: 36px; height: 36px; }
-    .radio-card-label { font-size: 14px; font-weight: 600; color: var(--text); }
+    .radio-card-icon { width: 40px; height: 24px; display: flex; align-items: flex-end; gap: 3px; }
+    .radio-card-bar { border-radius: 3px 3px 0 0; width: 9px; }
+    .radio-card-label { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.3; }
     .radio-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+    .radio-card.selected .radio-card-label { color: var(--accent-strong); }
+    html.dark .radio-card.selected .radio-card-label { color: #A78BFA; }
 
     /* ─── PILL (compact radio) ───────────────────────────────────── */
     .pill-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -595,20 +601,38 @@
         <div class="q-block">
           <p class="q-label">Comment te sens-tu en fin de mois ?<span class="req">*</span></p>
           <div class="radio-card-grid" role="radiogroup" aria-label="Ressenti financier">
+            <!-- Difficile fin de mois — barres basses, rouge -->
             <button class="radio-card" data-q="q_revenu_sentiment" data-val="difficile_fin_mois" role="radio" aria-checked="false">
-              <svg class="radio-card-icon" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" stroke="var(--red)" stroke-width="2" opacity="0.3"/><path d="M12 24c1.5-2.5 4-4 6-4s4.5 1.5 6 4" stroke="var(--red)" stroke-width="2" stroke-linecap="round" transform="rotate(180 18 24)"/><circle cx="13" cy="15" r="1.5" fill="var(--red)"/><circle cx="23" cy="15" r="1.5" fill="var(--red)"/></svg>
+              <span class="radio-card-icon" aria-hidden="true">
+                <span class="radio-card-bar" style="height:8px;background:#f87171;opacity:0.9"></span>
+                <span class="radio-card-bar" style="height:5px;background:#f87171;opacity:0.6"></span>
+                <span class="radio-card-bar" style="height:11px;background:#f87171;opacity:0.8"></span>
+                <span class="radio-card-bar" style="height:4px;background:#f87171;opacity:0.5"></span>
+              </span>
               <span class="radio-card-label">Difficile en fin de mois</span>
               <span class="radio-card-desc">Il reste peu ou rien</span>
             </button>
+            <!-- Juste-juste — barres moyennes, orange -->
             <button class="radio-card" data-q="q_revenu_sentiment" data-val="juste_juste" role="radio" aria-checked="false">
-              <svg class="radio-card-icon" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" stroke="var(--orange)" stroke-width="2" opacity="0.3"/><line x1="12" y1="22" x2="24" y2="22" stroke="var(--orange)" stroke-width="2" stroke-linecap="round"/><circle cx="13" cy="15" r="1.5" fill="var(--orange)"/><circle cx="23" cy="15" r="1.5" fill="var(--orange)"/></svg>
+              <span class="radio-card-icon" aria-hidden="true">
+                <span class="radio-card-bar" style="height:12px;background:#fb923c;opacity:0.7"></span>
+                <span class="radio-card-bar" style="height:16px;background:#fb923c;opacity:0.9"></span>
+                <span class="radio-card-bar" style="height:10px;background:#fb923c;opacity:0.75"></span>
+                <span class="radio-card-bar" style="height:14px;background:#fb923c;opacity:0.85"></span>
+              </span>
               <span class="radio-card-label">Juste-juste</span>
-              <span class="radio-card-desc">&#199;a passe, sans marge</span>
+              <span class="radio-card-desc">Ça passe, sans marge</span>
             </button>
+            <!-- À l’aise — barres hautes, vert -->
             <button class="radio-card" data-q="q_revenu_sentiment" data-val="a_l_aise" role="radio" aria-checked="false">
-              <svg class="radio-card-icon" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" stroke="var(--green)" stroke-width="2" opacity="0.3"/><path d="M12 20c1.5 2.5 4 4 6 4s4.5-1.5 6-4" stroke="var(--green)" stroke-width="2" stroke-linecap="round"/><circle cx="13" cy="15" r="1.5" fill="var(--green)"/><circle cx="23" cy="15" r="1.5" fill="var(--green)"/></svg>
-              <span class="radio-card-label">&#192; l&#8217;aise</span>
-              <span class="radio-card-desc">Je g&#232;re confortablement</span>
+              <span class="radio-card-icon" aria-hidden="true">
+                <span class="radio-card-bar" style="height:18px;background:#22c55e;opacity:0.8"></span>
+                <span class="radio-card-bar" style="height:22px;background:#22c55e;opacity:1"></span>
+                <span class="radio-card-bar" style="height:16px;background:#22c55e;opacity:0.85"></span>
+                <span class="radio-card-bar" style="height:20px;background:#22c55e;opacity:0.9"></span>
+              </span>
+              <span class="radio-card-label">À l’aise</span>
+              <span class="radio-card-desc">Je gère confortablement</span>
             </button>
           </div>
           <span class="field-error" id="e-revenu" role="alert">
@@ -674,7 +698,7 @@
           <p class="q-label">Tes objectifs prioritaires<span class="req">*</span></p>
           <div class="max-badge">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-            S&#233;lectionne jusqu&#8217;&#224; <span class="max-badge-count" id="cnt-obj">0</span> / 2
+            Sélectionne jusqu’à <span class="max-badge-count" id="cnt-obj">0</span> / 3
           </div>
           <div class="obj-grid" role="group" aria-label="Objectifs">
             <button class="obj-card" data-q="q_objectifs" data-val="sortir_decouvert" role="checkbox" aria-checked="false" data-excl="false">
@@ -993,7 +1017,7 @@ document.querySelectorAll('[data-q]').forEach(function(btn) {
       var sel = btn.classList.contains('selected');
 
       if (q === 'q_objectifs') {
-        if (!sel && A[q].length >= 2) return;
+        if (!sel && A[q].length >= 3) return;
         if (!sel) {
           A[q].push(val);
           btn.classList.add('selected'); btn.setAttribute('aria-checked','true');
@@ -1002,7 +1026,7 @@ document.querySelectorAll('[data-q]').forEach(function(btn) {
           btn.classList.remove('selected'); btn.setAttribute('aria-checked','false');
         }
         var cnt = document.getElementById('cnt-obj');
-        cnt.textContent = A[q].length; cnt.classList.toggle('full', A[q].length >= 2);
+        cnt.textContent = A[q].length; cnt.classList.toggle('full', A[q].length >= 3);
         autoMapUrgence();
 
       } else if (excl) {
@@ -1220,9 +1244,10 @@ function computeBriques() {
   if (retards==='frequent'&&rev==='difficile_fin_mois'&&dettes.filter(function(d){return d!=='aucun';}).length>=2) s.add('dispositifs_bdf');
   if (['15_17','18_24','65_plus'].includes(age)||confort==='peu_a_l_aise'||fraude==='oui') s.add('anti_arnaques');
   if (['15_17','18_24'].includes(age)&&['college_lycee','etudiant'].includes(status)) s.add('premiers_pas_bancaires');
-  if (['18_24','25_34'].includes(age)&&['je_vais_demenager','je_veux_acheter'].includes(lp)) s.add('emmenagement');
+  if (['je_vais_demenager','je_veux_acheter'].includes(lp)) s.add('emmenagement');
+  if (lp==='je_veux_acheter') s.add('projet_immo');
   if (['financer_projet_court_terme','acheter_logement','preparer_retraite'].some(function(o){return obj.includes(o);})&&rev!=='difficile_fin_mois') s.add('plan_multi_objectifs');
-  if (lp==='je_veux_acheter'||dettes.includes('credit_immo')) s.add('projet_immo');
+  if (dettes.includes('credit_immo')) s.add('projet_immo');
   if (status==='indep_tpe') s.add('treso_dirigeant');
   if (rev==='a_l_aise'||['assurance_vie','pea','per','immo_locatif'].some(function(p){return produits.includes(p);})) s.add('structuration_patrimoine');
   if (obj.includes('investir_long_terme')) { s.add('investissement_long_terme'); s.add('diversification_allocation'); if (['pea','assurance_vie','per'].some(function(p){return produits.includes(p);})) s.add('fiscalite_epargne'); }
@@ -1280,6 +1305,10 @@ function updatePreview() {
     if (A.q_objectifs.some(function(o){ return rule.keys.includes(o); })) { detectedPack = rule; break; }
   }
   if (!detectedPack && A.q_objectifs.length > 0) detectedPack = { label:'Fondamentaux', dot:'#A78BFA' };
+  // Découvert conditionnel: hide "Survie" pack unless explicit signal
+  var hasDecouvertSignal = A.q_dettes_types.includes('decouvert_regulier') || A.q_revenu_sentiment === 'difficile_fin_mois' || A.q_objectifs.includes('sortir_decouvert');
+  if (detectedPack && detectedPack.label === 'Survie & Stabilit\u00e9' && !hasDecouvertSignal) detectedPack = null;
+  if (!detectedPack && A.q_objectifs.length > 0) detectedPack = { label:'Fondamentaux', dot:'#A78BFA' };
   if (detectedPack) {
     packPill.innerHTML = '<span style="width:7px;height:7px;border-radius:50%;background:'+detectedPack.dot+';display:inline-block;flex-shrink:0"></span>' + detectedPack.label;
     packZone.style.display = 'flex';
@@ -1291,7 +1320,12 @@ function updatePreview() {
   var OBJ_BRIQUE = { sortir_decouvert:'Sortir du rouge',stabiliser_budget:'Budget base',rembourser_dettes:'D\u00e9sendettement',financer_projet_court_terme:'Projet court terme',acheter_logement:'Immobilier',preparer_retraite:'Retraite',investir_long_terme:'Investissement',mieux_comprendre_contrats:'Contrats',preparer_transmission:'Transmission',se_reperer:'Premiers pas' };
   var bricTags = [];
   A.q_objectifs.forEach(function(o){ if(OBJ_BRIQUE[o]) bricTags.push(OBJ_BRIQUE[o]); });
-  if (A.q_dettes_types.includes('decouvert_regulier') && !bricTags.includes('Sortir du rouge')) bricTags.push('Sortir du rouge');
+  if (A.q_logement_projet === 'je_veux_acheter') {
+    if (!bricTags.includes('Immobilier')) bricTags.unshift('Immobilier');
+    if (!bricTags.includes('Premier achat')) bricTags.splice(1, 0, 'Premier achat');
+  }
+  // Découvert conditionnel: "Sortir du rouge" only if explicit objective
+  // (decouvert_regulier alone no longer triggers it in preview)
   if (A.q_produits_detenu.includes('aucun_ou_je_sais_pas') && !bricTags.includes('Premiers pas')) bricTags.push('Premiers pas');
   bricTags = bricTags.slice(0,3);
   if (bricTags.length > 0) {

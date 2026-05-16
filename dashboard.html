@@ -768,6 +768,133 @@
       .mes-briques-grid { grid-template-columns: 1fr; }
       .bq-card { min-width: 180px; max-width: 180px; }
     }
+
+    /* ─── WELCOME MODAL ─────────────────────────────────────────── */
+    .welcome-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .welcome-overlay.open { opacity: 1; pointer-events: all; }
+    .welcome-modal {
+      position: relative;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      width: 100%; max-width: 520px;
+      max-height: 90dvh; overflow-y: auto;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.18);
+      display: flex; flex-direction: column; gap: 1.5rem;
+      transform: translateY(24px) scale(0.97);
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+      scroll-behavior: smooth;
+    }
+    html.dark .welcome-modal {
+      background: #161824;
+      box-shadow: 0 8px 56px rgba(0,0,0,0.45);
+    }
+    .welcome-overlay.open .welcome-modal { transform: translateY(0) scale(1); }
+
+    .welcome-close {
+      position: absolute; top: 1.25rem; right: 1.25rem;
+      color: var(--text-faint); transition: color var(--t);
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+    }
+    .welcome-close:hover { color: var(--text); background: var(--surface-2); }
+
+    .welcome-header { display: flex; flex-direction: column; gap: 0.5rem; padding-right: 2rem; }
+    .welcome-kicker {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent-strong); opacity: 0.8;
+    }
+    html.dark .welcome-kicker { color: #A78BFA; }
+    .welcome-title {
+      font-size: clamp(1.375rem, 3vw, 1.625rem);
+      font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+      color: var(--text); line-height: 1.25;
+    }
+    .welcome-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    .wm-section { display: flex; flex-direction: column; gap: 0.625rem; }
+    .wm-section-label {
+      font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    /* Profil chips */
+    .wm-profil-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .wm-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 9999px;
+      background: var(--surface-2); border: 1px solid var(--border-subtle);
+      font-size: 13px; font-weight: 500; color: var(--text-secondary);
+    }
+    .wm-chip svg { width: 13px; height: 13px; stroke: var(--text-faint); flex-shrink: 0; }
+
+    /* Briques list */
+    .wm-briques-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .wm-brique-card {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      background: var(--surface-2); border: 1px solid var(--border-subtle);
+      border-radius: var(--r-lg);
+      transition: border-color var(--t), background var(--t);
+    }
+    .wm-brique-card:first-child {
+      border-color: var(--accent-strong);
+      background: var(--accent-soft);
+    }
+    html.dark .wm-brique-card:first-child { border-color: #A78BFA; background: rgba(139,92,246,0.12); }
+    .wm-brique-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .wm-brique-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
+    .wm-brique-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .wm-brique-card:first-child .wm-brique-name { color: var(--accent-strong); }
+    html.dark .wm-brique-card:first-child .wm-brique-name { color: #A78BFA; }
+    .wm-brique-desc { font-size: 12px; color: var(--text-muted); }
+    .wm-brique-badge {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--accent-strong); background: var(--accent-soft);
+      padding: 2px 7px; border-radius: 9999px; flex-shrink: 0;
+    }
+    html.dark .wm-brique-badge { color: #A78BFA; }
+
+    /* Pitch */
+    .wm-pitch {
+      display: flex; align-items: flex-start; gap: 0.625rem;
+      padding: 0.875rem 1rem;
+      background: var(--surface-2); border-radius: var(--r-lg);
+      font-size: 13px; color: var(--text-secondary); line-height: 1.5;
+    }
+    .wm-pitch svg { stroke: var(--accent-strong); flex-shrink: 0; margin-top: 1px; }
+    html.dark .wm-pitch svg { stroke: #A78BFA; }
+
+    /* Footer */
+    .wm-footer { display: flex; flex-direction: column; align-items: center; gap: 0.625rem; }
+    .wm-cta {
+      width: 100%;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      padding: 0.9375rem 2rem; border-radius: 9999px;
+      background: var(--accent-strong); color: #fff;
+      font-size: 0.9375rem; font-weight: 600;
+      box-shadow: 0 4px 20px rgba(91,33,182,0.25);
+      transition: transform 0.15s, box-shadow var(--t), filter 0.15s;
+    }
+    html.dark .wm-cta { background: linear-gradient(135deg,#A78BFA,#6B8AFE); box-shadow: 0 4px 24px rgba(139,92,246,0.35); }
+    .wm-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,33,182,0.30); filter: brightness(1.05); }
+    .wm-cta:active { transform: scale(0.98); }
+    .wm-skip {
+      font-size: 13px; color: var(--text-faint);
+      transition: color var(--t);
+    }
+    .wm-skip:hover { color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -871,6 +998,47 @@
     <div class="explorer-cols" id="explorer-cols"></div>
   </div>
 
+
+<!-- WELCOME MODAL -->
+<div class="welcome-overlay" id="welcome-overlay" aria-modal="true" role="dialog" aria-label="Bienvenue sur Fundamental">
+  <div class="welcome-modal" id="welcome-modal">
+    <!-- Close -->
+    <button class="welcome-close" id="welcome-close" aria-label="Fermer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+
+    <!-- Header section -->
+    <div class="welcome-header">
+      <div class="welcome-kicker" id="wm-kicker">TON PARCOURS EST PRÊT</div>
+      <h2 class="welcome-title serif" id="wm-title">Bienvenue sur Fundamental.</h2>
+      <p class="welcome-sub" id="wm-sub">Un plan financier construit autour de ta situation réelle — pas un conseil générique.</p>
+    </div>
+
+    <!-- Profil détecté -->
+    <div class="wm-section" id="wm-profil-section">
+      <div class="wm-section-label">CE QU’ON A COMPRIS</div>
+      <div class="wm-profil-chips" id="wm-profil-chips"></div>
+    </div>
+
+    <!-- Briques recommandées -->
+    <div class="wm-section" id="wm-briques-section">
+      <div class="wm-section-label">TES PREMIÈRES BRIQUES</div>
+      <div class="wm-briques-list" id="wm-briques-list"></div>
+    </div>
+
+    <!-- Pitch plateforme -->
+    <div class="wm-pitch">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Chaque brique te prend 5 à 15 minutes et te laisse un résultat concret actionnable.
+    </div>
+
+    <!-- CTA -->
+    <div class="wm-footer">
+      <button class="wm-cta" id="wm-cta">Commencer mon parcours →</button>
+      <button class="wm-skip" id="wm-skip">Explorer le dashboard</button>
+    </div>
+  </div>
+</div>
 
 </main>
 
@@ -988,6 +1156,7 @@
         }
       }
       renderAll();
+      maybeShowWelcomeModal();
     } catch(e) {
       console.warn('[dashboard] loadData error:', e);
       renderAll();
@@ -1661,6 +1830,119 @@
   /* ─── Compat (anciens alias) ─────────────────────────── */
   /* renderGreeting() supprimé — logique intégrée dans renderHero() */
   /* setExplorerCat() supprimé — Explorer est maintenant 3 colonnes fixes */
+
+
+  // ─── WELCOME MODAL ───────────────────────────────────────────────────────────
+  function maybeShowWelcomeModal() {
+    try {
+      var wProfil = loadFromStorage('fund_profil');
+      if (!wProfil || !wProfil.completed_at) return;
+      if (localStorage.getItem('welcome_modal_seen')) return;
+      localStorage.setItem('welcome_modal_seen', '1');
+      buildWelcomeModal(wProfil);
+      document.getElementById('welcome-overlay').classList.add('open');
+    } catch(e) { console.warn('[welcome-modal] error:', e); }
+  }
+
+  function buildWelcomeModal(wProfil) {
+    var BRIQUE_LABEL = {
+      budget_base: { name:'Ton budget de base', desc:'Visualise tes revenus, d\u00e9penses et reste \u00e0 vivre', dot:'#fb923c' },
+      gestion_decouvert: { name:'Sortir du d\u00e9couvert', desc:'Un plan concret pour repasser dans le vert', dot:'#f87171' },
+      fonds_urgence: { name:'Ton matelas de s\u00e9curit\u00e9', desc:'Le fonds d\'urgence qui change tout', dot:'#22c55e' },
+      premiers_pas_bancaires: { name:'Premiers pas bancaires', desc:'Optimise tes comptes et livrets', dot:'#C4B5FD' },
+      droits_aides: { name:'Tes droits & aides', desc:'Les aides auxquelles tu as droit', dot:'#60A5FA' },
+      projet_immo: { name:'Projet immobilier', desc:'Pr\u00e9pare ton premier achat', dot:'#60A5FA' },
+      emmenagement: { name:'Emm\u00e9nagement', desc:'Pr\u00e9pare ta recherche de logement', dot:'#8FB59A' },
+      plan_desendettement: { name:'Plan de d\u00e9sendettement', desc:'Rembourse intelligemment', dot:'#f87171' },
+      investissement_long_terme: { name:'Investir sur le long terme', desc:'Fais fructifier ton \u00e9pargne', dot:'#A78BFA' },
+      structuration_patrimoine: { name:'Structurer ton patrimoine', desc:'Une vision globale de tes actifs', dot:'#A78BFA' },
+      retraite: { name:'Pr\u00e9parer ta retraite', desc:'Construire sur le long terme', dot:'#8FB59A' },
+      anti_arnaques: { name:'S\u00e9curit\u00e9 financi\u00e8re', desc:'Prot\u00e8ge-toi des arnaques et fraudes', dot:'#f87171' },
+      paiements_fractionnes: { name:'Paiements fractionn\u00e9s', desc:'Reprends le contr\u00f4le du BNPL', dot:'#fb923c' },
+      plan_multi_objectifs: { name:'Tes objectifs de vie', desc:'Planifie tes projets moyen terme', dot:'#C4B5FD' },
+      treso_dirigeant: { name:'Tr\u00e9sorerie dirigeant', desc:'G\u00e8re efficacement ta tr\u00e9so pro', dot:'#A78BFA' },
+    };
+
+    var chips = [];
+    var ageLbl = {'15_17':'15\u201317 ans','18_24':'18\u201324 ans','25_34':'25\u201334 ans','35_54':'35\u201354 ans','55_64':'55\u201364 ans','65_plus':'65 ans+'};
+    var stLbl = {college_lycee:'Lyc\u00e9en',etudiant:'\u00c9tudiant',sal_ouvrier_employe:'Salari\u00e9',sal_prof_inter:'Prof. interm\u00e9d.',cadre_prof_lib:'Cadre',indep_tpe:'Ind\u00e9pendant',chomeur_inactif:'En recherche',retraite:'Retrait\u00e9',autre:'Autre'};
+    var revLbl = {difficile_fin_mois:'Fin de mois difficile',juste_juste:'Juste-juste',a_l_aise:'\u00c0 l\'aise financi\u00e8rement'};
+    var logLbl = {chez_parents:'Chez les parents',colocation:'Colocation',locataire:'Locataire',proprietaire:'Propri\u00e9taire',heberge_autre:'H\u00e9berg\u00e9'};
+
+    var personIconSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a6 6 0 0112 0v2"/></svg>';
+    var briefIconSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>';
+    var walletIconSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>';
+    var homeIconSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/></svg>';
+
+    if (wProfil.q_age_group && ageLbl[wProfil.q_age_group]) chips.push({icon: personIconSVG, label: ageLbl[wProfil.q_age_group]});
+    if (wProfil.q_status_pro && stLbl[wProfil.q_status_pro]) chips.push({icon: briefIconSVG, label: stLbl[wProfil.q_status_pro]});
+    if (wProfil.q_revenu_sentiment && revLbl[wProfil.q_revenu_sentiment]) chips.push({icon: walletIconSVG, label: revLbl[wProfil.q_revenu_sentiment]});
+    if (wProfil.q_logement_situation && logLbl[wProfil.q_logement_situation]) chips.push({icon: homeIconSVG, label: logLbl[wProfil.q_logement_situation]});
+
+    // Also check non-prefixed keys (from submitQuiz which saves without q_ prefix)
+    if (!chips.length) {
+      if (wProfil.age_group && ageLbl[wProfil.age_group]) chips.push({icon: personIconSVG, label: ageLbl[wProfil.age_group]});
+      if (wProfil.status_pro && stLbl[wProfil.status_pro]) chips.push({icon: briefIconSVG, label: stLbl[wProfil.status_pro]});
+      if (wProfil.revenu_sentiment && revLbl[wProfil.revenu_sentiment]) chips.push({icon: walletIconSVG, label: revLbl[wProfil.revenu_sentiment]});
+      if (wProfil.logement_situation && logLbl[wProfil.logement_situation]) chips.push({icon: homeIconSVG, label: logLbl[wProfil.logement_situation]});
+    }
+
+    var chipsEl = document.getElementById('wm-profil-chips');
+    if (chipsEl) {
+      chipsEl.innerHTML = chips.map(function(c) {
+        return '<span class="wm-chip">' + c.icon + c.label + '</span>';
+      }).join('');
+    }
+
+    var briquesIds = (wProfil.briques_recommandees || []).slice(0, 3);
+    var briquesEl = document.getElementById('wm-briques-list');
+    if (briquesEl && briquesIds.length > 0) {
+      briquesEl.innerHTML = briquesIds.map(function(id, i) {
+        var b = BRIQUE_LABEL[id] || { name: id, desc: '', dot: '#A78BFA' };
+        return '<div class="wm-brique-card">' +
+          '<span class="wm-brique-dot" style="background:' + b.dot + '"></span>' +
+          '<span class="wm-brique-info">' +
+            '<span class="wm-brique-name">' + b.name + '</span>' +
+            (b.desc ? '<span class="wm-brique-desc">' + b.desc + '</span>' : '') +
+          '</span>' +
+          (i === 0 ? '<span class="wm-brique-badge">En premier</span>' : '') +
+        '</div>';
+      }).join('');
+    } else if (briquesEl) {
+      document.getElementById('wm-briques-section').style.display = 'none';
+    }
+
+    var titleEl = document.getElementById('wm-title');
+    var sentiment = wProfil.q_revenu_sentiment || wProfil.revenu_sentiment;
+    if (titleEl && sentiment === 'difficile_fin_mois') {
+      titleEl.textContent = 'On va s\'en sortir, ensemble.';
+    } else if (titleEl && sentiment === 'a_l_aise') {
+      titleEl.textContent = 'Tu es bien parti. Allons plus loin.';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var overlay = document.getElementById('welcome-overlay');
+    var closeBtn = document.getElementById('welcome-close');
+    var ctaBtn = document.getElementById('wm-cta');
+    var skipBtn = document.getElementById('wm-skip');
+
+    function closeWelcomeModal() {
+      if (overlay) overlay.classList.remove('open');
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closeWelcomeModal);
+    if (skipBtn) skipBtn.addEventListener('click', closeWelcomeModal);
+    if (ctaBtn) ctaBtn.addEventListener('click', function() {
+      closeWelcomeModal();
+      var firstBrique = document.querySelector('.brique-card, .br-card, .bq-card');
+      if (firstBrique) firstBrique.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    if (overlay) overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeWelcomeModal();
+    });
+  });
+
 </script>
 <script src="nav-avatar.js"></script>
 <script src="feedback-widget.js"></script>
