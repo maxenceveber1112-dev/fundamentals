@@ -1391,16 +1391,8 @@ function submitQuiz() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-async function goToDashboard() {
+function goToDashboard() {
   sessionStorage.setItem('show_welcome', '1');
-  // Attendre que saveProfile soit terminé avant de naviguer
-  // pour s'assurer que briques_recommandees est bien en base
-  try {
-    var p = loadFromStorage('fund_profil');
-    if (p && typeof saveProfile === 'function') {
-      await saveProfile(p);
-    }
-  } catch(e) { console.warn('[onboarding] saveProfile pre-nav failed:', e); }
   window.location.href = 'dashboard.html';
 }
 
