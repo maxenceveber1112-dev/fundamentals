@@ -771,6 +771,63 @@
   @keyframes wmFadeIn  { from { opacity:0; } to { opacity:1; } }
   @keyframes wmFadeOut { from { opacity:1; } to { opacity:0; } }
   @keyframes wmSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ─── Tour guidé ────────────────────────────────────────── */
+  .tour-overlay-dim {
+    position: fixed; inset: 0; z-index: 10000;
+    pointer-events: none;
+  }
+  .tour-spotlight {
+    position: fixed; z-index: 10001;
+    border-radius: 0.75rem;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.55);
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+  }
+  .tour-tooltip {
+    position: fixed; z-index: 10002;
+    background: var(--bg-elevated);
+    border-radius: 1rem;
+    padding: 1.125rem 1.25rem 1rem;
+    max-width: 300px; width: max-content;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    animation: wmSlideUp 0.25s ease;
+  }
+  .tour-tooltip-step {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent-strong);
+    margin-bottom: 0.35rem;
+  }
+  .tour-tooltip-title {
+    font-size: 0.95rem; font-weight: 700; color: var(--text);
+    margin: 0 0 0.35rem;
+  }
+  .tour-tooltip-desc {
+    font-size: 0.82rem; color: var(--text-secondary);
+    line-height: 1.55; margin: 0 0 1rem;
+  }
+  .tour-tooltip-footer {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  }
+  .tour-dots {
+    display: flex; gap: 0.35rem; align-items: center;
+  }
+  .tour-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent-soft); transition: background 0.2s;
+  }
+  .tour-dot.active { background: var(--accent-strong); }
+  .tour-btn-skip {
+    background: none; border: none; color: var(--text-muted);
+    font-size: 0.8rem; cursor: pointer; padding: 0; white-space: nowrap;
+  }
+  .tour-btn-next {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.45rem 1rem; background: var(--accent-strong); color: #fff;
+    border: none; border-radius: 999px; font-size: 0.82rem;
+    font-weight: 600; cursor: pointer; white-space: nowrap;
+  }
+  .tour-btn-next:hover { opacity: 0.9; }
   </style>
 </head>
 <body>
@@ -1687,10 +1744,13 @@
     sessionStorage.removeItem('show_welcome');
     sessionStorage.setItem('_wm_shown', '1');
     localStorage.setItem('welcome_modal_seen', '1');
-    buildWelcomeModal();
+    buildWelcomeModal(function() {
+      // Démarrer le tour après fermeture de la modal
+      setTimeout(startDashboardTour, 300);
+    });
   }
 
-  function buildWelcomeModal() {
+  function buildWelcomeModal(onClose) {
     var p = profil || {};
     var briques = p.briques_recommandees || [];
     var nbBriques = briques.length;
@@ -1736,11 +1796,166 @@
     document.body.appendChild(overlay);
     function closeModal() {
       overlay.style.animation = 'wmFadeOut 0.2s ease forwards';
-      setTimeout(function() { if (overlay.parentNode) overlay.remove(); }, 210);
+      setTimeout(function() {
+        if (overlay.parentNode) overlay.remove();
+        if (typeof onClose === 'function') onClose();
+      }, 210);
     }
     document.getElementById('wm-close').addEventListener('click', closeModal);
     document.getElementById('wm-later').addEventListener('click', closeModal);
     overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+  }
+
+
+  /* ─── Tour guidé séquentiel ─────────────────────────────── */
+  var _tourActive = false;
+
+  function startDashboardTour() {
+    if (_tourActive) return;
+    _tourActive = true;
+
+    var steps = [
+      {
+        targetId: 'zone-hero',
+        title: 'Ton module en cours',
+        desc: 'Ici s'affiche ta brique active. Clique sur "Reprendre" pour continuer là où tu t'es arrêté·e.',
+        pos: 'bottom'
+      },
+      {
+        targetId: 'zone-briques',
+        title: 'Tes prochaines briques',
+        desc: 'Ton parcours personnalisé, étape par étape. Chaque brique débloque la suivante.',
+        pos: 'top'
+      },
+      {
+        targetId: 'mes-briques-section',
+        title: 'Tes données financières',
+        desc: 'Tes indicateurs clés, mis à jour automatiquement au fil de tes briques.',
+        pos: 'top'
+      },
+      {
+        targetId: 'explorer-cols',
+        title: 'Explorer',
+        desc: 'Toutes les briques disponibles, simulateurs et parcours — consulte-les à ton rythme.',
+        pos: 'top'
+      }
+    ];
+
+    var current = 0;
+    var spotlight = null;
+    var tooltip   = null;
+
+    function getRect(id) {
+      var el = document.getElementById(id);
+      if (!el) return null;
+      // Si l'élément est caché (display:none), skip
+      if (el.offsetParent === null && el.style.display === 'none') return null;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return el.getBoundingClientRect();
+    }
+
+    function removeTour() {
+      _tourActive = false;
+      sessionStorage.removeItem('_tour_shown');
+      if (spotlight && spotlight.parentNode) spotlight.remove();
+      if (tooltip   && tooltip.parentNode)   tooltip.remove();
+      document.removeEventListener('keydown', onKey);
+    }
+
+    function showStep(idx) {
+      var step = steps[idx];
+      var rect = getRect(step.targetId);
+
+      // Si l'élément n'existe pas / caché, passer au suivant
+      if (!rect) {
+        if (idx + 1 < steps.length) { showStep(idx + 1); }
+        else { removeTour(); }
+        return;
+      }
+
+      var PAD = 8;
+
+      // Spotlight
+      if (!spotlight) {
+        spotlight = document.createElement('div');
+        spotlight.className = 'tour-spotlight';
+        document.body.appendChild(spotlight);
+      }
+      spotlight.style.cssText = [
+        'position:fixed',
+        'top:'    + (rect.top    - PAD) + 'px',
+        'left:'   + (rect.left   - PAD) + 'px',
+        'width:'  + (rect.width  + PAD*2) + 'px',
+        'height:' + (rect.height + PAD*2) + 'px',
+        'z-index:10001',
+        'border-radius:0.75rem',
+        'box-shadow:0 0 0 9999px rgba(0,0,0,0.55)',
+        'pointer-events:none',
+        'transition:all 0.35s cubic-bezier(.4,0,.2,1)'
+      ].join(';');
+
+      // Tooltip
+      if (!tooltip) {
+        tooltip = document.createElement('div');
+        tooltip.className = 'tour-tooltip';
+        document.body.appendChild(tooltip);
+      }
+
+      var isLast = (idx === steps.length - 1);
+      var dots = steps.map(function(_, i) {
+        return '<span class="tour-dot' + (i === idx ? ' active' : '') + '"></span>';
+      }).join('');
+
+      tooltip.innerHTML =
+        '<div class="tour-tooltip-step">' + (idx + 1) + ' / ' + steps.length + '</div>'
+        + '<p class="tour-tooltip-title">' + step.title + '</p>'
+        + '<p class="tour-tooltip-desc">' + step.desc + '</p>'
+        + '<div class="tour-tooltip-footer">'
+        + '<div class="tour-dots">' + dots + '</div>'
+        + '<div style="display:flex;gap:0.75rem;align-items:center;">'
+        + '<button class="tour-btn-skip" id="tour-skip">Passer</button>'
+        + '<button class="tour-btn-next" id="tour-next">'
+        + (isLast ? 'Terminer ✓' : 'Suivant →')
+        + '</button>'
+        + '</div>'
+        + '</div>';
+
+      // Positionner le tooltip
+      setTimeout(function() {
+        var tRect = tooltip.getBoundingClientRect();
+        var vpW = window.innerWidth;
+        var vpH = window.innerHeight;
+        var margin = 12;
+        var newRect = getRect(step.targetId) || rect;
+
+        var top, left;
+        if (step.pos === 'bottom') {
+          top  = newRect.bottom + PAD + margin;
+          left = newRect.left + PAD;
+        } else {
+          top  = newRect.top - PAD - tRect.height - margin;
+          left = newRect.left + PAD;
+        }
+        // Rester dans le viewport
+        left = Math.max(margin, Math.min(left, vpW - tRect.width - margin));
+        top  = Math.max(margin, Math.min(top,  vpH - tRect.height - margin));
+
+        tooltip.style.top  = top  + 'px';
+        tooltip.style.left = left + 'px';
+
+        document.getElementById('tour-next').addEventListener('click', function() {
+          if (idx + 1 < steps.length) { showStep(idx + 1); }
+          else { removeTour(); }
+        });
+        document.getElementById('tour-skip').addEventListener('click', removeTour);
+      }, 50);
+    }
+
+    function onKey(e) { if (e.key === 'Escape') removeTour(); }
+    document.addEventListener('keydown', onKey);
+
+    // Démarrer après un court délai (laisser le DOM se stabiliser)
+    setTimeout(function() { showStep(0); }, 400);
   }
 
   /* ─── Compat (anciens alias) ─────────────────────────── */
