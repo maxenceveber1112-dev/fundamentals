@@ -1108,6 +1108,7 @@
       currentUser = await requireAuth();
       if (!currentUser) return;
       await loadData();
+      maybeShowWelcomeModal();
     } catch(e) {
       console.warn('[dashboard] auth/init error:', e);
       try { renderAll(); } catch(e2) { console.warn('[dashboard] fallback renderAll error:', e2); }
@@ -1442,7 +1443,9 @@
   ];
 
   function renderInsight() {
-    const match = INSIGHTS.find(i => i.trigger(profil, dash));
+    // Toujours lire le profil le plus frais depuis _MEM
+    const freshProfil = loadFromStorage('fund_profil') || profil;
+    const match = INSIGHTS.find(i => i.trigger(freshProfil, dash));
     const zone = document.getElementById('zone-insight');
     if (!match) { zone.style.display = 'none'; return; }
     zone.style.display = '';
@@ -1835,12 +1838,20 @@
   // ─── WELCOME MODAL ───────────────────────────────────────────────────────────
   function maybeShowWelcomeModal() {
     try {
-      var wProfil = loadFromStorage('fund_profil');
-      if (!wProfil || !wProfil.completed_at) return;
       if (localStorage.getItem('welcome_modal_seen')) return;
+      var wProfil = loadFromStorage('fund_profil');
+      // Fallback: also check _MEM directly in case hydration is async
+      if (!wProfil || !wProfil.briques_recommandees || wProfil.briques_recommandees.length === 0) {
+        var raw = localStorage.getItem('fund_profil');
+        if (raw) {
+          try { wProfil = JSON.parse(raw); } catch(e2) {}
+        }
+      }
+      if (!wProfil || !wProfil.briques_recommandees || wProfil.briques_recommandees.length === 0) return;
       localStorage.setItem('welcome_modal_seen', '1');
       buildWelcomeModal(wProfil);
-      document.getElementById('welcome-overlay').classList.add('open');
+      var overlay = document.getElementById('welcome-overlay');
+      if (overlay) overlay.classList.add('open');
     } catch(e) { console.warn('[welcome-modal] error:', e); }
   }
 

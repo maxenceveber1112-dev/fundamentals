@@ -422,7 +422,11 @@
       text-align: center; padding: 4rem 2rem;
       min-height: 60vh; width: 100%;
     }
-    .completion-screen.active { display: flex; animation: fadeIn 0.5s ease both; }
+    .completion-screen.active { display: flex; animation: fadeIn 0.5s ease both; width: 100%; }
+    /* Completion — full width centré */
+    .onb-body:has(.completion-screen.active) { grid-template-columns: 1fr; }
+    .onb-body:has(.completion-screen.active) .onb-left { max-width: 100%; padding: 4rem 2rem; }
+    .onb-body:has(.completion-screen.active) .onb-right { display: none; }
     .completion-icon {
       width: 80px; height: 80px;
       animation: popIn 0.6s 0.1s var(--ease-spring) both;
@@ -1357,6 +1361,11 @@ function submitQuiz() {
   document.getElementById('onb-right-col').style.display = 'none';
   document.querySelector('.progress-bar-wrapper').style.display = 'none';
   document.getElementById('completion').classList.add('active');
+  document.querySelector('.onb-body').style.gridTemplateColumns = '1fr';
+  document.querySelector('.onb-left').style.maxWidth = '100%';
+  document.querySelector('.onb-left').style.display = 'flex';
+  document.querySelector('.onb-left').style.alignItems = 'center';
+  document.querySelector('.onb-left').style.justifyContent = 'center';
 
   // Build profile
   try {

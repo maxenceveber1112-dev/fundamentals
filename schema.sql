@@ -24,6 +24,7 @@ create table if not exists public.profiles (
   montant_livrets     numeric,
   montant_assurance_vie numeric,
   epargne_liquide_total numeric,
+  completed_at  timestamptz,
   created_at    timestamptz default now(),
   updated_at    timestamptz default now()
 );

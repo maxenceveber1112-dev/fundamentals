@@ -21,6 +21,10 @@ ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS abonnements_mensuel     numeric,       -- sous-total abonnements
   ADD COLUMN IF NOT EXISTS credits_mensuel         numeric;       -- sous-total crédits en cours
 
+-- ── Onboarding completion timestamp ──
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS completed_at   timestamptz;
+
 -- ── Découvert (gestion_decouvert) ──
 ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS decouvert_jours_mois    integer,       -- nb jours/mois dans le rouge
