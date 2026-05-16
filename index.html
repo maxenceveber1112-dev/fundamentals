@@ -1382,8 +1382,7 @@ function submitQuiz() {
       briques_recommandees: briquesIds,
       montant_livrets: em.montant_livrets || null,
       montant_assurance_vie: em.montant_assurance_vie || null,
-      epargne_liquide_total: em.epargne_liquide_total || null,
-      completed_at: new Date().toISOString()
+      epargne_liquide_total: em.epargne_liquide_total || null
     };
     saveToStorage('fund_profil', profileOut);
   } catch(e) {
