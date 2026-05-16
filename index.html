@@ -1392,6 +1392,8 @@ function submitQuiz() {
 }
 
 function goToDashboard() {
+  sessionStorage.removeItem('_wm_shown');   // reset pour nouvel onboarding
+  sessionStorage.removeItem('_tour_shown'); // reset tour aussi
   sessionStorage.setItem('show_welcome', '1');
   window.location.href = 'dashboard.html';
 }

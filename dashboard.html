@@ -771,6 +771,36 @@
   @keyframes wmFadeIn  { from { opacity:0; } to { opacity:1; } }
   @keyframes wmFadeOut { from { opacity:1; } to { opacity:0; } }
   @keyframes wmSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ─── Tour guidé ─────────────────────────────────────────── */
+  .tour-spotlight {
+    position: fixed; z-index: 10001; border-radius: 0.75rem;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.52);
+    pointer-events: none;
+    transition: top .35s cubic-bezier(.4,0,.2,1), left .35s cubic-bezier(.4,0,.2,1),
+                width .35s cubic-bezier(.4,0,.2,1), height .35s cubic-bezier(.4,0,.2,1);
+  }
+  .tour-tooltip {
+    position: fixed; z-index: 10002;
+    background: var(--bg-elevated); border-radius: 1rem;
+    padding: 1.125rem 1.25rem 1rem; max-width: 290px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    animation: wmSlideUp 0.25s ease;
+  }
+  .tour-step-label {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent-strong); margin-bottom: 0.3rem;
+  }
+  .tour-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin: 0 0 0.3rem; }
+  .tour-desc  { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.55; margin: 0 0 1rem; }
+  .tour-footer { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  .tour-dots  { display: flex; gap: 0.35rem; }
+  .tour-dot   { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-soft); }
+  .tour-dot.on { background: var(--accent-strong); }
+  .tour-skip  { background: none; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; padding: 0; }
+  .tour-next  { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 1rem;
+                background: var(--accent-strong); color: #fff; border: none; border-radius: 999px;
+                font-size: 0.82rem; font-weight: 600; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -1736,11 +1766,117 @@
     document.body.appendChild(overlay);
     function closeModal() {
       overlay.style.animation = 'wmFadeOut 0.2s ease forwards';
-      setTimeout(function() { if (overlay.parentNode) overlay.remove(); }, 210);
+      setTimeout(function() {
+        if (overlay.parentNode) overlay.remove();
+        startDashboardTour();
+      }, 210);
     }
     document.getElementById('wm-close').addEventListener('click', closeModal);
     document.getElementById('wm-later').addEventListener('click', closeModal);
     overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+  }
+
+
+  /* ─── Tour guidé séquentiel ─────────────────────────────── */
+  function startDashboardTour() {
+    if (sessionStorage.getItem('_tour_shown')) return;
+    sessionStorage.setItem('_tour_shown', '1');
+
+    var steps = [
+      { id:'zone-hero',          pos:'bottom', title:'Ton module en cours',         desc:'Ta brique active du moment. Clique sur « Reprendre » pour continuer là où tu t’es arrêté·e.' },
+      { id:'zone-briques',       pos:'top',    title:'Tes prochaines briques',       desc:'Ton parcours personnalisé, étape par étape. Chaque brique débloque la suivante.' },
+      { id:'mes-briques-section',pos:'top',    title:'Tes données financières',       desc:'Tes indicateurs clés, mis à jour automatiquement au fil de tes briques.' },
+      { id:'explorer-cols',      pos:'top',    title:'Explorer',                     desc:'Toutes les briques disponibles, simulateurs et parcours — consulte-les à ton rythme.' }
+    ];
+
+    var current = 0;
+    var spotlight = null, tooltip = null;
+
+    function cleanup() {
+      if (spotlight && spotlight.parentNode) spotlight.remove();
+      if (tooltip   && tooltip.parentNode)   tooltip.remove();
+      document.removeEventListener('keydown', onKey);
+      spotlight = null; tooltip = null;
+    }
+
+    function getEl(id) {
+      var el = document.getElementById(id);
+      if (!el) return null;
+      // Skip si caché
+      var cs = window.getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return null;
+      return el;
+    }
+
+    function showStep(idx) {
+      if (idx >= steps.length) { cleanup(); return; }
+      var step = steps[idx];
+      var el = getEl(step.id);
+      if (!el) { showStep(idx + 1); return; }   // section absente → suivant
+
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      setTimeout(function() {
+        var r = el.getBoundingClientRect();
+        var P = 8, M = 12;
+
+        // Spotlight
+        if (!spotlight) {
+          spotlight = document.createElement('div');
+          spotlight.className = 'tour-spotlight';
+          document.body.appendChild(spotlight);
+        }
+        spotlight.style.top    = (r.top    - P) + 'px';
+        spotlight.style.left   = (r.left   - P) + 'px';
+        spotlight.style.width  = (r.width  + P*2) + 'px';
+        spotlight.style.height = (r.height + P*2) + 'px';
+
+        // Tooltip
+        if (!tooltip) {
+          tooltip = document.createElement('div');
+          tooltip.className = 'tour-tooltip';
+          document.body.appendChild(tooltip);
+        }
+        var isLast = (idx === steps.length - 1);
+        var dots = steps.map(function(_, i) {
+          return '<span class="tour-dot' + (i === idx ? ' on' : '') + '"></span>';
+        }).join('');
+
+        tooltip.innerHTML =
+          '<div class="tour-step-label">' + (idx+1) + ' / ' + steps.length + '</div>'
+          + '<p class="tour-title">' + step.title + '</p>'
+          + '<p class="tour-desc">'  + step.desc  + '</p>'
+          + '<div class="tour-footer">'
+          + '<div class="tour-dots">' + dots + '</div>'
+          + '<div style="display:flex;gap:0.6rem;align-items:center;">'
+          + '<button class="tour-skip" id="t-skip">Passer</button>'
+          + '<button class="tour-next" id="t-next">' + (isLast ? 'Terminer ✓' : 'Suivant →') + '</button>'
+          + '</div></div>';
+
+        // Positionner le tooltip
+        var vpW = window.innerWidth, vpH = window.innerHeight;
+        var tH = 160, tW = 290; // estimation avant rendu
+        var top, left;
+        if (step.pos === 'bottom') {
+          top  = r.bottom + P + M;
+          left = r.left   + P;
+        } else {
+          top  = r.top - P - tH - M;
+          left = r.left + P;
+        }
+        left = Math.max(M, Math.min(left, vpW - tW - M));
+        top  = Math.max(M, Math.min(top,  vpH - tH - M));
+        tooltip.style.top  = top  + 'px';
+        tooltip.style.left = left + 'px';
+
+        document.getElementById('t-next').onclick = function() { showStep(idx + 1); };
+        document.getElementById('t-skip').onclick = cleanup;
+      }, 350);
+    }
+
+    function onKey(e) { if (e.key === 'Escape') cleanup(); }
+    document.addEventListener('keydown', onKey);
+    setTimeout(function() { showStep(0); }, 300);
   }
 
   /* ─── Compat (anciens alias) ─────────────────────────── */
