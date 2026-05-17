@@ -574,6 +574,180 @@ input[type=range] { -webkit-appearance:none; width:100%; height:6px; border-radi
 input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent-strong); border:2px solid var(--bg-elevated); box-shadow:0 2px 6px rgba(0,0,0,0.15); cursor:pointer; }
 input[type=range]::-moz-range-thumb { width:20px; height:20px; border-radius:50%; background:var(--accent-strong); border:2px solid var(--bg-elevated); box-shadow:0 2px 6px rgba(0,0,0,0.15); cursor:pointer; }
 
+/* Slider with animated chip */
+.slider-chip-wrap { position:relative; padding-top:2rem; }
+.slider-chip {
+  position:absolute; top:0; transform:translateX(-50%);
+  padding:0.25rem 0.625rem; border-radius:9999px;
+  background:var(--accent-strong); color:#fff;
+  font-size:0.75rem; font-weight:700;
+  white-space:nowrap; pointer-events:none;
+  transition:left 0.15s ease;
+  box-shadow:0 2px 8px rgba(91,33,182,0.25);
+}
+html.dark .slider-chip { background:var(--v3-accent-strong); }
+.slider-chip::after {
+  content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
+  border-left:5px solid transparent; border-right:5px solid transparent;
+  border-top:5px solid var(--accent-strong);
+}
+html.dark .slider-chip::after { border-top-color:var(--v3-accent-strong); }
+
+/* ══════════════════════════════════════════════════════════════
+   HORIZON SLIDER (timeline horizontal)
+══════════════════════════════════════════════════════════════ */
+.horizon-slider-wrap { display:flex; flex-direction:column; gap:0.5rem; }
+.horizon-slider-track { position:relative; padding:0.5rem 0; }
+.horizon-slider-labels {
+  display:flex; justify-content:space-between;
+  font-size:0.68rem; color:var(--text-faint); margin-top:0.35rem;
+}
+.horizon-slider-labels span {
+  text-align:center; flex:1;
+  transition:color 0.2s ease, font-weight 0.2s ease;
+}
+.horizon-slider-labels span.active { color:var(--accent-strong); font-weight:700; }
+html.dark .horizon-slider-labels span.active { color:var(--v3-accent-strong); }
+
+/* Slider ticks */
+.horizon-ticks {
+  display:flex; justify-content:space-between; padding:0 10px;
+  position:relative; height:6px; margin-top:-3px; pointer-events:none;
+}
+.horizon-tick {
+  width:4px; height:4px; border-radius:50%;
+  background:var(--track); flex-shrink:0;
+  transition:background 0.2s ease;
+}
+.horizon-tick.passed { background:var(--accent-strong); }
+html.dark .horizon-tick.passed { background:var(--v3-accent-strong); }
+
+/* ══════════════════════════════════════════════════════════════
+   SEGMENTED EFFORT GAUGE
+══════════════════════════════════════════════════════════════ */
+.effort-gauge {
+  display:flex; flex-direction:column; gap:0.5rem;
+}
+.effort-gauge-bar {
+  display:flex; height:12px; border-radius:9999px; overflow:hidden;
+  background:var(--track); position:relative;
+}
+.effort-seg {
+  height:100%; transition:opacity 0.3s ease;
+}
+.effort-seg-green { background:var(--green); width:60%; border-radius:9999px 0 0 9999px; }
+.effort-seg-orange { background:var(--orange); width:10%; }
+.effort-seg-red { background:var(--red); width:30%; border-radius:0 9999px 9999px 0; }
+.effort-indicator {
+  position:absolute; top:-3px; width:4px; height:18px;
+  background:var(--text); border-radius:2px;
+  box-shadow:0 0 4px rgba(0,0,0,0.3);
+  transition:left 0.5s var(--ease-out);
+  transform:translateX(-50%);
+}
+.effort-gauge-labels {
+  display:flex; justify-content:space-between;
+  font-size:0.68rem; color:var(--text-faint);
+}
+.effort-gauge-status {
+  font-size:0.82rem; font-weight:600;
+  text-align:center; padding:0.25rem 0.5rem;
+  border-radius:var(--r-sm);
+  transition:color 0.3s ease, background 0.3s ease;
+}
+.effort-status-green { color:var(--green); background:var(--green-soft); }
+.effort-status-orange { color:var(--orange); background:var(--orange-soft); }
+.effort-status-red { color:var(--red); background:var(--red-soft); }
+
+/* ══════════════════════════════════════════════════════════════
+   POSTAL CODE AUTOCOMPLETE
+══════════════════════════════════════════════════════════════ */
+.postal-wrap { position:relative; }
+.postal-result {
+  font-size:0.75rem; color:var(--accent-strong); font-weight:500;
+  margin-top:0.25rem; min-height:1.1em;
+  transition:opacity 0.2s ease;
+}
+html.dark .postal-result { color:var(--v3-accent-strong); }
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 5 — HERO BUDGET + COMPARISON CARDS
+══════════════════════════════════════════════════════════════ */
+.budget-hero-card {
+  background:var(--cream-grad); border:1px solid var(--cream-border);
+  border-radius:1.25rem; padding:2rem; text-align:center;
+  position:relative; overflow:hidden;
+}
+html.dark .budget-hero-card { backdrop-filter:blur(12px); }
+.budget-hero-amount {
+  font-family:var(--font-display);
+  font-size:clamp(2rem, 5vw, 2.75rem);
+  font-weight:400; color:var(--text); line-height:1.1;
+  animation:countUp 0.5s var(--ease-out) both;
+}
+.budget-hero-label {
+  font-size:0.82rem; color:var(--text-muted);
+  margin-top:0.375rem; font-weight:500;
+}
+.budget-hero-m2 {
+  font-size:0.9rem; color:var(--accent-strong);
+  margin-top:0.625rem; font-weight:600;
+}
+html.dark .budget-hero-m2 { color:var(--v3-accent-strong); }
+
+.compare-cards {
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:0.75rem; margin-top:1.25rem;
+}
+@media(max-width:600px) { .compare-cards { grid-template-columns:1fr; } }
+.compare-card {
+  background:var(--bg-elevated); border:1.5px solid var(--border-mid);
+  border-radius:1rem; padding:1.25rem 1rem;
+  text-align:center; transition:all 0.3s ease;
+  position:relative; overflow:hidden;
+}
+.compare-card.in-budget {
+  border-color:var(--green); background:var(--green-soft);
+}
+.compare-card.in-budget::after {
+  content:'✓'; position:absolute; top:0.5rem; right:0.625rem;
+  font-size:0.875rem; color:var(--green); font-weight:700;
+}
+.compare-card.out-budget {
+  opacity:0.55; border-color:var(--border-subtle);
+}
+.compare-card.out-budget::after {
+  content:'Hors budget'; position:absolute; top:0.5rem; right:0.5rem;
+  font-size:0.6rem; font-weight:600; color:var(--red);
+  background:var(--red-soft); padding:0.15rem 0.4rem; border-radius:9999px;
+}
+.compare-card-icon { font-size:1.5rem; margin-bottom:0.375rem; }
+.compare-card-type { font-size:0.82rem; font-weight:700; color:var(--text); }
+.compare-card-surface { font-size:0.72rem; color:var(--text-muted); margin-top:0.15rem; }
+.compare-card-price { font-family:var(--font-display); font-size:1.125rem; font-weight:400; color:var(--text); margin-top:0.5rem; }
+.compare-card-mens { font-size:0.75rem; color:var(--text-muted); margin-top:0.2rem; }
+
+/* Tooltip inline */
+.field-tooltip {
+  position:relative; display:inline-flex; align-items:center;
+  margin-left:0.375rem; cursor:help;
+}
+.field-tooltip .tooltip-icon {
+  width:14px; height:14px; border-radius:50%;
+  background:var(--surface-3); color:var(--text-faint);
+  font-size:0.6rem; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+.field-tooltip .tooltip-text {
+  display:none; position:absolute; bottom:calc(100% + 6px); left:50%;
+  transform:translateX(-50%);
+  background:var(--text); color:var(--bg); padding:0.4rem 0.6rem;
+  border-radius:0.375rem; font-size:0.7rem; font-weight:400;
+  white-space:nowrap; z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+.field-tooltip:hover .tooltip-text { display:block; }
+
 /* ══════════════════════════════════════════════════════════════
    JAUGES / GAUGES
 ══════════════════════════════════════════════════════════════ */
@@ -932,35 +1106,51 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
             <div id="bloc-b" style="display:none;">
               <div style="display:flex;flex-direction:column;gap:0.875rem;margin-top:1.25rem;">
 
+                <!-- Horizon slider timeline -->
                 <div class="compact-question">
                   <span class="compact-label">Horizon</span>
-                  <div class="pills-compact" id="pills-horizon">
-                    <span class="pill-sm" data-val="moins_3_mois">Moins de 3 mois</span>
-                    <span class="pill-sm" data-val="3_6_mois">3 à 6 mois</span>
-                    <span class="pill-sm" data-val="6_12_mois">6 à 12 mois</span>
-                    <span class="pill-sm" data-val="plus_1_an">Plus d'un an</span>
-                    <span class="pill-sm" data-val="curiosite">Simple curiosité</span>
+                  <div class="horizon-slider-wrap">
+                    <div class="slider-chip-wrap">
+                      <div class="slider-chip" id="horizon-chip" style="left:0%;">< 3 mois</div>
+                      <input type="range" id="slider-horizon" min="0" max="4" value="0" step="1" oninput="updateHorizonSlider()" style="width:100%;"/>
+                    </div>
+                    <div class="horizon-ticks" id="horizon-ticks">
+                      <span class="horizon-tick passed"></span>
+                      <span class="horizon-tick"></span>
+                      <span class="horizon-tick"></span>
+                      <span class="horizon-tick"></span>
+                      <span class="horizon-tick"></span>
+                    </div>
+                    <div class="horizon-slider-labels" id="horizon-labels">
+                      <span class="active">< 3 mois</span>
+                      <span>3–6 mois</span>
+                      <span>6–12 mois</span>
+                      <span>> 1 an</span>
+                      <span style="color:var(--text-faint);">Curiosité</span>
+                    </div>
                   </div>
                 </div>
 
-                <div class="compact-question">
-                  <span class="compact-label">Statut</span>
-                  <div class="pills-compact" id="pills-status">
-                    <span class="pill-sm" data-val="seul">Seul</span>
-                    <span class="pill-sm" data-val="couple">Couple</span>
-                    <span class="pill-sm" data-val="co_emprunteur">Avec co-emprunteur</span>
-                    <span class="pill-sm" data-val="sci">SCI / société</span>
+                <!-- Statut + Type de bien en 2 colonnes -->
+                <div class="fields-2col">
+                  <div class="compact-question">
+                    <span class="compact-label">Statut</span>
+                    <div class="pills-compact" id="pills-status">
+                      <span class="pill-sm" data-val="seul">Seul</span>
+                      <span class="pill-sm" data-val="couple">Couple</span>
+                      <span class="pill-sm" data-val="co_emprunteur">Co-empr.</span>
+                      <span class="pill-sm" data-val="sci">SCI</span>
+                    </div>
                   </div>
-                </div>
-
-                <div class="compact-question">
-                  <span class="compact-label">Type de bien</span>
-                  <div class="pills-compact" id="pills-propertyType">
-                    <span class="pill-sm" data-val="ancien">Ancien</span>
-                    <span class="pill-sm" data-val="neuf">Neuf</span>
-                    <span class="pill-sm" data-val="terrain">Terrain</span>
-                    <span class="pill-sm" data-val="vefa">VEFA</span>
-                    <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
+                  <div class="compact-question">
+                    <span class="compact-label">Type de bien</span>
+                    <div class="pills-compact" id="pills-propertyType">
+                      <span class="pill-sm" data-val="ancien">Ancien</span>
+                      <span class="pill-sm" data-val="neuf">Neuf</span>
+                      <span class="pill-sm" data-val="terrain">Terrain</span>
+                      <span class="pill-sm" data-val="vefa">VEFA</span>
+                      <span class="pill-sm" data-val="ne_sait_pas">?</span>
+                    </div>
                   </div>
                 </div>
 
@@ -973,20 +1163,14 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
                   </div>
                 </div>
 
-                <div class="compact-question" id="usage-question">
-                  <span class="compact-label">Usage prévu</span>
-                  <div class="pills-compact" id="pills-usage">
-                    <span class="pill-sm" data-val="habiter">Habiter</span>
-                    <span class="pill-sm" data-val="louer">Louer</span>
-                    <span class="pill-sm" data-val="revendre">Revendre</span>
-                    <span class="pill-sm" data-val="plus_tard">Préparer plus tard</span>
-                  </div>
-                </div>
-
+                <!-- Code postal avec autocomplete -->
                 <div class="compact-question">
-                  <span class="compact-label">Localisation <span style="font-size:0.72rem;color:var(--text-faint);font-weight:400;">(facultatif)</span></span>
-                  <input type="text" id="input-location" class="field-input" placeholder="ex : 75, Paris, 69001..." aria-label="Localisation" style="font-size:0.875rem;padding:0.6rem 0.875rem;"/>
-                  <div class="field-help">Département ou code postal — utile pour estimer les frais</div>
+                  <span class="compact-label">Code postal <span style="font-size:0.72rem;color:var(--text-faint);font-weight:400;">(facultatif)</span></span>
+                  <div class="postal-wrap">
+                    <input type="text" id="input-postal" class="field-input" placeholder="ex : 75001" aria-label="Code postal" maxlength="5" inputmode="numeric" style="font-size:0.875rem;padding:0.6rem 0.875rem;"/>
+                    <div class="postal-result" id="postal-result"></div>
+                  </div>
+                  <div class="field-help">Utile pour estimer le prix au m² dans ta zone</div>
                 </div>
 
               </div>
@@ -1027,45 +1211,47 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
                 </div>
               </div>
 
+              <div class="field-group">
+                <label class="field-label" for="input-aides">Autres entrées / Aides <span class="badge-prefilled" id="badge-aides" style="display:none">Prérempli</span></label>
+                <div class="euro-wrap"><input type="number" id="input-aides" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <div class="field-help">APL, allocations, etc. — s'ajoutent aux revenus pour le calcul de capacité</div>
+              </div>
+
+              <!-- Crédits existants EN PREMIER (grand, visible) -->
+              <div class="field-group">
+                <label class="field-label" for="input-credits" style="font-size:0.9rem;">Crédits existants / mois <span class="badge-prefilled" id="badge-credits" style="display:none">Prérempli</span></label>
+                <div class="euro-wrap"><input type="number" id="input-credits" class="field-input" placeholder="ex : 200" min="0" inputmode="numeric" style="font-size:1rem;padding:0.85rem 1rem;border-width:2px;"/><span class="euro-suffix">€</span></div>
+                <div class="field-help">Crédits conso, auto, etc. — impacte directement ta capacité d'emprunt</div>
+              </div>
+
+              <!-- Charges fixes en secondaire -->
               <div class="fields-2col">
                 <div class="field-group">
-                  <label class="field-label" for="input-charges">Charges fixes <span class="badge-prefilled" id="badge-charges" style="display:none">Prérempli</span></label>
-                  <div class="euro-wrap"><input type="number" id="input-charges" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                  <label class="field-label" for="input-charges" style="font-size:0.78rem;color:var(--text-secondary);">Charges fixes <span class="badge-prefilled" id="badge-charges" style="display:none">Prérempli</span></label>
+                  <div class="euro-wrap"><input type="number" id="input-charges" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric" style="font-size:0.875rem;"/><span class="euro-suffix">€</span></div>
                 </div>
                 <div class="field-group">
-                  <label class="field-label" for="input-credits">Crédits existants/mois <span class="badge-prefilled" id="badge-credits" style="display:none">Prérempli</span></label>
-                  <div class="euro-wrap"><input type="number" id="input-credits" class="field-input" placeholder="ex : 200" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                  <label class="field-label" for="input-loyer" style="font-size:0.78rem;color:var(--text-secondary);">Loyer actuel <span class="badge-prefilled" id="badge-loyer" style="display:none">Prérempli</span></label>
+                  <div class="euro-wrap"><input type="number" id="input-loyer" class="field-input" placeholder="ex : 700" min="0" inputmode="numeric" style="font-size:0.875rem;"/><span class="euro-suffix">€</span></div>
+                  <div id="loyer-source" class="field-help" style="display:none;"></div>
+                  <div class="loyer-delta neutral" id="loyer-delta"></div>
                 </div>
-              </div>
-
-              <div class="field-group">
-                <label class="field-label" for="input-loyer">Loyer actuel <span class="badge-prefilled" id="badge-loyer" style="display:none">Prérempli</span></label>
-                <div class="euro-wrap"><input type="number" id="input-loyer" class="field-input" placeholder="ex : 700" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-                <div id="loyer-source" class="field-help" style="display:none;"></div>
-                <div class="loyer-delta neutral" id="loyer-delta"></div>
               </div>
             </div>
 
-            <!-- Presets -->
-            <div class="presets" style="margin-top:1rem;">
-              <button class="preset-btn" data-preset="prudent" onclick="applyPreset('prudent')">Prudent</button>
-              <button class="preset-btn active" data-preset="equilibre" onclick="applyPreset('equilibre')">Équilibré</button>
-              <button class="preset-btn" data-preset="ambitieux" onclick="applyPreset('ambitieux')">Ambitieux</button>
-            </div>
-
-            <!-- Params avancés -->
-            <div style="margin-top:0.5rem;">
-              <button class="params-toggle" id="params-toggle-s2" onclick="toggleParams()">
-                <span id="params-summary">Durée : 20 ans · Taux estimé : 3.5%</span>
-                <span>▸</span>
-              </button>
-              <div class="params-body" id="params-body-s2">
-                <div class="slider-group">
-                  <div class="slider-header"><span class="slider-label">Durée du prêt</span><span class="slider-value" id="val-duree">20 ans</span></div>
-                  <input type="range" id="slider-duree" min="10" max="25" value="20" step="1" oninput="updateCapacity()"/>
+            <!-- Sliders durée + taux TOUJOURS VISIBLES -->
+            <div style="display:flex;flex-direction:column;gap:1rem;margin-top:1.25rem;">
+              <div class="slider-group">
+                <div class="slider-header"><span class="slider-label">Durée du prêt</span></div>
+                <div class="slider-chip-wrap">
+                  <div class="slider-chip" id="chip-duree">20 ans</div>
+                  <input type="range" id="slider-duree" min="5" max="30" value="20" step="1" oninput="updateCapacity()"/>
                 </div>
-                <div class="slider-group">
-                  <div class="slider-header"><span class="slider-label">Taux nominal</span><span class="slider-value" id="val-taux">3.5 %</span></div>
+              </div>
+              <div class="slider-group">
+                <div class="slider-header"><span class="slider-label">Taux nominal</span></div>
+                <div class="slider-chip-wrap">
+                  <div class="slider-chip" id="chip-taux">3.5 %</div>
                   <input type="range" id="slider-taux" min="1" max="7" value="3.5" step="0.1" oninput="updateCapacity()"/>
                 </div>
               </div>
@@ -1082,11 +1268,17 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
               <div class="result-card"><div class="result-card-value" id="rc-rav">--</div><div class="result-card-label">Reste à vivre</div></div>
             </div>
 
-            <!-- Taux d'effort -->
-            <div class="gauge-wrap" id="gauge-effort" style="margin-top:0.75rem;">
+            <!-- Jauge taux d'effort segmentée -->
+            <div class="effort-gauge" style="margin-top:0.75rem;">
               <div class="slider-header"><span class="slider-label" style="font-size:0.75rem;">Taux d'effort</span><span class="slider-value" id="val-effort" style="font-size:0.75rem;">0 %</span></div>
-              <div class="gauge-bar" style="height:8px;"><div class="gauge-fill gauge-green" id="fill-effort" style="width:0%"></div></div>
-              <div class="gauge-label"><span>0%</span><span>35%</span><span>50%</span></div>
+              <div class="effort-gauge-bar">
+                <div class="effort-seg effort-seg-green"></div>
+                <div class="effort-seg effort-seg-orange"></div>
+                <div class="effort-seg effort-seg-red"></div>
+                <div class="effort-indicator" id="effort-indicator" style="left:0%"></div>
+              </div>
+              <div class="effort-gauge-labels"><span>0%</span><span>30%</span><span>35%</span><span>50%</span></div>
+              <div class="effort-gauge-status effort-status-green" id="effort-status">0% de taux d'effort — Confortable</div>
             </div>
 
             <!-- Assurance estimée -->
@@ -1122,15 +1314,14 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
                   <input type="number" class="epargne-item-input" id="input-epargne-totale" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
                 </div>
                 <div class="epargne-item" id="ei-matelas" onclick="editEpargneItem(this,'input-matelas-actuel')">
-                  <div class="epargne-item-label">Matelas actuel</div>
+                  <div class="epargne-item-label">Épargne de précaution à ne pas dépenser</div>
                   <div class="epargne-item-value" id="ei-matelas-val">0 €</div>
                   <input type="number" class="epargne-item-input" id="input-matelas-actuel" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
                 </div>
               </div>
-              <div class="field-group">
-                <label class="field-label" for="input-matelas-cible" style="font-size:0.78rem;">Matelas cible</label>
-                <div class="euro-wrap"><input type="number" id="input-matelas-cible" class="field-input" placeholder="ex : 5 000" min="0" inputmode="numeric" style="font-size:0.875rem;padding:0.6rem 0.875rem;"/><span class="euro-suffix">€</span></div>
-              </div>
+              <!-- Matelas cible: hidden from UI but kept in state for scoring -->
+              <input type="hidden" id="input-matelas-cible" value="0"/>
+              <div id="apport-precaution-text" style="font-size:0.8rem;color:var(--text-secondary);line-height:1.5;padding:0.5rem 0;"></div>
               <!-- Barre répartition -->
               <div style="display:flex;flex-direction:column;gap:0.3rem;">
                 <div class="repartition-bar" id="repartition-bar">
@@ -1217,24 +1408,24 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
                 <div class="euro-wrap"><input type="number" id="input-frais-agence" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
               </div>
               <div class="field-group">
-                <label class="field-label" for="input-frais-garantie"><button class="glossary-term" onclick="showGlossaryPopover(this,'Garantie bancaire')" tabindex="0">Frais de garantie</button></label>
-                <div class="euro-wrap"><input type="number" id="input-frais-garantie" class="field-input" placeholder="ex : 2 000" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <label class="field-label" for="input-frais-garantie"><button class="glossary-term" onclick="showGlossaryPopover(this,'Garantie bancaire')" tabindex="0">Frais de garantie</button>
+                  <span class="field-tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Caution Crédit Logement — estimée à 1,2% de l'emprunt</span></span>
+                </label>
+                <div class="euro-wrap"><input type="number" id="input-frais-garantie" class="field-input" placeholder="auto" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <div class="field-help" id="help-garantie"></div>
               </div>
               <div class="field-group">
-                <label class="field-label" for="input-frais-dossier"><button class="glossary-term" onclick="showGlossaryPopover(this,'Frais de dossier')" tabindex="0">Frais de dossier bancaire</button></label>
-                <div class="euro-wrap"><input type="number" id="input-frais-dossier" class="field-input" placeholder="ex : 500" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <label class="field-label" for="input-frais-dossier"><button class="glossary-term" onclick="showGlossaryPopover(this,'Frais de dossier')" tabindex="0">Frais de dossier</button>
+                  <span class="field-tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Frais bancaires — estimés entre 500 et 1 000 €</span></span>
+                </label>
+                <div class="euro-wrap"><input type="number" id="input-frais-dossier" class="field-input" placeholder="auto" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <div class="field-help" id="help-dossier"></div>
               </div>
               <div class="field-group">
-                <label class="field-label" for="input-travaux-cout">Travaux</label>
-                <div class="euro-wrap"><input type="number" id="input-travaux-cout" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-              </div>
-              <div class="field-group">
-                <label class="field-label" for="input-meubles-cout">Meubles / emménagement</label>
-                <div class="euro-wrap"><input type="number" id="input-meubles-cout" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-              </div>
-              <div class="field-group">
-                <label class="field-label" for="input-demenagement">Déménagement</label>
-                <div class="euro-wrap"><input type="number" id="input-demenagement" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <label class="field-label" for="input-travaux-autres">Travaux & Installation
+                  <span class="field-tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Incluant meubles, déménagement et équipements</span></span>
+                </label>
+                <div class="euro-wrap"><input type="number" id="input-travaux-autres" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
               </div>
             </div>
 
@@ -1246,16 +1437,20 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
                   <div class="euro-wrap"><input type="number" id="input-taxe-fonciere" class="field-input" placeholder="ex : 1 200" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
                 </div>
                 <div class="field-group">
-                  <label class="field-label" for="input-charges-copro"><button class="glossary-term" onclick="showGlossaryPopover(this,'Charges de copropriété')" tabindex="0">Charges copro</button> / mois</label>
-                  <div class="euro-wrap"><input type="number" id="input-charges-copro" class="field-input" placeholder="ex : 150" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                  <label class="field-label" for="input-charges-copro"><button class="glossary-term" onclick="showGlossaryPopover(this,'Charges de copropriété')" tabindex="0">Charges copro</button> / an</label>
+                  <div class="euro-wrap"><input type="number" id="input-charges-copro" class="field-input" placeholder="ex : 1 800" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
                 </div>
                 <div class="field-group">
-                  <label class="field-label" for="input-assurance-hab">Assurance habitation / mois</label>
-                  <div class="euro-wrap"><input type="number" id="input-assurance-hab" class="field-input" placeholder="ex : 30" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                  <label class="field-label" for="input-assurance-hab">Assurance habitation / mois
+                    <span class="field-tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">Estimation basée sur le type de bien</span></span>
+                  </label>
+                  <div class="euro-wrap"><input type="number" id="input-assurance-hab" class="field-input" placeholder="auto" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
                 </div>
                 <div class="field-group">
-                  <label class="field-label" for="input-entretien">Entretien annuel estimé</label>
-                  <div class="euro-wrap"><input type="number" id="input-entretien" class="field-input" placeholder="ex : 500" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                  <label class="field-label" for="input-entretien">Entretien annuel estimé (€/an)
+                    <span class="field-tooltip"><span class="tooltip-icon">?</span><span class="tooltip-text">1% du prix pour un appartement, 1,5% pour une maison</span></span>
+                  </label>
+                  <div class="euro-wrap"><input type="number" id="input-entretien" class="field-input" placeholder="auto" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
                 </div>
               </div>
             </div>
@@ -1269,7 +1464,6 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
 
             <div class="result-cards" style="margin-top:0.75rem;">
               <div class="result-card"><div class="result-card-value" id="rc-cout-acq">--</div><div class="result-card-label">Coût acquisition</div></div>
-              <div class="result-card"><div class="result-card-value" id="rc-cout-install">--</div><div class="result-card-label">Coût installation</div></div>
               <div class="result-card"><div class="result-card-value" id="rc-cout-mensuel">--</div><div class="result-card-label">Coût mensuel proprio</div><div class="result-card-sub">hors mensualité crédit</div></div>
             </div>
 
@@ -1287,48 +1481,51 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
           </div>
         </div>
 
-        <!-- ═══ SCREEN 5 — Simulateur capacité ═══ -->
+        <!-- ═══ SCREEN 5 — Résumé graphique (REFONTE) ═══ -->
         <div class="screen" id="screen-5">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 5 / 8 · SIMULATEUR</div>
-            <h2 class="brick-title">Combien peux-tu viser&nbsp;?</h2>
-            <p class="brick-subtitle">On transforme mensualité + apport + frais en budget d'achat réaliste.</p>
+            <div class="brick-kicker">ÉTAPE 5 / 8 · TON BUDGET</div>
+            <h2 class="brick-title">Voici ce que tu peux viser.</h2>
+            <p class="brick-subtitle">Résumé visuel de ta capacité d'achat.</p>
 
-            <div style="display:flex;flex-direction:column;gap:1rem;">
-              <div class="slider-group">
-                <div class="slider-header"><span class="slider-label">Prix du bien</span><span class="slider-value" id="val-prix-sim">200 000 €</span></div>
-                <input type="range" id="slider-prix-sim" min="30000" max="800000" value="200000" step="5000" oninput="updateSimulator()"/>
+            <!-- Hero card budget max -->
+            <div class="budget-hero-card">
+              <div style="font-size:0.6875rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);">BUDGET MAXIMUM ESTIMÉ</div>
+              <div class="budget-hero-amount" id="s5-budget-max">--</div>
+              <div class="budget-hero-label">budget d'achat maximum estimé</div>
+              <div class="budget-hero-m2" id="s5-m2-line"></div>
+            </div>
+
+            <!-- 3 cards comparatives -->
+            <div class="compare-cards" id="s5-compare-cards">
+              <div class="compare-card" id="s5-card-studio">
+                <div class="compare-card-icon">🏢</div>
+                <div class="compare-card-type">Studio / T1</div>
+                <div class="compare-card-surface">≈ 30 m²</div>
+                <div class="compare-card-price" id="s5-price-studio">--</div>
+                <div class="compare-card-mens" id="s5-mens-studio">--</div>
               </div>
-              <div class="slider-group">
-                <div class="slider-header"><span class="slider-label">Apport</span><span class="slider-value" id="val-apport-sim">0 €</span></div>
-                <input type="range" id="slider-apport-sim" min="0" max="200000" value="0" step="1000" oninput="updateSimulator()"/>
+              <div class="compare-card" id="s5-card-2p">
+                <div class="compare-card-icon">🏠</div>
+                <div class="compare-card-type">2 pièces</div>
+                <div class="compare-card-surface">≈ 50 m²</div>
+                <div class="compare-card-price" id="s5-price-2p">--</div>
+                <div class="compare-card-mens" id="s5-mens-2p">--</div>
               </div>
-              <div class="slider-group">
-                <div class="slider-header"><span class="slider-label">Taux</span><span class="slider-value" id="val-taux-sim">3.5 %</span></div>
-                <input type="range" id="slider-taux-sim" min="1" max="7" value="3.5" step="0.1" oninput="updateSimulator()"/>
-              </div>
-              <div class="slider-group">
-                <div class="slider-header"><span class="slider-label">Durée</span><span class="slider-value" id="val-duree-sim">20 ans</span></div>
-                <input type="range" id="slider-duree-sim" min="10" max="25" value="20" step="1" oninput="updateSimulator()"/>
+              <div class="compare-card" id="s5-card-3p">
+                <div class="compare-card-icon">🏡</div>
+                <div class="compare-card-type">3 pièces</div>
+                <div class="compare-card-surface">≈ 70 m²</div>
+                <div class="compare-card-price" id="s5-price-3p">--</div>
+                <div class="compare-card-mens" id="s5-mens-3p">--</div>
               </div>
             </div>
 
-            <div id="sim-status" class="status-card green" style="margin-top:1rem;">
-              <span class="status-icon">✅</span>
-              <div><div class="status-text" id="sim-status-text">Projet confortable</div><div class="status-sub" id="sim-status-sub"></div></div>
-            </div>
-
-            <div class="result-cards" style="margin-top:0.75rem;">
-              <div class="result-card"><div class="result-card-value" id="rc-sim-mensualite">--</div><div class="result-card-label">Mensualité</div></div>
-              <div class="result-card"><div class="result-card-value" id="rc-sim-effort">--</div><div class="result-card-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Taux d\\'effort')" tabindex="0">Taux d'effort</button></div></div>
-              <div class="result-card"><div class="result-card-value" id="rc-sim-rav">--</div><div class="result-card-label">Reste à vivre</div></div>
-              <div class="result-card"><div class="result-card-value" id="rc-sim-emprunt">--</div><div class="result-card-label">Emprunt nécessaire</div></div>
-            </div>
-
-            <div class="quick-actions" style="margin-top:0.75rem;">
-              <button class="quick-action" onclick="quickAction('reduire_prix')">Réduire le prix</button>
-              <button class="quick-action" onclick="quickAction('augmenter_apport')">Augmenter l'apport</button>
-              <button class="quick-action" onclick="quickAction('allonger_duree')">Allonger la durée</button>
+            <!-- Quick actions -->
+            <div class="quick-actions" style="margin-top:1rem;">
+              <button class="quick-action" onclick="goToScreen(4)">Réduire le prix cible</button>
+              <button class="quick-action" onclick="goToScreen(3)">Augmenter l'apport</button>
+              <button class="quick-action" onclick="goToScreen(2)">Allonger la durée</button>
             </div>
 
             <div class="nav-btns" style="margin-top:1.5rem;">
@@ -1532,7 +1729,7 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
             </div>
             <div class="bpc-step" data-screen="5">
               <div class="bpc-step-num">5</div>
-              <div class="bpc-step-label">Simulateur</div>
+              <div class="bpc-step-label">Ton budget</div>
             </div>
             <div class="bpc-step" data-screen="6">
               <div class="bpc-step-num">6</div>
@@ -1584,22 +1781,56 @@ var ASSURANCE_RATES = {
   '65_plus': 0.0060
 };
 
+/* ─── PRIX M² PAR DÉPARTEMENT ────────────────────────────── */
+var PRIX_M2 = {
+  '75':7500,'92':6000,'93':3800,'94':4500,'77':3200,'78':4000,'91':3000,'95':3200,
+  '69':4200,'13':3500,'06':5000,'31':3300,'33':3800,'44':3500,'67':3000,'57':2200,'54':2000,
+  '59':2200,'76':2400,'38':3000,'34':3200,'35':3200,'29':2400,'45':2000,'37':2500,
+  'default':2500
+};
+var DEPT_NAMES = {
+  '75':'Paris','92':'Hauts-de-Seine','93':'Seine-Saint-Denis','94':'Val-de-Marne',
+  '77':'Seine-et-Marne','78':'Yvelines','91':'Essonne','95':"Val-d'Oise",
+  '69':'Rhône','13':'Bouches-du-Rhône','06':'Alpes-Maritimes','31':'Haute-Garonne',
+  '33':'Gironde','44':'Loire-Atlantique','67':'Bas-Rhin','57':'Moselle','54':'Meurthe-et-Moselle',
+  '59':'Nord','76':'Seine-Maritime','38':'Isère','34':'Hérault','35':'Ille-et-Vilaine',
+  '29':'Finistère','45':'Loiret','37':'Indre-et-Loire'
+};
+function getDeptFromPostal(cp) {
+  if (!cp || cp.length < 2) return null;
+  if (['971','972','973','974','976'].includes(cp.substring(0,3))) return cp.substring(0,3);
+  return cp.substring(0,2);
+}
+function getPrixM2(cp) {
+  var dept = getDeptFromPostal(cp);
+  return PRIX_M2[dept] || PRIX_M2['default'];
+}
+
+/* ─── HORIZON SLIDER DATA ───────────────────────────────── */
+var HORIZON_LABELS = ['< 3 mois', '3–6 mois', '6–12 mois', '> 1 an', 'Simple curiosité'];
+var HORIZON_VALUES = ['3m', '6m', '12m', '1y+', 'curiosite'];
+
+/* ─── DURATION BY AGE GROUP ─────────────────────────────── */
+var DUREE_PAR_AGE = { '25_34': 25, '25-34': 25, '35_44': 20, '35-44': 20, '45_54': 15, '45-54': 15, '55_plus': 10, '55+': 10 };
+
 /* ─── STATE ──────────────────────────────────────────────── */
 var S = {
   currentScreen: 0,
-  projectType: '', horizon: '', status: '', primo: '', propertyType: '', usage: '', location: '',
-  revenus: 0, revenusCompl: 0, charges: 0, credits: 0, loyer: 0,
+  projectType: '', horizon: '3m', status: '', primo: '', propertyType: '',
+  codePostal: '', prixM2: 2500, deptName: '',
+  revenus: 0, revenusCompl: 0, autresEntrees: 0, charges: 0, credits: 0, loyer: 0,
   duree: 20, taux: 3.5, assurance: 0, presetMode: 'equilibre',
   epargneTotale: 0, matelasActuel: 0, matelasCible: 0, aideFamille: 0,
   travauxApport: 0, epargneBloquee: 0, reserve: 0,
   prixBien: 0, fraisNotaire: 0, fraisAgence: 0, fraisGarantie: 0, fraisDossier: 0,
-  travauxCout: 0, meublesCout: 0, demenagement: 0,
+  travauxAutres: 0,
   taxeFonciere: 0, chargesCopro: 0, assuranceHab: 0, entretien: 0,
   investEnabled: false,
   loyerEstime: 0, vacance: 1, chargesLoc: 0, taxeFoncLoc: 0,
   assurancePno: 0, gestionLoc: 0,
   score: 0, scoreStatus: '', actions: [], nextBrick: null,
-  ageGroup: '25_34'
+  ageGroup: '25_34',
+  capaciteEmprunt: 0, apport: 0
 };
 
 /* ─── GLOSSARY DATA ──────────────────────────────────────── */
@@ -1749,13 +1980,12 @@ function fmt(v) {
 }
 function fmtPct(v) { return (Math.round(v * 1000) / 10) + ' %'; }
 function $(id) { return document.getElementById(id); }
-function getTotalRevenus() { return n(S.revenus) + n(S.revenusCompl); }
+function getTotalRevenus() { return n(S.revenus) + n(S.revenusCompl) + n(S.autresEntrees); }
 
 function getMensualiteCible() {
   var revenus = getTotalRevenus();
   var credits = n(S.credits);
-  var presetRatio = S.presetMode === 'prudent' ? 0.28 : (S.presetMode === 'ambitieux' ? 0.35 : 0.33);
-  var maxMens = revenus * presetRatio - credits;
+  var maxMens = revenus * 0.33 - credits;
   return Math.max(0, maxMens - n(S.assurance));
 }
 
@@ -1782,7 +2012,7 @@ function goToScreen(idx) {
   if (idx === 2) { S.assurance = getAutoAssurance(); updateCapacity(); }
   if (idx === 3) updateApport();
   if (idx === 4) updateCost();
-  if (idx === 5) initSimulator();
+  if (idx === 5) updateScreen5();
   if (idx === 6) initInvestment();
   if (idx === 7) buildTimeline();
   if (idx === 8) buildFinalScreen();
@@ -1797,11 +2027,12 @@ function goScreen(idx) { goToScreen(idx); }
 
 function syncStateFromScreen(screenIdx) {
   if (screenIdx === 1) {
-    S.location = ($('input-location') || {}).value || '';
+    // Postal code and horizon are synced in real-time via their handlers
   }
   if (screenIdx === 2) {
     S.revenus = n(($('input-revenus') || {}).value);
     S.revenusCompl = n(($('input-revenus-compl') || {}).value);
+    S.autresEntrees = n(($('input-aides') || {}).value);
     S.charges = n(($('input-charges') || {}).value);
     S.credits = n(($('input-credits') || {}).value);
     S.loyer = n(($('input-loyer') || {}).value);
@@ -1823,9 +2054,7 @@ function syncStateFromScreen(screenIdx) {
     S.fraisAgence = n(($('input-frais-agence') || {}).value);
     S.fraisGarantie = n(($('input-frais-garantie') || {}).value);
     S.fraisDossier = n(($('input-frais-dossier') || {}).value);
-    S.travauxCout = n(($('input-travaux-cout') || {}).value);
-    S.meublesCout = n(($('input-meubles-cout') || {}).value);
-    S.demenagement = n(($('input-demenagement') || {}).value);
+    S.travauxAutres = n(($('input-travaux-autres') || {}).value);
     S.taxeFonciere = n(($('input-taxe-fonciere') || {}).value);
     S.chargesCopro = n(($('input-charges-copro') || {}).value);
     S.assuranceHab = n(($('input-assurance-hab') || {}).value);
@@ -1882,7 +2111,7 @@ function updateProgressPanel(idx) {
     'Posons ta capacité mensuelle.',
     'Calculons ton apport réel.',
     'Le vrai coût de ton achat.',
-    'Simule ton budget d\'achat.',
+    'Ton budget d\'achat en résumé.',
     'Et si tu achètes pour louer\u00a0?',
     'Les étapes jusqu\'aux clés.',
     'Ton diagnostic est prêt\u00a0!'
@@ -1901,14 +2130,8 @@ function selectProjectCard(el) {
   updateModeCard();
 
   if (val === 'investissement_locatif') {
-    S.usage = 'louer';
-    var usageQ = $('usage-question');
-    if (usageQ) usageQ.style.display = 'none';
     var toggle = $('toggle-invest');
     if (toggle && !toggle.checked) { toggle.checked = true; }
-  } else {
-    var usageQ2 = $('usage-question');
-    if (usageQ2) usageQ2.style.display = '';
   }
 
   var blocB = $('bloc-b');
@@ -1952,6 +2175,83 @@ function initPills() {
       });
     });
   });
+}
+
+/* ─── HORIZON SLIDER ────────────────────────────────────── */
+function updateHorizonSlider() {
+  var slider = $('slider-horizon');
+  if (!slider) return;
+  var idx = parseInt(slider.value);
+  S.horizon = HORIZON_VALUES[idx];
+  var chip = $('horizon-chip');
+  if (chip) {
+    chip.textContent = HORIZON_LABELS[idx];
+    var pct = idx / 4 * 100;
+    chip.style.left = 'calc(' + pct + '% + ' + (10 - pct * 0.2) + 'px)';
+  }
+  var labels = document.querySelectorAll('#horizon-labels span');
+  labels.forEach(function(l, i) {
+    l.classList.toggle('active', i === idx);
+    if (i === 4) l.style.color = i === idx ? 'var(--text-faint)' : 'var(--text-faint)';
+  });
+  var ticks = document.querySelectorAll('#horizon-ticks .horizon-tick');
+  ticks.forEach(function(t, i) { t.classList.toggle('passed', i <= idx); });
+  updateSliderTrack(slider);
+}
+
+/* ─── POSTAL CODE HANDLER ──────────────────────────────── */
+function initPostalCode() {
+  var input = $('input-postal');
+  if (!input) return;
+  input.addEventListener('input', function() {
+    var cp = input.value.replace(/\D/g, '');
+    input.value = cp;
+    var result = $('postal-result');
+    if (cp.length >= 5) {
+      var dept = getDeptFromPostal(cp);
+      S.codePostal = cp;
+      S.prixM2 = getPrixM2(cp);
+      var deptName = DEPT_NAMES[dept] || ('Département ' + dept);
+      S.deptName = deptName;
+      if (result) result.textContent = deptName + ' — prix moyen estimé : ' + new Intl.NumberFormat('fr-FR').format(S.prixM2) + ' €/m²';
+    } else {
+      S.codePostal = '';
+      S.prixM2 = PRIX_M2['default'];
+      S.deptName = '';
+      if (result) result.textContent = '';
+    }
+  });
+}
+
+/* ─── SLIDER TRACK COLORING ────────────────────────────── */
+function updateSliderTrack(slider) {
+  if (!slider) return;
+  var min = parseFloat(slider.min);
+  var max = parseFloat(slider.max);
+  var val = parseFloat(slider.value);
+  var pct = (val - min) / (max - min) * 100;
+  slider.style.background = 'linear-gradient(to right, var(--accent-strong) 0%, var(--accent-strong) ' + pct + '%, var(--track) ' + pct + '%, var(--track) 100%)';
+}
+
+/* ─── SLIDER CHIP POSITIONING ──────────────────────────── */
+function positionChip(sliderId, chipId, suffix) {
+  var slider = $(sliderId);
+  var chip = $(chipId);
+  if (!slider || !chip) return;
+  var min = parseFloat(slider.min);
+  var max = parseFloat(slider.max);
+  var val = parseFloat(slider.value);
+  var pct = (val - min) / (max - min) * 100;
+  chip.style.left = 'calc(' + pct + '% + ' + (10 - pct * 0.2) + 'px)';
+  chip.textContent = suffix;
+  updateSliderTrack(slider);
+}
+
+/* ─── ASSURANCE HABITATION AUTO ────────────────────────── */
+function estimateAssuranceHab(propertyType) {
+  if (propertyType === 'terrain') return 0;
+  if (propertyType === 'appartement' || propertyType === 'ancien' || propertyType === 'neuf' || propertyType === 'vefa') return 20;
+  return 25;
 }
 
 /* ─── GLOSSARY POPOVER ──────────────────────────────────── */
@@ -2018,36 +2318,47 @@ function toggleHypotheses() {
 
 /* ─── ÉCRAN 2 : CAPACITY ─────────────────────────────────── */
 function updateCapacity() {
-  var revenus = n(($('input-revenus') || {}).value) + n(($('input-revenus-compl') || {}).value);
+  var revenus = n(($('input-revenus') || {}).value) + n(($('input-revenus-compl') || {}).value) + n(($('input-aides') || {}).value);
   var charges = n(($('input-charges') || {}).value);
   var credits = n(($('input-credits') || {}).value);
   var loyer = n(($('input-loyer') || {}).value);
   var duree = n(($('slider-duree') || {}).value);
   var taux = n(($('slider-taux') || {}).value);
 
-  $('val-duree').textContent = duree + ' ans';
-  $('val-taux').textContent = taux.toFixed(1) + ' %';
-  $('params-summary').textContent = 'Durée : ' + duree + ' ans · Taux estimé : ' + taux.toFixed(1) + '%';
+  // Position chips
+  positionChip('slider-duree', 'chip-duree', duree + ' ans');
+  positionChip('slider-taux', 'chip-taux', taux.toFixed(1) + ' %');
 
   S.revenus = n(($('input-revenus') || {}).value);
   S.revenusCompl = n(($('input-revenus-compl') || {}).value);
+  S.autresEntrees = n(($('input-aides') || {}).value);
   S.charges = charges; S.credits = credits; S.loyer = loyer;
   S.duree = duree; S.taux = taux;
 
   S.assurance = getAutoAssurance();
 
-  var presetRatio = S.presetMode === 'prudent' ? 0.28 : (S.presetMode === 'ambitieux' ? 0.35 : 0.33);
-  var mensMax = revenus * presetRatio - credits - S.assurance;
+  var mensMax = revenus * 0.33 - credits - S.assurance;
   mensMax = Math.max(0, mensMax);
 
   var effort = revenus > 0 ? (credits + mensMax + S.assurance) / revenus : 0;
   var rav = revenus - charges - credits - mensMax - S.assurance;
 
+  // Segmented effort gauge
   var effortPct = Math.min(effort * 100, 50);
-  var fillEl = $('fill-effort');
-  fillEl.style.width = (effortPct / 50 * 100) + '%';
-  fillEl.className = 'gauge-fill ' + (effort > 0.35 ? 'gauge-red' : effort > 0.30 ? 'gauge-orange' : 'gauge-green');
+  var indicatorPos = effortPct / 50 * 100;
+  var indicator = $('effort-indicator');
+  if (indicator) indicator.style.left = indicatorPos + '%';
   $('val-effort').textContent = fmtPct(effort);
+
+  var statusEl = $('effort-status');
+  if (statusEl) {
+    var effortLabel, effortClass;
+    if (effort <= 0.30) { effortLabel = 'Confortable'; effortClass = 'effort-status-green'; }
+    else if (effort <= 0.35) { effortLabel = 'Limite HCSF'; effortClass = 'effort-status-orange'; }
+    else { effortLabel = 'Trop tendu'; effortClass = 'effort-status-red'; }
+    statusEl.textContent = fmtPct(effort) + ' de taux d\'effort — ' + effortLabel;
+    statusEl.className = 'effort-gauge-status ' + effortClass;
+  }
 
   var warnEl = $('warning-effort');
   if (effort > EFFORT_MAX && revenus > 0) {
@@ -2085,22 +2396,20 @@ function updateCapacity() {
   }
 }
 
-function applyPreset(preset) {
-  S.presetMode = preset;
-  document.querySelectorAll('.preset-btn').forEach(function(b) {
-    b.classList.toggle('active', b.getAttribute('data-preset') === preset);
-  });
-  updateCapacity();
-}
-
 /* ─── ÉCRAN 3 : APPORT ───────────────────────────────────── */
 function updateApport() {
   var total = n(($('input-epargne-totale') || {}).value);
   var mAct = n(($('input-matelas-actuel') || {}).value);
-  var mCib = n(($('input-matelas-cible') || {}).value);
   var aide = n(($('input-aide-famille') || {}).value);
   var reserve = n(($('input-reserve') || {}).value);
   var bloquee = n(($('input-epargne-bloquee') || {}).value);
+
+  // Auto-compute matelas cible = 3 × charges mensuelles
+  var chargesMens = n(S.charges) + n(S.credits);
+  var mCib = chargesMens > 0 ? chargesMens * 3 : mAct;
+  S.matelasCible = mCib;
+  var matCibInput = $('input-matelas-cible');
+  if (matCibInput) matCibInput.value = mCib;
 
   var protege = Math.max(mCib, mAct);
   var mob = calculateMobilizableDownPayment(total, aide, protege, bloquee, reserve);
@@ -2121,7 +2430,15 @@ function updateApport() {
   var fees = estimateAcquisitionFees(S.prixBien, S.propertyType);
   var heroSub = $('apport-hero-sub');
   if (heroSub) {
-    heroSub.textContent = 'sur ' + fmt(total) + ' d\'épargne totale — ' + fmt(protege) + ' protégés pour ton matelas';
+    heroSub.textContent = 'sur ' + fmt(total) + ' d\'épargne totale — ' + fmt(mAct) + ' doivent être conservés comme épargne de précaution';
+  }
+
+  // Dynamic precaution text
+  var precText = $('apport-precaution-text');
+  if (precText && total > 0) {
+    precText.textContent = 'Sur ' + fmt(total) + ' d\'épargne totale — ' + fmt(mAct) + ' doivent être conservés comme épargne de précaution.';
+  } else if (precText) {
+    precText.textContent = '';
   }
 
   var hero = $('apport-hero');
@@ -2156,6 +2473,10 @@ function closeEpargneItem(inp) {
 /* ─── ÉCRAN 4 : COST ─────────────────────────────────────── */
 function updateCost() {
   var prix = n(($('input-prix-bien') || {}).value);
+  var apport = getApportMobilisable();
+  var emprunt = Math.max(0, prix - apport);
+
+  // Auto-estimate frais notaire
   var notaireInput = $('input-frais-notaire');
   if (prix > 0 && !notaireInput.value) {
     var estimated = estimateAcquisitionFees(prix, S.propertyType);
@@ -2163,34 +2484,70 @@ function updateCost() {
     S.fraisNotaire = estimated;
   }
   var notaire = n(notaireInput.value) || S.fraisNotaire || estimateAcquisitionFees(prix, S.propertyType);
+
+  // Auto-estimate frais de garantie = 1.2% × emprunt
+  var garantieInput = $('input-frais-garantie');
+  if (prix > 0 && !garantieInput.value) {
+    var estGarantie = Math.round(0.012 * emprunt);
+    garantieInput.placeholder = fmt(estGarantie);
+    S.fraisGarantie = estGarantie;
+  }
+  var garantie = n(garantieInput.value) || S.fraisGarantie || Math.round(0.012 * emprunt);
+
+  // Auto-estimate frais de dossier
+  var dossierInput = $('input-frais-dossier');
+  if (prix > 0 && !dossierInput.value) {
+    var estDossier = Math.max(500, Math.min(1000, Math.round(prix * 0.01)));
+    dossierInput.placeholder = fmt(estDossier);
+    S.fraisDossier = estDossier;
+  }
+  var dossier = n(dossierInput.value) || S.fraisDossier || Math.max(500, Math.min(1000, Math.round(prix * 0.01)));
+
   var agence = n(($('input-frais-agence') || {}).value);
-  var garantie = n(($('input-frais-garantie') || {}).value);
-  var dossier = n(($('input-frais-dossier') || {}).value);
-  var travaux = n(($('input-travaux-cout') || {}).value);
-  var meubles = n(($('input-meubles-cout') || {}).value);
-  var demenagement = n(($('input-demenagement') || {}).value);
+  var travauxAutres = n(($('input-travaux-autres') || {}).value);
   var taxeF = n(($('input-taxe-fonciere') || {}).value);
-  var copro = n(($('input-charges-copro') || {}).value);
-  var assHab = n(($('input-assurance-hab') || {}).value);
-  var entretien = n(($('input-entretien') || {}).value);
+  var coproAn = n(($('input-charges-copro') || {}).value); // maintenant en /an
+
+  // Auto-estimate assurance habitation
+  var assHabInput = $('input-assurance-hab');
+  if (prix > 0 && !assHabInput.value) {
+    var estAssHab = estimateAssuranceHab(S.propertyType);
+    assHabInput.placeholder = estAssHab + ' €/mois';
+    S.assuranceHab = estAssHab;
+  }
+  var assHab = n(assHabInput.value) || S.assuranceHab || estimateAssuranceHab(S.propertyType);
+
+  // Auto-estimate entretien annuel
+  var entretienInput = $('input-entretien');
+  if (prix > 0 && !entretienInput.value) {
+    var entretienRate = (S.propertyType === 'maison') ? 0.015 : 0.01;
+    var estEntretien = Math.round(prix * entretienRate);
+    entretienInput.placeholder = fmt(estEntretien) + '/an';
+    S.entretien = estEntretien;
+  }
+  var entretien = n(entretienInput.value) || S.entretien || Math.round(prix * ((S.propertyType === 'maison') ? 0.015 : 0.01));
 
   var coutAcq = prix + notaire + agence + garantie + dossier;
-  var coutInstall = travaux + meubles + demenagement;
-  var coutTotal = coutAcq + coutInstall;
-  var coutMensuelProprio = taxeF / 12 + copro + assHab + entretien / 12;
+  var coutTotal = coutAcq + travauxAutres;
+  // Copro is now annual → divide by 12 for monthly
+  var coutMensuelProprio = taxeF / 12 + coproAn / 12 + assHab + entretien / 12;
 
   $('rc-cout-acq').textContent = fmt(coutAcq);
-  $('rc-cout-install').textContent = fmt(coutInstall);
   $('rc-cout-mensuel').textContent = fmt(coutMensuelProprio);
   $('val-cout-total').textContent = fmt(coutTotal);
+
+  // Help texts
+  var helpGarantie = $('help-garantie');
+  if (helpGarantie && prix > 0) helpGarantie.textContent = 'Estimation : 1,2% de l\'emprunt (' + fmt(emprunt) + ')';
+  var helpDossier = $('help-dossier');
+  if (helpDossier && prix > 0) helpDossier.textContent = 'Estimation : entre 500 et 1 000 €';
 
   var segments = [
     { label: 'Prix', val: prix, color: '#5B21B6' },
     { label: 'Notaire', val: notaire, color: '#7C3AED' },
     { label: 'Agence', val: agence, color: '#8B5CF6' },
     { label: 'Garantie/dossier', val: garantie + dossier, color: '#A78BFA' },
-    { label: 'Travaux', val: travaux, color: '#C4B5FD' },
-    { label: 'Installation', val: meubles + demenagement, color: '#DDD6FE' }
+    { label: 'Travaux & install.', val: travauxAutres, color: '#C4B5FD' }
   ].filter(function(s) { return s.val > 0; });
 
   var bar = $('stacked-bar');
@@ -2206,79 +2563,67 @@ function updateCost() {
   }
 }
 
-/* ─── ÉCRAN 5 : SIMULATOR ────────────────────────────────── */
+/* ─── ÉCRAN 5 : RÉSUMÉ GRAPHIQUE ─────────────────────────── */
 function initSimulator() {
-  var mob = getApportMobilisable();
-  if (S.prixBien > 0) $('slider-prix-sim').value = S.prixBien;
-  if (mob > 0) { $('slider-apport-sim').value = Math.min(mob, 200000); $('slider-apport-sim').max = Math.max(200000, mob + 50000); }
-  $('slider-taux-sim').value = S.taux || 3.5;
-  $('slider-duree-sim').value = S.duree || 20;
-  updateSimulator();
+  updateScreen5();
 }
 
-function updateSimulator() {
-  var prix = n($('slider-prix-sim').value);
-  var apport = n($('slider-apport-sim').value);
-  var taux = n($('slider-taux-sim').value);
-  var duree = n($('slider-duree-sim').value);
+function updateScreen5() {
+  var mensualite = getMensualiteCible();
+  var apport = getApportMobilisable();
+  var capacite = calculateBorrowingCapacity(mensualite, S.taux, S.duree * 12);
+  var budgetMax = capacite + apport;
 
-  $('val-prix-sim').textContent = fmt(prix);
-  $('val-apport-sim').textContent = fmt(apport);
-  $('val-taux-sim').textContent = taux.toFixed(1) + ' %';
-  $('val-duree-sim').textContent = duree + ' ans';
+  S.capaciteEmprunt = capacite;
+  S.apport = apport;
 
-  var fees = estimateAcquisitionFees(prix, S.propertyType);
-  var emprunt = Math.max(0, prix + fees - apport);
-  var months = duree * 12;
-  var mensualite = calculateMonthlyPayment(emprunt, taux, months);
-  var totalMens = mensualite + n(S.assurance);
-  var effort = calculateDebtRatio(S.credits, totalMens, getTotalRevenus());
-  var rav = getTotalRevenus() - S.charges - S.credits - totalMens;
+  // Hero card
+  var heroAmount = $('s5-budget-max');
+  if (heroAmount) heroAmount.textContent = fmt(budgetMax);
 
-  $('rc-sim-mensualite').textContent = fmt(mensualite);
-  $('rc-sim-effort').textContent = fmtPct(effort);
-  $('rc-sim-rav').textContent = fmt(rav);
-  $('rc-sim-emprunt').textContent = fmt(emprunt);
-
-  var statusCard = $('sim-status');
-  var statusText = $('sim-status-text');
-  var statusSub = $('sim-status-sub');
-  var statusIcon = statusCard.querySelector('.status-icon');
-  if (effort > EFFORT_MAX || rav < 200) {
-    statusCard.className = 'status-card red';
-    statusIcon.innerHTML = '❌';
-    statusText.textContent = 'Projet trop tendu';
-    statusSub.textContent = effort > EFFORT_MAX ? 'Taux d\'effort supérieur à 35%' : 'Reste à vivre insuffisant';
-  } else if (effort > 0.30 || rav < 500) {
-    statusCard.className = 'status-card orange';
-    statusIcon.innerHTML = '⚠️';
-    statusText.textContent = 'Projet à ajuster';
-    statusSub.textContent = 'Marge serrée — ajuste le prix ou la durée';
-  } else {
-    statusCard.className = 'status-card green';
-    statusIcon.innerHTML = '✅';
-    statusText.textContent = 'Projet confortable';
-    statusSub.textContent = '';
+  // M² line
+  var prixM2 = n(S.prixM2) || 2500;
+  var surfaceMax = prixM2 > 0 ? Math.round(budgetMax / prixM2) : 0;
+  var locationLabel = S.deptName || (S.codePostal ? 'département ' + getDeptFromPostal(S.codePostal) : 'moyenne nationale');
+  var m2Line = $('s5-m2-line');
+  if (m2Line && budgetMax > 0) {
+    m2Line.textContent = 'soit ~' + surfaceMax + ' m² à ' + locationLabel + ' (' + new Intl.NumberFormat('fr-FR').format(prixM2) + ' €/m²)';
+  } else if (m2Line) {
+    m2Line.textContent = '';
   }
-}
 
-function quickAction(action) {
-  if (action === 'reduire_prix') {
-    var cur = n($('slider-prix-sim').value);
-    $('slider-prix-sim').value = Math.max(30000, cur - 10000);
-  } else if (action === 'augmenter_apport') {
-    var curA = n($('slider-apport-sim').value);
-    $('slider-apport-sim').value = Math.min(n($('slider-apport-sim').max), curA + 5000);
-  } else if (action === 'allonger_duree') {
-    var curD = n($('slider-duree-sim').value);
-    $('slider-duree-sim').value = Math.min(25, curD + 1);
-  }
-  updateSimulator();
+  // 3 comparison cards
+  var configs = [
+    { id: 'studio', surface: 30, label: 'Studio / T1' },
+    { id: '2p', surface: 50, label: '2 pièces' },
+    { id: '3p', surface: 70, label: '3 pièces' }
+  ];
+
+  configs.forEach(function(cfg) {
+    var prix = cfg.surface * prixM2;
+    var empruntNeeded = Math.max(0, prix - apport);
+    var mens = calculateMonthlyPayment(empruntNeeded, S.taux, S.duree * 12);
+    var card = $('s5-card-' + cfg.id);
+    var priceEl = $('s5-price-' + cfg.id);
+    var mensEl = $('s5-mens-' + cfg.id);
+
+    if (priceEl) priceEl.textContent = fmt(prix);
+    if (mensEl) mensEl.textContent = '~' + fmt(mens) + '/mois';
+
+    if (card) {
+      card.classList.remove('in-budget', 'out-budget');
+      if (prix <= budgetMax) {
+        card.classList.add('in-budget');
+      } else {
+        card.classList.add('out-budget');
+      }
+    }
+  });
 }
 
 /* ─── ÉCRAN 6 : INVESTMENT ───────────────────────────────── */
 function initInvestment() {
-  var isLocatif = S.projectType === 'investissement_locatif' || S.usage === 'louer';
+  var isLocatif = S.projectType === 'investissement_locatif';
   var toggle = $('toggle-invest');
   if (isLocatif && !toggle.checked) { toggle.checked = true; }
   toggleInvestment();
@@ -2300,7 +2645,7 @@ function updateInvestment() {
   var pno = n(($('input-assurance-pno') || {}).value);
   var gestion = n(($('input-gestion-loc') || {}).value);
 
-  var prixTotal = S.prixBien > 0 ? S.prixBien + estimateAcquisitionFees(S.prixBien, S.propertyType) : n($('slider-prix-sim').value);
+  var prixTotal = S.prixBien > 0 ? S.prixBien + estimateAcquisitionFees(S.prixBien, S.propertyType) : 0;
   var loyerAnnuel = loyerM * 12;
   var vacanceCost = loyerM * vacance;
   var chargesAnnuelles = chargesNR * 12 + taxeF + pno * 12 + gestion * 12;
@@ -2375,7 +2720,7 @@ function buildFinalScreen() {
   var fees = estimateAcquisitionFees(S.prixBien, S.propertyType);
   var prixCible = borrowing + mob - fees;
   var rav = getTotalRevenus() - S.charges - S.credits - mensualite - n(S.assurance);
-  var coutMensuelProprio = S.taxeFonciere / 12 + S.chargesCopro + S.assuranceHab + S.entretien / 12;
+  var coutMensuelProprio = S.taxeFonciere / 12 + S.chargesCopro / 12 + S.assuranceHab + S.entretien / 12;
 
   var items = [
     { label: 'Type de projet', val: formatProjectType(S.projectType) },
@@ -2474,16 +2819,15 @@ function validerEtDashboard() {
     },
     project: {
       projectType: S.projectType,
-      propertyUse: S.usage,
+      propertyUse: S.projectType === 'investissement_locatif' ? 'louer' : 'habiter',
       propertyType: S.propertyType,
-      location: S.location,
+      location: S.codePostal || '',
       purchaseHorizon: S.horizon,
       isFirstTimeBuyer: S.primo === 'oui',
       propertyPrice: S.prixBien,
-      worksAmount: S.travauxCout,
-      furnitureAmount: S.meublesCout,
+      worksAmount: S.travauxAutres,
       annualPropertyTax: S.taxeFonciere,
-      monthlyCondoFees: S.chargesCopro
+      annualCondoFees: S.chargesCopro
     },
     financing: {
       interestRate: S.taux,
@@ -2571,6 +2915,19 @@ function validerEtDashboard() {
 
     S.ageGroup = profil.age_group || '25_34';
 
+    // Durée déduite de l'âge
+    var dureeDeduite = DUREE_PAR_AGE[S.ageGroup] || DUREE_PAR_AGE[profil.age_group] || 20;
+    S.duree = dureeDeduite;
+    var sliderDuree = $('slider-duree');
+    if (sliderDuree) sliderDuree.value = dureeDeduite;
+
+    // Prefill aides
+    var aidesInput = $('input-aides');
+    if (aidesInput) {
+      var aides = n(bData.aides) || 0;
+      if (aides > 0) { aidesInput.value = aides; $('badge-aides').style.display = 'inline'; S.autresEntrees = aides; }
+    }
+
     var revInput = $('input-revenus');
     if (revInput) {
       var rev = n(bData.revenus) || n(profil.revenusMensuels) || 0;
@@ -2616,23 +2973,30 @@ function validerEtDashboard() {
 
     attachLiveListeners();
     initPills();
+    initPostalCode();
+    updateHorizonSlider();
+
+    // Init slider tracks
+    ['slider-duree', 'slider-taux', 'slider-horizon'].forEach(function(id) {
+      updateSliderTrack($(id));
+    });
   })();
 })();
 
 function attachLiveListeners() {
   // Screen 2 inputs
-  ['input-revenus', 'input-revenus-compl', 'input-charges', 'input-credits', 'input-loyer'].forEach(function(id) {
+  ['input-revenus', 'input-revenus-compl', 'input-aides', 'input-charges', 'input-credits', 'input-loyer'].forEach(function(id) {
     var el = $(id);
     if (el) el.addEventListener('input', updateCapacity);
   });
   // Screen 3 inputs
-  ['input-epargne-totale', 'input-matelas-actuel', 'input-matelas-cible', 'input-aide-famille', 'input-reserve', 'input-epargne-bloquee', 'input-travaux-apport'].forEach(function(id) {
+  ['input-epargne-totale', 'input-matelas-actuel', 'input-aide-famille', 'input-reserve', 'input-epargne-bloquee', 'input-travaux-apport'].forEach(function(id) {
     var el = $(id);
     if (el) el.addEventListener('input', updateApport);
   });
   // Screen 4 inputs
   ['input-prix-bien', 'input-frais-notaire', 'input-frais-agence', 'input-frais-garantie', 'input-frais-dossier',
-   'input-travaux-cout', 'input-meubles-cout', 'input-demenagement',
+   'input-travaux-autres',
    'input-taxe-fonciere', 'input-charges-copro', 'input-assurance-hab', 'input-entretien'].forEach(function(id) {
     var el = $(id);
     if (el) el.addEventListener('input', updateCost);
