@@ -99,6 +99,16 @@ const BRIQUES_META = {
     resume: 'Un parcours immobilier sans mauvaise surprise, de la recherche à la signature.',
     chapitres: ['Simuler sa capacité d\'emprunt', 'Comprendre les frais de notaire', 'Choisir son crédit']
   },
+  achat_immobilier: {
+    id: 'achat_immobilier', nom: 'Achat immobilier',
+    tagline: 'Comprends le processus, estime ta capacité et prépare ton projet.',
+    duree: '10 min', pack: 'Construction & projets', pack_color: '#60a5fa',
+    icon: '🏠',
+    resume: 'En quelques minutes, estime ta capacité d\'achat, repère les frais et sais quoi faire ensuite.',
+    chapitres: ['Le jargon utile', 'Capacité mensuelle', 'Simulateur d\'achat'],
+    tags: ['logement', 'crédit', 'notaire'],
+    recommended: false
+  },
   treso_dirigeant: {
     id: 'treso_dirigeant', nom: 'Tréso du dirigeant',
     tagline: 'Gérer la frontière entre finances perso et pro.',
@@ -522,7 +532,8 @@ const BRICK_FILES = {
   gestion_decouvert:       'brique-gestion-decouvert.html',
   paiements_fractionnes:   'brique-paiements-fractionnes.html',
   fonds_urgence:           'brique-fonds-urgence.html',
-  premiers_pas_bancaires:  'brique-premiers-pas-bancaires.html'
+  premiers_pas_bancaires:  'brique-premiers-pas-bancaires.html',
+  achat_immobilier:        'brique-achat-immobilier.html'
 };
 
 function getNextBrick(currentBrickId) {
