@@ -1349,7 +1349,7 @@ function updatePreview() {
 }
 
 // ─── SUBMIT ──────────────────────────────────────────────────────
-function submitQuiz() {
+async function submitQuiz() {
   if (!validate(4)) return;
 
   // Auto-map hidden fields
@@ -1386,7 +1386,7 @@ function submitQuiz() {
     };
     // Reset complet des données user avant de sauvegarder le nouveau profil
     if (typeof resetUserData === 'function') {
-      resetUserData().catch(function(e) { console.warn('[onboarding] resetUserData failed:', e); });
+      try { await resetUserData(); } catch(e) { console.warn('[onboarding] resetUserData failed:', e); }
     }
     if (typeof _MEM !== 'undefined') {
       delete _MEM['fund_dashboard'];

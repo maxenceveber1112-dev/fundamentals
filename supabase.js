@@ -167,6 +167,9 @@ async function resetUserData() {
   await sb.from('brick_data').delete().eq('user_id', user.id);
   await sb.from('profiles').delete().eq('id', user.id);
   Object.keys(_MEM).forEach(function(k) { delete _MEM[k]; });
+  // Nettoyer aussi les flags localStorage/sessionStorage liés au profil
+  try { localStorage.removeItem('welcome_modal_seen'); } catch(e) {}
+  try { sessionStorage.removeItem('_wm_shown'); sessionStorage.removeItem('_tour_shown'); } catch(e) {}
 }
 
 // ─── COMPAT : wrappers sync pour le code existant ──────────────────
