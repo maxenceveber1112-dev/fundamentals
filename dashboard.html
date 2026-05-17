@@ -773,215 +773,41 @@
   @keyframes wmSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
   /* ─── Tour guidé ─────────────────────────────────────────── */
+  /* Tour guidé */
   .tour-dim {
     position: fixed; inset: 0; z-index: 10000;
-    background: rgba(0,0,0,0.52); pointer-events: none;
-    animation: wmFadeIn 0.25s ease;
-  }
-  .tour-spotlight {
-    position: fixed; z-index: 10001; border-radius: 0.75rem;
-    outline: 3px solid var(--accent); outline-offset: 3px;
+    background: rgba(11,11,26,0.72);
     pointer-events: none;
-    transition: top .35s cubic-bezier(.4,0,.2,1), left .35s cubic-bezier(.4,0,.2,1),
-                width .35s cubic-bezier(.4,0,.2,1), height .35s cubic-bezier(.4,0,.2,1);
+  }
+  .tour-hole {
+    position: fixed; z-index: 10001;
+    border-radius: 0.875rem;
+    box-shadow: 0 0 0 4px var(--accent), 0 0 0 8px rgba(196,181,253,0.18);
+    pointer-events: none;
+    transition: top .3s ease, left .3s ease, width .3s ease, height .3s ease;
   }
   .tour-tooltip {
     position: fixed; z-index: 10002;
-    background: var(--bg-elevated); border-radius: 1rem;
-    padding: 1.125rem 1.25rem 1rem; max-width: 290px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
-    animation: wmSlideUp 0.25s ease;
+    background: var(--bg-elevated);
+    border-radius: 1rem;
+    padding: 1.125rem 1.25rem 1rem;
+    width: 280px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
   }
   .tour-step-label {
     font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em;
     text-transform: uppercase; color: var(--accent-strong); margin-bottom: 0.3rem;
   }
-  .tour-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin: 0 0 0.3rem; }
+  .tour-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin: 0 0 0.35rem; }
   .tour-desc  { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.55; margin: 0 0 1rem; }
   .tour-footer { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
   .tour-dots  { display: flex; gap: 0.35rem; }
-  .tour-dot   { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-soft); }
+  .tour-dot   { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-soft); transition: background .2s; }
   .tour-dot.on { background: var(--accent-strong); }
   .tour-skip  { background: none; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; padding: 0; }
   .tour-next  { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 1rem;
                 background: var(--accent-strong); color: #fff; border: none; border-radius: 999px;
                 font-size: 0.82rem; font-weight: 600; cursor: pointer; }
-  </style>
-</head>
-<body>
-<canvas id="bg-canvas"></canvas>
-
-<!-- NAV supprimée V3 — remplacée par sidebar.js (sidebar + ctx-header) -->
-
-<main>
-  <!-- ══ Completed banner ══ -->
-  <div class="completed-banner" id="completed-banner">
-    <h2>Parcours complété</h2>
-    <p>Tous les modules sont terminés. Explore de nouvelles briques dans la section ci-dessous.</p>
-  </div>
-
-  <!-- ════════════════════════════════════════════════════════════
-       ZONE 1 — HERO NEXT BEST ACTION
-  ════════════════════════════════════════════════════════════ -->
-  <div class="zone-hero" id="zone-hero">
-    <div class="hero-cream">
-    <!-- Salutation discrète -->
-    <div class="greeting-line" id="greeting-line">Bonjour.</div>
-
-    <!-- Kicker contextuel -->
-    <div class="hero-kicker" id="hero-kicker">
-      <span id="hero-kicker-label">ON REPREND</span>
-      <span class="hero-kicker-sep"></span>
-      <span id="hero-kicker-sub">Module</span>
-    </div>
-
-    <!-- Titre serif italic -->
-    <h1 class="hero-title" id="hero-title">—</h1>
-
-    <!-- Description -->
-    <p class="hero-desc" id="hero-desc">—</p>
-
-    <!-- Progression brique -->
-    <div class="hero-progress" id="hero-progress" style="display:none;">
-      <div class="hero-progress-meta">
-        <span>Progression</span>
-        <span class="hero-progress-pct" id="hero-pct">0%</span>
-      </div>
-      <div class="f-track" style="height:3px;">
-        <div class="f-fill" id="hero-bar" style="width:0%"></div>
-      </div>
-    </div>
-
-    <!-- CTAs -->
-    <div class="hero-actions">
-      <button class="btn-hero-primary" onclick="resumeBrique()" id="btn-resume">
-        Commencer
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
-      <a href="plan.html" class="btn-hero-secondary">Plus tard</a>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════════════════════════════════════
-       ZONE 2 — MES BRIQUES À VENIR
-  ════════════════════════════════════════════════════════════ -->
-  <div class="section-wrap" id="zone-briques">
-    <div class="section-head">
-      <h2 class="section-title">Mes briques à venir</h2>
-      <span class="section-action" id="briques-voir-tout-action" onclick="toggleAllBriques()" style="display:none;">Voir tout →</span>
-    </div>
-    <div class="section-divider"></div>
-    <div id="briques-sections"></div>
-  </div>
-
-  <!-- ── Mes données (premier bloc après hero) ──────────── -->
-  <section class="mes-briques-section" id="mes-briques-section" style="display:none;">
-    <div class="mes-briques-header">
-      <h2 class="section-title">Mes données</h2>
-      <p class="mes-briques-sub">Mis à jour à chaque brique · Objectifs et projets bientôt disponibles</p>
-    </div>
-    <div class="mes-briques-grid" id="mes-briques-grid"></div>
-  </section>
-
-  <!-- ════════════════════════════════════════════════════════════
-       ZONE 3 — INSIGHT ÉDITORIAL
-  ════════════════════════════════════════════════════════════ -->
-  <div class="zone-insight" id="zone-insight" style="display:none;">
-    <div class="insight-card">
-      <div class="insight-kicker" id="insight-kicker">INSIGHT PERSONNALISÉ</div>
-      <div class="insight-figure" id="insight-text">—</div>
-      <p class="insight-sub" id="insight-sub" style="display:none;"></p>
-      <a href="#" class="insight-link" id="insight-cta" style="display:none;">
-        <span id="insight-cta-text">Voir le plan détaillé</span> →
-      </a>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════════════════════════════════════
-       ZONE 4 — EXPLORER
-  ════════════════════════════════════════════════════════════ -->
-  <div class="section-wrap">
-    <div class="section-head">
-      <h2 class="section-title">Explorer</h2>
-      <span class="section-action" style="font-size:0.75rem;color:var(--text-faint);">Briques, simulateurs et parcours</span>
-    </div>
-    <div class="section-divider"></div>
-    <div class="explorer-cols" id="explorer-cols"></div>
-  </div>
-
-
-</main>
-
-<!-- ════════════ ENGAGEMENT MODAL ════════════ -->
-<div class="modal-overlay" id="eng-modal-overlay">
-  <div class="modal" id="eng-modal">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
-      <h3 style="font-size:1rem;font-weight:700;">Ajouter un engagement</h3>
-      <button style="width:28px;height:28px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text-muted);" onclick="closeEngModal()">×</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:0.875rem;">
-      <div>
-        <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Type</label>
-        <select id="eng-type" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;">
-          <option value="fonds_urgence">Mini fonds d'urgence</option>
-          <option value="decouvert">Plafond de découvert</option>
-          <option value="remboursement">Remboursement mensuel</option>
-          <option value="epargne">Épargne mensuelle</option>
-          <option value="autre">Autre objectif</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Libellé</label>
-        <input id="eng-label" type="text" placeholder="Ex. : Ne pas dépasser –100 € ce mois-ci" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;outline:none;" />
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-        <div>
-          <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Cible (€)</label>
-          <input id="eng-cible" type="number" placeholder="300" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;outline:none;" />
-        </div>
-        <div>
-          <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Actuel (€)</label>
-          <input id="eng-actuel" type="number" placeholder="0" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;outline:none;" />
-        </div>
-      </div>
-      <button style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.875rem;border-radius:var(--r-full);background:linear-gradient(135deg,#8B5CF6,#6366F1);font-size:0.9rem;font-weight:700;color:#fff;border:none;" onclick="saveEngagement()">Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<script src="sidebar.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="shared.js"></script>
-<script src="supabase.js"></script>
-<script>
-  /* ─── Init BG canvas (no-op en V2 — canvas masqué) ─── */
-  if (typeof initBgCanvas === 'function') initBgCanvas('bg-canvas');
-
-  /* ─── Theme toggle ───────────────────────────────────── */
-  (function() {
-    var btn = document.getElementById('theme-toggle-btn');
-    if (!btn) return;
-    btn.addEventListener('click', function() {
-      var isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('fundamental-theme', isDark ? 'dark' : 'light');
-    });
-  })();
-
-  /* ─── STATE ─────────────────────────────────────────── */
-  let currentUser = null;
-  let dash   = typeof getMockDashboard === 'function' ? getMockDashboard() : { briques: [], engagements: [], streak: 0, modules_completes: 0 };
-  let profil = typeof getMockProfile === 'function' ? getMockProfile() : {};
-
-  /* ─── AUTH GATE + INIT ──────────────────────────────── */
-  (async () => {
-    try {
-      currentUser = await requireAuth();
-      if (!currentUser) return;
-      await loadData();
-    } catch(e) {
-      console.warn('[dashboard] auth/init error:', e);
-      try { renderAll(); } catch(e2) { console.warn('[dashboard] fallback renderAll error:', e2); }
-    }
   })();
 
   async function loadData() {
@@ -1788,107 +1614,91 @@
     sessionStorage.setItem('_tour_shown', '1');
 
     var steps = [
-      { id:'zone-hero',          pos:'bottom', title:'Ton module en cours',         desc:'Ta brique active du moment. Clique sur « Reprendre » pour continuer là où tu t’es arrêté·e.' },
-      { id:'zone-briques',       pos:'top',    title:'Tes prochaines briques',       desc:'Ton parcours personnalisé, étape par étape. Chaque brique débloque la suivante.' },
-      { id:'mes-briques-section',pos:'top',    title:'Tes données financières',       desc:'Tes indicateurs clés, mis à jour automatiquement au fil de tes briques.' },
-      { id:'explorer-cols',      pos:'top',    title:'Explorer',                     desc:'Toutes les briques disponibles, simulateurs et parcours — consulte-les à ton rythme.' }
+      { id: 'zone-hero',           title: 'Ton module en cours',    desc: 'Ta brique active. Clique sur Reprendre pour continuer ton parcours.' },
+      { id: 'zone-briques',        title: 'Tes prochaines briques', desc: 'Ton parcours personnalise etape par etape. Chaque brique debloque la suivante.' },
+      { id: 'mes-briques-section', title: 'Tes donnees',            desc: 'Tes indicateurs cles mis a jour automatiquement au fil de tes briques.' },
+      { id: 'explorer-cols',       title: 'Explorer',               desc: 'Toutes les briques disponibles, simulateurs et parcours - consulte-les a ton rythme.' }
     ];
 
-    var current = 0;
-    var dim = null, spotlight = null, tooltip = null;
+    var dim = null, hole = null, tip = null;
 
     function cleanup() {
-      if (dim       && dim.parentNode)       dim.remove();
-      if (spotlight && spotlight.parentNode) spotlight.remove();
-      if (tooltip   && tooltip.parentNode)   tooltip.remove();
+      [dim, hole, tip].forEach(function(el) { if (el && el.parentNode) el.remove(); });
       document.removeEventListener('keydown', onKey);
-      dim = null; spotlight = null; tooltip = null;
+      dim = null; hole = null; tip = null;
     }
 
-    function getEl(id) {
-      var el = document.getElementById(id);
-      if (!el) return null;
-      // Skip si caché
-      var cs = window.getComputedStyle(el);
-      if (cs.display === 'none' || cs.visibility === 'hidden') return null;
-      return el;
+    function positionStep(idx) {
+      var step = steps[idx];
+      var el = document.getElementById(step.id);
+      if (!el || window.getComputedStyle(el).display === 'none') { showStep(idx + 1); return; }
+
+      var r = el.getBoundingClientRect();
+      var P = 6, M = 14, TW = 280;
+      var vpW = window.innerWidth, vpH = window.innerHeight;
+
+      // Positionner le ring autour de l'element
+      hole.style.top    = (r.top    - P) + 'px';
+      hole.style.left   = (r.left   - P) + 'px';
+      hole.style.width  = (r.width  + P * 2) + 'px';
+      hole.style.height = (r.height + P * 2) + 'px';
+
+      // Contenu du tooltip
+      var isLast = idx === steps.length - 1;
+      var dots = steps.map(function(_, i) {
+        return '<span class="tour-dot' + (i === idx ? ' on' : '') + '"></span>';
+      }).join('');
+      tip.innerHTML =
+        '<div class="tour-step-label">' + (idx + 1) + ' / ' + steps.length + '</div>'
+        + '<p class="tour-title">' + step.title + '</p>'
+        + '<p class="tour-desc">' + step.desc + '</p>'
+        + '<div class="tour-footer"><div class="tour-dots">' + dots + '</div>'
+        + '<div style="display:flex;gap:0.6rem;align-items:center;">'
+        + '<button class="tour-skip" id="t-skip">Passer</button>'
+        + '<button class="tour-next" id="t-next">' + (isLast ? 'Terminer' : 'Suivant') + '</button>'
+        + '</div></div>';
+
+      // Mesurer hauteur reelle avant positionnement
+      tip.style.top = '-9999px'; tip.style.left = '-9999px';
+      var TH = tip.offsetHeight || 170;
+
+      // Sous l'element si place suffisante, sinon au-dessus
+      var spaceBelow = vpH - r.bottom - P - M;
+      var spaceAbove = r.top - P - M;
+      var top = (spaceBelow >= TH || spaceBelow >= spaceAbove)
+        ? r.bottom + P + M
+        : r.top - P - TH - M;
+      var left = Math.max(M, Math.min(r.left - P, vpW - TW - M));
+      top  = Math.max(M, Math.min(top, vpH - TH - M));
+
+      tip.style.top  = top  + 'px';
+      tip.style.left = left + 'px';
+
+      document.getElementById('t-next').onclick = function() { showStep(idx + 1); };
+      document.getElementById('t-skip').onclick = cleanup;
     }
 
     function showStep(idx) {
       if (idx >= steps.length) { cleanup(); return; }
-      var step = steps[idx];
-      var el = getEl(step.id);
-      if (!el) { showStep(idx + 1); return; }   // section absente → suivant
+      var el = document.getElementById(steps[idx].id);
+      if (!el) { showStep(idx + 1); return; }
 
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (!dim)  { dim  = document.createElement('div'); dim.className  = 'tour-dim';     document.body.appendChild(dim); }
+      if (!hole) { hole = document.createElement('div'); hole.className = 'tour-hole';    document.body.appendChild(hole); }
+      if (!tip)  { tip  = document.createElement('div'); tip.className  = 'tour-tooltip'; document.body.appendChild(tip); }
 
+      // Scroll vers l'element puis attendre stabilisation avant de positionner
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setTimeout(function() {
-        var r = el.getBoundingClientRect();
-        var P = 8, M = 12;
-
-        // Overlay sombre plein écran
-        if (!dim) {
-          dim = document.createElement('div');
-          dim.className = 'tour-dim';
-          document.body.appendChild(dim);
-        }
-        // Ring autour de l'élément cible
-        if (!spotlight) {
-          spotlight = document.createElement('div');
-          spotlight.className = 'tour-spotlight';
-          document.body.appendChild(spotlight);
-        }
-        spotlight.style.top    = (r.top    - P) + 'px';
-        spotlight.style.left   = (r.left   - P) + 'px';
-        spotlight.style.width  = (r.width  + P*2) + 'px';
-        spotlight.style.height = (r.height + P*2) + 'px';
-
-        // Tooltip
-        if (!tooltip) {
-          tooltip = document.createElement('div');
-          tooltip.className = 'tour-tooltip';
-          document.body.appendChild(tooltip);
-        }
-        var isLast = (idx === steps.length - 1);
-        var dots = steps.map(function(_, i) {
-          return '<span class="tour-dot' + (i === idx ? ' on' : '') + '"></span>';
-        }).join('');
-
-        tooltip.innerHTML =
-          '<div class="tour-step-label">' + (idx+1) + ' / ' + steps.length + '</div>'
-          + '<p class="tour-title">' + step.title + '</p>'
-          + '<p class="tour-desc">'  + step.desc  + '</p>'
-          + '<div class="tour-footer">'
-          + '<div class="tour-dots">' + dots + '</div>'
-          + '<div style="display:flex;gap:0.6rem;align-items:center;">'
-          + '<button class="tour-skip" id="t-skip">Passer</button>'
-          + '<button class="tour-next" id="t-next">' + (isLast ? 'Terminer ✓' : 'Suivant →') + '</button>'
-          + '</div></div>';
-
-        // Positionner le tooltip
-        var vpW = window.innerWidth, vpH = window.innerHeight;
-        var tH = 160, tW = 290; // estimation avant rendu
-        var top, left;
-        if (step.pos === 'bottom') {
-          top  = r.bottom + P + M;
-          left = r.left   + P;
-        } else {
-          top  = r.top - P - tH - M;
-          left = r.left + P;
-        }
-        left = Math.max(M, Math.min(left, vpW - tW - M));
-        top  = Math.max(M, Math.min(top,  vpH - tH - M));
-        tooltip.style.top  = top  + 'px';
-        tooltip.style.left = left + 'px';
-
-        document.getElementById('t-next').onclick = function() { showStep(idx + 1); };
-        document.getElementById('t-skip').onclick = cleanup;
-      }, 350);
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() { positionStep(idx); });
+        });
+      }, 420);
     }
 
     function onKey(e) { if (e.key === 'Escape') cleanup(); }
     document.addEventListener('keydown', onKey);
-    setTimeout(function() { showStep(0); }, 300);
+    setTimeout(function() { showStep(0); }, 350);
   }
 
   /* ─── Compat (anciens alias) ─────────────────────────── */
