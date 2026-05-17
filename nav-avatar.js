@@ -275,6 +275,13 @@
         Profil &amp; Objectifs
       </a>
 
+      <a href="javascript:void(0)" class="nav-dd-item" id="nav-restart-brique" role="menuitem">
+        <span class="nav-dd-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        </span>
+        Reprendre depuis le début
+      </a>
+
       <a href="index.html" class="nav-dd-item" role="menuitem">
         <span class="nav-dd-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -312,6 +319,23 @@
   });
 
   dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+  // Reprendre depuis le début : naviguer vers la 1ère brique du parcours
+  const restartBtn = wrap.querySelector('#nav-restart-brique');
+  if (restartBtn) {
+    restartBtn.addEventListener('click', () => {
+      dropdown.classList.remove('open');
+      // Lire la 1ère brique depuis le storage
+      var dashData = typeof loadFromStorage === 'function' ? loadFromStorage('fund_dashboard') : null;
+      var briques = dashData && Array.isArray(dashData.briques) ? dashData.briques : [];
+      var first = briques[0];
+      if (first && typeof BRICK_FILES !== 'undefined' && BRICK_FILES[first.id]) {
+        window.location.href = BRICK_FILES[first.id];
+      } else {
+        window.location.href = 'dashboard.html';
+      }
+    });
+  }
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
