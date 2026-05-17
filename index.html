@@ -1384,6 +1384,15 @@ function submitQuiz() {
       montant_assurance_vie: em.montant_assurance_vie || null,
       epargne_liquide_total: em.epargne_liquide_total || null
     };
+    // Reset complet des données user avant de sauvegarder le nouveau profil
+    if (typeof resetUserData === 'function') {
+      resetUserData().catch(function(e) { console.warn('[onboarding] resetUserData failed:', e); });
+    }
+    if (typeof _MEM !== 'undefined') {
+      delete _MEM['fund_dashboard'];
+      Object.keys(_MEM).filter(function(k) { return k.startsWith('fund_brick_'); })
+        .forEach(function(k) { delete _MEM[k]; });
+    }
     saveToStorage('fund_profil', profileOut);
   } catch(e) {
     console.error('submitQuiz error:', e);

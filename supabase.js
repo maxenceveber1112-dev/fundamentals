@@ -158,6 +158,17 @@ async function submitFeedback(page, rating, message) {
   return { error: error?.message };
 }
 
+// ─── RESET ─────────────────────────────────────────────────────────
+async function resetUserData() {
+  const user = await getCurrentUser();
+  if (!user) return;
+  const sb = getClient();
+  await sb.from('user_dashboard').delete().eq('user_id', user.id);
+  await sb.from('brick_data').delete().eq('user_id', user.id);
+  await sb.from('profiles').delete().eq('id', user.id);
+  Object.keys(_MEM).forEach(function(k) { delete _MEM[k]; });
+}
+
 // ─── COMPAT : wrappers sync pour le code existant ──────────────────
 // Ces fonctions permettent de migrer progressivement sans tout casser.
 // Elles font un double write : Supabase (async) + mémoire (sync).
