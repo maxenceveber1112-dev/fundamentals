@@ -4,316 +4,831 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Fundamental — Achat immobilier</title>
+
+<!-- Bootstrap theme (synchrone, avant render) -->
+<script>
+(function(){
+  var s=localStorage.getItem('fundamental-theme');
+  var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');
+})();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<script>(function(){var s=localStorage.getItem('fundamental-theme');var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');})()</script>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+
 <style>
-/* ─── TOKENS ──────────────────────────────────────────────── */
-:root{
-  --bg:#FAF8F5;--bg-elevated:#FFFFFF;--cream-grad:linear-gradient(180deg,#F6F1E8 0%,#EFE7D8 100%);
-  --accent:#C4B5FD;--accent-strong:#5B21B6;--accent-soft:rgba(196,181,253,0.22);
-  --text:#1C1917;--text-secondary:#57534E;--text-muted:#78716C;--text-faint:#A8A29E;
-  --green:#22C55E;--green-soft:rgba(34,197,94,.12);--orange:#F59E0B;--orange-soft:rgba(245,158,11,.12);
-  --red:#EF4444;--red-soft:rgba(239,68,68,.1);
-  --shadow-card:0 1px 2px rgba(20,20,30,0.04),0 4px 16px rgba(20,20,30,0.04);
-  --cream-border:rgba(28,25,23,0.08);--radius:16px;--radius-sm:10px;
-  --ease-out:cubic-bezier(.22,1,.36,1);--track:rgba(28,25,23,0.06);
-  --font-body:'Inter',system-ui,sans-serif;--font-display:'Fraunces',Georgia,serif;
+/* ══════════════════════════════════════════════════════════════
+   TOKENS — identiques dashboard.html V2 (light + dark)
+══════════════════════════════════════════════════════════════ */
+:root {
+  --bg:              #FAF8F5;
+  --bg-elevated:     #FFFFFF;
+  --bg-glass:        rgba(255,255,255,0.70);
+  --cream-grad:      linear-gradient(180deg, #F6F1E8 0%, #EFE7D8 100%);
+  --cream-border:    rgba(184,159,113,0.18);
+
+  --nav-bg:          rgba(250,248,245,0.88);
+  --nav-border:      rgba(28,25,23,0.07);
+
+  --border-subtle:   rgba(28,25,23,0.07);
+  --border-mid:      rgba(28,25,23,0.11);
+  --border-hover:    rgba(28,25,23,0.18);
+
+  --text:            #1C1917;
+  --text-secondary:  #57534E;
+  --text-muted:      #78716C;
+  --text-faint:      #A8A29E;
+
+  --accent:          #C4B5FD;
+  --accent-strong:   #5B21B6;
+  --accent-fill:     #C4B5FD;
+  --accent-soft:     rgba(196,181,253,0.22);
+  --accent-pill-text:#2E1065;
+
+  --track:           #E7E5E4;
+
+  --dot-invest:      #8FB59A;
+
+  --shadow-card:     0 1px 2px rgba(20,20,30,0.04), 0 4px 16px rgba(20,20,30,0.04);
+  --shadow-hover:    0 4px 20px rgba(20,20,30,0.10);
+
+  --green:           #22C55E;
+  --red:             #f87171;
+  --orange:          #FB923C;
+  --yellow:          #FBBF24;
+  --purple:          #C084FC;
+
+  --surface:         #FFFFFF;
+  --surface-2:       #F5F5F4;
+  --surface-3:       #EDEBE8;
+  --border:          rgba(28,25,23,0.07);
+
+  --indigo:          #6366F1;
+  --violet:          #818CF8;
+  --indigo-dim:      rgba(99,102,241,0.10);
+  --indigo-glow:     rgba(99,102,241,0.18);
+  --violet-glow:     rgba(129,140,248,0.10);
+
+  --r-sm:0.5rem; --r-md:0.875rem; --r-lg:1rem; --r-xl:1.5rem; --r-full:9999px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1); --t:180ms;
+
+  /* Tokens v3 pour le panel progression */
+  --v3-bg-elevated:  #FFFFFF;
+  --v3-border-subtle:rgba(28,25,23,.07);
+  --v3-text:         #1C1917;
+  --v3-text-secondary:#57534E;
+  --v3-text-muted:   #78716C;
+  --v3-text-faint:   #A8A29E;
+  --v3-accent-strong:#5B21B6;
+  --v3-accent-soft:  rgba(196,181,253,.22);
+  --v3-track:        #E7E5E4;
+  --v3-dot-invest:   #8FB59A;
+  --v3-shadow-card:  0 1px 2px rgba(20,20,30,.04), 0 4px 16px rgba(20,20,30,.04);
+
+  --green-soft:      rgba(34,197,94,.12);
+  --orange-soft:     rgba(251,163,60,.12);
+  --red-soft:        rgba(248,113,113,.12);
+
+  --font-body:       'Inter', system-ui, sans-serif;
+  --font-display:    'Fraunces', Georgia, serif;
 }
-html.dark{
-  --bg:#0B0B1A;--bg-elevated:#161824;--cream-grad:linear-gradient(180deg,#161824 0%,#1a1c2e 100%);
-  --accent:#C4B5FD;--accent-strong:#A78BFA;--accent-soft:rgba(196,181,253,0.15);
-  --text:#F5F5F4;--text-secondary:#D6D3D1;--text-muted:#A8A29E;--text-faint:#78716C;
-  --green:#4ADE80;--green-soft:rgba(74,222,128,.12);--orange:#FBBF24;--orange-soft:rgba(251,191,36,.12);
-  --red:#F87171;--red-soft:rgba(248,113,113,.12);
-  --shadow-card:0 1px 2px rgba(0,0,0,0.2),0 4px 16px rgba(0,0,0,0.15);
-  --cream-border:rgba(255,255,255,0.08);--track:rgba(255,255,255,0.08);
+
+html.dark {
+  --bg:              #0B0B1A;
+  --bg-elevated:     #161824;
+  --bg-glass:        rgba(255,255,255,0.04);
+  --cream-grad:      linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  --cream-border:    rgba(255,255,255,0.08);
+
+  --nav-bg:          rgba(11,11,26,0.82);
+  --nav-border:      rgba(255,255,255,0.05);
+
+  --border-subtle:   rgba(255,255,255,0.06);
+  --border-mid:      rgba(255,255,255,0.10);
+  --border-hover:    rgba(255,255,255,0.16);
+
+  --text:            #F5F5F4;
+  --text-secondary:  #D4D4D8;
+  --text-muted:      #A1A1AA;
+  --text-faint:      #71717A;
+
+  --accent:          linear-gradient(90deg, #8B5CF6 0%, #6366F1 60%, #3B82F6 100%);
+  --accent-strong:   #A78BFA;
+  --accent-fill:     linear-gradient(90deg, #A78BFA, #60A5FA);
+  --accent-soft:     rgba(167,139,250,0.14);
+  --accent-pill-text:#FFFFFF;
+
+  --track:           rgba(255,255,255,0.08);
+  --dot-invest:      #4ADE80;
+
+  --shadow-card:     0 1px 2px rgba(0,0,0,0.4), 0 4px 24px rgba(0,0,0,0.20);
+  --shadow-hover:    0 4px 28px rgba(0,0,0,0.45);
+
+  --green:           #4ade80;
+
+  --surface:         rgba(255,255,255,0.04);
+  --surface-2:       rgba(255,255,255,0.06);
+  --surface-3:       rgba(255,255,255,0.09);
+  --border:          rgba(255,255,255,0.06);
+
+  --indigo:          #818CF8;
+  --violet:          #A78BFA;
+  --indigo-dim:      rgba(99,102,241,0.14);
+  --indigo-glow:     rgba(99,102,241,0.22);
+
+  --v3-bg-elevated:  #161824;
+  --v3-border-subtle:rgba(255,255,255,.08);
+  --v3-text:         #F5F5F4;
+  --v3-text-secondary:#D4D4D8;
+  --v3-text-muted:   #A1A1AA;
+  --v3-text-faint:   #71717A;
+  --v3-accent-strong:#A78BFA;
+  --v3-accent-soft:  rgba(167,139,250,.14);
+  --v3-track:        rgba(255,255,255,.08);
+  --v3-dot-invest:   #4ADE80;
+  --v3-shadow-card:  0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
+
+  --green-soft:      rgba(74,222,128,.12);
+  --orange-soft:     rgba(251,191,36,.12);
+  --red-soft:        rgba(248,113,113,.12);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;}
 
-/* ─── LAYOUT ──────────────────────────────────────────────── */
-.brick-container{max-width:680px;margin:0 auto;padding:1.5rem 1.25rem 4rem;}
-@media(min-width:768px){.brick-container{padding:2rem 2rem 5rem;}}
-
-/* ─── PROGRESS ────────────────────────────────────────────── */
-.brick-progress{display:flex;align-items:center;gap:0.75rem;margin-bottom:2rem;padding:0.75rem 0;}
-.brick-progress-bar{flex:1;height:4px;background:var(--track);border-radius:9999px;overflow:hidden;}
-.brick-progress-fill{height:100%;background:var(--accent-strong);border-radius:9999px;transition:width 0.6s var(--ease-out);}
-.brick-progress-text{font-size:0.75rem;color:var(--text-muted);font-weight:600;white-space:nowrap;}
-
-/* ─── SCREENS ─────────────────────────────────────────────── */
-.screen{display:none;flex-direction:column;gap:1.5rem;}
-.screen.active-screen{display:flex;animation:fadeSlideUp 0.35s ease both;}
-@keyframes fadeSlideUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-
-/* ─── CARDS ───────────────────────────────────────────────── */
-.brick-card{background:var(--bg-elevated);border:1px solid var(--cream-border);border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow-card);}
-.brick-kicker{font-size:0.7rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:0.5rem;}
-.brick-title{font-family:var(--font-display);font-size:1.35rem;font-weight:600;line-height:1.3;color:var(--text);margin-bottom:0.35rem;}
-.brick-subtitle{font-size:0.9rem;color:var(--text-secondary);line-height:1.55;}
-
-/* ─── BENEFITS LIST ───────────────────────────────────────── */
-.benefits-list{list-style:none;display:flex;flex-direction:column;gap:0.65rem;margin:1rem 0;}
-.benefits-list li{display:flex;align-items:flex-start;gap:0.6rem;font-size:0.88rem;color:var(--text-secondary);}
-.benefits-list li::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-strong);margin-top:0.45rem;flex-shrink:0;}
-
-/* ─── BADGES ──────────────────────────────────────────────── */
-.badges{display:flex;flex-wrap:wrap;gap:0.5rem;margin:0.75rem 0;}
-.badge{display:inline-flex;align-items:center;gap:0.35rem;padding:0.3rem 0.7rem;border-radius:9999px;font-size:0.72rem;font-weight:600;background:var(--accent-soft);color:var(--accent-strong);border:1px solid rgba(196,181,253,0.2);}
-
-/* ─── MINI FLOW ───────────────────────────────────────────── */
-.mini-flow{display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;padding:1rem;background:var(--cream-grad);border-radius:var(--radius-sm);margin:0.5rem 0;}
-.mini-flow-step{font-size:0.78rem;font-weight:600;color:var(--accent-strong);white-space:nowrap;}
-.mini-flow-arrow{font-size:0.65rem;color:var(--text-faint);}
-
-/* ─── BUTTONS ─────────────────────────────────────────────── */
-.btn-hero-primary{display:inline-flex;align-items:center;gap:0.4rem;padding:0.7rem 1.4rem;font-size:0.88rem;font-weight:600;color:#fff;background:var(--accent-strong);border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s ease;white-space:nowrap;}
-.btn-hero-primary:hover{filter:brightness(1.1);transform:translateY(-1px);}
-.btn-hero-secondary{display:inline-flex;align-items:center;gap:0.4rem;padding:0.55rem 1.1rem;font-size:0.84rem;font-weight:500;color:var(--text-secondary);background:transparent;border:1px solid var(--cream-border);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s ease;}
-.btn-hero-secondary:hover{border-color:var(--accent);background:var(--accent-soft);}
-.nav-btns{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1rem;}
-
-/* ─── FIELDS ──────────────────────────────────────────────── */
-.field-group{display:flex;flex-direction:column;gap:0.35rem;}
-.field-label{font-size:0.82rem;font-weight:600;color:var(--text);}
-.field-input{width:100%;padding:0.6rem 0.85rem;font-size:0.88rem;font-family:var(--font-body);border:1px solid var(--cream-border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);transition:border-color 0.2s ease;}
-.field-input:focus{outline:none;border-color:var(--accent-strong);box-shadow:0 0 0 3px var(--accent-soft);}
-.field-help{font-size:0.75rem;color:var(--text-faint);}
-.euro-wrap{position:relative;}
-.euro-wrap .field-input{padding-right:2.5rem;}
-.euro-suffix{position:absolute;right:0.85rem;top:50%;transform:translateY(-50%);font-size:0.85rem;color:var(--text-faint);pointer-events:none;}
-.badge-prefilled{font-size:0.65rem;font-weight:600;color:var(--green);background:var(--green-soft);padding:0.15rem 0.45rem;border-radius:9999px;margin-left:0.4rem;}
-.fields-grid{display:flex;flex-direction:column;gap:1.25rem;}
-@media(min-width:520px){.fields-2col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}}
-
-/* ─── PILLS SELECT ────────────────────────────────────────── */
-.pills-group{display:flex;flex-wrap:wrap;gap:0.5rem;}
-.pill-option{display:inline-flex;align-items:center;gap:0.3rem;padding:0.45rem 0.9rem;border-radius:9999px;font-size:0.8rem;font-weight:500;border:1px solid var(--cream-border);background:var(--bg);color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;user-select:none;}
-.pill-option:hover{border-color:var(--accent);background:var(--accent-soft);}
-.pill-option.selected{background:var(--accent-strong);color:#fff;border-color:var(--accent-strong);}
-
-/* ─── MODE CARD ───────────────────────────────────────────── */
-.mode-card{padding:0.85rem 1rem;border-radius:var(--radius-sm);background:var(--accent-soft);border:1px solid rgba(196,181,253,0.18);margin-top:0.5rem;transition:all 0.3s ease;}
-.mode-card-title{font-size:0.78rem;font-weight:700;color:var(--accent-strong);margin-bottom:0.2rem;}
-.mode-card-text{font-size:0.8rem;color:var(--text-secondary);line-height:1.5;}
-
-/* ─── GLOSSARY (Tooltips contextuels) ─────────────────────── */
-.glossary-term{display:inline;padding:0;font-size:inherit;font-weight:inherit;color:inherit;background:none;border:none;border-bottom:1.5px dotted var(--accent-strong);cursor:pointer;transition:color 0.15s ease;text-decoration:none;}
-.glossary-term:hover{color:var(--accent-strong);}
-.glossary-popover{position:absolute;z-index:500;width:min(340px,90vw);background:var(--bg-elevated);border:1px solid var(--cream-border);border-radius:var(--radius);padding:1.1rem;box-shadow:0 8px 32px rgba(0,0,0,0.12);animation:popIn 0.2s ease;}
-@keyframes popIn{from{opacity:0;transform:scale(0.95) translateY(4px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.glossary-popover-close{position:absolute;top:0.5rem;right:0.6rem;background:none;border:none;font-size:1.1rem;color:var(--text-faint);cursor:pointer;padding:0.25rem;}
-.glossary-popover h4{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:0.4rem;}
-.glossary-popover p{font-size:0.8rem;color:var(--text-secondary);line-height:1.5;margin-bottom:0.35rem;}
-.glossary-popover .gp-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--accent-strong);margin-top:0.5rem;margin-bottom:0.15rem;}
-
-/* ─── SLIDERS ─────────────────────────────────────────────── */
-.slider-group{display:flex;flex-direction:column;gap:0.4rem;}
-.slider-header{display:flex;justify-content:space-between;align-items:center;}
-.slider-label{font-size:0.82rem;font-weight:600;color:var(--text);}
-.slider-value{font-size:0.82rem;font-weight:700;color:var(--accent-strong);}
-input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:9999px;background:var(--track);outline:none;cursor:pointer;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent-strong);border:2px solid var(--bg-elevated);box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer;}
-input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--accent-strong);border:2px solid var(--bg-elevated);box-shadow:0 2px 6px rgba(0,0,0,0.15);cursor:pointer;}
-
-/* ─── GAUGE ───────────────────────────────────────────────── */
-.gauge-wrap{display:flex;flex-direction:column;gap:0.3rem;}
-.gauge-bar{height:10px;background:var(--track);border-radius:9999px;overflow:hidden;position:relative;}
-.gauge-fill{height:100%;border-radius:9999px;transition:width 0.6s var(--ease-out),background 0.4s ease;}
-.gauge-label{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-faint);}
-.gauge-green{background:var(--green);}
-.gauge-orange{background:var(--orange);}
-.gauge-red{background:var(--red);}
-
-/* ─── RESULT CARDS ────────────────────────────────────────── */
-.result-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.75rem;}
-.result-card{padding:0.85rem;border-radius:var(--radius-sm);background:var(--cream-grad);border:1px solid var(--cream-border);text-align:center;}
-.result-card-value{font-family:var(--font-display);font-size:1.3rem;font-weight:600;color:var(--text);}
-.result-card-label{font-size:0.72rem;color:var(--text-muted);margin-top:0.15rem;}
-.result-card-sub{font-size:0.68rem;color:var(--text-faint);margin-top:0.1rem;}
-
-/* ─── STATUS CARD ─────────────────────────────────────────── */
-.status-card{padding:0.85rem 1rem;border-radius:var(--radius-sm);display:flex;align-items:center;gap:0.75rem;}
-.status-card.green{background:var(--green-soft);border:1px solid rgba(34,197,94,0.2);}
-.status-card.orange{background:var(--orange-soft);border:1px solid rgba(245,158,11,0.2);}
-.status-card.red{background:var(--red-soft);border:1px solid rgba(239,68,68,0.15);}
-.status-icon{font-size:1.3rem;}
-.status-text{font-size:0.82rem;font-weight:600;color:var(--text);}
-.status-sub{font-size:0.75rem;color:var(--text-secondary);}
-
-/* ─── PRESETS ─────────────────────────────────────────────── */
-.presets{display:flex;gap:0.5rem;flex-wrap:wrap;}
-.preset-btn{padding:0.4rem 0.85rem;border-radius:9999px;font-size:0.78rem;font-weight:600;border:1px solid var(--cream-border);background:var(--bg);color:var(--text-secondary);cursor:pointer;transition:all 0.2s ease;}
-.preset-btn:hover,.preset-btn.active{background:var(--accent-strong);color:#fff;border-color:var(--accent-strong);}
-
-/* ─── STACKED BARS ────────────────────────────────────────── */
-.stacked-bar-wrap{display:flex;flex-direction:column;gap:0.5rem;}
-.stacked-bar{display:flex;height:28px;border-radius:var(--radius-sm);overflow:hidden;}
-.stacked-seg{transition:width 0.6s var(--ease-out);display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:700;color:#fff;min-width:2px;}
-.stacked-legend{display:flex;flex-wrap:wrap;gap:0.6rem;margin-top:0.25rem;}
-.stacked-legend-item{display:flex;align-items:center;gap:0.3rem;font-size:0.72rem;color:var(--text-muted);}
-.stacked-legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
-
-/* ─── QUICK ACTIONS ───────────────────────────────────────── */
-.quick-actions{display:flex;flex-wrap:wrap;gap:0.5rem;}
-.quick-action{padding:0.4rem 0.85rem;border-radius:9999px;font-size:0.75rem;font-weight:600;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-strong);cursor:pointer;transition:all 0.2s ease;}
-.quick-action:hover{background:var(--accent-strong);color:#fff;}
-
-/* ─── INVESTMENT TOGGLE CARD ──────────────────────────────── */
-.invest-toggle-card{padding:1.1rem;border-radius:var(--radius);background:var(--cream-grad);border:1px solid var(--cream-border);display:flex;flex-direction:column;gap:0.75rem;}
-.invest-toggle-header{display:flex;justify-content:space-between;align-items:center;}
-.invest-toggle-label{font-size:0.88rem;font-weight:600;color:var(--text);}
-.toggle-switch{position:relative;width:44px;height:24px;flex-shrink:0;}
-.toggle-switch input{opacity:0;width:0;height:0;}
-.toggle-slider{position:absolute;inset:0;border-radius:9999px;background:var(--track);cursor:pointer;transition:background 0.3s ease;}
-.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform 0.3s ease;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
-.toggle-switch input:checked+.toggle-slider{background:var(--accent-strong);}
-.toggle-switch input:checked+.toggle-slider::before{transform:translateX(20px);}
-.invest-minimal{font-size:0.82rem;color:var(--text-muted);font-style:italic;padding:0.5rem 0;}
-
-/* ─── TIMELINE ────────────────────────────────────────────── */
-.timeline{display:flex;flex-direction:column;gap:0;}
-.timeline-step{position:relative;padding-left:2rem;padding-bottom:1rem;border-left:2px solid var(--track);cursor:pointer;transition:all 0.2s ease;}
-.timeline-step:last-child{border-left-color:transparent;padding-bottom:0;}
-.timeline-step::before{content:attr(data-num);position:absolute;left:-11px;top:0;width:22px;height:22px;border-radius:50%;background:var(--bg-elevated);border:2px solid var(--accent);font-size:0.65rem;font-weight:700;color:var(--accent-strong);display:flex;align-items:center;justify-content:center;}
-.timeline-step-title{font-size:0.84rem;font-weight:600;color:var(--text);padding:0 0 0.15rem;}
-.timeline-step-title:hover{color:var(--accent-strong);}
-.timeline-detail{display:none;padding:0.5rem 0;font-size:0.8rem;color:var(--text-secondary);line-height:1.55;}
-.timeline-detail.open{display:block;animation:fadeSlideUp 0.25s ease;}
-.timeline-detail-row{display:flex;gap:0.5rem;margin-bottom:0.35rem;}
-.timeline-detail-label{font-size:0.72rem;font-weight:700;color:var(--accent-strong);text-transform:uppercase;letter-spacing:0.03em;min-width:70px;}
-.timeline-detail-val{font-size:0.8rem;color:var(--text-secondary);}
-.timeline-legal{margin-top:0.25rem;padding:0.5rem 0.7rem;border-radius:var(--radius-sm);background:var(--orange-soft);font-size:0.75rem;color:var(--text);border:1px solid rgba(245,158,11,0.15);}
-
-/* ─── FINAL SCREEN ────────────────────────────────────────── */
-.score-ring{width:100px;height:100px;margin:0 auto;}
-.score-ring circle{fill:none;stroke-width:8;}
-.score-ring .ring-bg{stroke:var(--track);}
-.score-ring .ring-fill{stroke:var(--accent-strong);stroke-linecap:round;transition:stroke-dashoffset 1s var(--ease-out);}
-.score-ring text{font-family:var(--font-display);font-size:1.4rem;font-weight:700;fill:var(--text);text-anchor:middle;dominant-baseline:central;}
-.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.65rem;}
-.summary-item{padding:0.65rem;border-radius:var(--radius-sm);background:var(--cream-grad);border:1px solid var(--cream-border);text-align:center;}
-.summary-item-val{font-family:var(--font-display);font-size:1.1rem;font-weight:600;color:var(--text);}
-.summary-item-label{font-size:0.7rem;color:var(--text-muted);margin-top:0.1rem;}
-.actions-list{display:flex;flex-direction:column;gap:0.5rem;margin:0.75rem 0;}
-.action-item{display:flex;align-items:flex-start;gap:0.6rem;padding:0.6rem 0.75rem;border-radius:var(--radius-sm);background:var(--accent-soft);font-size:0.82rem;color:var(--text);}
-.action-item::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--accent-strong);margin-top:0.4rem;flex-shrink:0;}
-.reco-cards{display:flex;flex-direction:column;gap:1rem;margin-top:1rem;}
-.reco-card{padding:1.15rem;border-radius:var(--radius);border:1px solid var(--cream-border);background:var(--bg-elevated);box-shadow:var(--shadow-card);display:flex;flex-direction:column;gap:0.5rem;}
-.reco-card-tag{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent-strong);}
-.reco-card-title{font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--text);}
-.reco-card-text{font-size:0.8rem;color:var(--text-secondary);line-height:1.5;}
-.reco-card .btn-hero-primary{align-self:flex-start;margin-top:0.25rem;font-size:0.82rem;padding:0.55rem 1.1rem;}
-
-/* ─── WARNING ─────────────────────────────────────────────── */
-.warning-box{padding:0.65rem 0.85rem;border-radius:var(--radius-sm);background:var(--orange-soft);border:1px solid rgba(245,158,11,0.15);font-size:0.78rem;color:var(--text);display:flex;align-items:flex-start;gap:0.5rem;}
-.warning-box.red-warning{background:var(--red-soft);border-color:rgba(239,68,68,0.15);}
-
-/* ─── ACCORDION DETAIL ────────────────────────────────────── */
-.accordion{border:1px solid var(--cream-border);border-radius:var(--radius-sm);overflow:hidden;margin-top:0.5rem;}
-.accordion-header{padding:0.65rem 0.85rem;font-size:0.8rem;font-weight:600;color:var(--text);cursor:pointer;background:var(--bg);display:flex;justify-content:space-between;align-items:center;transition:background 0.2s ease;}
-.accordion-header:hover{background:var(--accent-soft);}
-.accordion-header::after{content:'+';font-size:1rem;font-weight:400;color:var(--text-faint);transition:transform 0.2s ease;}
-.accordion-header.open::after{content:'-';}
-.accordion-body{display:none;padding:0.65rem 0.85rem;font-size:0.78rem;color:var(--text-secondary);line-height:1.55;border-top:1px solid var(--cream-border);}
-.accordion-body.open{display:block;animation:fadeSlideUp 0.2s ease;}
-
-/* ─── PROJECT TYPE CARDS (grille 2x2) ─────────────────────── */
-.project-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
-.project-type-card{
-  background:var(--bg-elevated);border:2px solid var(--cream-border);border-radius:var(--radius);
-  padding:1.1rem;cursor:pointer;transition:all 0.2s ease;text-align:center;
-  display:flex;flex-direction:column;align-items:center;gap:0.4rem;
+/* ── Reset ── */
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { -webkit-font-smoothing:antialiased; }
+body {
+  min-height:100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size:1rem; line-height:1.6;
+  overflow-x:hidden;
+  transition: background 0.3s ease, color 0.3s ease;
 }
-.project-type-card:hover{border-color:var(--accent);background:var(--accent-soft);}
-.project-type-card.selected{border-color:var(--accent-strong);background:var(--accent-soft);}
-.project-type-card .ptc-icon{font-size:1.8rem;}
-.project-type-card .ptc-title{font-size:0.84rem;font-weight:700;color:var(--text);}
-.project-type-card .ptc-sub{font-size:0.72rem;color:var(--text-muted);line-height:1.4;}
-.project-type-card.selected .ptc-title::after{content:' \2713';color:var(--accent-strong);}
-
-/* ─── BLOC B QUESTIONS COMPACT ────────────────────────────── */
-.compact-question{display:flex;flex-direction:column;gap:0.4rem;}
-.compact-label{font-size:0.78rem;font-weight:600;color:var(--text-secondary);}
-.pills-compact{display:flex;flex-wrap:wrap;gap:0.35rem;}
-.pill-sm{
-  padding:0.3rem 0.65rem;border-radius:9999px;font-size:0.75rem;font-weight:500;
-  border:1px solid var(--cream-border);background:var(--bg);color:var(--text-secondary);
-  cursor:pointer;transition:all 0.15s ease;
+html.dark body {
+  background: radial-gradient(1100px 600px at 70% -5%, #1E1B4B 0%, transparent 55%),
+              linear-gradient(180deg, #0B0B1A 0%, #050507 100%);
+  background-attachment: fixed;
 }
-.pill-sm:hover{border-color:var(--accent);background:var(--accent-soft);}
-.pill-sm.selected{background:var(--accent-strong);color:#fff;border-color:var(--accent-strong);}
+button { cursor:pointer; background:none; border:none; font:inherit; color:inherit; }
+a { color:inherit; text-decoration:none; }
+:focus-visible { outline:2px solid var(--accent-strong); outline-offset:3px; border-radius:var(--r-sm); }
 
-/* ─── EPARGNE MODULE (ecran apport) ───────────────────────── */
-.epargne-module{
-  background:var(--cream-grad);border:1px solid var(--cream-border);border-radius:var(--radius);
-  padding:1.25rem;display:flex;flex-direction:column;gap:1rem;
-}
-.epargne-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
-.epargne-item{
-  background:var(--bg-elevated);border-radius:var(--radius-sm);padding:0.85rem;
-  border:1px solid var(--cream-border);cursor:pointer;transition:all 0.2s ease;
-}
-.epargne-item:hover{border-color:var(--accent);}
-.epargne-item-label{font-size:0.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.25rem;}
-.epargne-item-value{font-family:var(--font-display);font-size:1.2rem;font-weight:600;color:var(--text);}
-.epargne-item-input{display:none;width:100%;border:none;background:transparent;font-family:var(--font-display);font-size:1.1rem;font-weight:600;color:var(--accent-strong);outline:none;}
-.epargne-item.editing .epargne-item-value{display:none;}
-.epargne-item.editing .epargne-item-input{display:block;}
+/* ── Animations ── */
+@keyframes slideUp    { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn     { from { opacity:0; } to { opacity:1; } }
+@keyframes countUp    { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+@keyframes popIn      { from { opacity:0; transform:scale(0.95) translateY(4px); } to { opacity:1; transform:scale(1) translateY(0); } }
 
-/* ─── REPARTITION BARRE BICOLORE ──────────────────────────── */
-.repartition-bar{
-  height:12px;border-radius:9999px;background:var(--track);overflow:hidden;position:relative;
+/* ── Sidebar shell ── */
+.f-sidebar-shell { display:flex; min-height:100dvh; }
+
+/* ══════════════════════════════════════════════════════════════
+   LAYOUT 2 COLONNES (identique brique-budget)
+══════════════════════════════════════════════════════════════ */
+.brique-layout {
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:2rem;
+  max-width:1080px;
+  margin:0 auto;
+  padding:2rem 2rem 6rem;
+  align-items:start;
+}
+@media(max-width:768px) {
+  .brique-layout { grid-template-columns:1fr; padding:1rem 1rem 5rem; }
+  .brique-progress-col { display:none; }
+}
+
+.brique-progress-col { position:sticky; top:5rem; }
+
+/* ══════════════════════════════════════════════════════════════
+   PANEL PROGRESSION (colonne droite)
+══════════════════════════════════════════════════════════════ */
+.brique-progress-card {
+  background: var(--v3-bg-elevated);
+  border:1px solid var(--v3-border-subtle);
+  border-radius:1.25rem;
+  box-shadow: var(--v3-shadow-card);
+  padding:1.5rem;
+}
+html.dark .brique-progress-card { backdrop-filter:blur(12px); }
+
+.bpc-kicker {
+  font-size:0.6875rem; font-weight:600;
+  letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--v3-accent-strong);
+  margin-bottom:0.625rem;
+}
+.bpc-title {
+  font-family:var(--font-display);
+  font-size:0.9375rem; font-weight:400;
+  font-style:italic;
+  color:var(--v3-text);
+  margin-bottom:1.25rem;
+  line-height:1.35;
+}
+
+/* Ring SVG */
+.bpc-ring-wrap {
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:1.25rem;
+}
+.bpc-ring { transform:rotate(-90deg); }
+.bpc-ring-bg { fill:none; stroke:var(--v3-track); stroke-width:6; }
+.bpc-ring-fill {
+  fill:none; stroke:var(--v3-accent-strong); stroke-width:6;
+  stroke-linecap:round;
+  transition:stroke-dashoffset 0.8s var(--ease-out);
+}
+.bpc-ring-pct {
+  font-family:var(--font-display);
+  font-size:1.125rem; font-weight:400;
+  fill:var(--v3-text);
+}
+
+/* Steps list */
+.bpc-steps { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+.bpc-step {
+  display:flex; align-items:flex-start; gap:0.625rem;
+  padding:0.5rem 0.625rem; border-radius:0.625rem;
+  color:var(--v3-text-faint); font-size:13px;
+  transition:background .15s, color .15s;
+}
+.bpc-step.active { background:var(--v3-accent-soft); color:var(--v3-text); }
+.bpc-step.done   { color:var(--v3-text-muted); }
+.bpc-step-num {
+  width:20px; height:20px; border-radius:50%;
+  background:var(--v3-track); color:var(--v3-text-faint);
+  font-size:10px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  transition:background .2s, color .2s;
+}
+.bpc-step.active .bpc-step-num { background:var(--v3-accent-strong); color:#fff; }
+.bpc-step.done   .bpc-step-num { background:var(--v3-accent-soft); color:var(--v3-accent-strong); }
+html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
+.bpc-step-label { font-size:13px; font-weight:500; min-width:0; line-height:1.3; }
+.bpc-step.active .bpc-step-label { color:var(--v3-text); font-weight:600; }
+
+/* Nav links en bas du panel */
+.bpc-nav { display:flex; flex-direction:column; gap:0.375rem; padding-top:1rem; border-top:1px solid var(--v3-border-subtle); }
+.bpc-nav-link {
+  display:flex; align-items:center; gap:0.5rem;
+  font-size:0.78rem; font-weight:500; color:var(--v3-text-muted);
+  padding:0.3rem 0.25rem; border-radius:0.375rem;
+  transition:color .15s;
+}
+.bpc-nav-link:hover { color:var(--v3-text); }
+.bpc-nav-link svg { opacity:0.5; flex-shrink:0; }
+
+/* ══════════════════════════════════════════════════════════════
+   PROGRESS BAR TOP (dots + barre)
+══════════════════════════════════════════════════════════════ */
+.brick-progress-bar {
+  display:flex; align-items:center; gap:0.75rem;
+  margin-bottom:1.5rem;
+}
+.brick-prog-dots { display:flex; gap:0.375rem; }
+.brick-prog-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--track); transition:background 0.3s ease;
+}
+.brick-prog-dot.done { background:var(--accent-strong); }
+html.dark .brick-prog-dot.done { background:#A78BFA; }
+.brick-prog-dot.active { background:var(--accent-strong); opacity:0.5; }
+html.dark .brick-prog-dot.active { background:#A78BFA; }
+.f-track { height:2px; background:var(--track); border-radius:9999px; overflow:hidden; flex:1; }
+.f-fill  { height:100%; background:var(--accent-fill); border-radius:9999px; transition:width 0.9s var(--ease-out); }
+
+/* ══════════════════════════════════════════════════════════════
+   SCREENS (colonne gauche)
+══════════════════════════════════════════════════════════════ */
+.screen { display:none; flex-direction:column; gap:1.5rem; animation:fadeSlideUp 0.35s var(--ease-out) both; }
+.screen.active { display:flex; }
+
+/* ══════════════════════════════════════════════════════════════
+   HERO CREAM (écran 0) — identique brique-budget
+══════════════════════════════════════════════════════════════ */
+.hero-cream {
+  background: var(--cream-grad);
+  border:1px solid var(--cream-border);
+  border-radius:1.375rem;
+  padding:2.75rem 3rem 2.5rem;
+  position:relative; overflow:hidden;
+  transition:background 0.3s ease, border-color 0.3s ease;
+}
+html.dark .hero-cream { backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
+/* Glyph maison en arrière-plan */
+.hero-cream::after {
+  content:'🏠';
+  font-family:'Instrument Serif','Fraunces',Georgia,serif;
+  font-style:italic; font-weight:300;
+  position:absolute; right:-0.5rem; bottom:-1rem;
+  font-size:10rem; line-height:1;
+  opacity:0.10;
+  pointer-events:none; user-select:none;
+  filter:grayscale(0.3);
+}
+
+.hero-kicker {
+  font-size:0.6875rem; font-weight:600;
+  letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--text-muted); margin-bottom:1.125rem;
+  display:flex; align-items:center; gap:0.5rem;
+}
+html.dark .hero-kicker { color:#A5B4FC; }
+.hero-kicker .dot-cat {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--dot-invest); flex-shrink:0;
+}
+
+.hero-title {
+  font-family:var(--font-display);
+  font-size:clamp(1.5rem, 3.5vw, 2rem);
+  font-weight:400; line-height:1.15;
+  letter-spacing:-0.02em;
+  color:var(--text); margin-bottom:0.875rem;
+}
+.hero-title em { font-style:italic; font-weight:300; }
+
+.hero-desc {
+  font-size:0.9375rem; color:var(--text-muted);
+  max-width:480px; line-height:1.6; margin-bottom:2rem;
+}
+
+.badge-rassurant {
+  display:inline-flex; align-items:center; gap:0.4rem;
+  padding:0.35rem 0.75rem;
+  background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2);
+  border-radius:9999px;
+  font-size:0.78rem; font-weight:500; color:var(--green);
+  margin-bottom:1.75rem;
+}
+
+.hero-actions { display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap; }
+
+/* ══════════════════════════════════════════════════════════════
+   BUTTONS — identiques brique-budget
+══════════════════════════════════════════════════════════════ */
+.btn-hero-primary {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  padding:0.75rem 1.375rem; border-radius:9999px;
+  background:var(--accent); color:var(--accent-pill-text);
+  font-size:0.875rem; font-weight:600; border:none; cursor:pointer;
+  transition:filter 0.2s ease, transform 0.12s ease;
+}
+html.dark .btn-hero-primary {
+  box-shadow:0 8px 28px -10px rgba(99,102,241,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+.btn-hero-primary:hover { filter:brightness(0.95); }
+html.dark .btn-hero-primary:hover { filter:brightness(1.08); }
+.btn-hero-primary:active { transform:scale(0.98); }
+.btn-hero-primary:disabled { opacity:0.45; cursor:not-allowed; filter:none; }
+
+.btn-hero-secondary {
+  font-size:0.8125rem; font-weight:500; color:var(--text-muted);
+  text-decoration:none; cursor:pointer;
+  transition:color var(--t);
+  background:none; border:none;
+}
+.btn-hero-secondary:hover { color:var(--text); }
+
+/* ══════════════════════════════════════════════════════════════
+   BRICK CARD (écrans 1-8) — identique brique-budget
+══════════════════════════════════════════════════════════════ */
+.brick-card {
+  background:var(--bg-elevated);
+  border:1px solid var(--border-subtle);
+  border-radius:1.25rem;
+  box-shadow:var(--shadow-card);
+  padding:2rem 2.25rem;
+  position:relative; overflow:hidden;
+  transition:background 0.3s ease, border-color 0.3s ease;
+}
+html.dark .brick-card { backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+
+.brick-kicker {
+  font-size:0.6875rem; font-weight:600;
+  letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--text-muted); margin-bottom:0.875rem;
+}
+html.dark .brick-kicker { color:#A5B4FC; }
+
+.brick-title {
+  font-family:var(--font-display);
+  font-size:clamp(1.5rem, 3.5vw, 2rem);
+  font-weight:400; font-style:italic;
+  line-height:1.15; letter-spacing:-0.02em;
+  color:var(--text); margin-bottom:0.625rem;
+}
+.brick-subtitle {
+  font-size:0.9rem; color:var(--text-muted);
+  margin-bottom:1.75rem; line-height:1.55;
+}
+
+/* ── Champs ── */
+.field-group { display:flex; flex-direction:column; gap:0.375rem; }
+.field-label {
+  font-size:0.82rem; font-weight:600; color:var(--text);
+  display:flex; align-items:center; gap:0.5rem;
+}
+.field-help  { font-size:0.75rem; color:var(--text-faint); margin-top:0.2rem; }
+
+.badge-prefilled {
+  font-size:0.6rem; font-weight:600; letter-spacing:0.06em;
+  color:var(--green); background:rgba(34,197,94,0.08);
+  border-radius:9999px; padding:0.15rem 0.45rem;
+  white-space:nowrap;
+}
+
+.field-input {
+  width:100%; padding:0.75rem 1rem;
+  background:var(--surface-2);
+  border:1.5px solid var(--border-mid);
+  border-radius:var(--r-md);
+  color:var(--text); font-size:0.95rem; font-family:inherit;
+  transition:border-color var(--t), box-shadow var(--t);
+}
+.field-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+.field-input::placeholder { color:var(--text-faint); }
+.field-input.prefilled { border-color:rgba(34,197,94,0.3); }
+.field-input.prefilled:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,0.1); }
+
+/* Grilles champs */
+.fields-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.fields-2col { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:520px) {
+  .fields-grid { grid-template-columns:1fr; }
+  .fields-2col { grid-template-columns:1fr; }
+}
+
+/* Euro suffix */
+.euro-wrap { position:relative; }
+.euro-wrap .field-input { padding-right:2.5rem; }
+.euro-suffix { position:absolute; right:0.85rem; top:50%; transform:translateY(-50%); font-size:0.85rem; color:var(--text-faint); pointer-events:none; }
+
+/* ── Nav btns ── */
+.nav-btns { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding-top:0.5rem; }
+
+/* ── Section séparateur ── */
+.section-sep {
+  display:flex; align-items:center; gap:0.75rem;
+  margin:0.25rem 0;
+}
+.section-sep-line { flex:1; height:1px; background:var(--border-subtle); }
+.section-sep-label { font-size:0.75rem; color:var(--text-faint); white-space:nowrap; }
+
+/* ══════════════════════════════════════════════════════════════
+   PILLS — project cards + compact pills
+══════════════════════════════════════════════════════════════ */
+/* Project type cards 2×2 */
+.project-type-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+.project-type-card {
+  background:var(--surface-2);
+  border:1.5px solid var(--border-mid);
+  border-radius:1rem;
+  padding:1.25rem 1rem;
+  cursor:pointer; transition:all 0.2s ease; text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+}
+.project-type-card:hover { border-color:var(--accent-strong); background:var(--accent-soft); }
+.project-type-card.selected {
+  border-color:var(--accent-strong);
+  background:var(--accent-soft);
+  box-shadow:0 0 0 3px var(--accent-soft);
+}
+.project-type-card .ptc-icon { font-size:2rem; }
+.project-type-card .ptc-title { font-size:0.875rem; font-weight:600; color:var(--text); }
+.project-type-card .ptc-sub { font-size:0.75rem; color:var(--text-muted); line-height:1.4; }
+.project-type-card.selected .ptc-title { color:var(--accent-strong); }
+html.dark .project-type-card.selected .ptc-title { color:var(--v3-accent-strong); }
+
+/* Compact pills (bloc B) */
+.compact-question { display:flex; flex-direction:column; gap:0.375rem; }
+.compact-label { font-size:0.78rem; font-weight:600; color:var(--text-secondary); }
+.pills-compact { display:flex; flex-wrap:wrap; gap:0.5rem; }
+.pill-sm {
+  padding:0.4rem 0.875rem; border-radius:9999px;
+  font-size:0.8rem; font-weight:500;
+  background:var(--surface-2); border:1.5px solid var(--border-mid);
+  color:var(--text-muted); cursor:pointer;
+  transition:all var(--t); user-select:none;
+}
+.pill-sm:hover { border-color:var(--border-hover); color:var(--text); }
+.pill-sm.selected { background:var(--accent-soft); border-color:var(--accent-strong); color:var(--accent-strong); }
+html.dark .pill-sm.selected { color:#A78BFA; }
+
+/* Mode card */
+.mode-card {
+  padding:0.875rem 1rem; border-radius:0.875rem;
+  background:var(--surface-2); border:1px solid var(--border-subtle);
+  margin-top:0.75rem; animation:fadeSlideUp 0.25s var(--ease-out) both;
+}
+.mode-card-title { font-size:0.78rem; font-weight:700; color:var(--accent-strong); margin-bottom:0.2rem; }
+html.dark .mode-card-title { color:var(--v3-accent-strong); }
+.mode-card-text { font-size:0.8rem; color:var(--text-muted); line-height:1.5; }
+
+/* ══════════════════════════════════════════════════════════════
+   GLOSSARY TOOLTIPS
+══════════════════════════════════════════════════════════════ */
+.glossary-term {
+  display:inline; padding:0; font-size:inherit; font-weight:inherit;
+  color:inherit; background:none; border:none;
+  border-bottom:1.5px dotted var(--accent-strong);
+  cursor:pointer; transition:color 0.15s ease; text-decoration:none;
+}
+.glossary-term:hover { color:var(--accent-strong); }
+html.dark .glossary-term { border-bottom-color:var(--v3-accent-strong); }
+html.dark .glossary-term:hover { color:var(--v3-accent-strong); }
+.glossary-popover {
+  position:absolute; z-index:500; width:min(340px,90vw);
+  background:var(--bg-elevated); border:1px solid var(--cream-border);
+  border-radius:1rem; padding:1.1rem;
+  box-shadow:0 8px 32px rgba(0,0,0,0.12); animation:popIn 0.2s ease;
+}
+.glossary-popover-close {
+  position:absolute; top:0.5rem; right:0.6rem;
+  background:none; border:none; font-size:1.1rem; color:var(--text-faint);
+  cursor:pointer; padding:0.25rem;
+}
+.glossary-popover h4 { font-size:0.88rem; font-weight:700; color:var(--text); margin-bottom:0.4rem; }
+.glossary-popover p { font-size:0.8rem; color:var(--text-secondary); line-height:1.5; margin-bottom:0.35rem; }
+.glossary-popover .gp-label {
+  font-size:0.7rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.04em; color:var(--accent-strong);
+  margin-top:0.5rem; margin-bottom:0.15rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SLIDERS
+══════════════════════════════════════════════════════════════ */
+.slider-group { display:flex; flex-direction:column; gap:0.4rem; }
+.slider-header { display:flex; justify-content:space-between; align-items:center; }
+.slider-label { font-size:0.82rem; font-weight:600; color:var(--text); }
+.slider-value { font-size:0.82rem; font-weight:700; color:var(--accent-strong); }
+html.dark .slider-value { color:var(--v3-accent-strong); }
+input[type=range] { -webkit-appearance:none; width:100%; height:6px; border-radius:9999px; background:var(--track); outline:none; cursor:pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--accent-strong); border:2px solid var(--bg-elevated); box-shadow:0 2px 6px rgba(0,0,0,0.15); cursor:pointer; }
+input[type=range]::-moz-range-thumb { width:20px; height:20px; border-radius:50%; background:var(--accent-strong); border:2px solid var(--bg-elevated); box-shadow:0 2px 6px rgba(0,0,0,0.15); cursor:pointer; }
+
+/* ══════════════════════════════════════════════════════════════
+   JAUGES / GAUGES
+══════════════════════════════════════════════════════════════ */
+.gauge-wrap { display:flex; flex-direction:column; gap:0.3rem; }
+.gauge-bar { height:10px; background:var(--track); border-radius:9999px; overflow:hidden; }
+.gauge-fill { height:100%; border-radius:9999px; transition:width 0.6s var(--ease-out),background 0.4s ease; }
+.gauge-label { display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-faint); }
+.gauge-green { background:var(--green); }
+.gauge-orange { background:var(--orange); }
+.gauge-red { background:var(--red); }
+
+/* ══════════════════════════════════════════════════════════════
+   RESULT CARDS
+══════════════════════════════════════════════════════════════ */
+.result-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.75rem; }
+.result-card {
+  padding:0.875rem 1rem; border-radius:0.875rem;
+  background:var(--bg-elevated); border:1px solid var(--border-subtle);
+  box-shadow:var(--shadow-card); text-align:center;
+}
+.result-card-value { font-family:var(--font-display); font-size:1.25rem; font-weight:400; color:var(--text); }
+.result-card-label { font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-faint); margin-top:0.2rem; }
+.result-card-sub { font-size:0.68rem; color:var(--text-faint); margin-top:0.1rem; }
+
+/* Status cards */
+.status-card { padding:0.875rem 1rem; border-radius:0.875rem; display:flex; align-items:center; gap:0.75rem; }
+.status-card.green { background:var(--green-soft); border:1px solid rgba(34,197,94,0.2); }
+.status-card.orange { background:var(--orange-soft); border:1px solid rgba(251,163,60,0.2); }
+.status-card.red { background:var(--red-soft); border:1px solid rgba(248,113,113,0.15); }
+.status-icon { font-size:1.3rem; }
+.status-text { font-size:0.875rem; font-weight:600; color:var(--text); }
+.status-sub { font-size:0.78rem; color:var(--text-muted); }
+
+/* ══════════════════════════════════════════════════════════════
+   PRESETS
+══════════════════════════════════════════════════════════════ */
+.presets { display:flex; gap:0.5rem; flex-wrap:wrap; }
+.preset-btn {
+  padding:0.4rem 0.875rem; border-radius:9999px;
+  font-size:0.8rem; font-weight:600;
+  border:1.5px solid var(--border-mid);
+  background:var(--surface-2); color:var(--text-muted);
+  cursor:pointer; transition:all var(--t);
+}
+.preset-btn:hover { border-color:var(--border-hover); color:var(--text); }
+.preset-btn.active { background:var(--accent-soft); border-color:var(--accent-strong); color:var(--accent-strong); }
+html.dark .preset-btn.active { color:var(--v3-accent-strong); }
+
+/* ══════════════════════════════════════════════════════════════
+   STACKED BARS
+══════════════════════════════════════════════════════════════ */
+.stacked-bar-wrap { display:flex; flex-direction:column; gap:0.5rem; }
+.stacked-bar { display:flex; height:28px; border-radius:0.875rem; overflow:hidden; }
+.stacked-seg { transition:width 0.6s var(--ease-out); display:flex; align-items:center; justify-content:center; font-size:0.6rem; font-weight:700; color:#fff; min-width:2px; }
+.stacked-legend { display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.375rem; }
+.stacked-legend-item { display:flex; align-items:center; gap:0.375rem; font-size:0.72rem; color:var(--text-muted); }
+.stacked-legend-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+
+/* ══════════════════════════════════════════════════════════════
+   QUICK ACTIONS
+══════════════════════════════════════════════════════════════ */
+.quick-actions { display:flex; flex-wrap:wrap; gap:0.5rem; }
+.quick-action {
+  padding:0.4rem 0.875rem; border-radius:9999px;
+  font-size:0.78rem; font-weight:600;
+  border:1.5px solid var(--border-mid);
+  background:var(--surface-2); color:var(--text-muted);
+  cursor:pointer; transition:all var(--t);
+}
+.quick-action:hover { background:var(--accent-soft); border-color:var(--accent-strong); color:var(--accent-strong); }
+
+/* ══════════════════════════════════════════════════════════════
+   PARAMS AVANCÉS (accordéon collapsible)
+══════════════════════════════════════════════════════════════ */
+.params-toggle {
+  display:flex; align-items:center; gap:0.4rem;
+  font-size:0.78rem; font-weight:600;
+  color:var(--text-muted); cursor:pointer; margin-top:0.5rem; padding:0.4rem 0;
+  border:none; background:none; transition:color 0.15s ease;
+}
+.params-toggle:hover { color:var(--accent-strong); }
+.params-body { display:none; padding-top:0.5rem; }
+.params-body.open { display:flex; flex-direction:column; gap:0.75rem; animation:fadeSlideUp 0.25s ease; }
+
+/* ══════════════════════════════════════════════════════════════
+   ÉPARGNE MODULE (écran 3)
+══════════════════════════════════════════════════════════════ */
+.epargne-module {
+  background:var(--surface-2);
+  border:1px solid var(--border-subtle);
+  border-radius:1rem;
+  padding:1.25rem; display:flex; flex-direction:column; gap:1rem;
+}
+.epargne-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+.epargne-item {
+  background:var(--bg-elevated); border-radius:0.875rem; padding:0.875rem;
+  border:1.5px solid var(--border-mid); cursor:pointer; transition:all var(--t);
+}
+.epargne-item:hover { border-color:var(--accent-strong); }
+.epargne-item-label { font-size:0.72rem; font-weight:600; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.25rem; }
+.epargne-item-value { font-family:var(--font-display); font-size:1.25rem; font-weight:400; color:var(--text); }
+.epargne-item-input { display:none; width:100%; border:none; background:transparent; font-family:var(--font-display); font-size:1.125rem; font-weight:400; color:var(--accent-strong); outline:none; }
+.epargne-item.editing .epargne-item-value { display:none; }
+.epargne-item.editing .epargne-item-input { display:block; }
+
+/* Barre répartition protégé/mobilisable */
+.repartition-bar {
+  height:8px; border-radius:9999px; background:var(--track); overflow:hidden;
   display:flex;
 }
-.repartition-protege{height:100%;background:var(--green);border-radius:9999px 0 0 9999px;transition:width 0.5s ease;}
-.repartition-mobilisable{height:100%;background:var(--accent-strong);border-radius:0 9999px 9999px 0;transition:width 0.5s ease;}
+.repartition-protege { height:100%; background:var(--green); border-radius:9999px 0 0 9999px; transition:width 0.5s ease; }
+.repartition-mobilisable { height:100%; background:var(--accent-strong); border-radius:0 9999px 9999px 0; transition:width 0.5s ease; }
+html.dark .repartition-mobilisable { background:var(--v3-accent-strong); }
 
-/* ─── HERO CARD APPORT ────────────────────────────────────── */
-.apport-hero{
-  position:relative;overflow:hidden;border-radius:var(--radius);
-  background:var(--cream-grad);border:1px solid var(--cream-border);
-  padding:1.5rem;display:flex;flex-direction:column;gap:0.75rem;
+/* ══════════════════════════════════════════════════════════════
+   HERO CARD APPORT (écran 3)
+══════════════════════════════════════════════════════════════ */
+.apport-hero {
+  position:relative; overflow:hidden; border-radius:1rem;
+  background:var(--cream-grad); border:1px solid var(--cream-border);
+  padding:1.5rem; display:flex; flex-direction:column; gap:0.75rem;
 }
-.apport-hero-bg{
-  position:absolute;right:-10px;bottom:-10px;opacity:0.06;
-  font-size:8rem;pointer-events:none;user-select:none;
+.apport-hero-bg {
+  position:absolute; right:-10px; bottom:-10px; opacity:0.08;
+  font-size:7rem; pointer-events:none; user-select:none;
 }
-.apport-hero-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-strong);}
-.apport-hero-value{font-family:var(--font-display);font-size:2rem;font-weight:600;color:var(--text);line-height:1.1;}
-.apport-hero-sub{font-size:0.8rem;color:var(--text-secondary);}
+.apport-hero-label { font-size:0.6875rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--accent-strong); }
+html.dark .apport-hero-label { color:var(--v3-accent-strong); }
+.apport-hero-value { font-family:var(--font-display); font-size:2rem; font-weight:400; color:var(--text); line-height:1.1; }
+.apport-hero-sub { font-size:0.8rem; color:var(--text-secondary); }
 
-/* ─── LOYER DELTA INLINE ──────────────────────────────────── */
-.loyer-delta{font-size:0.75rem;margin-top:0.25rem;font-weight:500;}
-.loyer-delta.positive{color:var(--orange);}
-.loyer-delta.negative{color:var(--green);}
-.loyer-delta.neutral{color:var(--text-faint);}
+/* Loyer delta */
+.loyer-delta { font-size:0.75rem; margin-top:0.25rem; font-weight:500; }
+.loyer-delta.positive { color:var(--orange); }
+.loyer-delta.negative { color:var(--green); }
+.loyer-delta.neutral { color:var(--text-faint); }
 
-/* ─── PARAMS AVANCES ACCORDEON ────────────────────────────── */
-.params-toggle{
-  display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;font-weight:600;
-  color:var(--text-muted);cursor:pointer;margin-top:0.5rem;padding:0.4rem 0;
-  border:none;background:none;transition:color 0.15s ease;
+/* ══════════════════════════════════════════════════════════════
+   TOGGLE SWITCH (investissement locatif)
+══════════════════════════════════════════════════════════════ */
+.invest-toggle-card {
+  padding:1rem 1.125rem; border-radius:0.875rem;
+  background:var(--surface-2); border:1px solid var(--border-subtle);
+  display:flex; flex-direction:column; gap:0.75rem;
 }
-.params-toggle:hover{color:var(--accent-strong);}
-.params-body{display:none;padding-top:0.5rem;}
-.params-body.open{display:flex;flex-direction:column;gap:0.75rem;animation:fadeSlideUp 0.25s ease;}
+.invest-toggle-header { display:flex; justify-content:space-between; align-items:center; }
+.invest-toggle-label { font-size:0.875rem; font-weight:600; color:var(--text); }
+.toggle-switch { position:relative; width:44px; height:24px; flex-shrink:0; }
+.toggle-switch input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; inset:0; border-radius:9999px; background:var(--track); cursor:pointer; transition:background 0.3s ease; }
+.toggle-slider::before { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform 0.3s ease; box-shadow:0 1px 3px rgba(0,0,0,0.15); }
+.toggle-switch input:checked + .toggle-slider { background:var(--accent-strong); }
+html.dark .toggle-switch input:checked + .toggle-slider { background:var(--v3-accent-strong); }
+.toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); }
+.invest-minimal { font-size:0.82rem; color:var(--text-muted); font-style:italic; padding:0.5rem 0; }
 
-/* ─── RESPONSIVE ──────────────────────────────────────────── */
-@media(max-width:480px){
-  .brick-title{font-size:1.15rem;}
-  .result-cards{grid-template-columns:1fr 1fr;}
-  .summary-grid{grid-template-columns:1fr 1fr;}
-  .fields-2col{grid-template-columns:1fr !important;}
-  .project-type-grid{grid-template-columns:1fr;}
+/* ══════════════════════════════════════════════════════════════
+   WARNING BOX
+══════════════════════════════════════════════════════════════ */
+.warning-box {
+  padding:0.75rem 1rem; border-radius:0.875rem;
+  background:var(--orange-soft); border:1px solid rgba(251,163,60,0.2);
+  font-size:0.8125rem; color:var(--text); display:flex; align-items:flex-start; gap:0.5rem;
 }
+.warning-box.red-warning { background:var(--red-soft); border-color:rgba(248,113,113,0.2); }
 
-/* ─── ANIMATIONS ──────────────────────────────────────────── */
-.fade-in{animation:fadeIn 0.3s ease both;}
-@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+/* ══════════════════════════════════════════════════════════════
+   TIMELINE (écran 7)
+══════════════════════════════════════════════════════════════ */
+.timeline { display:flex; flex-direction:column; gap:0; }
+.timeline-step {
+  position:relative; padding-left:2rem; padding-bottom:1rem;
+  border-left:2px solid var(--border-mid); cursor:pointer; transition:all 0.2s ease;
+}
+.timeline-step:last-child { border-left-color:transparent; padding-bottom:0; }
+.timeline-step::before {
+  content:attr(data-num); position:absolute; left:-11px; top:0;
+  width:22px; height:22px; border-radius:50%;
+  background:var(--bg-elevated); border:2px solid var(--accent-strong);
+  font-size:0.65rem; font-weight:700; color:var(--accent-strong);
+  display:flex; align-items:center; justify-content:center;
+}
+html.dark .timeline-step::before { color:var(--v3-accent-strong); border-color:var(--v3-accent-strong); }
+.timeline-step-title { font-size:0.875rem; font-weight:600; color:var(--text); padding:0 0 0.15rem; transition:color 0.15s; }
+.timeline-step-title:hover { color:var(--accent-strong); }
+html.dark .timeline-step-title:hover { color:var(--v3-accent-strong); }
+.timeline-detail { display:none; padding:0.5rem 0; font-size:0.8rem; color:var(--text-secondary); line-height:1.55; }
+.timeline-detail.open { display:block; animation:fadeSlideUp 0.25s ease; }
+.timeline-detail-row { display:flex; gap:0.5rem; margin-bottom:0.35rem; }
+.timeline-detail-label { font-size:0.72rem; font-weight:700; color:var(--accent-strong); text-transform:uppercase; letter-spacing:0.03em; min-width:70px; }
+html.dark .timeline-detail-label { color:var(--v3-accent-strong); }
+.timeline-detail-val { font-size:0.8rem; color:var(--text-secondary); }
+.timeline-legal { margin-top:0.25rem; padding:0.5rem 0.75rem; border-radius:0.625rem; background:var(--orange-soft); font-size:0.75rem; color:var(--text); border:1px solid rgba(251,163,60,0.15); }
+
+/* ══════════════════════════════════════════════════════════════
+   ÉCRAN FINAL — score ring + summary + reco cards
+══════════════════════════════════════════════════════════════ */
+.score-ring { width:100px; height:100px; margin:0 auto; }
+.score-ring circle { fill:none; stroke-width:8; }
+.score-ring .ring-bg { stroke:var(--track); }
+.score-ring .ring-fill { stroke:var(--accent-strong); stroke-linecap:round; transition:stroke-dashoffset 1s var(--ease-out); }
+html.dark .score-ring .ring-fill { stroke:var(--v3-accent-strong); }
+.score-ring text { font-family:var(--font-display); font-size:1.4rem; font-weight:400; fill:var(--text); text-anchor:middle; dominant-baseline:central; }
+
+.summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.625rem; }
+.summary-item {
+  padding:0.75rem; border-radius:0.875rem;
+  background:var(--surface-2); border:1px solid var(--border-subtle);
+  text-align:center;
+}
+.summary-item-val { font-family:var(--font-display); font-size:1.125rem; font-weight:400; color:var(--text); }
+.summary-item-label { font-size:0.68rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-faint); margin-top:0.15rem; }
+
+.actions-list { display:flex; flex-direction:column; gap:0.5rem; margin:0.75rem 0; }
+.action-item {
+  display:flex; align-items:flex-start; gap:0.625rem;
+  padding:0.75rem 1rem; border-radius:0.875rem;
+  background:var(--surface-2); border:1px solid var(--border-subtle);
+  font-size:0.8125rem; color:var(--text);
+}
+.action-item::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--accent-strong); margin-top:0.45rem; flex-shrink:0; }
+html.dark .action-item::before { background:var(--v3-accent-strong); }
+
+/* Reco cards (style cream compact) */
+.reco-cards { display:flex; flex-direction:column; gap:1rem; }
+.reco-card {
+  background:var(--cream-grad);
+  border:1px solid var(--cream-border);
+  border-radius:1.125rem;
+  padding:1.5rem 1.75rem;
+  position:relative; overflow:hidden;
+}
+html.dark .reco-card { backdrop-filter:blur(12px); }
+.reco-card::after {
+  content:attr(data-glyph);
+  font-family:'Instrument Serif',serif; font-style:italic;
+  position:absolute; right:-0.5rem; bottom:-1.5rem;
+  font-size:8rem; line-height:1;
+  color:rgba(196,181,253,0.15);
+  pointer-events:none; user-select:none;
+}
+.reco-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem; }
+.reco-title { font-family:var(--font-display); font-size:1.125rem; font-weight:400; font-style:italic; color:var(--text); margin-bottom:0.375rem; }
+.reco-desc { font-size:0.8125rem; color:var(--text-muted); margin-bottom:1.25rem; line-height:1.55; }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════ */
+@media(max-width:520px) {
+  .brique-layout { padding:1rem 1rem 5rem; }
+  .brick-card { padding:1.5rem 1.25rem; }
+  .hero-cream { padding:2rem 1.5rem; }
+  .project-type-grid { grid-template-columns:1fr; }
+  .epargne-grid { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body data-brick-name="Achat immobilier">
@@ -328,632 +843,724 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 <script src="nav-avatar.js"></script>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
-<!-- MAIN CONTENT                                                -->
+<!-- MAIN LAYOUT (sidebar.js injecte la sidebar à gauche)       -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div class="brick-container" id="brick-root">
+<div class="f-sidebar-shell">
+  <div class="f-content" style="flex:1;min-width:0;">
 
-  <!-- Progress bar -->
-  <div class="brick-progress">
-    <div class="brick-progress-bar"><div class="brick-progress-fill" id="progress-fill" style="width:0%"></div></div>
-    <div class="brick-progress-text" id="progress-text">0 / 8</div>
-  </div>
+    <!-- Layout 2 colonnes : contenu + panel progression -->
+    <div class="brique-layout">
 
-  <!-- ─── ECRAN 0 : Introduction ───────────────────────────── -->
-  <div id="screen-0" class="screen active-screen">
-    <div class="brick-card">
-      <div class="brick-kicker">BRIQUE ACHAT IMMOBILIER</div>
-      <h2 class="brick-title">Acheter un bien, ce n'est pas juste trouver un prix.</h2>
-      <p class="brick-subtitle">Un achat immobilier melange budget, banque, notaire, taxes, assurance, travaux et delais. On va remettre tout dans l'ordre.</p>
+      <!-- ════════════════════════════ COLONNE GAUCHE ════════════════════════════ -->
+      <div class="brique-main">
 
-      <ul class="benefits-list">
-        <li>Comprendre le jargon</li>
-        <li>Estimer ta capacite d'achat</li>
-        <li>Voir les frais a prevoir</li>
-        <li>Savoir quoi faire ensuite</li>
-      </ul>
-
-      <div class="badges">
-        <span class="badge">10 min</span>
-        <span class="badge">Interactif</span>
-        <span class="badge">Utilise tes donnees</span>
-      </div>
-
-      <div class="mini-flow">
-        <span class="mini-flow-step">Prix du bien</span>
-        <span class="mini-flow-arrow">&#x2192;</span>
-        <span class="mini-flow-step">Apport</span>
-        <span class="mini-flow-arrow">&#x2192;</span>
-        <span class="mini-flow-step">Credit</span>
-        <span class="mini-flow-arrow">&#x2192;</span>
-        <span class="mini-flow-step">Frais</span>
-        <span class="mini-flow-arrow">&#x2192;</span>
-        <span class="mini-flow-step">Notaire</span>
-        <span class="mini-flow-arrow">&#x2192;</span>
-        <span class="mini-flow-step">Mensualite</span>
-      </div>
-
-      <div class="nav-btns">
-        <span></span>
-        <button class="btn-hero-primary" onclick="goScreen(1)">Commencer</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── ECRAN 1 : Ton projet (refonte — cards 2x2 + bloc B) ── -->
-  <div id="screen-1" class="screen">
-    <div class="brick-card">
-      <div class="brick-kicker">ETAPE 1 / 8 &middot; TON PROJET</div>
-      <h2 class="brick-title">Quel achat veux-tu preparer ?</h2>
-      <p class="brick-subtitle">On adapte les calculs selon ton type de projet.</p>
-
-      <!-- BLOC A — 4 grandes cards de type de projet -->
-      <div class="project-type-grid" id="project-type-grid">
-        <div class="project-type-card" data-val="residence_principale" onclick="selectProjectCard(this)">
-          <div class="ptc-icon">&#x1F3E0;</div>
-          <div class="ptc-title">Residence principale</div>
-          <div class="ptc-sub">Pour y vivre au quotidien</div>
-        </div>
-        <div class="project-type-card" data-val="investissement_locatif" onclick="selectProjectCard(this)">
-          <div class="ptc-icon">&#x1F4C8;</div>
-          <div class="ptc-title">Investissement locatif</div>
-          <div class="ptc-sub">Acheter pour louer</div>
-        </div>
-        <div class="project-type-card" data-val="residence_secondaire" onclick="selectProjectCard(this)">
-          <div class="ptc-icon">&#x26F5;</div>
-          <div class="ptc-title">Residence secondaire</div>
-          <div class="ptc-sub">Un pied-a-terre ou vacances</div>
-        </div>
-        <div class="project-type-card" data-val="achat_travaux" onclick="selectProjectCard(this)">
-          <div class="ptc-icon">&#x1F6E0;&#xFE0F;</div>
-          <div class="ptc-title">Achat avec travaux</div>
-          <div class="ptc-sub">Renover pour habiter ou revendre</div>
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:0.5rem;">
-        <span class="pill-sm" data-val="ne_sait_pas" onclick="selectProjectCard(this)" style="font-size:0.78rem;color:var(--text-faint);">Je ne sais pas encore</span>
-      </div>
-
-      <!-- Mode card dynamique -->
-      <div class="mode-card" id="mode-card" style="display:none">
-        <div class="mode-card-title" id="mode-card-title"></div>
-        <div class="mode-card-text" id="mode-card-text"></div>
-      </div>
-
-      <!-- BLOC B — questions compactes (visible apres selection) -->
-      <div id="bloc-b" style="display:none;">
-        <div style="display:flex;flex-direction:column;gap:0.85rem;margin-top:1rem;">
-
-          <div class="compact-question">
-            <span class="compact-label">Horizon</span>
-            <div class="pills-compact" id="pills-horizon">
-              <span class="pill-sm" data-val="moins_3_mois">Moins de 3 mois</span>
-              <span class="pill-sm" data-val="3_6_mois">3 a 6 mois</span>
-              <span class="pill-sm" data-val="6_12_mois">6 a 12 mois</span>
-              <span class="pill-sm" data-val="plus_1_an">Plus d'un an</span>
-              <span class="pill-sm" data-val="curiosite">Simple curiosite</span>
-            </div>
-          </div>
-
-          <div class="compact-question">
-            <span class="compact-label">Statut</span>
-            <div class="pills-compact" id="pills-status">
-              <span class="pill-sm" data-val="seul">Seul</span>
-              <span class="pill-sm" data-val="couple">Couple</span>
-              <span class="pill-sm" data-val="co_emprunteur">Avec co-emprunteur</span>
-              <span class="pill-sm" data-val="sci">SCI / societe</span>
-            </div>
-          </div>
-
-          <div class="compact-question">
-            <span class="compact-label">Type de bien</span>
-            <div class="pills-compact" id="pills-propertyType">
-              <span class="pill-sm" data-val="ancien">Ancien</span>
-              <span class="pill-sm" data-val="neuf">Neuf</span>
-              <span class="pill-sm" data-val="terrain">Terrain</span>
-              <span class="pill-sm" data-val="vefa">VEFA</span>
-              <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
-            </div>
-          </div>
-
-          <div class="compact-question">
-            <span class="compact-label">Primo-accedant <span class="glossary-term" onclick="showGlossaryPopover(this,'Primo-accedant')" tabindex="0">&#x24D8;</span></span>
-            <div class="pills-compact" id="pills-primo">
-              <span class="pill-sm" data-val="oui">Oui</span>
-              <span class="pill-sm" data-val="non">Non</span>
-              <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
-            </div>
-          </div>
-
-          <div class="compact-question" id="usage-question">
-            <span class="compact-label">Usage prevu</span>
-            <div class="pills-compact" id="pills-usage">
-              <span class="pill-sm" data-val="habiter">Habiter</span>
-              <span class="pill-sm" data-val="louer">Louer</span>
-              <span class="pill-sm" data-val="revendre">Revendre</span>
-              <span class="pill-sm" data-val="plus_tard">Preparer plus tard</span>
-            </div>
-          </div>
-
-          <div class="compact-question">
-            <span class="compact-label">Localisation (facultatif)</span>
-            <input type="text" id="input-location" class="field-input" placeholder="ex : 75, Paris, 69001..." aria-label="Localisation" style="font-size:0.84rem;padding:0.5rem 0.75rem;"/>
-            <div class="field-help">Departement ou code postal — utile pour estimer les frais</div>
+        <!-- Barre de progression globale (dots + barre) -->
+        <div class="brick-progress-bar" id="global-progress-bar" style="margin-bottom:1.5rem;">
+          <div class="brick-prog-dots" id="prog-dots"></div>
+          <div class="f-track" style="max-width:200px;">
+            <div class="f-fill" id="prog-fill" style="width:0%"></div>
           </div>
         </div>
-      </div>
 
-      <div id="sci-warning" class="warning-box" style="display:none">
-        <span>&#x26A0;&#xFE0F;</span>
-        <span>L'achat en SCI ou societe est hors perimetre simplifie de cette brique. Les calculs restent indicatifs.</span>
-      </div>
-
-      <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(0)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(2)">Continuer</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── ECRAN 2 : Ta capacite mensuelle (ex-ecran 3, refonte) ── -->
-  <div id="screen-2" class="screen">
-    <div class="brick-card">
-      <div class="brick-kicker">ETAPE 2 / 8 &middot; CAPACITE MENSUELLE</div>
-      <h2 class="brick-title">Quelle mensualite ton budget peut supporter ?</h2>
-      <p class="brick-subtitle">On transforme tes revenus et charges en <span class="glossary-term" onclick="showGlossaryPopover(this,'Mensualite')" tabindex="0">mensualite</span> cible.</p>
-
-      <div class="fields-grid">
-        <div class="field-group">
-          <label class="field-label" for="input-revenus">Revenus nets du foyer <span class="badge-prefilled" id="badge-revenus" style="display:none">Prerempli</span></label>
-          <div class="euro-wrap"><input type="number" id="input-revenus" class="field-input" placeholder="ex : 2500" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          <a href="#" id="link-rev-compl" style="font-size:0.75rem;color:var(--accent-strong);margin-top:0.2rem;text-decoration:none;" onclick="event.preventDefault();toggleRevCompl();">+ Ajouter des revenus complementaires</a>
-          <div id="rev-compl-wrap" style="display:none;margin-top:0.4rem;">
-            <div class="field-group">
-              <label class="field-label" for="input-revenus-compl" style="font-size:0.78rem;">Revenus complementaires (primes, variable...)</label>
-              <div class="euro-wrap"><input type="number" id="input-revenus-compl" class="field-input" placeholder="0" min="0" inputmode="numeric" style="font-size:0.84rem;"/><span class="euro-suffix">&euro;</span></div>
+        <!-- ═══ SCREEN 0 — Introduction ═══ -->
+        <div class="screen active" id="screen-0">
+          <div class="hero-cream">
+            <div class="hero-kicker">
+              <span class="dot-cat"></span>
+              ACHAT IMMOBILIER
+            </div>
+            <h1 class="hero-title">
+              Acheter un bien, c'est bien plus<br><em>que trouver un prix.</em>
+            </h1>
+            <p class="hero-desc">
+              En moins de 15 minutes, on démêle budget, banque, notaire, frais et assurance — et tu sors avec un diagnostic chiffré personnalisé.
+            </p>
+            <div class="badge-rassurant">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              Tu peux donner des montants approximatifs.
+            </div>
+            <div class="hero-actions">
+              <button class="btn-hero-primary" onclick="goToScreen(1)">
+                Commencer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
             </div>
           </div>
         </div>
-        <div class="fields-2col" style="margin-top:0.25rem;">
-          <div class="field-group">
-            <label class="field-label" for="input-charges">Charges fixes mensuelles <span class="badge-prefilled" id="badge-charges" style="display:none">Prerempli</span></label>
-            <div class="euro-wrap"><input type="number" id="input-charges" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-credits">Credits existants / mois <span class="badge-prefilled" id="badge-credits" style="display:none">Prerempli</span></label>
-            <div class="euro-wrap"><input type="number" id="input-credits" class="field-input" placeholder="ex : 200" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-loyer">Loyer actuel <span class="badge-prefilled" id="badge-loyer" style="display:none">Prerempli</span></label>
-          <div class="euro-wrap"><input type="number" id="input-loyer" class="field-input" placeholder="ex : 700" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          <div id="loyer-source" class="field-help" style="display:none;color:var(--text-faint);"></div>
-          <div class="loyer-delta neutral" id="loyer-delta"></div>
-        </div>
-      </div>
 
-      <!-- Presets AVANT les resultats -->
-      <div class="presets" style="margin-top:0.75rem;">
-        <button class="preset-btn" data-preset="prudent" onclick="applyPreset('prudent')">Prudent</button>
-        <button class="preset-btn active" data-preset="equilibre" onclick="applyPreset('equilibre')">Equilibre</button>
-        <button class="preset-btn" data-preset="ambitieux" onclick="applyPreset('ambitieux')">Ambitieux</button>
-      </div>
+        <!-- ═══ SCREEN 1 — Ton projet ═══ -->
+        <div class="screen" id="screen-1">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 1 / 8 · TON PROJET</div>
+            <h2 class="brick-title">Quel achat tu prépares&nbsp;?</h2>
+            <p class="brick-subtitle">On adapte les calculs selon ton type de projet.</p>
 
-      <!-- Parametres avances (duree, taux) — collapsible -->
-      <div style="margin-top:0.5rem;">
-        <div class="params-toggle" id="params-toggle-s2" onclick="toggleParams()">
-          <span id="params-summary">Duree : 20 ans &middot; Taux estime : 3.5%</span>
-          <span>&#x25B8;</span>
-        </div>
-        <div class="params-body" id="params-body-s2">
-          <div class="slider-group">
-            <div class="slider-header"><span class="slider-label">Duree du pret</span><span class="slider-value" id="val-duree">20 ans</span></div>
-            <input type="range" id="slider-duree" min="10" max="25" value="20" step="1" oninput="updateCapacity()"/>
-          </div>
-          <div class="slider-group">
-            <div class="slider-header"><span class="slider-label">Taux nominal</span><span class="slider-value" id="val-taux">3.5 %</span></div>
-            <input type="range" id="slider-taux" min="1" max="7" value="3.5" step="0.1" oninput="updateCapacity()"/>
-          </div>
-        </div>
-      </div>
+            <!-- BLOC A — 4 grandes cards de type de projet -->
+            <div class="project-type-grid" id="project-type-grid">
+              <div class="project-type-card" data-val="residence_principale" onclick="selectProjectCard(this)">
+                <div class="ptc-icon">🏠</div>
+                <div class="ptc-title">Résidence principale</div>
+                <div class="ptc-sub">Pour y vivre au quotidien</div>
+              </div>
+              <div class="project-type-card" data-val="investissement_locatif" onclick="selectProjectCard(this)">
+                <div class="ptc-icon">📈</div>
+                <div class="ptc-title">Investissement locatif</div>
+                <div class="ptc-sub">Acheter pour louer</div>
+              </div>
+              <div class="project-type-card" data-val="residence_secondaire" onclick="selectProjectCard(this)">
+                <div class="ptc-icon">⛵</div>
+                <div class="ptc-title">Résidence secondaire</div>
+                <div class="ptc-sub">Un pied-à-terre ou vacances</div>
+              </div>
+              <div class="project-type-card" data-val="achat_travaux" onclick="selectProjectCard(this)">
+                <div class="ptc-icon">🛠️</div>
+                <div class="ptc-title">Achat avec travaux</div>
+                <div class="ptc-sub">Rénover pour habiter ou revendre</div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:0.5rem;">
+              <span class="pill-sm" data-val="ne_sait_pas" onclick="selectProjectCard(this)" style="font-size:0.78rem;color:var(--text-faint);">Je ne sais pas encore</span>
+            </div>
 
-      <div id="warning-effort" class="warning-box" style="display:none;margin-top:0.5rem;">
-        <span>&#x26A0;&#xFE0F;</span>
-        <span id="warning-effort-text">Taux d'effort eleve.</span>
-      </div>
+            <!-- Mode card dynamique -->
+            <div class="mode-card" id="mode-card" style="display:none">
+              <div class="mode-card-title" id="mode-card-title"></div>
+              <div class="mode-card-text" id="mode-card-text"></div>
+            </div>
 
-      <!-- 2 result cards : Mensualite cible + Reste a vivre -->
-      <div class="result-cards" id="results-s2" style="margin-top:0.75rem;grid-template-columns:1fr 1fr;">
-        <div class="result-card"><div class="result-card-value" id="rc-mensualite">--</div><div class="result-card-label">Mensualite cible</div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-rav">--</div><div class="result-card-label">Reste a vivre</div></div>
-      </div>
+            <!-- BLOC B — questions compactes (visible après sélection) -->
+            <div id="bloc-b" style="display:none;">
+              <div style="display:flex;flex-direction:column;gap:0.875rem;margin-top:1.25rem;">
 
-      <!-- Taux d'effort inline sous les cards -->
-      <div class="gauge-wrap" id="gauge-effort" style="margin-top:0.5rem;">
-        <div class="slider-header"><span class="slider-label" style="font-size:0.75rem;">Taux d'effort</span><span class="slider-value" id="val-effort" style="font-size:0.75rem;">0 %</span></div>
-        <div class="gauge-bar" style="height:8px;"><div class="gauge-fill gauge-green" id="fill-effort" style="width:0%"></div></div>
-        <div class="gauge-label"><span>0%</span><span>35%</span><span>50%</span></div>
-      </div>
+                <div class="compact-question">
+                  <span class="compact-label">Horizon</span>
+                  <div class="pills-compact" id="pills-horizon">
+                    <span class="pill-sm" data-val="moins_3_mois">Moins de 3 mois</span>
+                    <span class="pill-sm" data-val="3_6_mois">3 à 6 mois</span>
+                    <span class="pill-sm" data-val="6_12_mois">6 à 12 mois</span>
+                    <span class="pill-sm" data-val="plus_1_an">Plus d'un an</span>
+                    <span class="pill-sm" data-val="curiosite">Simple curiosité</span>
+                  </div>
+                </div>
 
-      <!-- Assurance estimee -->
-      <div id="assurance-info" style="font-size:0.75rem;color:var(--text-faint);margin-top:0.35rem;"></div>
+                <div class="compact-question">
+                  <span class="compact-label">Statut</span>
+                  <div class="pills-compact" id="pills-status">
+                    <span class="pill-sm" data-val="seul">Seul</span>
+                    <span class="pill-sm" data-val="couple">Couple</span>
+                    <span class="pill-sm" data-val="co_emprunteur">Avec co-emprunteur</span>
+                    <span class="pill-sm" data-val="sci">SCI / société</span>
+                  </div>
+                </div>
 
-      <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(1)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(3)">Continuer</button>
-      </div>
-    </div>
-  </div>
+                <div class="compact-question">
+                  <span class="compact-label">Type de bien</span>
+                  <div class="pills-compact" id="pills-propertyType">
+                    <span class="pill-sm" data-val="ancien">Ancien</span>
+                    <span class="pill-sm" data-val="neuf">Neuf</span>
+                    <span class="pill-sm" data-val="terrain">Terrain</span>
+                    <span class="pill-sm" data-val="vefa">VEFA</span>
+                    <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
+                  </div>
+                </div>
 
-  <!-- ─── ECRAN 3 : Ton apport reel (ex-ecran 4, refonte) ──── -->
-  <div id="screen-3" class="screen">
-    <div class="brick-card">
-      <div class="brick-kicker">ETAPE 3 / 8 &middot; APPORT</div>
-      <h2 class="brick-title">Ton <span class="glossary-term" onclick="showGlossaryPopover(this,'Apport')" tabindex="0">apport</span> ne doit pas vider ta securite.</h2>
-      <p class="brick-subtitle">L'apport utile est celui que tu peux mobiliser sans te mettre en tension.</p>
+                <div class="compact-question">
+                  <span class="compact-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Primo-accédant')" tabindex="0">Primo-accédant</button></span>
+                  <div class="pills-compact" id="pills-primo">
+                    <span class="pill-sm" data-val="oui">Oui</span>
+                    <span class="pill-sm" data-val="non">Non</span>
+                    <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
+                  </div>
+                </div>
 
-      <!-- Module Epargne & Matelas -->
-      <div class="epargne-module" id="epargne-module">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Ton epargne</span>
-          <span class="badge-prefilled" id="badge-epargne-mod" style="display:none">Prerempli</span>
-        </div>
-        <div class="epargne-grid">
-          <div class="epargne-item" id="ei-epargne" onclick="editEpargneItem(this,'input-epargne-totale')">
-            <div class="epargne-item-label">Epargne totale</div>
-            <div class="epargne-item-value" id="ei-epargne-val">0 &euro;</div>
-            <input type="number" class="epargne-item-input" id="input-epargne-totale" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
-          </div>
-          <div class="epargne-item" id="ei-matelas" onclick="editEpargneItem(this,'input-matelas-actuel')">
-            <div class="epargne-item-label">Matelas actuel</div>
-            <div class="epargne-item-value" id="ei-matelas-val">0 &euro;</div>
-            <input type="number" class="epargne-item-input" id="input-matelas-actuel" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
-          </div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-matelas-cible" style="font-size:0.78rem;">Matelas cible</label>
-          <div class="euro-wrap"><input type="number" id="input-matelas-cible" class="field-input" placeholder="ex : 5000" min="0" inputmode="numeric" style="font-size:0.84rem;padding:0.5rem 0.75rem;"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <!-- Barre repartition -->
-        <div style="display:flex;flex-direction:column;gap:0.3rem;">
-          <div class="repartition-bar" id="repartition-bar">
-            <div class="repartition-protege" id="repartition-protege" style="width:0%"></div>
-            <div class="repartition-mobilisable" id="repartition-mobilisable" style="width:0%"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--text-faint);">
-            <span>Protege</span>
-            <span>Mobilisable</span>
-          </div>
-        </div>
-      </div>
+                <div class="compact-question" id="usage-question">
+                  <span class="compact-label">Usage prévu</span>
+                  <div class="pills-compact" id="pills-usage">
+                    <span class="pill-sm" data-val="habiter">Habiter</span>
+                    <span class="pill-sm" data-val="louer">Louer</span>
+                    <span class="pill-sm" data-val="revendre">Revendre</span>
+                    <span class="pill-sm" data-val="plus_tard">Préparer plus tard</span>
+                  </div>
+                </div>
 
-      <!-- Autres apports + Travaux -->
-      <div class="fields-grid" style="margin-top:1rem;">
-        <div class="field-group">
-          <label class="field-label" for="input-aide-famille">Autres apports</label>
-          <div class="euro-wrap"><input type="number" id="input-aide-famille" class="field-input" placeholder="ex : don familial, vente d'un bien..." min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-travaux-apport">Travaux prevus</label>
-          <div class="euro-wrap"><input type="number" id="input-travaux-apport" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-      </div>
+                <div class="compact-question">
+                  <span class="compact-label">Localisation <span style="font-size:0.72rem;color:var(--text-faint);font-weight:400;">(facultatif)</span></span>
+                  <input type="text" id="input-location" class="field-input" placeholder="ex : 75, Paris, 69001..." aria-label="Localisation" style="font-size:0.875rem;padding:0.6rem 0.875rem;"/>
+                  <div class="field-help">Département ou code postal — utile pour estimer les frais</div>
+                </div>
 
-      <!-- Modifier les hypotheses — accordeon -->
-      <div style="margin-top:0.75rem;">
-        <button class="params-toggle" onclick="toggleHypotheses()">Modifier les hypotheses &#x25B8;</button>
-        <div class="params-body" id="hypotheses-body">
-          <div class="field-group">
-            <label class="field-label" for="input-epargne-bloquee" style="font-size:0.78rem;">Epargne bloquee ou non mobilisable</label>
-            <div class="euro-wrap"><input type="number" id="input-epargne-bloquee" class="field-input" placeholder="0" min="0" inputmode="numeric" style="font-size:0.84rem;"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-reserve" style="font-size:0.78rem;">Montant minimum a conserver apres achat</label>
-            <div class="euro-wrap"><input type="number" id="input-reserve" class="field-input" placeholder="ex : 2000" min="0" inputmode="numeric" style="font-size:0.84rem;"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-        </div>
-      </div>
+              </div>
+            </div>
 
-      <div id="warning-apport" class="warning-box" style="display:none;margin-top:0.5rem;">
-        <span>&#x26A0;&#xFE0F;</span>
-        <span id="warning-apport-text"></span>
-      </div>
+            <div id="sci-warning" class="warning-box" style="display:none;margin-top:0.75rem;">
+              <span>⚠️</span>
+              <span>L'achat en SCI ou société est hors périmètre simplifié de cette brique. Les calculs restent indicatifs.</span>
+            </div>
 
-      <!-- Hero card apport mobilisable -->
-      <div class="apport-hero" id="apport-hero" style="margin-top:1rem;">
-        <div class="apport-hero-bg">&#x1F3E0;</div>
-        <div class="apport-hero-label">TON APPORT MOBILISABLE</div>
-        <div class="apport-hero-value" id="apport-hero-value">--</div>
-        <div class="apport-hero-sub" id="apport-hero-sub"></div>
-        <button class="btn-hero-primary" onclick="goScreen(4)" style="align-self:flex-start;">Continuer</button>
-      </div>
-
-      <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(2)">Retour</button>
-        <span></span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── ECRAN 4 : Le vrai cout d'achat (ex-ecran 5) ──────── -->
-  <div id="screen-4" class="screen">
-    <div class="brick-card">
-      <div class="brick-kicker">ETAPE 4 / 8 &middot; COUT REEL</div>
-      <h2 class="brick-title">Le prix affiche n'est pas le cout total.</h2>
-      <p class="brick-subtitle">On additionne les couts visibles et invisibles.</p>
-
-      <div class="fields-grid fields-2col">
-        <div class="field-group">
-          <label class="field-label" for="input-prix-bien">Prix du bien</label>
-          <div class="euro-wrap"><input type="number" id="input-prix-bien" class="field-input" placeholder="ex : 200000" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-frais-notaire"><span class="glossary-term" onclick="showGlossaryPopover(this,'Frais de notaire')" tabindex="0">Frais de notaire</span> (estimation)</label>
-          <div class="euro-wrap"><input type="number" id="input-frais-notaire" class="field-input" placeholder="auto" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          <div class="field-help" id="help-notaire">Estimation modifiable. Voir la regle ci-dessous.</div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-frais-agence">Frais d'agence (si non inclus)</label>
-          <div class="euro-wrap"><input type="number" id="input-frais-agence" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-frais-garantie"><span class="glossary-term" onclick="showGlossaryPopover(this,'Garantie bancaire')" tabindex="0">Frais de garantie</span></label>
-          <div class="euro-wrap"><input type="number" id="input-frais-garantie" class="field-input" placeholder="ex : 2000" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-frais-dossier"><span class="glossary-term" onclick="showGlossaryPopover(this,'Frais de dossier')" tabindex="0">Frais de dossier bancaire</span></label>
-          <div class="euro-wrap"><input type="number" id="input-frais-dossier" class="field-input" placeholder="ex : 500" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-travaux-cout">Travaux</label>
-          <div class="euro-wrap"><input type="number" id="input-travaux-cout" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-meubles-cout">Meubles / emmenagement</label>
-          <div class="euro-wrap"><input type="number" id="input-meubles-cout" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-demenagement">Demenagement</label>
-          <div class="euro-wrap"><input type="number" id="input-demenagement" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-      </div>
-
-      <div style="margin-top:0.75rem;display:flex;flex-direction:column;gap:0.75rem;">
-        <div class="brick-kicker" style="margin-bottom:0;">COUTS MENSUELS PROPRIETAIRE</div>
-        <div class="fields-grid fields-2col">
-          <div class="field-group">
-            <label class="field-label" for="input-taxe-fonciere"><span class="glossary-term" onclick="showGlossaryPopover(this,'Taxe fonciere')" tabindex="0">Taxe fonciere</span> / an</label>
-            <div class="euro-wrap"><input type="number" id="input-taxe-fonciere" class="field-input" placeholder="ex : 1200" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-charges-copro"><span class="glossary-term" onclick="showGlossaryPopover(this,'Charges de copropriete')" tabindex="0">Charges copro</span> / mois</label>
-            <div class="euro-wrap"><input type="number" id="input-charges-copro" class="field-input" placeholder="ex : 150" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-assurance-hab">Assurance habitation / mois</label>
-            <div class="euro-wrap"><input type="number" id="input-assurance-hab" class="field-input" placeholder="ex : 30" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-entretien">Entretien annuel estime</label>
-            <div class="euro-wrap"><input type="number" id="input-entretien" class="field-input" placeholder="ex : 500" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stacked bar chart -->
-      <div class="stacked-bar-wrap" id="cost-chart" style="margin-top:1rem;">
-        <div class="slider-header"><span class="slider-label">Repartition du cout total</span><span class="slider-value" id="val-cout-total">--</span></div>
-        <div class="stacked-bar" id="stacked-bar"></div>
-        <div class="stacked-legend" id="stacked-legend"></div>
-      </div>
-
-      <div class="result-cards" style="margin-top:0.75rem;">
-        <div class="result-card"><div class="result-card-value" id="rc-cout-acq">--</div><div class="result-card-label">Cout acquisition</div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-cout-install">--</div><div class="result-card-label">Cout installation</div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-cout-mensuel">--</div><div class="result-card-label">Cout mensuel proprio</div><div class="result-card-sub">hors mensualite credit</div></div>
-      </div>
-
-      <div class="mode-card" style="margin-top:0.5rem;">
-        <div class="mode-card-text">Estimation a verifier. Tu peux modifier chaque montant. Les hypotheses sont affichees.</div>
-      </div>
-
-      <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(3)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(5)">Continuer</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── ECRAN 5 : Capacite d'achat (ex-ecran 6) ────────────── -->
-  <div id="screen-5" class="screen">
-    <div class="brick-card">
-      <div class="brick-kicker">ETAPE 5 / 8 &middot; SIMULATEUR</div>
-      <h2 class="brick-title">Combien peux-tu viser ?</h2>
-      <p class="brick-subtitle">On transforme mensualite + apport + frais en budget d'achat realiste.</p>
-
-      <div style="display:flex;flex-direction:column;gap:1rem;">
-        <div class="slider-group">
-          <div class="slider-header"><span class="slider-label">Prix du bien</span><span class="slider-value" id="val-prix-sim">200 000 &euro;</span></div>
-          <input type="range" id="slider-prix-sim" min="30000" max="800000" value="200000" step="5000" oninput="updateSimulator()"/>
-        </div>
-        <div class="slider-group">
-          <div class="slider-header"><span class="slider-label">Apport</span><span class="slider-value" id="val-apport-sim">0 &euro;</span></div>
-          <input type="range" id="slider-apport-sim" min="0" max="200000" value="0" step="1000" oninput="updateSimulator()"/>
-        </div>
-        <div class="slider-group">
-          <div class="slider-header"><span class="slider-label">Taux</span><span class="slider-value" id="val-taux-sim">3.5 %</span></div>
-          <input type="range" id="slider-taux-sim" min="1" max="7" value="3.5" step="0.1" oninput="updateSimulator()"/>
-        </div>
-        <div class="slider-group">
-          <div class="slider-header"><span class="slider-label">Duree</span><span class="slider-value" id="val-duree-sim">20 ans</span></div>
-          <input type="range" id="slider-duree-sim" min="10" max="25" value="20" step="1" oninput="updateSimulator()"/>
-        </div>
-      </div>
-
-      <div id="sim-status" class="status-card green" style="margin-top:0.75rem;">
-        <span class="status-icon">&#x2705;</span>
-        <div><div class="status-text" id="sim-status-text">Projet confortable</div><div class="status-sub" id="sim-status-sub"></div></div>
-      </div>
-
-      <div class="result-cards" style="margin-top:0.75rem;">
-        <div class="result-card"><div class="result-card-value" id="rc-sim-mensualite">--</div><div class="result-card-label">Mensualite</div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-sim-effort">--</div><div class="result-card-label"><span class="glossary-term" onclick="showGlossaryPopover(this,'Taux d\\\'effort')" tabindex="0">Taux d'effort</span></div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-sim-rav">--</div><div class="result-card-label">Reste a vivre</div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-sim-emprunt">--</div><div class="result-card-label">Emprunt necessaire</div></div>
-      </div>
-
-      <div class="quick-actions" style="margin-top:0.5rem;">
-        <button class="quick-action" onclick="quickAction('reduire_prix')">Reduire le prix</button>
-        <button class="quick-action" onclick="quickAction('augmenter_apport')">Augmenter l'apport</button>
-        <button class="quick-action" onclick="quickAction('allonger_duree')">Allonger la duree</button>
-      </div>
-
-      <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(4)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(6)">Continuer</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── ECRAN 6 : Investissement locatif (ex-ecran 7) ──────── -->
-  <div id="screen-6" class="screen">
-    <div class="brick-card">
-      <div class="brick-kicker">ETAPE 6 / 8 &middot; INVESTISSEMENT LOCATIF</div>
-      <h2 class="brick-title">Acheter pour louer : il faut regarder plus que le loyer.</h2>
-
-      <div class="invest-toggle-card">
-        <div class="invest-toggle-header">
-          <span class="invest-toggle-label">Tu prepares un investissement locatif ?</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="toggle-invest" onchange="toggleInvestment()"/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <div id="invest-minimal" class="invest-minimal" style="display:none">
-        Section non applicable a ton projet. Tu peux continuer.
-      </div>
-
-      <div id="invest-full" style="display:none">
-        <div class="fields-grid fields-2col" style="margin-top:0.75rem;">
-          <div class="field-group">
-            <label class="field-label" for="input-loyer-estime">Loyer mensuel estime</label>
-            <div class="euro-wrap"><input type="number" id="input-loyer-estime" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-vacance">Vacance locative (mois/an)</label>
-            <input type="number" id="input-vacance" class="field-input" placeholder="ex : 1" min="0" max="12" step="0.5" inputmode="numeric"/>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-charges-loc">Charges non recuperables / mois</label>
-            <div class="euro-wrap"><input type="number" id="input-charges-loc" class="field-input" placeholder="ex : 50" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-taxe-fonc-loc">Taxe fonciere / an</label>
-            <div class="euro-wrap"><input type="number" id="input-taxe-fonc-loc" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-assurance-pno">Assurance PNO / mois</label>
-            <div class="euro-wrap"><input type="number" id="input-assurance-pno" class="field-input" placeholder="ex : 20" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-          </div>
-          <div class="field-group">
-            <label class="field-label" for="input-gestion-loc">Gestion locative / mois</label>
-            <div class="euro-wrap"><input type="number" id="input-gestion-loc" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+            <div class="nav-btns" style="margin-top:1.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(0)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(2)">
+                Continuer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div class="result-cards" id="results-invest" style="margin-top:1rem;">
-          <div class="result-card"><div class="result-card-value" id="rc-rdt-brut">--</div><div class="result-card-label"><span class="glossary-term" onclick="showGlossaryPopover(this,'Rendement brut')" tabindex="0">Rendement brut</span></div></div>
-          <div class="result-card"><div class="result-card-value" id="rc-rdt-net">--</div><div class="result-card-label"><span class="glossary-term" onclick="showGlossaryPopover(this,'Rendement net simplifie')" tabindex="0">Rendement net simplifie</span></div></div>
-          <div class="result-card"><div class="result-card-value" id="rc-cashflow">--</div><div class="result-card-label"><span class="glossary-term" onclick="showGlossaryPopover(this,'Cash-flow')" tabindex="0">Cash-flow mensuel</span></div></div>
-          <div class="result-card"><div class="result-card-value" id="rc-effort-loc">--</div><div class="result-card-label">Effort d'epargne</div></div>
+        <!-- ═══ SCREEN 2 — Capacité mensuelle ═══ -->
+        <div class="screen" id="screen-2">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 2 / 8 · CAPACITÉ MENSUELLE</div>
+            <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
+            <p class="brick-subtitle">On transforme tes revenus et charges en <button class="glossary-term" onclick="showGlossaryPopover(this,'Mensualité')" tabindex="0">mensualité</button> cible.</p>
+
+            <div style="display:flex;flex-direction:column;gap:1.25rem;">
+              <div class="field-group">
+                <label class="field-label" for="input-revenus">Revenus nets du foyer <span class="badge-prefilled" id="badge-revenus" style="display:none">Prérempli</span></label>
+                <div class="euro-wrap"><input type="number" id="input-revenus" class="field-input" placeholder="ex : 2 500" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <button type="button" id="link-rev-compl" style="font-size:0.75rem;color:var(--accent-strong);margin-top:0.2rem;text-decoration:none;background:none;border:none;cursor:pointer;text-align:left;padding:0;" onclick="toggleRevCompl()">+ Ajouter des revenus complémentaires</button>
+                <div id="rev-compl-wrap" style="display:none;margin-top:0.4rem;">
+                  <div class="field-group">
+                    <label class="field-label" for="input-revenus-compl" style="font-size:0.78rem;">Revenus complémentaires (primes, variable...)</label>
+                    <div class="euro-wrap"><input type="number" id="input-revenus-compl" class="field-input" placeholder="0" min="0" inputmode="numeric" style="font-size:0.875rem;"/><span class="euro-suffix">€</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="fields-2col">
+                <div class="field-group">
+                  <label class="field-label" for="input-charges">Charges fixes <span class="badge-prefilled" id="badge-charges" style="display:none">Prérempli</span></label>
+                  <div class="euro-wrap"><input type="number" id="input-charges" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-credits">Crédits existants/mois <span class="badge-prefilled" id="badge-credits" style="display:none">Prérempli</span></label>
+                  <div class="euro-wrap"><input type="number" id="input-credits" class="field-input" placeholder="ex : 200" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="input-loyer">Loyer actuel <span class="badge-prefilled" id="badge-loyer" style="display:none">Prérempli</span></label>
+                <div class="euro-wrap"><input type="number" id="input-loyer" class="field-input" placeholder="ex : 700" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <div id="loyer-source" class="field-help" style="display:none;"></div>
+                <div class="loyer-delta neutral" id="loyer-delta"></div>
+              </div>
+            </div>
+
+            <!-- Presets -->
+            <div class="presets" style="margin-top:1rem;">
+              <button class="preset-btn" data-preset="prudent" onclick="applyPreset('prudent')">Prudent</button>
+              <button class="preset-btn active" data-preset="equilibre" onclick="applyPreset('equilibre')">Équilibré</button>
+              <button class="preset-btn" data-preset="ambitieux" onclick="applyPreset('ambitieux')">Ambitieux</button>
+            </div>
+
+            <!-- Params avancés -->
+            <div style="margin-top:0.5rem;">
+              <button class="params-toggle" id="params-toggle-s2" onclick="toggleParams()">
+                <span id="params-summary">Durée : 20 ans · Taux estimé : 3.5%</span>
+                <span>▸</span>
+              </button>
+              <div class="params-body" id="params-body-s2">
+                <div class="slider-group">
+                  <div class="slider-header"><span class="slider-label">Durée du prêt</span><span class="slider-value" id="val-duree">20 ans</span></div>
+                  <input type="range" id="slider-duree" min="10" max="25" value="20" step="1" oninput="updateCapacity()"/>
+                </div>
+                <div class="slider-group">
+                  <div class="slider-header"><span class="slider-label">Taux nominal</span><span class="slider-value" id="val-taux">3.5 %</span></div>
+                  <input type="range" id="slider-taux" min="1" max="7" value="3.5" step="0.1" oninput="updateCapacity()"/>
+                </div>
+              </div>
+            </div>
+
+            <div id="warning-effort" class="warning-box" style="display:none;margin-top:0.75rem;">
+              <span>⚠️</span>
+              <span id="warning-effort-text">Taux d'effort élevé.</span>
+            </div>
+
+            <!-- Result cards -->
+            <div class="result-cards" id="results-s2" style="margin-top:1rem;">
+              <div class="result-card"><div class="result-card-value" id="rc-mensualite">--</div><div class="result-card-label">Mensualité cible</div></div>
+              <div class="result-card"><div class="result-card-value" id="rc-rav">--</div><div class="result-card-label">Reste à vivre</div></div>
+            </div>
+
+            <!-- Taux d'effort -->
+            <div class="gauge-wrap" id="gauge-effort" style="margin-top:0.75rem;">
+              <div class="slider-header"><span class="slider-label" style="font-size:0.75rem;">Taux d'effort</span><span class="slider-value" id="val-effort" style="font-size:0.75rem;">0 %</span></div>
+              <div class="gauge-bar" style="height:8px;"><div class="gauge-fill gauge-green" id="fill-effort" style="width:0%"></div></div>
+              <div class="gauge-label"><span>0%</span><span>35%</span><span>50%</span></div>
+            </div>
+
+            <!-- Assurance estimée -->
+            <div id="assurance-info" style="font-size:0.75rem;color:var(--text-faint);margin-top:0.35rem;"></div>
+
+            <div class="nav-btns" style="margin-top:1.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(1)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(3)">
+                Continuer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div class="warning-box" style="margin-top:0.5rem;">
-          <span>&#x26A0;&#xFE0F;</span>
-          <span>Simulation simplifiee. La fiscalite (IR, CSG, regime LMNP...) peut changer fortement le resultat. Ne constitue pas un conseil en investissement.</span>
+        <!-- ═══ SCREEN 3 — Ton apport réel ═══ -->
+        <div class="screen" id="screen-3">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 3 / 8 · APPORT</div>
+            <h2 class="brick-title">Ton <button class="glossary-term" onclick="showGlossaryPopover(this,'Apport')" tabindex="0">apport</button> ne doit pas vider ta sécurité.</h2>
+            <p class="brick-subtitle">L'apport utile est celui que tu peux mobiliser sans te mettre en tension.</p>
+
+            <!-- Module épargne -->
+            <div class="epargne-module" id="epargne-module">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:0.875rem;font-weight:600;color:var(--text);">Ton épargne</span>
+                <span class="badge-prefilled" id="badge-epargne-mod" style="display:none">Prérempli</span>
+              </div>
+              <div class="epargne-grid">
+                <div class="epargne-item" id="ei-epargne" onclick="editEpargneItem(this,'input-epargne-totale')">
+                  <div class="epargne-item-label">Épargne totale</div>
+                  <div class="epargne-item-value" id="ei-epargne-val">0 €</div>
+                  <input type="number" class="epargne-item-input" id="input-epargne-totale" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
+                </div>
+                <div class="epargne-item" id="ei-matelas" onclick="editEpargneItem(this,'input-matelas-actuel')">
+                  <div class="epargne-item-label">Matelas actuel</div>
+                  <div class="epargne-item-value" id="ei-matelas-val">0 €</div>
+                  <input type="number" class="epargne-item-input" id="input-matelas-actuel" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="input-matelas-cible" style="font-size:0.78rem;">Matelas cible</label>
+                <div class="euro-wrap"><input type="number" id="input-matelas-cible" class="field-input" placeholder="ex : 5 000" min="0" inputmode="numeric" style="font-size:0.875rem;padding:0.6rem 0.875rem;"/><span class="euro-suffix">€</span></div>
+              </div>
+              <!-- Barre répartition -->
+              <div style="display:flex;flex-direction:column;gap:0.3rem;">
+                <div class="repartition-bar" id="repartition-bar">
+                  <div class="repartition-protege" id="repartition-protege" style="width:0%"></div>
+                  <div class="repartition-mobilisable" id="repartition-mobilisable" style="width:0%"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--text-faint);">
+                  <span>Protégé</span>
+                  <span>Mobilisable</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Autres apports + Travaux -->
+            <div class="fields-2col" style="margin-top:1rem;">
+              <div class="field-group">
+                <label class="field-label" for="input-aide-famille">Autres apports</label>
+                <div class="euro-wrap"><input type="number" id="input-aide-famille" class="field-input" placeholder="ex : don familial..." min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="input-travaux-apport">Travaux prévus</label>
+                <div class="euro-wrap"><input type="number" id="input-travaux-apport" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+              </div>
+            </div>
+
+            <!-- Modifier hypothèses -->
+            <div style="margin-top:0.75rem;">
+              <button class="params-toggle" onclick="toggleHypotheses()">Modifier les hypothèses ▸</button>
+              <div class="params-body" id="hypotheses-body">
+                <div class="field-group">
+                  <label class="field-label" for="input-epargne-bloquee" style="font-size:0.78rem;">Épargne bloquée ou non mobilisable</label>
+                  <div class="euro-wrap"><input type="number" id="input-epargne-bloquee" class="field-input" placeholder="0" min="0" inputmode="numeric" style="font-size:0.875rem;"/><span class="euro-suffix">€</span></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-reserve" style="font-size:0.78rem;">Montant minimum à conserver après achat</label>
+                  <div class="euro-wrap"><input type="number" id="input-reserve" class="field-input" placeholder="ex : 2 000" min="0" inputmode="numeric" style="font-size:0.875rem;"/><span class="euro-suffix">€</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="warning-apport" class="warning-box" style="display:none;margin-top:0.75rem;">
+              <span>⚠️</span>
+              <span id="warning-apport-text"></span>
+            </div>
+
+            <!-- Hero card apport mobilisable -->
+            <div class="apport-hero" id="apport-hero" style="margin-top:1.25rem;">
+              <div class="apport-hero-bg">🏠</div>
+              <div class="apport-hero-label">TON APPORT MOBILISABLE</div>
+              <div class="apport-hero-value" id="apport-hero-value">--</div>
+              <div class="apport-hero-sub" id="apport-hero-sub"></div>
+              <button class="btn-hero-primary" onclick="goToScreen(4)" style="align-self:flex-start;">
+                Continuer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+
+            <div class="nav-btns" style="margin-top:0.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(2)">← Retour</button>
+              <span></span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="nav-btns" style="margin-top:1rem;">
-        <button class="btn-hero-secondary" onclick="goScreen(5)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(7)">Continuer</button>
-      </div>
-    </div>
-  </div>
+        <!-- ═══ SCREEN 4 — Le vrai coût d'achat ═══ -->
+        <div class="screen" id="screen-4">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 4 / 8 · COÛT RÉEL</div>
+            <h2 class="brick-title">Le prix affiché n'est pas le coût total.</h2>
+            <p class="brick-subtitle">On additionne les coûts visibles et invisibles.</p>
 
-  <!-- ─── ECRAN 7 : Les etapes d'un achat (ex-ecran 8) ─────── -->
-  <div id="screen-7" class="screen">
-    <div class="brick-card">
-      <div class="brick-kicker">ETAPE 7 / 8 &middot; PROCESSUS</div>
-      <h2 class="brick-title">Les grandes etapes avant les cles.</h2>
-      <p class="brick-subtitle">Clique sur une etape pour voir le detail.</p>
+            <div class="fields-2col">
+              <div class="field-group">
+                <label class="field-label" for="input-prix-bien">Prix du bien</label>
+                <div class="euro-wrap"><input type="number" id="input-prix-bien" class="field-input" placeholder="ex : 200 000" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="input-frais-notaire"><button class="glossary-term" onclick="showGlossaryPopover(this,'Frais de notaire')" tabindex="0">Frais de notaire</button></label>
+                <div class="euro-wrap"><input type="number" id="input-frais-notaire" class="field-input" placeholder="auto" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <div class="field-help" id="help-notaire">Estimation modifiable.</div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="input-frais-agence">Frais d'agence</label>
+                <div class="euro-wrap"><input type="number" id="input-frais-agence" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="input-frais-garantie"><button class="glossary-term" onclick="showGlossaryPopover(this,'Garantie bancaire')" tabindex="0">Frais de garantie</button></label>
+                <div class="euro-wrap"><input type="number" id="input-frais-garantie" class="field-input" placeholder="ex : 2 000" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="input-frais-dossier"><button class="glossary-term" onclick="showGlossaryPopover(this,'Frais de dossier')" tabindex="0">Frais de dossier bancaire</button></label>
+                <div class="euro-wrap"><input type="number" id="input-frais-dossier" class="field-input" placeholder="ex : 500" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="input-travaux-cout">Travaux</label>
+                <div class="euro-wrap"><input type="number" id="input-travaux-cout" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="input-meubles-cout">Meubles / emménagement</label>
+                <div class="euro-wrap"><input type="number" id="input-meubles-cout" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="input-demenagement">Déménagement</label>
+                <div class="euro-wrap"><input type="number" id="input-demenagement" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+              </div>
+            </div>
 
-      <div class="timeline" id="timeline">
-        <!-- Populated by JS -->
-      </div>
+            <div style="margin-top:1.25rem;">
+              <div class="brick-kicker" style="margin-bottom:0.75rem;">COÛTS MENSUELS PROPRIÉTAIRE</div>
+              <div class="fields-2col">
+                <div class="field-group">
+                  <label class="field-label" for="input-taxe-fonciere"><button class="glossary-term" onclick="showGlossaryPopover(this,'Taxe foncière')" tabindex="0">Taxe foncière</button> / an</label>
+                  <div class="euro-wrap"><input type="number" id="input-taxe-fonciere" class="field-input" placeholder="ex : 1 200" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-charges-copro"><button class="glossary-term" onclick="showGlossaryPopover(this,'Charges de copropriété')" tabindex="0">Charges copro</button> / mois</label>
+                  <div class="euro-wrap"><input type="number" id="input-charges-copro" class="field-input" placeholder="ex : 150" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-assurance-hab">Assurance habitation / mois</label>
+                  <div class="euro-wrap"><input type="number" id="input-assurance-hab" class="field-input" placeholder="ex : 30" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-entretien">Entretien annuel estimé</label>
+                  <div class="euro-wrap"><input type="number" id="input-entretien" class="field-input" placeholder="ex : 500" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+              </div>
+            </div>
 
-      <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(6)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(8)">Voir mon diagnostic</button>
-      </div>
-    </div>
-  </div>
+            <!-- Stacked bar -->
+            <div class="stacked-bar-wrap" id="cost-chart" style="margin-top:1.25rem;">
+              <div class="slider-header"><span class="slider-label">Répartition du coût total</span><span class="slider-value" id="val-cout-total">--</span></div>
+              <div class="stacked-bar" id="stacked-bar"></div>
+              <div class="stacked-legend" id="stacked-legend"></div>
+            </div>
 
-  <!-- ─── ECRAN FINAL 8 : Diagnostic (ex-ecran 9) ────────────── -->
-  <div id="screen-8" class="screen">
-    <div class="brick-card" style="text-align:center;">
-      <div class="brick-kicker">DIAGNOSTIC IMMOBILIER</div>
-      <h2 class="brick-title">Ton premier diagnostic immobilier est pret.</h2>
+            <div class="result-cards" style="margin-top:0.75rem;">
+              <div class="result-card"><div class="result-card-value" id="rc-cout-acq">--</div><div class="result-card-label">Coût acquisition</div></div>
+              <div class="result-card"><div class="result-card-value" id="rc-cout-install">--</div><div class="result-card-label">Coût installation</div></div>
+              <div class="result-card"><div class="result-card-value" id="rc-cout-mensuel">--</div><div class="result-card-label">Coût mensuel proprio</div><div class="result-card-sub">hors mensualité crédit</div></div>
+            </div>
 
-      <svg class="score-ring" viewBox="0 0 100 100">
-        <circle class="ring-bg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="0"/>
-        <circle class="ring-fill" id="score-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
-        <text id="score-ring-text" x="50" y="50">--</text>
-      </svg>
+            <div class="mode-card" style="margin-top:0.75rem;">
+              <div class="mode-card-text">Estimation à vérifier. Tu peux modifier chaque montant.</div>
+            </div>
 
-      <div id="score-status" class="status-card green" style="justify-content:center;margin:0.75rem 0;">
-        <span class="status-icon" id="score-status-icon">&#x2705;</span>
-        <div class="status-text" id="score-status-text">--</div>
-      </div>
-    </div>
+            <div class="nav-btns" style="margin-top:1.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(3)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(5)">
+                Continuer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
 
-    <div class="brick-card">
-      <div class="brick-kicker">RESUME</div>
-      <div class="summary-grid" id="summary-grid">
-        <!-- Populated by JS -->
-      </div>
-    </div>
+        <!-- ═══ SCREEN 5 — Simulateur capacité ═══ -->
+        <div class="screen" id="screen-5">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 5 / 8 · SIMULATEUR</div>
+            <h2 class="brick-title">Combien peux-tu viser&nbsp;?</h2>
+            <p class="brick-subtitle">On transforme mensualité + apport + frais en budget d'achat réaliste.</p>
 
-    <div class="brick-card">
-      <div class="brick-kicker">ACTIONS PRIORITAIRES</div>
-      <div class="actions-list" id="actions-list">
-        <!-- Populated by JS -->
-      </div>
-    </div>
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="slider-group">
+                <div class="slider-header"><span class="slider-label">Prix du bien</span><span class="slider-value" id="val-prix-sim">200 000 €</span></div>
+                <input type="range" id="slider-prix-sim" min="30000" max="800000" value="200000" step="5000" oninput="updateSimulator()"/>
+              </div>
+              <div class="slider-group">
+                <div class="slider-header"><span class="slider-label">Apport</span><span class="slider-value" id="val-apport-sim">0 €</span></div>
+                <input type="range" id="slider-apport-sim" min="0" max="200000" value="0" step="1000" oninput="updateSimulator()"/>
+              </div>
+              <div class="slider-group">
+                <div class="slider-header"><span class="slider-label">Taux</span><span class="slider-value" id="val-taux-sim">3.5 %</span></div>
+                <input type="range" id="slider-taux-sim" min="1" max="7" value="3.5" step="0.1" oninput="updateSimulator()"/>
+              </div>
+              <div class="slider-group">
+                <div class="slider-header"><span class="slider-label">Durée</span><span class="slider-value" id="val-duree-sim">20 ans</span></div>
+                <input type="range" id="slider-duree-sim" min="10" max="25" value="20" step="1" oninput="updateSimulator()"/>
+              </div>
+            </div>
 
-    <div class="reco-cards">
-      <div class="reco-card">
-        <span class="reco-card-tag">PARCOURS RECOMMANDE</span>
-        <h3 class="reco-card-title">Parcours Achat immobilier</h3>
-        <p class="reco-card-text">On va construire ton dossier banque, comparer les scenarios et suivre les etapes jusqu'au notaire.</p>
-        <a href="parcours-achat-immobilier.html" class="btn-hero-primary">Lancer le parcours</a>
-      </div>
-      <div class="reco-card" id="reco-next-brick">
-        <span class="reco-card-tag">PROCHAINE BRIQUE RECOMMANDEE</span>
-        <h3 class="reco-card-title" id="reco-next-title">--</h3>
-        <p class="reco-card-text" id="reco-next-text">--</p>
-        <button class="btn-hero-primary" id="reco-next-btn" onclick="goToNextBrick()">Commencer</button>
-      </div>
-    </div>
+            <div id="sim-status" class="status-card green" style="margin-top:1rem;">
+              <span class="status-icon">✅</span>
+              <div><div class="status-text" id="sim-status-text">Projet confortable</div><div class="status-sub" id="sim-status-sub"></div></div>
+            </div>
 
-    <div class="nav-btns" style="margin-top:1rem;">
-      <button class="btn-hero-secondary" onclick="goScreen(7)">Retour</button>
-      <button class="btn-hero-primary" onclick="validerEtDashboard()">Ajouter mon projet au dashboard</button>
-    </div>
-  </div>
+            <div class="result-cards" style="margin-top:0.75rem;">
+              <div class="result-card"><div class="result-card-value" id="rc-sim-mensualite">--</div><div class="result-card-label">Mensualité</div></div>
+              <div class="result-card"><div class="result-card-value" id="rc-sim-effort">--</div><div class="result-card-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Taux d\\'effort')" tabindex="0">Taux d'effort</button></div></div>
+              <div class="result-card"><div class="result-card-value" id="rc-sim-rav">--</div><div class="result-card-label">Reste à vivre</div></div>
+              <div class="result-card"><div class="result-card-value" id="rc-sim-emprunt">--</div><div class="result-card-label">Emprunt nécessaire</div></div>
+            </div>
 
-</div><!-- /brick-container -->
+            <div class="quick-actions" style="margin-top:0.75rem;">
+              <button class="quick-action" onclick="quickAction('reduire_prix')">Réduire le prix</button>
+              <button class="quick-action" onclick="quickAction('augmenter_apport')">Augmenter l'apport</button>
+              <button class="quick-action" onclick="quickAction('allonger_duree')">Allonger la durée</button>
+            </div>
+
+            <div class="nav-btns" style="margin-top:1.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(4)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(6)">
+                Continuer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SCREEN 6 — Investissement locatif ═══ -->
+        <div class="screen" id="screen-6">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 6 / 8 · INVESTISSEMENT LOCATIF</div>
+            <h2 class="brick-title">Acheter pour louer&nbsp;: il faut regarder plus que le loyer.</h2>
+
+            <div class="invest-toggle-card">
+              <div class="invest-toggle-header">
+                <span class="invest-toggle-label">Tu prépares un investissement locatif&nbsp;?</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-invest" onchange="toggleInvestment()"/>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div id="invest-minimal" class="invest-minimal" style="display:block;">
+              Section non applicable à ton projet. Tu peux continuer.
+            </div>
+
+            <div id="invest-full" style="display:none;">
+              <div class="fields-2col" style="margin-top:0.75rem;">
+                <div class="field-group">
+                  <label class="field-label" for="input-loyer-estime">Loyer mensuel estimé</label>
+                  <div class="euro-wrap"><input type="number" id="input-loyer-estime" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-vacance">Vacance locative (mois/an)</label>
+                  <input type="number" id="input-vacance" class="field-input" placeholder="ex : 1" min="0" max="12" step="0.5" inputmode="numeric"/>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-charges-loc">Charges non récupérables / mois</label>
+                  <div class="euro-wrap"><input type="number" id="input-charges-loc" class="field-input" placeholder="ex : 50" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-taxe-fonc-loc">Taxe foncière / an</label>
+                  <div class="euro-wrap"><input type="number" id="input-taxe-fonc-loc" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-assurance-pno">Assurance PNO / mois</label>
+                  <div class="euro-wrap"><input type="number" id="input-assurance-pno" class="field-input" placeholder="ex : 20" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="input-gestion-loc">Gestion locative / mois</label>
+                  <div class="euro-wrap"><input type="number" id="input-gestion-loc" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                </div>
+              </div>
+
+              <div class="result-cards" id="results-invest" style="margin-top:1rem;">
+                <div class="result-card"><div class="result-card-value" id="rc-rdt-brut">--</div><div class="result-card-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Rendement brut')" tabindex="0">Rendement brut</button></div></div>
+                <div class="result-card"><div class="result-card-value" id="rc-rdt-net">--</div><div class="result-card-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Rendement net simplifié')" tabindex="0">Rendement net</button></div></div>
+                <div class="result-card"><div class="result-card-value" id="rc-cashflow">--</div><div class="result-card-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Cash-flow')" tabindex="0">Cash-flow mensuel</button></div></div>
+                <div class="result-card"><div class="result-card-value" id="rc-effort-loc">--</div><div class="result-card-label">Effort d'épargne</div></div>
+              </div>
+
+              <div class="warning-box" style="margin-top:0.75rem;">
+                <span>⚠️</span>
+                <span>Simulation simplifiée. La fiscalité (IR, CSG, LMNP…) peut changer le résultat.</span>
+              </div>
+            </div>
+
+            <div class="nav-btns" style="margin-top:1.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(5)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(7)">
+                Continuer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SCREEN 7 — Les étapes d'un achat ═══ -->
+        <div class="screen" id="screen-7">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 7 / 8 · PROCESSUS</div>
+            <h2 class="brick-title">Les grandes étapes avant les clés.</h2>
+            <p class="brick-subtitle">Clique sur une étape pour voir le détail.</p>
+
+            <div class="timeline" id="timeline">
+              <!-- Populated by JS -->
+            </div>
+
+            <div class="nav-btns" style="margin-top:1.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(6)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(8)">
+                Voir mon diagnostic
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SCREEN 8 — Diagnostic final ═══ -->
+        <div class="screen" id="screen-8">
+          <div class="brick-card" style="text-align:center;">
+            <div class="brick-kicker">DIAGNOSTIC IMMOBILIER</div>
+            <h2 class="brick-title">Ton premier diagnostic immobilier est prêt.</h2>
+
+            <svg class="score-ring" viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="0"/>
+              <circle class="ring-fill" id="score-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+              <text id="score-ring-text" x="50" y="50">--</text>
+            </svg>
+
+            <div id="score-status" class="status-card green" style="justify-content:center;margin:0.75rem 0;">
+              <span class="status-icon" id="score-status-icon">✅</span>
+              <div class="status-text" id="score-status-text">--</div>
+            </div>
+          </div>
+
+          <div class="brick-card">
+            <div class="brick-kicker">RÉSUMÉ</div>
+            <div class="summary-grid" id="summary-grid">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="brick-card">
+            <div class="brick-kicker">ACTIONS PRIORITAIRES</div>
+            <div class="actions-list" id="actions-list">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="reco-cards">
+            <div class="reco-card" data-glyph="🏠">
+              <div class="reco-kicker">PARCOURS RECOMMANDÉ</div>
+              <h3 class="reco-title">Parcours Achat immobilier</h3>
+              <p class="reco-desc">On va construire ton dossier banque, comparer les scénarios et suivre les étapes jusqu'au notaire.</p>
+              <a href="parcours-achat-immobilier.html" class="btn-hero-primary" style="align-self:flex-start;">Lancer le parcours</a>
+            </div>
+            <div class="reco-card" id="reco-next-brick" data-glyph="→">
+              <div class="reco-kicker">PROCHAINE BRIQUE RECOMMANDÉE</div>
+              <h3 class="reco-title" id="reco-next-title">--</h3>
+              <p class="reco-desc" id="reco-next-text">--</p>
+              <button class="btn-hero-primary" id="reco-next-btn" onclick="goToNextBrick()" style="align-self:flex-start;">Commencer</button>
+            </div>
+          </div>
+
+          <div class="nav-btns" style="margin-top:1rem;">
+            <button class="btn-hero-secondary" onclick="goToScreen(7)">← Retour</button>
+            <button class="btn-hero-primary" onclick="validerEtDashboard()">
+              Ajouter au dashboard
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /brique-main -->
+
+      <!-- ════════════════════════════ COLONNE DROITE — Panel progression ════════════════════════════ -->
+      <div class="brique-progress-col">
+        <div class="brique-progress-card">
+          <div class="bpc-kicker">TA PROGRESSION</div>
+          <div class="bpc-title" id="bpc-title">Prépare ton projet immobilier.</div>
+
+          <!-- Ring progression -->
+          <div class="bpc-ring-wrap">
+            <svg class="bpc-ring" width="80" height="80" viewBox="0 0 80 80" aria-hidden="true">
+              <circle class="bpc-ring-bg" cx="40" cy="40" r="34"/>
+              <circle class="bpc-ring-fill" id="bpc-ring-fill" cx="40" cy="40" r="34"
+                stroke-dasharray="213.6"
+                stroke-dashoffset="213.6"/>
+              <text x="40" y="40" text-anchor="middle" dominant-baseline="central" class="bpc-ring-pct" id="bpc-ring-pct">0%</text>
+            </svg>
+          </div>
+
+          <!-- Steps list -->
+          <div class="bpc-steps" id="bpc-steps">
+            <div class="bpc-step active" data-screen="0">
+              <div class="bpc-step-num">0</div>
+              <div class="bpc-step-label">Introduction</div>
+            </div>
+            <div class="bpc-step" data-screen="1">
+              <div class="bpc-step-num">1</div>
+              <div class="bpc-step-label">Ton projet</div>
+            </div>
+            <div class="bpc-step" data-screen="2">
+              <div class="bpc-step-num">2</div>
+              <div class="bpc-step-label">Capacité mensuelle</div>
+            </div>
+            <div class="bpc-step" data-screen="3">
+              <div class="bpc-step-num">3</div>
+              <div class="bpc-step-label">Ton apport</div>
+            </div>
+            <div class="bpc-step" data-screen="4">
+              <div class="bpc-step-num">4</div>
+              <div class="bpc-step-label">Vrai coût d'achat</div>
+            </div>
+            <div class="bpc-step" data-screen="5">
+              <div class="bpc-step-num">5</div>
+              <div class="bpc-step-label">Simulateur</div>
+            </div>
+            <div class="bpc-step" data-screen="6">
+              <div class="bpc-step-num">6</div>
+              <div class="bpc-step-label">Locatif</div>
+            </div>
+            <div class="bpc-step" data-screen="7">
+              <div class="bpc-step-num">7</div>
+              <div class="bpc-step-label">Les étapes</div>
+            </div>
+            <div class="bpc-step" data-screen="8">
+              <div class="bpc-step-num">✓</div>
+              <div class="bpc-step-label">C'est noté.</div>
+            </div>
+          </div>
+
+          <!-- Nav links -->
+          <div class="bpc-nav">
+            <a href="dashboard.html" class="bpc-nav-link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Dashboard
+            </a>
+          </div>
+        </div>
+      </div><!-- /brique-progress-col -->
+
+    </div><!-- /brique-layout -->
+  </div><!-- /f-content -->
+</div><!-- /f-sidebar-shell -->
 
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- INLINE JS — Brick logic                                     -->
@@ -997,65 +1604,62 @@ var S = {
 
 /* ─── GLOSSARY DATA ──────────────────────────────────────── */
 var GLOSSARY = [
-  { cat: 'Comprendre le cout', sub: 'Les bases du prix', terms: [
-    { t: 'Prix net vendeur', d: 'Le prix du bien sans frais d\'agence. C\'est la base sur laquelle se calculent les frais de notaire.', ex: 'Un bien affiche a 210 000 EUR FAI avec 10 000 EUR de frais d\'agence = 200 000 EUR net vendeur.', w: 'Les frais de notaire se calculent sur ce montant, pas sur le prix FAI.' },
-    { t: 'Frais d\'agence', d: 'La commission de l\'agence immobiliere, generalement entre 3% et 8% du prix.', ex: 'Sur un bien a 200 000 EUR, l\'agence peut prendre 10 000 EUR.', w: 'Peuvent etre a la charge du vendeur ou de l\'acheteur. Verifie la repartition.' },
-    { t: 'Prix FAI', d: 'Prix Frais d\'Agence Inclus. C\'est le prix total affiche sur l\'annonce.', ex: '200 000 EUR net vendeur + 10 000 EUR d\'agence = 210 000 EUR FAI.', w: 'Ne confonds pas avec le cout total du projet.' }
+  { cat: 'Comprendre le coût', sub: 'Les bases du prix', terms: [
+    { t: 'Prix net vendeur', d: 'Le prix du bien sans frais d\'agence. C\'est la base sur laquelle se calculent les frais de notaire.', ex: 'Un bien affiché à 210 000 EUR FAI avec 10 000 EUR de frais d\'agence = 200 000 EUR net vendeur.', w: 'Les frais de notaire se calculent sur ce montant, pas sur le prix FAI.' },
+    { t: 'Frais d\'agence', d: 'La commission de l\'agence immobilière, généralement entre 3% et 8% du prix.', ex: 'Sur un bien à 200 000 EUR, l\'agence peut prendre 10 000 EUR.', w: 'Peuvent être à la charge du vendeur ou de l\'acheteur. Vérifie la répartition.' },
+    { t: 'Prix FAI', d: 'Prix Frais d\'Agence Inclus. C\'est le prix total affiché sur l\'annonce.', ex: '200 000 EUR net vendeur + 10 000 EUR d\'agence = 210 000 EUR FAI.', w: 'Ne confonds pas avec le coût total du projet.' }
   ]},
-  { cat: 'Le credit', sub: 'Comment fonctionne l\'emprunt', terms: [
-    { t: 'Credit immobilier', d: 'Le pret que la banque t\'accorde pour acheter un bien. Tu rembourses en mensualites sur 10 a 25 ans.', ex: 'Emprunter 180 000 EUR sur 20 ans a 3.5% = environ 1 043 EUR/mois.', w: 'La banque regarde tes revenus, ton taux d\'effort et ton apport.' },
-    { t: 'Mensualite', d: 'Ce que tu payes chaque mois pour rembourser ton credit (capital + interets).', ex: '1 043 EUR/mois pour 180 000 EUR sur 20 ans a 3.5%.', w: 'La mensualite doit rentrer dans ton mois, pas seulement dans une formule.' },
-    { t: 'Taux nominal', d: 'Le taux d\'interet du credit, hors assurance et frais.', ex: 'Un taux nominal de 3.5% signifie 3.5% d\'interets par an sur le capital restant du.', w: 'Le cout reel du credit est mieux mesure par le TAEG.' },
-    { t: 'TAEG', d: 'Taux Annuel Effectif Global. Inclut le taux nominal + assurance + frais de dossier + frais de garantie.', ex: 'Un taux nominal de 3.5% avec assurance et frais peut donner un TAEG de 4.2%.', w: 'Le TAEG donne une vision plus complete du cout du credit que le taux nominal.' },
-    { t: 'Assurance emprunteur', d: 'Assurance obligatoire qui couvre le remboursement en cas de deces, invalidite ou arret de travail.', ex: 'Environ 0.2% a 0.5% du capital emprunte par an, soit 30 a 75 EUR/mois pour 180 000 EUR.', w: 'Tu peux la negocier ou la changer (loi Lemoine). Elle entre dans le calcul du taux d\'effort.' },
-    { t: 'Taux d\'effort', d: 'La part de tes revenus consacree aux remboursements de credits. Les normes HCSF limitent a 35% assurance incluse.', ex: 'Revenus 3 000 EUR/mois, credits 1 000 EUR/mois = taux d\'effort 33%.', w: 'Au-dela de 35%, les banques refusent generalement le pret.' },
-    { t: 'Reste a vivre', d: 'Ce qui te reste chaque mois apres avoir paye toutes tes charges et credits.', ex: '3 000 EUR de revenus - 800 EUR de charges - 1 000 EUR de credit = 1 200 EUR de reste a vivre.', w: 'Un taux d\'effort correct ne suffit pas : le reste a vivre doit etre suffisant.' }
+  { cat: 'Le crédit', sub: 'Comment fonctionne l\'emprunt', terms: [
+    { t: 'Crédit immobilier', d: 'Le prêt que la banque t\'accorde pour acheter un bien. Tu rembourses en mensualités sur 10 à 25 ans.', ex: 'Emprunter 180 000 EUR sur 20 ans à 3.5% = environ 1 043 EUR/mois.', w: 'La banque regarde tes revenus, ton taux d\'effort et ton apport.' },
+    { t: 'Mensualité', d: 'Ce que tu payes chaque mois pour rembourser ton crédit (capital + intérêts).', ex: '1 043 EUR/mois pour 180 000 EUR sur 20 ans à 3.5%.', w: 'La mensualité doit rentrer dans ton mois, pas seulement dans une formule.' },
+    { t: 'Taux nominal', d: 'Le taux d\'intérêt du crédit, hors assurance et frais.', ex: 'Un taux nominal de 3.5% signifie 3.5% d\'intérêts par an sur le capital restant dû.', w: 'Le coût réel du crédit est mieux mesuré par le TAEG.' },
+    { t: 'TAEG', d: 'Taux Annuel Effectif Global. Inclut le taux nominal + assurance + frais de dossier + frais de garantie.', ex: 'Un taux nominal de 3.5% avec assurance et frais peut donner un TAEG de 4.2%.', w: 'Le TAEG donne une vision plus complète du coût du crédit que le taux nominal.' },
+    { t: 'Assurance emprunteur', d: 'Assurance obligatoire qui couvre le remboursement en cas de décès, invalidité ou arrêt de travail.', ex: 'Environ 0.2% à 0.5% du capital emprunté par an, soit 30 à 75 EUR/mois pour 180 000 EUR.', w: 'Tu peux la négocier ou la changer (loi Lemoine). Elle entre dans le calcul du taux d\'effort.' },
+    { t: "Taux d'effort", d: 'La part de tes revenus consacrée aux remboursements de crédits. Les normes HCSF limitent à 35% assurance incluse.', ex: 'Revenus 3 000 EUR/mois, crédits 1 000 EUR/mois = taux d\'effort 33%.', w: 'Au-delà de 35%, les banques refusent généralement le prêt.' },
+    { t: 'Reste à vivre', d: 'Ce qui te reste chaque mois après avoir payé toutes tes charges et crédits.', ex: '3 000 EUR de revenus - 800 EUR de charges - 1 000 EUR de crédit = 1 200 EUR de reste à vivre.', w: 'Un taux d\'effort correct ne suffit pas : le reste à vivre doit être suffisant.' }
   ]},
   { cat: 'Les frais', sub: 'Ce que tu payes en plus du prix', terms: [
-    { t: 'Garantie bancaire', d: 'Une surete exigee par la banque (caution, hypotheque ou PPD).', ex: 'Une caution Credit Logement coute environ 1% du montant emprunte.', w: 'La caution est souvent moins chere que l\'hypotheque, et partiellement restituee.' },
-    { t: 'Caution', d: 'Un organisme se porte garant pour toi. Alternative a l\'hypotheque.', ex: 'Credit Logement, CAMCA, SOCAMI...', w: 'Moins chere qu\'une hypotheque et plus simple.' },
-    { t: 'Hypotheque', d: 'La banque prend une surete sur le bien. En cas de defaut, elle peut le vendre.', ex: 'Coute environ 1.5% a 2% du montant emprunte.', w: 'Plus couteuse qu\'une caution, mais parfois la seule option.' },
-    { t: 'Frais de dossier', d: 'Frais factures par la banque pour monter le dossier de credit.', ex: 'Entre 500 et 1 500 EUR selon la banque.', w: 'Souvent negociables, surtout si tu fais jouer la concurrence.' },
-    { t: 'Apport', d: 'L\'argent que tu mets au depart. Il sert souvent a payer les frais et a rassurer la banque.', ex: 'Sur un achat a 200 000 EUR, un apport de 20 000 EUR couvre les frais de notaire.', w: 'L\'apport utile est celui que tu peux mobiliser sans vider ta securite.' }
+    { t: 'Garantie bancaire', d: 'Une sûreté exigée par la banque (caution, hypothèque ou PPD).', ex: 'Une caution Crédit Logement coûte environ 1% du montant emprunté.', w: 'La caution est souvent moins chère que l\'hypothèque, et partiellement restituée.' },
+    { t: 'Caution', d: 'Un organisme se porte garant pour toi. Alternative à l\'hypothèque.', ex: 'Crédit Logement, CAMCA, SOCAMI...', w: 'Moins chère qu\'une hypothèque et plus simple.' },
+    { t: 'Hypothèque', d: 'La banque prend une sûreté sur le bien. En cas de défaut, elle peut le vendre.', ex: 'Coûte environ 1.5% à 2% du montant emprunté.', w: 'Plus coûteuse qu\'une caution, mais parfois la seule option.' },
+    { t: 'Frais de dossier', d: 'Frais facturés par la banque pour monter le dossier de crédit.', ex: 'Entre 500 et 1 500 EUR selon la banque.', w: 'Souvent négociables, surtout si tu fais jouer la concurrence.' },
+    { t: 'Apport', d: 'L\'argent que tu mets au départ. Il sert souvent à payer les frais et à rassurer la banque.', ex: 'Sur un achat à 200 000 EUR, un apport de 20 000 EUR couvre les frais de notaire.', w: 'L\'apport utile est celui que tu peux mobiliser sans vider ta sécurité.' }
   ]},
   { cat: 'Le notaire', sub: 'Ce qui se passe chez le notaire', terms: [
-    { t: 'Frais de notaire', d: 'Ensemble des couts lies a l\'acte d\'achat : droits, taxes, emoluments, debours.', ex: 'Environ 7-8% dans l\'ancien, 2-3% dans le neuf.', w: 'Ce ne sont pas des "frais" du notaire : 80% sont des taxes pour l\'Etat.' },
-    { t: 'Emoluments', d: 'La remuneration du notaire, calculee sur un bareme fixe.', ex: 'Environ 1% du prix pour un bien a 200 000 EUR.', w: 'Le notaire ne fixe pas librement ses honoraires sur la vente.' },
-    { t: 'Debours', d: 'Les frais avances par le notaire pour les documents et formalites.', ex: 'Extraits cadastraux, certificats d\'urbanisme...', w: 'Quelques centaines d\'euros generalement.' },
-    { t: 'Compromis de vente', d: 'Le contrat d\'avant-vente entre acheteur et vendeur. Il engage les deux parties.', ex: 'Tu verses un depot de garantie (5 a 10% du prix) et tu as 10 jours pour te retracter.', w: 'Le compromis engage. Tu dois comprendre les conditions avant de signer.' },
-    { t: 'Promesse de vente', d: 'Le vendeur s\'engage a te vendre, toi tu as une option d\'achat.', ex: 'Tu verses une indemnite d\'immobilisation (5 a 10%) et tu decides dans le delai prevu.', w: 'Moins frequent que le compromis mais courant dans certaines regions.' },
-    { t: 'Condition suspensive', d: 'Clause qui annule la vente si une condition n\'est pas remplie (obtention du pret, par exemple).', ex: 'Si la banque refuse ton pret dans le delai prevu, la vente est annulee sans penalite.', w: 'Verifie toujours la condition suspensive de pret : delai, montant, taux maximum.' },
-    { t: 'Delai de retractation', d: 'Apres la signature du compromis, tu disposes de 10 jours calendaires pour te retracter sans motif.', ex: 'Tu signes le 1er mars. Tu peux te retracter jusqu\'au 11 mars.', w: 'C\'est un droit : utilise-le si tu as un doute apres signature.' },
-    { t: 'Offre de pret', d: 'Le document que la banque t\'envoie avec toutes les conditions du credit.', ex: 'Taux, duree, mensualite, assurance, garantie, cout total du credit.', w: 'Tu dois attendre au moins 10 jours avant de l\'accepter (delai de reflexion legal).' },
-    { t: 'Acte authentique', d: 'L\'acte de vente definitif signe chez le notaire. Le transfert de propriete est effectif.', ex: 'Tu deviens proprietaire a la signature. Le notaire t\'envoie le titre de propriete apres.', w: 'La signature a lieu generalement 2 a 3 mois apres le compromis.' }
+    { t: 'Frais de notaire', d: 'Ensemble des coûts liés à l\'acte d\'achat : droits, taxes, émoluments, débours.', ex: 'Environ 7-8% dans l\'ancien, 2-3% dans le neuf.', w: 'Ce ne sont pas des "frais" du notaire : 80% sont des taxes pour l\'État.' },
+    { t: 'Émoluments', d: 'La rémunération du notaire, calculée sur un barème fixe.', ex: 'Environ 1% du prix pour un bien à 200 000 EUR.', w: 'Le notaire ne fixe pas librement ses honoraires sur la vente.' },
+    { t: 'Compromis de vente', d: 'Le contrat d\'avant-vente entre acheteur et vendeur. Il engage les deux parties.', ex: 'Tu verses un dépôt de garantie (5 à 10% du prix) et tu as 10 jours pour te rétracter.', w: 'Le compromis engage. Tu dois comprendre les conditions avant de signer.' },
+    { t: 'Condition suspensive', d: 'Clause qui annule la vente si une condition n\'est pas remplie (obtention du prêt, par exemple).', ex: 'Si la banque refuse ton prêt dans le délai prévu, la vente est annulée sans pénalité.', w: 'Vérifie toujours la condition suspensive de prêt : délai, montant, taux maximum.' },
+    { t: 'Délai de rétractation', d: 'Après la signature du compromis, tu disposes de 10 jours calendaires pour te rétracter sans motif.', ex: 'Tu signes le 1er mars. Tu peux te rétracter jusqu\'au 11 mars.', w: 'C\'est un droit : utilise-le si tu as un doute après signature.' },
+    { t: 'Offre de prêt', d: 'Le document que la banque t\'envoie avec toutes les conditions du crédit.', ex: 'Taux, durée, mensualité, assurance, garantie, coût total du crédit.', w: 'Tu dois attendre au moins 10 jours avant de l\'accepter (délai de réflexion légal).' },
+    { t: 'Acte authentique', d: 'L\'acte de vente définitif signé chez le notaire. Le transfert de propriété est effectif.', ex: 'Tu deviens propriétaire à la signature. Le notaire t\'envoie le titre de propriété après.', w: 'La signature a lieu généralement 2 à 3 mois après le compromis.' }
   ]},
-  { cat: 'L\'investissement', sub: 'Si tu achetes pour louer', terms: [
-    { t: 'Taxe fonciere', d: 'Impot annuel du par le proprietaire au 1er janvier de chaque annee.', ex: 'Entre 500 et 3 000 EUR/an selon la commune et la surface.', w: 'La taxe fonciere revient chaque annee. Elle doit entrer dans ton budget proprietaire.' },
-    { t: 'Charges de copropriete', d: 'Les charges communes de l\'immeuble (entretien, gardien, ascenseur...).', ex: 'De 20 a 80 EUR/m2/an selon l\'immeuble.', w: 'Demande les 3 dernieres annees de charges et les travaux votes en AG.' },
-    { t: 'DPE', d: 'Diagnostic de Performance Energetique. Note de A a G sur la consommation energetique du logement.', ex: 'Un logement note F ou G est interdit a la location depuis 2025.', w: 'Peut impacter la valeur et la louabilite du bien.' },
-    { t: 'Rendement brut', d: 'Loyers annuels divises par le cout total du projet. Vision simplifiee de la rentabilite.', ex: '9 600 EUR de loyers / 200 000 EUR de cout total = 4.8% brut.', w: 'Le rendement brut ne prend pas en compte les charges ni la fiscalite.' },
-    { t: 'Rendement net simplifie', d: 'Loyers annuels diminues des charges et taxes, divises par le cout total du projet.', ex: '(9 600 - 2 400) / 200 000 = 3.6% net simplifie.', w: 'Plus realiste que le brut, mais ne prend pas en compte l\'impot sur le revenu.' },
-    { t: 'Cash-flow', d: 'Ce qui rentre moins ce qui sort chaque mois. Positif = le bien se finance seul.', ex: '800 EUR de loyer - 1 000 EUR de mensualite - 100 EUR de charges = -300 EUR de cash-flow.', w: 'Un cash-flow negatif n\'est pas forcement un probleme, mais il faut pouvoir le supporter.' }
+  { cat: 'L\'investissement', sub: 'Si tu achètes pour louer', terms: [
+    { t: 'Taxe foncière', d: 'Impôt annuel dû par le propriétaire au 1er janvier de chaque année.', ex: 'Entre 500 et 3 000 EUR/an selon la commune et la surface.', w: 'La taxe foncière revient chaque année. Elle doit entrer dans ton budget propriétaire.' },
+    { t: 'Charges de copropriété', d: 'Les charges communes de l\'immeuble (entretien, gardien, ascenseur...).', ex: 'De 20 à 80 EUR/m2/an selon l\'immeuble.', w: 'Demande les 3 dernières années de charges et les travaux votés en AG.' },
+    { t: 'Rendement brut', d: 'Loyers annuels divisés par le coût total du projet. Vision simplifiée de la rentabilité.', ex: '9 600 EUR de loyers / 200 000 EUR de coût total = 4.8% brut.', w: 'Le rendement brut ne prend pas en compte les charges ni la fiscalité.' },
+    { t: 'Rendement net simplifié', d: 'Loyers annuels diminués des charges et taxes, divisés par le coût total du projet.', ex: '(9 600 - 2 400) / 200 000 = 3.6% net simplifié.', w: 'Plus réaliste que le brut, mais ne prend pas en compte l\'impôt sur le revenu.' },
+    { t: 'Cash-flow', d: 'Ce qui rentre moins ce qui sort chaque mois. Positif = le bien se finance seul.', ex: '800 EUR de loyer - 1 000 EUR de mensualité - 100 EUR de charges = -300 EUR de cash-flow.', w: 'Un cash-flow négatif n\'est pas forcément un problème, mais il faut pouvoir le supporter.' }
   ]},
   { cat: 'Autres', sub: '', terms: [
-    { t: 'Primo-accedant', d: 'Personne qui achete sa residence principale pour la premiere fois (ou qui n\'a pas ete proprietaire de sa residence principale au cours des 2 dernieres annees).', ex: 'Tu es locataire depuis 3 ans : tu es primo-accedant.', w: 'Donne acces a certaines aides (PTZ, exonerations locales).' }
+    { t: 'Primo-accédant', d: 'Personne qui achète sa résidence principale pour la première fois (ou qui n\'a pas été propriétaire de sa résidence principale au cours des 2 dernières années).', ex: 'Tu es locataire depuis 3 ans : tu es primo-accédant.', w: 'Donne accès à certaines aides (PTZ, exonérations locales).' }
   ]}
 ];
 
 /* ─── TIMELINE DATA ──────────────────────────────────────── */
 var TIMELINE = [
   { num: 1, title: 'Clarifier le projet', who: 'Toi', docs: 'Aucun', risk: 'Acheter sans savoir ce qu\'on cherche', action: 'Utilise la brique Achat immobilier pour cadrer ton projet.' },
-  { num: 2, title: 'Estimer la capacite', who: 'Toi / courtier', docs: 'Revenus, charges, epargne', risk: 'Sous-estimer les charges ou le taux d\'effort', action: 'Simule ta capacite dans l\'ecran 5 de cette brique.' },
-  { num: 3, title: 'Preparer le dossier banque', who: 'Toi', docs: 'Bulletins, avis d\'imposition, releves bancaires, epargne', risk: 'Dossier incomplet = retard ou refus', action: 'Lance le parcours Achat immobilier pour preparer ton dossier.' },
-  { num: 4, title: 'Chercher le bien', who: 'Toi / agent immobilier', docs: 'Annonces, visites', risk: 'Coup de coeur sans analyse du budget total', action: 'Compare le prix affiche au cout total (ecran 4).' },
-  { num: 5, title: 'Faire une offre', who: 'Toi', docs: 'Offre ecrite', risk: 'Proposer un prix sans connaitre sa limite', action: 'Verifie ta capacite avant de faire une offre.' },
-  { num: 6, title: 'Signer le compromis', who: 'Notaire', docs: 'Compromis, diagnostics, titre de propriete', risk: 'Ne pas verifier les conditions suspensives', action: 'Verifie prix, financement, conditions suspensives, diagnostics.', legal: 'Tu disposes de 10 jours calendaires de retractation apres signature.' },
-  { num: 7, title: 'Delai de retractation (10 jours)', who: 'Toi', docs: 'Aucun', risk: 'Laisser passer le delai sans reflexion', action: 'Prends le temps de relire le compromis et de verifier les diagnostics.' },
-  { num: 8, title: 'Obtenir l\'offre de pret', who: 'Banque / courtier', docs: 'Dossier complet, compromis signe', risk: 'Refus de pret ou conditions defavorables', action: 'Compare au moins 3 banques ou passe par un courtier.' },
-  { num: 9, title: 'Delai de reflexion offre de pret (10 jours)', who: 'Toi', docs: 'Offre de pret recue', risk: 'Accepter trop vite sans comparer', action: 'Lis l\'offre en detail : taux, assurance, garantie, penalites.', legal: 'Tu ne peux pas accepter l\'offre avant 10 jours calendaires apres reception.' },
-  { num: 10, title: 'Signer l\'acte authentique', who: 'Notaire', docs: 'Fonds, assurance habitation, pret signe', risk: 'Fonds non disponibles ou assurance manquante', action: 'Verifie que les fonds sont chez le notaire et que l\'assurance est active.' },
-  { num: 11, title: 'Emmenager ou mettre en location', who: 'Toi', docs: 'Bail, etat des lieux si location', risk: 'Oublier les demarches (EDF, assurance, taxe fonciere)', action: 'Mets a jour ton budget proprietaire.' },
-  { num: 12, title: 'Mettre a jour son budget proprietaire', who: 'Toi', docs: 'Budget actualise', risk: 'Sous-estimer les charges recurrentes', action: 'Reviens sur la brique Budget pour integrer tes nouvelles charges.' }
+  { num: 2, title: 'Estimer la capacité', who: 'Toi / courtier', docs: 'Revenus, charges, épargne', risk: 'Sous-estimer les charges ou le taux d\'effort', action: 'Simule ta capacité dans l\'écran 5 de cette brique.' },
+  { num: 3, title: 'Préparer le dossier banque', who: 'Toi', docs: 'Bulletins, avis d\'imposition, relevés bancaires, épargne', risk: 'Dossier incomplet = retard ou refus', action: 'Lance le parcours Achat immobilier pour préparer ton dossier.' },
+  { num: 4, title: 'Chercher le bien', who: 'Toi / agent immobilier', docs: 'Annonces, visites', risk: 'Coup de cœur sans analyse du budget total', action: 'Compare le prix affiché au coût total (écran 4).' },
+  { num: 5, title: 'Faire une offre', who: 'Toi', docs: 'Offre écrite', risk: 'Proposer un prix sans connaître sa limite', action: 'Vérifie ta capacité avant de faire une offre.' },
+  { num: 6, title: 'Signer le compromis', who: 'Notaire', docs: 'Compromis, diagnostics, titre de propriété', risk: 'Ne pas vérifier les conditions suspensives', action: 'Vérifie prix, financement, conditions suspensives, diagnostics.', legal: 'Tu disposes de 10 jours calendaires de rétractation après signature.' },
+  { num: 7, title: 'Délai de rétractation (10 jours)', who: 'Toi', docs: 'Aucun', risk: 'Laisser passer le délai sans réflexion', action: 'Prends le temps de relire le compromis et de vérifier les diagnostics.' },
+  { num: 8, title: "Obtenir l'offre de prêt", who: 'Banque / courtier', docs: 'Dossier complet, compromis signé', risk: 'Refus de prêt ou conditions défavorables', action: 'Compare au moins 3 banques ou passe par un courtier.' },
+  { num: 9, title: "Délai de réflexion offre de prêt (10 jours)", who: 'Toi', docs: 'Offre de prêt reçue', risk: 'Accepter trop vite sans comparer', action: "Lis l'offre en détail : taux, assurance, garantie, pénalités.", legal: 'Tu ne peux pas accepter l\'offre avant 10 jours calendaires après réception.' },
+  { num: 10, title: "Signer l'acte authentique", who: 'Notaire', docs: 'Fonds, assurance habitation, prêt signé', risk: 'Fonds non disponibles ou assurance manquante', action: 'Vérifie que les fonds sont chez le notaire et que l\'assurance est active.' },
+  { num: 11, title: 'Emménager ou mettre en location', who: 'Toi', docs: 'Bail, état des lieux si location', risk: 'Oublier les démarches (EDF, assurance, taxe foncière)', action: 'Mets à jour ton budget propriétaire.' },
+  { num: 12, title: 'Mettre à jour son budget propriétaire', who: 'Toi', docs: 'Budget actualisé', risk: 'Sous-estimer les charges récurrentes', action: 'Reviens sur la brique Budget pour intégrer tes nouvelles charges.' }
 ];
 
 /* ─── CALCULATION FUNCTIONS ──────────────────────────────── */
@@ -1127,14 +1731,14 @@ function recommendNextBrick(st) {
   var profil = loadFromStorage('fund_profil') || {};
   var budgetData = loadFromStorage('fund_brick_budget_base');
   var matelasData = loadFromStorage('fund_brick_fonds_urgence');
-  if (!budgetData) return { slug: 'budget_base', label: 'Stabilise ton mois', reason: 'Avant d\'acheter, connais ton vrai reste a vivre.' };
+  if (!budgetData) return { slug: 'budget_base', label: 'Stabilise ton mois', reason: 'Avant d\'acheter, connais ton vrai reste à vivre.' };
   if (!matelasData || n(st.matelasActuel) < n(st.matelasCible) * 0.5)
-    return { slug: 'fonds_urgence', label: 'Ton matelas de securite', reason: 'Acheter sans reserve rend le projet fragile.' };
+    return { slug: 'fonds_urgence', label: 'Ton matelas de sécurité', reason: 'Acheter sans réserve rend le projet fragile.' };
   var effort = calculateDebtRatio(st.credits, 0, getTotalRevenus());
-  if (effort > 0.25) return { slug: 'gestion_decouvert', label: 'Sortir du rouge', reason: 'Tes credits existants reduisent ta capacite d\'achat.' };
+  if (effort > 0.25) return { slug: 'gestion_decouvert', label: 'Sortir du rouge', reason: 'Tes crédits existants réduisent ta capacité d\'achat.' };
   var apportMob = getApportMobilisable();
-  if (apportMob > 0 && st.prixBien > 0) return { slug: 'plan_multi_objectifs', label: 'Tes objectifs en parallele', reason: 'Ton socle est pret pour planifier plusieurs projets.' };
-  return { slug: 'fonds_urgence', label: 'Ton matelas de securite', reason: 'Consolider ton epargne renforcera ton projet.' };
+  if (apportMob > 0 && st.prixBien > 0) return { slug: 'plan_multi_objectifs', label: 'Tes objectifs en parallèle', reason: 'Ton socle est prêt pour planifier plusieurs projets.' };
+  return { slug: 'fonds_urgence', label: 'Ton matelas de sécurité', reason: 'Consolider ton épargne renforcera ton projet.' };
 }
 
 /* ─── HELPERS ────────────────────────────────────────────── */
@@ -1160,49 +1764,20 @@ function getApportMobilisable() {
   return calculateMobilizableDownPayment(S.epargneTotale, S.aideFamille, protectedAmount, n(S.epargneBloquee), n(S.reserve));
 }
 
-/* ─── PROJECT CARD SELECTION (ecran 1 bloc A) ────────────── */
-function selectProjectCard(el) {
-  var val = el.getAttribute('data-val');
-  // Deselect all project-type-cards AND the "je ne sais pas" pill
-  document.querySelectorAll('.project-type-card').forEach(function(c) { c.classList.remove('selected'); });
-  document.querySelectorAll('#screen-1 .pill-sm[data-val="ne_sait_pas"]').forEach(function(p) { p.classList.remove('selected'); });
-  el.classList.add('selected');
-  S.projectType = val;
-  updateModeCard();
-
-  // Auto-set usage for investissement locatif
-  if (val === 'investissement_locatif') {
-    S.usage = 'louer';
-    var usageQ = $('usage-question');
-    if (usageQ) usageQ.style.display = 'none';
-    var toggle = $('toggle-invest');
-    if (toggle && !toggle.checked) { toggle.checked = true; }
-  } else {
-    var usageQ2 = $('usage-question');
-    if (usageQ2) usageQ2.style.display = '';
-  }
-
-  // Show bloc B with animation
-  var blocB = $('bloc-b');
-  if (blocB && blocB.style.display === 'none') {
-    blocB.style.display = 'block';
-    blocB.style.animation = 'fadeSlideUp 0.3s ease both';
-  }
-}
-
 /* ─── SCREEN NAVIGATION ──────────────────────────────────── */
-function goScreen(idx) {
+function goToScreen(idx) {
   if (idx < 0 || idx >= TOTAL_SCREENS) return;
   syncStateFromScreen(S.currentScreen);
+
   var cur = $('screen-' + S.currentScreen);
-  if (cur) cur.classList.remove('active-screen');
+  if (cur) cur.classList.remove('active');
   var target = $('screen-' + idx);
-  if (target) target.classList.add('active-screen');
+  if (target) target.classList.add('active');
   S.currentScreen = idx;
-  var pct = Math.round(idx / (TOTAL_SCREENS - 1) * 100);
-  $('progress-fill').style.width = pct + '%';
-  $('progress-text').textContent = idx + ' / ' + (TOTAL_SCREENS - 1);
+
+  updateProgressPanel(idx);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
   // Screen-specific init
   if (idx === 2) { S.assurance = getAutoAssurance(); updateCapacity(); }
   if (idx === 3) updateApport();
@@ -1211,10 +1786,14 @@ function goScreen(idx) {
   if (idx === 6) initInvestment();
   if (idx === 7) buildTimeline();
   if (idx === 8) buildFinalScreen();
+
   if (typeof autosaveBrickProgress === 'function') {
     autosaveBrickProgress(BRICK_ID, idx, S);
   }
 }
+
+// Alias pour compatibilité avec le HTML généré
+function goScreen(idx) { goToScreen(idx); }
 
 function syncStateFromScreen(screenIdx) {
   if (screenIdx === 1) {
@@ -1262,6 +1841,100 @@ function syncStateFromScreen(screenIdx) {
   }
 }
 
+/* ─── PANEL PROGRESSION ──────────────────────────────────── */
+function updateProgressPanel(idx) {
+  var pct = Math.round(idx / (TOTAL_SCREENS - 1) * 100);
+
+  // Ring
+  var circumference = 213.6;
+  var offset = circumference - (pct / 100) * circumference;
+  var ringFill = $('bpc-ring-fill');
+  if (ringFill) { ringFill.style.strokeDashoffset = offset; }
+  var ringPct = $('bpc-ring-pct');
+  if (ringPct) ringPct.textContent = pct + '%';
+
+  // Steps
+  var steps = document.querySelectorAll('.bpc-step');
+  steps.forEach(function(step) {
+    var sc = parseInt(step.getAttribute('data-screen') || '0');
+    step.classList.remove('active', 'done');
+    if (sc === idx) step.classList.add('active');
+    else if (sc < idx) step.classList.add('done');
+  });
+
+  // Dots (barre du haut mobile)
+  var dotsEl = $('prog-dots');
+  var fillEl = $('prog-fill');
+  if (dotsEl && TOTAL_SCREENS > 0) {
+    var html = '';
+    for (var i = 0; i < TOTAL_SCREENS; i++) {
+      var cls = i < idx ? 'done' : (i === idx ? 'active' : '');
+      html += '<div class="brick-prog-dot ' + cls + '"></div>';
+    }
+    dotsEl.innerHTML = html;
+  }
+  if (fillEl) fillEl.style.width = pct + '%';
+
+  // Panel title
+  var TITLES = [
+    'Prépare ton projet immobilier.',
+    'Quel type de bien tu vises\u00a0?',
+    'Posons ta capacité mensuelle.',
+    'Calculons ton apport réel.',
+    'Le vrai coût de ton achat.',
+    'Simule ton budget d\'achat.',
+    'Et si tu achètes pour louer\u00a0?',
+    'Les étapes jusqu\'aux clés.',
+    'Ton diagnostic est prêt\u00a0!'
+  ];
+  var titleEl = $('bpc-title');
+  if (titleEl && TITLES[idx]) titleEl.textContent = TITLES[idx];
+}
+
+/* ─── PROJECT CARD SELECTION ─────────────────────────────── */
+function selectProjectCard(el) {
+  var val = el.getAttribute('data-val');
+  document.querySelectorAll('.project-type-card').forEach(function(c) { c.classList.remove('selected'); });
+  document.querySelectorAll('#screen-1 .pill-sm[data-val="ne_sait_pas"]').forEach(function(p) { p.classList.remove('selected'); });
+  el.classList.add('selected');
+  S.projectType = val;
+  updateModeCard();
+
+  if (val === 'investissement_locatif') {
+    S.usage = 'louer';
+    var usageQ = $('usage-question');
+    if (usageQ) usageQ.style.display = 'none';
+    var toggle = $('toggle-invest');
+    if (toggle && !toggle.checked) { toggle.checked = true; }
+  } else {
+    var usageQ2 = $('usage-question');
+    if (usageQ2) usageQ2.style.display = '';
+  }
+
+  var blocB = $('bloc-b');
+  if (blocB && blocB.style.display === 'none') {
+    blocB.style.display = 'block';
+    blocB.style.animation = 'fadeSlideUp 0.3s ease both';
+  }
+}
+
+function updateModeCard() {
+  var card = $('mode-card');
+  var title = $('mode-card-title');
+  var text = $('mode-card-text');
+  if (!S.projectType || S.projectType === 'ne_sait_pas') { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  var modes = {
+    residence_principale: { t: 'Mode : Résidence principale', m: 'On regarde surtout mensualité, apport, reste à vivre et stabilité.' },
+    investissement_locatif: { t: 'Mode : Investissement locatif', m: 'On ajoute loyer, rentabilité, charges, taxe foncière et cash-flow.' },
+    residence_secondaire: { t: 'Mode : Résidence secondaire', m: 'On intègre le surcoût d\'une deuxième charge de logement.' },
+    achat_travaux: { t: 'Mode : Achat avec travaux', m: 'On ajoute une réserve travaux et une marge de sécurité.' }
+  };
+  var mode = modes[S.projectType] || { t: 'Mode de calcul', m: 'Les calculs s\'adaptent à ton type de projet.' };
+  title.textContent = mode.t;
+  text.textContent = mode.m;
+}
+
 /* ─── PILLS SELECTION (compact pills — bloc B) ───────────── */
 function initPills() {
   document.querySelectorAll('.pills-compact').forEach(function(group) {
@@ -1271,7 +1944,6 @@ function initPills() {
         pill.classList.add('selected');
         var field = group.id.replace('pills-', '');
         S[field] = pill.getAttribute('data-val');
-        // SCI warning
         if (field === 'status' && S[field] === 'sci') {
           $('sci-warning').style.display = 'flex';
         } else if (field === 'status') {
@@ -1282,29 +1954,8 @@ function initPills() {
   });
 }
 
-function updateModeCard() {
-  var card = $('mode-card');
-  var title = $('mode-card-title');
-  var text = $('mode-card-text');
-  if (!S.projectType || S.projectType === 'ne_sait_pas') { card.style.display = 'none'; return; }
-  card.style.display = 'block';
-  var modes = {
-    residence_principale: { t: 'Mode : Residence principale', m: 'On regarde surtout mensualite, apport, reste a vivre et stabilite.' },
-    investissement_locatif: { t: 'Mode : Investissement locatif', m: 'On ajoute loyer, rentabilite, charges, taxe fonciere et cash-flow.' },
-    residence_secondaire: { t: 'Mode : Residence secondaire', m: 'On integre le surcoute d\'une deuxieme charge de logement.' },
-    achat_travaux: { t: 'Mode : Achat avec travaux', m: 'On ajoute une reserve travaux et une marge de securite.' }
-  };
-  var mode = modes[S.projectType] || { t: 'Mode de calcul', m: 'Les calculs s\'adaptent a ton type de projet.' };
-  title.textContent = mode.t;
-  text.textContent = mode.m;
-}
-
 /* ─── GLOSSARY POPOVER ──────────────────────────────────── */
 var activePopover = null;
-
-function escapeAttr(s) {
-  return s.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-}
 
 function findTermDef(name) {
   for (var i = 0; i < GLOSSARY.length; i++) {
@@ -1325,7 +1976,7 @@ function showGlossaryPopover(el, termName) {
     '<h4>' + term.t + '</h4>' +
     '<p>' + term.d + '</p>' +
     '<div class="gp-label">Exemple</div><p>' + term.ex + '</p>' +
-    '<div class="gp-label">Pourquoi ca compte</div><p>' + term.w + '</p>';
+    '<div class="gp-label">Pourquoi ça compte</div><p>' + term.w + '</p>';
   var rect = el.getBoundingClientRect();
   var scrollY = window.scrollY || window.pageYOffset;
   pop.style.position = 'absolute';
@@ -1365,7 +2016,7 @@ function toggleHypotheses() {
   if (body) body.classList.toggle('open');
 }
 
-/* ─── ECRAN 2 : CAPACITY (ex-ecran 3) ───────────────────── */
+/* ─── ÉCRAN 2 : CAPACITY ─────────────────────────────────── */
 function updateCapacity() {
   var revenus = n(($('input-revenus') || {}).value) + n(($('input-revenus-compl') || {}).value);
   var charges = n(($('input-charges') || {}).value);
@@ -1376,14 +2027,13 @@ function updateCapacity() {
 
   $('val-duree').textContent = duree + ' ans';
   $('val-taux').textContent = taux.toFixed(1) + ' %';
-  $('params-summary').textContent = 'Duree : ' + duree + ' ans \u00b7 Taux estime : ' + taux.toFixed(1) + '%';
+  $('params-summary').textContent = 'Durée : ' + duree + ' ans · Taux estimé : ' + taux.toFixed(1) + '%';
 
   S.revenus = n(($('input-revenus') || {}).value);
   S.revenusCompl = n(($('input-revenus-compl') || {}).value);
   S.charges = charges; S.credits = credits; S.loyer = loyer;
   S.duree = duree; S.taux = taux;
 
-  // Auto assurance
   S.assurance = getAutoAssurance();
 
   var presetRatio = S.presetMode === 'prudent' ? 0.28 : (S.presetMode === 'ambitieux' ? 0.35 : 0.33);
@@ -1393,18 +2043,16 @@ function updateCapacity() {
   var effort = revenus > 0 ? (credits + mensMax + S.assurance) / revenus : 0;
   var rav = revenus - charges - credits - mensMax - S.assurance;
 
-  // Update gauge
   var effortPct = Math.min(effort * 100, 50);
   var fillEl = $('fill-effort');
   fillEl.style.width = (effortPct / 50 * 100) + '%';
   fillEl.className = 'gauge-fill ' + (effort > 0.35 ? 'gauge-red' : effort > 0.30 ? 'gauge-orange' : 'gauge-green');
   $('val-effort').textContent = fmtPct(effort);
 
-  // Warning
   var warnEl = $('warning-effort');
   if (effort > EFFORT_MAX && revenus > 0) {
     warnEl.style.display = 'flex';
-    $('warning-effort-text').textContent = 'Taux d\'effort a ' + fmtPct(effort) + '. Les normes HCSF limitent a 35% assurance incluse.';
+    $('warning-effort-text').textContent = 'Taux d\'effort à ' + fmtPct(effort) + '. Les normes HCSF limitent à 35% assurance incluse.';
   } else {
     warnEl.style.display = 'none';
   }
@@ -1412,28 +2060,26 @@ function updateCapacity() {
   $('rc-mensualite').textContent = fmt(mensMax);
   $('rc-rav').textContent = fmt(rav);
 
-  // Loyer delta inline
   var deltaEl = $('loyer-delta');
   if (deltaEl && loyer > 0) {
     var ecart = mensMax - loyer;
     if (ecart > 0) {
       deltaEl.className = 'loyer-delta positive';
-      deltaEl.textContent = 'La mensualite serait +' + fmt(ecart) + ' de plus que ton loyer actuel';
+      deltaEl.textContent = 'La mensualité serait +' + fmt(ecart) + ' de plus que ton loyer actuel';
     } else if (ecart < 0) {
       deltaEl.className = 'loyer-delta negative';
-      deltaEl.textContent = 'La mensualite serait ' + fmt(ecart) + ' de moins que ton loyer actuel';
+      deltaEl.textContent = 'La mensualité serait ' + fmt(ecart) + ' de moins que ton loyer actuel';
     } else {
       deltaEl.className = 'loyer-delta neutral';
-      deltaEl.textContent = 'Identique a ton loyer actuel';
+      deltaEl.textContent = 'Identique à ton loyer actuel';
     }
   } else if (deltaEl) {
     deltaEl.textContent = '';
   }
 
-  // Assurance info
   var assInfo = $('assurance-info');
   if (assInfo && S.assurance > 0) {
-    assInfo.textContent = 'Assurance estimee : ~' + fmt(S.assurance) + '/mois (adaptee a ton age)';
+    assInfo.textContent = 'Assurance estimée : ~' + fmt(S.assurance) + '/mois (adaptée à ton âge)';
   } else if (assInfo) {
     assInfo.textContent = '';
   }
@@ -1447,7 +2093,7 @@ function applyPreset(preset) {
   updateCapacity();
 }
 
-/* ─── ECRAN 3 : APPORT (ex-ecran 4) ─────────────────────── */
+/* ─── ÉCRAN 3 : APPORT ───────────────────────────────────── */
 function updateApport() {
   var total = n(($('input-epargne-totale') || {}).value);
   var mAct = n(($('input-matelas-actuel') || {}).value);
@@ -1459,13 +2105,11 @@ function updateApport() {
   var protege = Math.max(mCib, mAct);
   var mob = calculateMobilizableDownPayment(total, aide, protege, bloquee, reserve);
 
-  // Update epargne module display values
   var eiEpVal = $('ei-epargne-val');
   if (eiEpVal) eiEpVal.textContent = fmt(total);
   var eiMatVal = $('ei-matelas-val');
   if (eiMatVal) eiMatVal.textContent = fmt(mAct);
 
-  // Repartition bar
   if (total > 0) {
     var pctProtege = Math.min(100, protege / total * 100);
     var pctMob = Math.min(100 - pctProtege, mob / total * 100);
@@ -1473,34 +2117,31 @@ function updateApport() {
     $('repartition-mobilisable').style.width = pctMob + '%';
   }
 
-  // Hero card
   $('apport-hero-value').textContent = fmt(mob);
   var fees = estimateAcquisitionFees(S.prixBien, S.propertyType);
   var heroSub = $('apport-hero-sub');
   if (heroSub) {
-    heroSub.textContent = 'sur ' + fmt(total) + ' d\'epargne totale \u2014 ' + fmt(protege) + ' proteges pour ton matelas';
+    heroSub.textContent = 'sur ' + fmt(total) + ' d\'épargne totale — ' + fmt(protege) + ' protégés pour ton matelas';
   }
 
-  // Color the hero based on ratio
   var hero = $('apport-hero');
   if (hero) {
-    hero.style.borderColor = mob > fees && fees > 0 ? 'rgba(34,197,94,0.3)' : mob > 0 ? 'rgba(245,158,11,0.3)' : 'rgba(239,68,68,0.2)';
+    hero.style.borderColor = mob > fees && fees > 0 ? 'rgba(34,197,94,0.3)' : mob > 0 ? 'rgba(251,163,60,0.3)' : 'rgba(248,113,113,0.2)';
   }
 
-  // Warnings
   var warnEl = $('warning-apport');
   if (mob <= 0 && total > 0) {
     warnEl.style.display = 'flex';
-    $('warning-apport-text').textContent = 'Ton epargne est entierement protegee. Le projet peut etre difficile a financer.';
+    $('warning-apport-text').textContent = 'Ton épargne est entièrement protégée. Le projet peut être difficile à financer.';
   } else if (mob > 0 && mAct < mCib * 0.5) {
     warnEl.style.display = 'flex';
-    $('warning-apport-text').textContent = 'Apport disponible, mais securite fragile. Consolide ton matelas avant d\'acheter.';
+    $('warning-apport-text').textContent = 'Apport disponible, mais sécurité fragile. Consolide ton matelas avant d\'acheter.';
   } else {
     warnEl.style.display = 'none';
   }
 }
 
-/* ─── EPARGNE MODULE INLINE EDIT ─────────────────────────── */
+/* ─── ÉPARGNE MODULE INLINE EDIT ─────────────────────────── */
 function editEpargneItem(item, inputId) {
   item.classList.add('editing');
   var inp = $(inputId);
@@ -1512,7 +2153,7 @@ function closeEpargneItem(inp) {
   updateApport();
 }
 
-/* ─── ECRAN 4 : COST (ex-ecran 5) ───────────────────────── */
+/* ─── ÉCRAN 4 : COST ─────────────────────────────────────── */
 function updateCost() {
   var prix = n(($('input-prix-bien') || {}).value);
   var notaireInput = $('input-frais-notaire');
@@ -1565,7 +2206,7 @@ function updateCost() {
   }
 }
 
-/* ─── ECRAN 5 : SIMULATOR (ex-ecran 6) ──────────────────── */
+/* ─── ÉCRAN 5 : SIMULATOR ────────────────────────────────── */
 function initSimulator() {
   var mob = getApportMobilisable();
   if (S.prixBien > 0) $('slider-prix-sim').value = S.prixBien;
@@ -1605,17 +2246,17 @@ function updateSimulator() {
   var statusIcon = statusCard.querySelector('.status-icon');
   if (effort > EFFORT_MAX || rav < 200) {
     statusCard.className = 'status-card red';
-    statusIcon.innerHTML = '&#x274C;';
+    statusIcon.innerHTML = '❌';
     statusText.textContent = 'Projet trop tendu';
-    statusSub.textContent = effort > EFFORT_MAX ? 'Taux d\'effort superieur a 35%' : 'Reste a vivre insuffisant';
+    statusSub.textContent = effort > EFFORT_MAX ? 'Taux d\'effort supérieur à 35%' : 'Reste à vivre insuffisant';
   } else if (effort > 0.30 || rav < 500) {
     statusCard.className = 'status-card orange';
-    statusIcon.innerHTML = '&#x26A0;&#xFE0F;';
-    statusText.textContent = 'Projet a ajuster';
-    statusSub.textContent = 'Marge serree \u2014 ajuste le prix ou la duree';
+    statusIcon.innerHTML = '⚠️';
+    statusText.textContent = 'Projet à ajuster';
+    statusSub.textContent = 'Marge serrée — ajuste le prix ou la durée';
   } else {
     statusCard.className = 'status-card green';
-    statusIcon.innerHTML = '&#x2705;';
+    statusIcon.innerHTML = '✅';
     statusText.textContent = 'Projet confortable';
     statusSub.textContent = '';
   }
@@ -1635,7 +2276,7 @@ function quickAction(action) {
   updateSimulator();
 }
 
-/* ─── ECRAN 6 : INVESTMENT (ex-ecran 7) ──────────────────── */
+/* ─── ÉCRAN 6 : INVESTMENT ───────────────────────────────── */
 function initInvestment() {
   var isLocatif = S.projectType === 'investissement_locatif' || S.usage === 'louer';
   var toggle = $('toggle-invest');
@@ -1674,10 +2315,10 @@ function updateInvestment() {
   $('rc-rdt-brut').textContent = fmtPct(rdtBrut);
   $('rc-rdt-net').textContent = fmtPct(rdtNet);
   $('rc-cashflow').textContent = fmt(cashflow);
-  $('rc-effort-loc').textContent = effortLoc > 0 ? fmt(effortLoc) + '/mois' : 'Autofinance';
+  $('rc-effort-loc').textContent = effortLoc > 0 ? fmt(effortLoc) + '/mois' : 'Autofinancé';
 }
 
-/* ─── ECRAN 7 : TIMELINE (ex-ecran 8) ───────────────────── */
+/* ─── ÉCRAN 7 : TIMELINE ─────────────────────────────────── */
 function buildTimeline() {
   var container = $('timeline');
   if (container.children.length > 0) return;
@@ -1687,7 +2328,6 @@ function buildTimeline() {
     div.setAttribute('data-num', step.num);
     var html = '<div class="timeline-step-title" onclick="toggleTimelineStep(this)">' + step.title + '</div>';
     html += '<div class="timeline-detail" id="tl-detail-' + step.num + '">';
-    html += '<div class="timeline-detail-row"><span class="timeline-detail-label">Quoi</span><span class="timeline-detail-val">' + step.title + '</span></div>';
     html += '<div class="timeline-detail-row"><span class="timeline-detail-label">Qui</span><span class="timeline-detail-val">' + step.who + '</span></div>';
     html += '<div class="timeline-detail-row"><span class="timeline-detail-label">Documents</span><span class="timeline-detail-val">' + step.docs + '</span></div>';
     html += '<div class="timeline-detail-row"><span class="timeline-detail-label">Risque</span><span class="timeline-detail-val">' + step.risk + '</span></div>';
@@ -1706,15 +2346,15 @@ function toggleTimelineStep(el) {
   if (detail) detail.classList.toggle('open');
 }
 
-/* ─── ECRAN FINAL 8 : DIAGNOSTIC (ex-ecran 9) ───────────── */
+/* ─── ÉCRAN FINAL 8 : DIAGNOSTIC ────────────────────────── */
 function buildFinalScreen() {
   syncStateFromScreen(S.currentScreen);
   S.score = calculateRealEstateScore(S);
   var status, icon;
-  if (S.score >= 80) { status = 'Pret a approfondir'; icon = '\u2705'; }
-  else if (S.score >= 60) { status = 'A approfondir'; icon = '\uD83D\uDD35'; }
-  else if (S.score >= 40) { status = 'A cadrer'; icon = '\u26A0\uFE0F'; }
-  else { status = 'Projet fragile'; icon = '\u274C'; }
+  if (S.score >= 80) { status = 'Prêt à approfondir'; icon = '✅'; }
+  else if (S.score >= 60) { status = 'À approfondir'; icon = '🔵'; }
+  else if (S.score >= 40) { status = 'À cadrer'; icon = '⚠️'; }
+  else { status = 'Projet fragile'; icon = '❌'; }
   S.scoreStatus = status;
 
   var circumference = 264;
@@ -1739,14 +2379,14 @@ function buildFinalScreen() {
 
   var items = [
     { label: 'Type de projet', val: formatProjectType(S.projectType) },
-    { label: 'Mensualite cible', val: fmt(mensualite) },
-    { label: 'Capacite d\'emprunt', val: fmt(borrowing) },
+    { label: 'Mensualité cible', val: fmt(mensualite) },
+    { label: "Capacité d'emprunt", val: fmt(borrowing) },
     { label: 'Prix cible prudent', val: fmt(prixCible > 0 ? prixCible : 0) },
     { label: 'Apport mobilisable', val: fmt(mob) },
-    { label: 'Frais estimes', val: fmt(fees) },
-    { label: 'Cout mensuel proprio', val: fmt(coutMensuelProprio) },
-    { label: 'Taux d\'effort', val: fmtPct(effort) },
-    { label: 'Reste a vivre', val: fmt(rav) }
+    { label: 'Frais estimés', val: fmt(fees) },
+    { label: 'Coût mensuel proprio', val: fmt(coutMensuelProprio) },
+    { label: "Taux d'effort", val: fmtPct(effort) },
+    { label: 'Reste à vivre', val: fmt(rav) }
   ];
 
   var grid = $('summary-grid');
@@ -1770,30 +2410,30 @@ function buildFinalScreen() {
 function buildActions() {
   var actions = [];
   var budgetData = loadFromStorage('fund_brick_budget_base');
-  if (!budgetData) actions.push('Finaliser la brique Budget pour connaitre ton vrai reste a vivre.');
-  if (S.matelasActuel < S.matelasCible * 0.5) actions.push('Consolider ton matelas de securite avant d\'acheter.');
+  if (!budgetData) actions.push('Finaliser la brique Budget pour connaître ton vrai reste à vivre.');
+  if (S.matelasActuel < S.matelasCible * 0.5) actions.push('Consolider ton matelas de sécurité avant d\'acheter.');
   var effort = calculateDebtRatio(S.credits, getMensualiteCible() + n(S.assurance), getTotalRevenus());
-  if (effort > EFFORT_MAX) actions.push('Reduire tes charges ou credits pour baisser le taux d\'effort.');
+  if (effort > EFFORT_MAX) actions.push('Réduire tes charges ou crédits pour baisser le taux d\'effort.');
   var mob = getApportMobilisable();
   var fees = estimateAcquisitionFees(S.prixBien, S.propertyType);
   if (mob < fees && S.prixBien > 0) actions.push('Augmenter ton apport pour couvrir au moins les frais d\'acquisition.');
-  if (S.prixBien > 0 && !S.taxeFonciere) actions.push('Renseigner la taxe fonciere pour un cout mensuel complet.');
+  if (S.prixBien > 0 && !S.taxeFonciere) actions.push('Renseigner la taxe foncière pour un coût mensuel complet.');
   if (actions.length === 0) {
-    actions.push('Preparer ton dossier bancaire (revenus, epargne, releves).');
-    actions.push('Lancer le parcours Achat immobilier pour comparer des scenarios.');
+    actions.push('Préparer ton dossier bancaire (revenus, épargne, relevés).');
+    actions.push('Lancer le parcours Achat immobilier pour comparer des scénarios.');
   }
   return actions;
 }
 
 function formatProjectType(t) {
   var map = {
-    residence_principale: 'Residence principale',
+    residence_principale: 'Résidence principale',
     investissement_locatif: 'Investissement locatif',
-    residence_secondaire: 'Residence secondaire',
+    residence_secondaire: 'Résidence secondaire',
     achat_travaux: 'Achat avec travaux',
-    ne_sait_pas: 'A definir'
+    ne_sait_pas: 'À définir'
   };
-  return map[t] || t || 'Non defini';
+  return map[t] || t || 'Non défini';
 }
 
 /* ─── DASHBOARD INTEGRATION ──────────────────────────────── */
@@ -1878,7 +2518,7 @@ function validerEtDashboard() {
     id: 'eng_real_estate_project',
     type: 'achat_immobilier',
     label: 'Achat immobilier',
-    detail: 'Score ' + S.score + '/100 \u00b7 ' + S.scoreStatus + (S.prixBien > 0 ? ' \u00b7 Prix cible ' + fmt(prixCible) : ''),
+    detail: 'Score ' + S.score + '/100 · ' + S.scoreStatus + (S.prixBien > 0 ? ' · Prix cible ' + fmt(prixCible) : ''),
     montant_actuel: S.score,
     montant_cible: 100,
     brique_id: BRICK_ID,
@@ -1887,9 +2527,9 @@ function validerEtDashboard() {
 
   var insights = [];
   if (S.score < 40) {
-    insights.push({ id: 'ins_immo_fragile', type: 'alerte', titre: 'Projet immobilier fragile', contenu: 'Ton score de preparation est de ' + S.score + '/100. ' + (S.actions[0] || 'Consolide tes bases avant d\'acheter.') });
+    insights.push({ id: 'ins_immo_fragile', type: 'alerte', titre: 'Projet immobilier fragile', contenu: 'Ton score de préparation est de ' + S.score + '/100. ' + (S.actions[0] || 'Consolide tes bases avant d\'acheter.') });
   } else if (S.score >= 60) {
-    insights.push({ id: 'ins_immo_ok', type: 'info', titre: 'Projet immobilier en bonne voie', contenu: 'Score ' + S.score + '/100. Capacite d\'emprunt estimee : ' + fmt(borrowing) + '.' });
+    insights.push({ id: 'ins_immo_ok', type: 'info', titre: 'Projet immobilier en bonne voie', contenu: 'Score ' + S.score + '/100. Capacité d\'emprunt estimée : ' + fmt(borrowing) + '.' });
   }
 
   if (typeof completeBrickFull === 'function') {
@@ -1911,6 +2551,9 @@ function validerEtDashboard() {
 (function init() {
   if (typeof brickStarted === 'function') brickStarted(BRICK_ID);
 
+  // Init panel progression
+  updateProgressPanel(0);
+
   (async function() {
     if (typeof requireAuth === 'function') {
       var user = await requireAuth();
@@ -1920,42 +2563,35 @@ function validerEtDashboard() {
       await hydrateFromSupabase().catch(function() {});
     }
 
-    // Load existing data defensively
     var profil = loadFromStorage('fund_profil') || {};
     var budgetData = loadFromStorage('fund_brick_budget_base') || {};
     var bData = (budgetData && budgetData.data) ? budgetData.data : budgetData;
     var matelasData = loadFromStorage('fund_brick_fonds_urgence') || {};
     var mData = (matelasData && matelasData.data) ? matelasData.data : matelasData;
 
-    // Age group for assurance auto
     S.ageGroup = profil.age_group || '25_34';
 
-    // Prefill revenus
     var revInput = $('input-revenus');
     if (revInput) {
       var rev = n(bData.revenus) || n(profil.revenusMensuels) || 0;
       if (rev > 0) { revInput.value = rev; $('badge-revenus').style.display = 'inline'; S.revenus = rev; }
     }
-    // Prefill charges
     var chargesInput = $('input-charges');
     if (chargesInput) {
       var ch = n(bData.chargesFixes) || 0;
       if (ch > 0) { chargesInput.value = ch; $('badge-charges').style.display = 'inline'; S.charges = ch; }
     }
-    // Prefill credits
     var creditsInput = $('input-credits');
     if (creditsInput) {
       var cr = n(bData.credits) || 0;
       if (cr > 0) { creditsInput.value = cr; $('badge-credits').style.display = 'inline'; S.credits = cr; }
     }
-    // Prefill loyer
     var loyerInput = $('input-loyer');
     if (loyerInput) {
       var loy = n(bData.loyer) || 0;
       if (loy > 0) {
         loyerInput.value = loy;
         $('badge-loyer').style.display = 'inline';
-        S.loyer = loy;
         var loyerSrc = $('loyer-source');
         if (loyerSrc) { loyerSrc.style.display = 'block'; loyerSrc.textContent = 'Depuis ton budget : ' + fmt(loy); }
       }
