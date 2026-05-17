@@ -773,9 +773,14 @@
   @keyframes wmSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
 
   /* ─── Tour guidé ─────────────────────────────────────────── */
+  .tour-dim {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(0,0,0,0.52); pointer-events: none;
+    animation: wmFadeIn 0.25s ease;
+  }
   .tour-spotlight {
     position: fixed; z-index: 10001; border-radius: 0.75rem;
-    box-shadow: 0 0 0 9999px rgba(0,0,0,0.52);
+    outline: 3px solid var(--accent); outline-offset: 3px;
     pointer-events: none;
     transition: top .35s cubic-bezier(.4,0,.2,1), left .35s cubic-bezier(.4,0,.2,1),
                 width .35s cubic-bezier(.4,0,.2,1), height .35s cubic-bezier(.4,0,.2,1);
@@ -1790,13 +1795,14 @@
     ];
 
     var current = 0;
-    var spotlight = null, tooltip = null;
+    var dim = null, spotlight = null, tooltip = null;
 
     function cleanup() {
+      if (dim       && dim.parentNode)       dim.remove();
       if (spotlight && spotlight.parentNode) spotlight.remove();
       if (tooltip   && tooltip.parentNode)   tooltip.remove();
       document.removeEventListener('keydown', onKey);
-      spotlight = null; tooltip = null;
+      dim = null; spotlight = null; tooltip = null;
     }
 
     function getEl(id) {
@@ -1820,7 +1826,13 @@
         var r = el.getBoundingClientRect();
         var P = 8, M = 12;
 
-        // Spotlight
+        // Overlay sombre plein écran
+        if (!dim) {
+          dim = document.createElement('div');
+          dim.className = 'tour-dim';
+          document.body.appendChild(dim);
+        }
+        // Ring autour de l'élément cible
         if (!spotlight) {
           spotlight = document.createElement('div');
           spotlight.className = 'tour-spotlight';
