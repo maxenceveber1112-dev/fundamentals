@@ -515,7 +515,7 @@
   html.dark .affiner-btn-label { color:#A78BFA; }
   .affiner-btn-sub { font-size:0.75rem; color:var(--text-faint); }
   .bloc-affine { display:none; flex-direction:column; gap:1rem; animation:fadeSlideUp 0.4s var(--ease-out) both; }
-  .bloc-affine.visible { display:flex; }
+  .bloc-affine.visible { display:flex; padding-bottom:88px; }
 
   /* ── Sticky bar ── */
   .sticky-bar {
@@ -2092,12 +2092,21 @@ document.getElementById('popup-abo')?.addEventListener('click', function(e) {
 // ══════════════════════════════════════════════════════════════
 // SCREEN 2 — Dettes
 // ══════════════════════════════════════════════════════════════
+// Normalisation des valeurs dettes_types de l'onboarding vers les vals DETTE_TYPES de la brique
+const DETTES_NORMALIZE = {
+  'autre_credit': 'autre',
+  'paiement_fractionne_mini_credit': 'paiements_fractionnes',
+  'decouvert_regulier': 'decouvert',
+};
+
 function buildScreen2() {
   const list = document.getElementById('dettes-list');
   if (!list) return;
 
   // Pré-remplissage depuis profil (types seulement)
-  const profilDettes = (profil.dettes_types || []).filter(d => d !== 'aucun');
+  const profilDettes = (profil.dettes_types || [])
+    .filter(d => d !== 'aucun')
+    .map(d => DETTES_NORMALIZE[d] || d);
   if (profilDettes.length > 0 && budgetData.dettes.length === 0) {
     document.getElementById('dettes-confirm-bar').style.display = 'block';
     profilDettes.forEach(type => {
@@ -2401,10 +2410,12 @@ function buildSankeyFlow() {
   html += `<rect x="${x2}" y="0" width="${barW}" height="${h2B}" rx="4" fill="${cB}"/>`;
   if (h2E > 2) html += `<rect x="${x2}" y="${y2E}" width="${barW}" height="${h2E}" rx="4" fill="${cE}"/>`;
 
-  // Col 3 — disponible (épargne + reste), positioned below charges
+  // Col 3 — disponible (épargne + reste), positioned below ALL charges (besoins + envies)
   const h3S = rS * H;
   const h3R = rR * H;
-  const y3_start = h2B + gap;
+  // y3_start = bas de col2 complète (besoins + gap + envies + gap si envies présent)
+  const y2_bottom = h2B + (h2E > 2 ? gap + h2E : 0);
+  const y3_start = y2_bottom + gap;
   const y3S = y3_start;
   const y3R_pos = y3_start + h3S + (h3S > 2 ? gap : 0);
   if (h3S > 2) html += `<rect x="${x3}" y="${y3S}" width="${barW}" height="${h3S}" rx="4" fill="${cS}"/>`;
@@ -2424,17 +2435,17 @@ function buildSankeyFlow() {
   // Bézier paths col2 → col3
   const lx2 = x2 + barW, rx3 = x3;
   const mx2 = (lx2 + rx3) / 2;
-  // Épargne path: from bottom of envies in col2 to y3S in col3
+  // Épargne path: from bottom of col2 (y2_bottom) to y3S
   if (h3S > 2) {
-    const stTop = y2E + h2E - h3S, stBot = y2E + h2E;
+    const stTop = y2_bottom - h3S, stBot = y2_bottom;
     if (stTop >= 0) {
-      html += `<path d="M${lx2},${stTop} C${mx2},${stTop} ${mx2},${y3S} ${rx3},${y3S} L${rx3},${y3S+h3S} C${mx2},${y3S+h3S} ${mx2},${stBot} ${lx2},${stBot} Z" fill="${cS}" opacity="0.18"/>`;
+      html += `<path d="M${lx2},${stTop} C${mx2},${stTop} ${mx2},${y3S} ${rx3},${y3S} L${rx3},${y3S+h3S} C${mx2},${y3S+h3S} ${mx2},${stBot} ${lx2},${stBot} Z" fill="${cS}" opacity="0.20"/>`;
     }
   }
-  // Reste path: from unallocated space in col2 to y3R_pos in col3
+  // Reste path: from very bottom of col2 to y3R_pos in col3
   if (h3R > 4) {
-    const rtTop = 0, rtBot = rR * H;
-    html += `<path d="M${lx2},${rtTop} C${mx2},${rtTop} ${mx2},${y3R_pos} ${rx3},${y3R_pos} L${rx3},${y3R_pos+h3R} C${mx2},${y3R_pos+h3R} ${mx2},${rtBot} ${lx2},${rtBot} Z" fill="${cR}" opacity="0.12"/>`;
+    const rtTop = y2_bottom, rtBot = y2_bottom + h3R;
+    html += `<path d="M${lx2},${rtTop} C${mx2},${rtTop} ${mx2},${y3R_pos} ${rx3},${y3R_pos} L${rx3},${y3R_pos+h3R} C${mx2},${y3R_pos+h3R} ${mx2},${rtBot} ${lx2},${rtBot} Z" fill="${cR}" opacity="0.14"/>`;
   }
 
   // Labels
