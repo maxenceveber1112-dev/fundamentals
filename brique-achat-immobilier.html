@@ -101,13 +101,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-he
 .mode-card-text{font-size:0.8rem;color:var(--text-secondary);line-height:1.5;}
 
 /* ─── GLOSSARY (Tooltips contextuels) ─────────────────────── */
-.glossary-section{display:flex;flex-direction:column;gap:1.25rem;}
-.glossary-category{margin-bottom:0.25rem;}
-.glossary-cat-title{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--accent-strong);margin-bottom:0.6rem;}
-.glossary-cat-sub{font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem;}
-.glossary-terms{display:flex;flex-wrap:wrap;gap:0.45rem;}
-.glossary-term{display:inline-flex;padding:0.35rem 0.7rem;font-size:0.8rem;font-weight:500;color:var(--text);background:var(--bg);border:1px dashed var(--cream-border);border-radius:var(--radius-sm);cursor:pointer;transition:all 0.2s ease;text-decoration:none;border-bottom:1.5px dotted var(--accent-strong);}
-.glossary-term:hover{background:var(--accent-soft);border-color:var(--accent);}
+.glossary-term{display:inline;padding:0;font-size:inherit;font-weight:inherit;color:inherit;background:none;border:none;border-bottom:1.5px dotted var(--accent-strong);cursor:pointer;transition:color 0.15s ease;text-decoration:none;}
+.glossary-term:hover{color:var(--accent-strong);}
 .glossary-popover{position:absolute;z-index:500;width:min(340px,90vw);background:var(--bg-elevated);border:1px solid var(--cream-border);border-radius:var(--radius);padding:1.1rem;box-shadow:0 8px 32px rgba(0,0,0,0.12);animation:popIn 0.2s ease;}
 @keyframes popIn{from{opacity:0;transform:scale(0.95) translateY(4px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .glossary-popover-close{position:absolute;top:0.5rem;right:0.6rem;background:none;border:none;font-size:1.1rem;color:var(--text-faint);cursor:pointer;padding:0.25rem;}
@@ -226,12 +221,94 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .accordion-body{display:none;padding:0.65rem 0.85rem;font-size:0.78rem;color:var(--text-secondary);line-height:1.55;border-top:1px solid var(--cream-border);}
 .accordion-body.open{display:block;animation:fadeSlideUp 0.2s ease;}
 
+/* ─── PROJECT TYPE CARDS (grille 2x2) ─────────────────────── */
+.project-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+.project-type-card{
+  background:var(--bg-elevated);border:2px solid var(--cream-border);border-radius:var(--radius);
+  padding:1.1rem;cursor:pointer;transition:all 0.2s ease;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:0.4rem;
+}
+.project-type-card:hover{border-color:var(--accent);background:var(--accent-soft);}
+.project-type-card.selected{border-color:var(--accent-strong);background:var(--accent-soft);}
+.project-type-card .ptc-icon{font-size:1.8rem;}
+.project-type-card .ptc-title{font-size:0.84rem;font-weight:700;color:var(--text);}
+.project-type-card .ptc-sub{font-size:0.72rem;color:var(--text-muted);line-height:1.4;}
+.project-type-card.selected .ptc-title::after{content:' \2713';color:var(--accent-strong);}
+
+/* ─── BLOC B QUESTIONS COMPACT ────────────────────────────── */
+.compact-question{display:flex;flex-direction:column;gap:0.4rem;}
+.compact-label{font-size:0.78rem;font-weight:600;color:var(--text-secondary);}
+.pills-compact{display:flex;flex-wrap:wrap;gap:0.35rem;}
+.pill-sm{
+  padding:0.3rem 0.65rem;border-radius:9999px;font-size:0.75rem;font-weight:500;
+  border:1px solid var(--cream-border);background:var(--bg);color:var(--text-secondary);
+  cursor:pointer;transition:all 0.15s ease;
+}
+.pill-sm:hover{border-color:var(--accent);background:var(--accent-soft);}
+.pill-sm.selected{background:var(--accent-strong);color:#fff;border-color:var(--accent-strong);}
+
+/* ─── EPARGNE MODULE (ecran apport) ───────────────────────── */
+.epargne-module{
+  background:var(--cream-grad);border:1px solid var(--cream-border);border-radius:var(--radius);
+  padding:1.25rem;display:flex;flex-direction:column;gap:1rem;
+}
+.epargne-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+.epargne-item{
+  background:var(--bg-elevated);border-radius:var(--radius-sm);padding:0.85rem;
+  border:1px solid var(--cream-border);cursor:pointer;transition:all 0.2s ease;
+}
+.epargne-item:hover{border-color:var(--accent);}
+.epargne-item-label{font-size:0.72rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:0.25rem;}
+.epargne-item-value{font-family:var(--font-display);font-size:1.2rem;font-weight:600;color:var(--text);}
+.epargne-item-input{display:none;width:100%;border:none;background:transparent;font-family:var(--font-display);font-size:1.1rem;font-weight:600;color:var(--accent-strong);outline:none;}
+.epargne-item.editing .epargne-item-value{display:none;}
+.epargne-item.editing .epargne-item-input{display:block;}
+
+/* ─── REPARTITION BARRE BICOLORE ──────────────────────────── */
+.repartition-bar{
+  height:12px;border-radius:9999px;background:var(--track);overflow:hidden;position:relative;
+  display:flex;
+}
+.repartition-protege{height:100%;background:var(--green);border-radius:9999px 0 0 9999px;transition:width 0.5s ease;}
+.repartition-mobilisable{height:100%;background:var(--accent-strong);border-radius:0 9999px 9999px 0;transition:width 0.5s ease;}
+
+/* ─── HERO CARD APPORT ────────────────────────────────────── */
+.apport-hero{
+  position:relative;overflow:hidden;border-radius:var(--radius);
+  background:var(--cream-grad);border:1px solid var(--cream-border);
+  padding:1.5rem;display:flex;flex-direction:column;gap:0.75rem;
+}
+.apport-hero-bg{
+  position:absolute;right:-10px;bottom:-10px;opacity:0.06;
+  font-size:8rem;pointer-events:none;user-select:none;
+}
+.apport-hero-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent-strong);}
+.apport-hero-value{font-family:var(--font-display);font-size:2rem;font-weight:600;color:var(--text);line-height:1.1;}
+.apport-hero-sub{font-size:0.8rem;color:var(--text-secondary);}
+
+/* ─── LOYER DELTA INLINE ──────────────────────────────────── */
+.loyer-delta{font-size:0.75rem;margin-top:0.25rem;font-weight:500;}
+.loyer-delta.positive{color:var(--orange);}
+.loyer-delta.negative{color:var(--green);}
+.loyer-delta.neutral{color:var(--text-faint);}
+
+/* ─── PARAMS AVANCES ACCORDEON ────────────────────────────── */
+.params-toggle{
+  display:flex;align-items:center;gap:0.4rem;font-size:0.78rem;font-weight:600;
+  color:var(--text-muted);cursor:pointer;margin-top:0.5rem;padding:0.4rem 0;
+  border:none;background:none;transition:color 0.15s ease;
+}
+.params-toggle:hover{color:var(--accent-strong);}
+.params-body{display:none;padding-top:0.5rem;}
+.params-body.open{display:flex;flex-direction:column;gap:0.75rem;animation:fadeSlideUp 0.25s ease;}
+
 /* ─── RESPONSIVE ──────────────────────────────────────────── */
 @media(max-width:480px){
   .brick-title{font-size:1.15rem;}
   .result-cards{grid-template-columns:1fr 1fr;}
   .summary-grid{grid-template-columns:1fr 1fr;}
   .fields-2col{grid-template-columns:1fr !important;}
+  .project-type-grid{grid-template-columns:1fr;}
 }
 
 /* ─── ANIMATIONS ──────────────────────────────────────────── */
@@ -258,10 +335,10 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   <!-- Progress bar -->
   <div class="brick-progress">
     <div class="brick-progress-bar"><div class="brick-progress-fill" id="progress-fill" style="width:0%"></div></div>
-    <div class="brick-progress-text" id="progress-text">0 / 9</div>
+    <div class="brick-progress-text" id="progress-text">0 / 8</div>
   </div>
 
-  <!-- ─── ÉCRAN 0 : Introduction ───────────────────────────── -->
+  <!-- ─── ECRAN 0 : Introduction ───────────────────────────── -->
   <div id="screen-0" class="screen active-screen">
     <div class="brick-card">
       <div class="brick-kicker">BRIQUE ACHAT IMMOBILIER</div>
@@ -302,87 +379,107 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
   </div>
 
-  <!-- ─── ECRAN 1 : Ton projet ─────────────────────────────── -->
+  <!-- ─── ECRAN 1 : Ton projet (refonte — cards 2x2 + bloc B) ── -->
   <div id="screen-1" class="screen">
     <div class="brick-card">
       <div class="brick-kicker">ETAPE 1 / 8 &middot; TON PROJET</div>
       <h2 class="brick-title">Quel achat veux-tu preparer ?</h2>
       <p class="brick-subtitle">On adapte les calculs selon ton type de projet.</p>
 
-      <div class="fields-grid">
-        <div class="field-group">
-          <label class="field-label">Type de projet</label>
-          <div class="pills-group" id="pills-projectType">
-            <span class="pill-option" data-val="residence_principale">Residence principale</span>
-            <span class="pill-option" data-val="investissement_locatif">Investissement locatif</span>
-            <span class="pill-option" data-val="residence_secondaire">Residence secondaire</span>
-            <span class="pill-option" data-val="achat_travaux">Achat avec travaux</span>
-            <span class="pill-option" data-val="ne_sait_pas">Je ne sais pas encore</span>
-          </div>
+      <!-- BLOC A — 4 grandes cards de type de projet -->
+      <div class="project-type-grid" id="project-type-grid">
+        <div class="project-type-card" data-val="residence_principale" onclick="selectProjectCard(this)">
+          <div class="ptc-icon">&#x1F3E0;</div>
+          <div class="ptc-title">Residence principale</div>
+          <div class="ptc-sub">Pour y vivre au quotidien</div>
         </div>
-
-        <div class="field-group">
-          <label class="field-label">Horizon</label>
-          <div class="pills-group" id="pills-horizon">
-            <span class="pill-option" data-val="moins_3_mois">Moins de 3 mois</span>
-            <span class="pill-option" data-val="3_6_mois">3 a 6 mois</span>
-            <span class="pill-option" data-val="6_12_mois">6 a 12 mois</span>
-            <span class="pill-option" data-val="plus_1_an">Plus d'un an</span>
-            <span class="pill-option" data-val="curiosite">Simple curiosite</span>
-          </div>
+        <div class="project-type-card" data-val="investissement_locatif" onclick="selectProjectCard(this)">
+          <div class="ptc-icon">&#x1F4C8;</div>
+          <div class="ptc-title">Investissement locatif</div>
+          <div class="ptc-sub">Acheter pour louer</div>
         </div>
-
-        <div class="field-group">
-          <label class="field-label">Statut</label>
-          <div class="pills-group" id="pills-status">
-            <span class="pill-option" data-val="seul">Seul</span>
-            <span class="pill-option" data-val="couple">Couple</span>
-            <span class="pill-option" data-val="co_emprunteur">Avec co-emprunteur</span>
-            <span class="pill-option" data-val="sci">SCI / societe</span>
-          </div>
+        <div class="project-type-card" data-val="residence_secondaire" onclick="selectProjectCard(this)">
+          <div class="ptc-icon">&#x26F5;</div>
+          <div class="ptc-title">Residence secondaire</div>
+          <div class="ptc-sub">Un pied-a-terre ou vacances</div>
         </div>
-
-        <div class="field-group">
-          <label class="field-label">Primo-accedant</label>
-          <div class="pills-group" id="pills-primo">
-            <span class="pill-option" data-val="oui">Oui</span>
-            <span class="pill-option" data-val="non">Non</span>
-            <span class="pill-option" data-val="ne_sait_pas">Je ne sais pas</span>
-          </div>
+        <div class="project-type-card" data-val="achat_travaux" onclick="selectProjectCard(this)">
+          <div class="ptc-icon">&#x1F6E0;&#xFE0F;</div>
+          <div class="ptc-title">Achat avec travaux</div>
+          <div class="ptc-sub">Renover pour habiter ou revendre</div>
         </div>
-
-        <div class="field-group">
-          <label class="field-label">Type de bien</label>
-          <div class="pills-group" id="pills-propertyType">
-            <span class="pill-option" data-val="ancien">Ancien</span>
-            <span class="pill-option" data-val="neuf">Neuf</span>
-            <span class="pill-option" data-val="terrain">Terrain</span>
-            <span class="pill-option" data-val="vefa">VEFA</span>
-            <span class="pill-option" data-val="ne_sait_pas">Je ne sais pas</span>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Usage prevu</label>
-          <div class="pills-group" id="pills-usage">
-            <span class="pill-option" data-val="habiter">Habiter</span>
-            <span class="pill-option" data-val="louer">Louer</span>
-            <span class="pill-option" data-val="revendre">Revendre</span>
-            <span class="pill-option" data-val="plus_tard">Preparer plus tard</span>
-          </div>
-        </div>
-
-        <div class="field-group">
-          <label class="field-label">Localisation (facultatif)</label>
-          <input type="text" id="input-location" class="field-input" placeholder="ex : 75, Paris, 69001..." aria-label="Localisation"/>
-          <div class="field-help">Departement ou code postal — utile pour estimer les frais</div>
-        </div>
+      </div>
+      <div style="text-align:center;margin-top:0.5rem;">
+        <span class="pill-sm" data-val="ne_sait_pas" onclick="selectProjectCard(this)" style="font-size:0.78rem;color:var(--text-faint);">Je ne sais pas encore</span>
       </div>
 
       <!-- Mode card dynamique -->
       <div class="mode-card" id="mode-card" style="display:none">
         <div class="mode-card-title" id="mode-card-title"></div>
         <div class="mode-card-text" id="mode-card-text"></div>
+      </div>
+
+      <!-- BLOC B — questions compactes (visible apres selection) -->
+      <div id="bloc-b" style="display:none;">
+        <div style="display:flex;flex-direction:column;gap:0.85rem;margin-top:1rem;">
+
+          <div class="compact-question">
+            <span class="compact-label">Horizon</span>
+            <div class="pills-compact" id="pills-horizon">
+              <span class="pill-sm" data-val="moins_3_mois">Moins de 3 mois</span>
+              <span class="pill-sm" data-val="3_6_mois">3 a 6 mois</span>
+              <span class="pill-sm" data-val="6_12_mois">6 a 12 mois</span>
+              <span class="pill-sm" data-val="plus_1_an">Plus d'un an</span>
+              <span class="pill-sm" data-val="curiosite">Simple curiosite</span>
+            </div>
+          </div>
+
+          <div class="compact-question">
+            <span class="compact-label">Statut</span>
+            <div class="pills-compact" id="pills-status">
+              <span class="pill-sm" data-val="seul">Seul</span>
+              <span class="pill-sm" data-val="couple">Couple</span>
+              <span class="pill-sm" data-val="co_emprunteur">Avec co-emprunteur</span>
+              <span class="pill-sm" data-val="sci">SCI / societe</span>
+            </div>
+          </div>
+
+          <div class="compact-question">
+            <span class="compact-label">Type de bien</span>
+            <div class="pills-compact" id="pills-propertyType">
+              <span class="pill-sm" data-val="ancien">Ancien</span>
+              <span class="pill-sm" data-val="neuf">Neuf</span>
+              <span class="pill-sm" data-val="terrain">Terrain</span>
+              <span class="pill-sm" data-val="vefa">VEFA</span>
+              <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
+            </div>
+          </div>
+
+          <div class="compact-question">
+            <span class="compact-label">Primo-accedant <span class="glossary-term" onclick="showGlossaryPopover(this,'Primo-accedant')" tabindex="0">&#x24D8;</span></span>
+            <div class="pills-compact" id="pills-primo">
+              <span class="pill-sm" data-val="oui">Oui</span>
+              <span class="pill-sm" data-val="non">Non</span>
+              <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
+            </div>
+          </div>
+
+          <div class="compact-question" id="usage-question">
+            <span class="compact-label">Usage prevu</span>
+            <div class="pills-compact" id="pills-usage">
+              <span class="pill-sm" data-val="habiter">Habiter</span>
+              <span class="pill-sm" data-val="louer">Louer</span>
+              <span class="pill-sm" data-val="revendre">Revendre</span>
+              <span class="pill-sm" data-val="plus_tard">Preparer plus tard</span>
+            </div>
+          </div>
+
+          <div class="compact-question">
+            <span class="compact-label">Localisation (facultatif)</span>
+            <input type="text" id="input-location" class="field-input" placeholder="ex : 75, Paris, 69001..." aria-label="Localisation" style="font-size:0.84rem;padding:0.5rem 0.75rem;"/>
+            <div class="field-help">Departement ou code postal — utile pour estimer les frais</div>
+          </div>
+        </div>
       </div>
 
       <div id="sci-warning" class="warning-box" style="display:none">
@@ -397,16 +494,88 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
   </div>
 
-  <!-- ─── ECRAN 2 : Le jargon utile ───────────────────────── -->
+  <!-- ─── ECRAN 2 : Ta capacite mensuelle (ex-ecran 3, refonte) ── -->
   <div id="screen-2" class="screen">
     <div class="brick-card">
-      <div class="brick-kicker">ETAPE 2 / 8 &middot; VOCABULAIRE</div>
-      <h2 class="brick-title">Les mots a connaitre avant de signer.</h2>
-      <p class="brick-subtitle">Clique sur un terme pour voir sa definition. Tu peux revenir ici a tout moment.</p>
+      <div class="brick-kicker">ETAPE 2 / 8 &middot; CAPACITE MENSUELLE</div>
+      <h2 class="brick-title">Quelle mensualite ton budget peut supporter ?</h2>
+      <p class="brick-subtitle">On transforme tes revenus et charges en <span class="glossary-term" onclick="showGlossaryPopover(this,'Mensualite')" tabindex="0">mensualite</span> cible.</p>
 
-      <div class="glossary-section" id="glossary-section">
-        <!-- Populated by JS -->
+      <div class="fields-grid">
+        <div class="field-group">
+          <label class="field-label" for="input-revenus">Revenus nets du foyer <span class="badge-prefilled" id="badge-revenus" style="display:none">Prerempli</span></label>
+          <div class="euro-wrap"><input type="number" id="input-revenus" class="field-input" placeholder="ex : 2500" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+          <a href="#" id="link-rev-compl" style="font-size:0.75rem;color:var(--accent-strong);margin-top:0.2rem;text-decoration:none;" onclick="event.preventDefault();toggleRevCompl();">+ Ajouter des revenus complementaires</a>
+          <div id="rev-compl-wrap" style="display:none;margin-top:0.4rem;">
+            <div class="field-group">
+              <label class="field-label" for="input-revenus-compl" style="font-size:0.78rem;">Revenus complementaires (primes, variable...)</label>
+              <div class="euro-wrap"><input type="number" id="input-revenus-compl" class="field-input" placeholder="0" min="0" inputmode="numeric" style="font-size:0.84rem;"/><span class="euro-suffix">&euro;</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="fields-2col" style="margin-top:0.25rem;">
+          <div class="field-group">
+            <label class="field-label" for="input-charges">Charges fixes mensuelles <span class="badge-prefilled" id="badge-charges" style="display:none">Prerempli</span></label>
+            <div class="euro-wrap"><input type="number" id="input-charges" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="input-credits">Credits existants / mois <span class="badge-prefilled" id="badge-credits" style="display:none">Prerempli</span></label>
+            <div class="euro-wrap"><input type="number" id="input-credits" class="field-input" placeholder="ex : 200" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="input-loyer">Loyer actuel <span class="badge-prefilled" id="badge-loyer" style="display:none">Prerempli</span></label>
+          <div class="euro-wrap"><input type="number" id="input-loyer" class="field-input" placeholder="ex : 700" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+          <div id="loyer-source" class="field-help" style="display:none;color:var(--text-faint);"></div>
+          <div class="loyer-delta neutral" id="loyer-delta"></div>
+        </div>
       </div>
+
+      <!-- Presets AVANT les resultats -->
+      <div class="presets" style="margin-top:0.75rem;">
+        <button class="preset-btn" data-preset="prudent" onclick="applyPreset('prudent')">Prudent</button>
+        <button class="preset-btn active" data-preset="equilibre" onclick="applyPreset('equilibre')">Equilibre</button>
+        <button class="preset-btn" data-preset="ambitieux" onclick="applyPreset('ambitieux')">Ambitieux</button>
+      </div>
+
+      <!-- Parametres avances (duree, taux) — collapsible -->
+      <div style="margin-top:0.5rem;">
+        <div class="params-toggle" id="params-toggle-s2" onclick="toggleParams()">
+          <span id="params-summary">Duree : 20 ans &middot; Taux estime : 3.5%</span>
+          <span>&#x25B8;</span>
+        </div>
+        <div class="params-body" id="params-body-s2">
+          <div class="slider-group">
+            <div class="slider-header"><span class="slider-label">Duree du pret</span><span class="slider-value" id="val-duree">20 ans</span></div>
+            <input type="range" id="slider-duree" min="10" max="25" value="20" step="1" oninput="updateCapacity()"/>
+          </div>
+          <div class="slider-group">
+            <div class="slider-header"><span class="slider-label">Taux nominal</span><span class="slider-value" id="val-taux">3.5 %</span></div>
+            <input type="range" id="slider-taux" min="1" max="7" value="3.5" step="0.1" oninput="updateCapacity()"/>
+          </div>
+        </div>
+      </div>
+
+      <div id="warning-effort" class="warning-box" style="display:none;margin-top:0.5rem;">
+        <span>&#x26A0;&#xFE0F;</span>
+        <span id="warning-effort-text">Taux d'effort eleve.</span>
+      </div>
+
+      <!-- 2 result cards : Mensualite cible + Reste a vivre -->
+      <div class="result-cards" id="results-s2" style="margin-top:0.75rem;grid-template-columns:1fr 1fr;">
+        <div class="result-card"><div class="result-card-value" id="rc-mensualite">--</div><div class="result-card-label">Mensualite cible</div></div>
+        <div class="result-card"><div class="result-card-value" id="rc-rav">--</div><div class="result-card-label">Reste a vivre</div></div>
+      </div>
+
+      <!-- Taux d'effort inline sous les cards -->
+      <div class="gauge-wrap" id="gauge-effort" style="margin-top:0.5rem;">
+        <div class="slider-header"><span class="slider-label" style="font-size:0.75rem;">Taux d'effort</span><span class="slider-value" id="val-effort" style="font-size:0.75rem;">0 %</span></div>
+        <div class="gauge-bar" style="height:8px;"><div class="gauge-fill gauge-green" id="fill-effort" style="width:0%"></div></div>
+        <div class="gauge-label"><span>0%</span><span>35%</span><span>50%</span></div>
+      </div>
+
+      <!-- Assurance estimee -->
+      <div id="assurance-info" style="font-size:0.75rem;color:var(--text-faint);margin-top:0.35rem;"></div>
 
       <div class="nav-btns">
         <button class="btn-hero-secondary" onclick="goScreen(1)">Retour</button>
@@ -415,146 +584,100 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
   </div>
 
-  <!-- ─── ECRAN 3 : Ta capacite mensuelle ─────────────────── -->
+  <!-- ─── ECRAN 3 : Ton apport reel (ex-ecran 4, refonte) ──── -->
   <div id="screen-3" class="screen">
     <div class="brick-card">
-      <div class="brick-kicker">ETAPE 3 / 8 &middot; CAPACITE MENSUELLE</div>
-      <h2 class="brick-title">Quelle mensualite ton budget peut supporter ?</h2>
-      <p class="brick-subtitle">On transforme tes revenus et charges en mensualite cible.</p>
-
-      <div class="fields-grid fields-2col">
-        <div class="field-group">
-          <label class="field-label" for="input-revenus">Revenus nets mensuels <span class="badge-prefilled" id="badge-revenus" style="display:none">Prerempli</span></label>
-          <div class="euro-wrap"><input type="number" id="input-revenus" class="field-input" placeholder="ex : 2500" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-charges">Charges fixes mensuelles <span class="badge-prefilled" id="badge-charges" style="display:none">Prerempli</span></label>
-          <div class="euro-wrap"><input type="number" id="input-charges" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-credits">Credits existants / mois <span class="badge-prefilled" id="badge-credits" style="display:none">Prerempli</span></label>
-          <div class="euro-wrap"><input type="number" id="input-credits" class="field-input" placeholder="ex : 200" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-loyer">Loyer actuel</label>
-          <div class="euro-wrap"><input type="number" id="input-loyer" class="field-input" placeholder="ex : 700" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:1rem;margin-top:0.75rem;">
-        <div class="slider-group">
-          <div class="slider-header"><span class="slider-label">Duree du pret</span><span class="slider-value" id="val-duree">20 ans</span></div>
-          <input type="range" id="slider-duree" min="10" max="25" value="20" step="1" oninput="updateCapacity()"/>
-        </div>
-        <div class="slider-group">
-          <div class="slider-header"><span class="slider-label">Taux nominal</span><span class="slider-value" id="val-taux">3.5 %</span></div>
-          <input type="range" id="slider-taux" min="1" max="7" value="3.5" step="0.1" oninput="updateCapacity()"/>
-        </div>
-        <div class="slider-group">
-          <div class="slider-header"><span class="slider-label">Assurance emprunteur / mois</span><span class="slider-value" id="val-assurance">0 &euro;</span></div>
-          <input type="range" id="slider-assurance" min="0" max="200" value="0" step="5" oninput="updateCapacity()"/>
-        </div>
-      </div>
-
-      <div class="presets" style="margin-top:0.5rem;">
-        <button class="preset-btn" data-preset="prudent" onclick="applyPreset('prudent')">Prudent</button>
-        <button class="preset-btn active" data-preset="equilibre" onclick="applyPreset('equilibre')">Equilibre</button>
-        <button class="preset-btn" data-preset="ambitieux" onclick="applyPreset('ambitieux')">Ambitieux</button>
-      </div>
-
-      <!-- Gauge taux effort -->
-      <div class="gauge-wrap" id="gauge-effort" style="margin-top:1rem;">
-        <div class="slider-header"><span class="slider-label">Taux d'effort</span><span class="slider-value" id="val-effort">0 %</span></div>
-        <div class="gauge-bar"><div class="gauge-fill gauge-green" id="fill-effort" style="width:0%"></div></div>
-        <div class="gauge-label"><span>0%</span><span>35%</span><span>50%</span></div>
-      </div>
-
-      <div id="warning-effort" class="warning-box" style="display:none">
-        <span>&#x26A0;&#xFE0F;</span>
-        <span id="warning-effort-text">Taux d'effort eleve.</span>
-      </div>
-
-      <div class="result-cards" id="results-s3" style="margin-top:0.75rem;">
-        <div class="result-card"><div class="result-card-value" id="rc-mensualite">--</div><div class="result-card-label">Mensualite cible</div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-rav">--</div><div class="result-card-label">Reste a vivre</div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-ecart">--</div><div class="result-card-label">Ecart vs loyer</div></div>
-      </div>
-
-      <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(2)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(4)">Continuer</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ─── ECRAN 4 : Ton apport reel ───────────────────────── -->
-  <div id="screen-4" class="screen">
-    <div class="brick-card">
-      <div class="brick-kicker">ETAPE 4 / 8 &middot; APPORT</div>
-      <h2 class="brick-title">Ton apport ne doit pas vider ta securite.</h2>
+      <div class="brick-kicker">ETAPE 3 / 8 &middot; APPORT</div>
+      <h2 class="brick-title">Ton <span class="glossary-term" onclick="showGlossaryPopover(this,'Apport')" tabindex="0">apport</span> ne doit pas vider ta securite.</h2>
       <p class="brick-subtitle">L'apport utile est celui que tu peux mobiliser sans te mettre en tension.</p>
 
-      <div class="fields-grid fields-2col">
-        <div class="field-group">
-          <label class="field-label" for="input-epargne-totale">Epargne totale disponible <span class="badge-prefilled" id="badge-epargne" style="display:none">Prerempli</span></label>
-          <div class="euro-wrap"><input type="number" id="input-epargne-totale" class="field-input" placeholder="ex : 15000" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+      <!-- Module Epargne & Matelas -->
+      <div class="epargne-module" id="epargne-module">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Ton epargne</span>
+          <span class="badge-prefilled" id="badge-epargne-mod" style="display:none">Prerempli</span>
+        </div>
+        <div class="epargne-grid">
+          <div class="epargne-item" id="ei-epargne" onclick="editEpargneItem(this,'input-epargne-totale')">
+            <div class="epargne-item-label">Epargne totale</div>
+            <div class="epargne-item-value" id="ei-epargne-val">0 &euro;</div>
+            <input type="number" class="epargne-item-input" id="input-epargne-totale" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
+          </div>
+          <div class="epargne-item" id="ei-matelas" onclick="editEpargneItem(this,'input-matelas-actuel')">
+            <div class="epargne-item-label">Matelas actuel</div>
+            <div class="epargne-item-value" id="ei-matelas-val">0 &euro;</div>
+            <input type="number" class="epargne-item-input" id="input-matelas-actuel" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
+          </div>
         </div>
         <div class="field-group">
-          <label class="field-label" for="input-matelas-actuel">Matelas de securite actuel <span class="badge-prefilled" id="badge-matelas" style="display:none">Prerempli</span></label>
-          <div class="euro-wrap"><input type="number" id="input-matelas-actuel" class="field-input" placeholder="ex : 3000" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+          <label class="field-label" for="input-matelas-cible" style="font-size:0.78rem;">Matelas cible</label>
+          <div class="euro-wrap"><input type="number" id="input-matelas-cible" class="field-input" placeholder="ex : 5000" min="0" inputmode="numeric" style="font-size:0.84rem;padding:0.5rem 0.75rem;"/><span class="euro-suffix">&euro;</span></div>
         </div>
-        <div class="field-group">
-          <label class="field-label" for="input-matelas-cible">Matelas cible</label>
-          <div class="euro-wrap"><input type="number" id="input-matelas-cible" class="field-input" placeholder="ex : 5000" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+        <!-- Barre repartition -->
+        <div style="display:flex;flex-direction:column;gap:0.3rem;">
+          <div class="repartition-bar" id="repartition-bar">
+            <div class="repartition-protege" id="repartition-protege" style="width:0%"></div>
+            <div class="repartition-mobilisable" id="repartition-mobilisable" style="width:0%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--text-faint);">
+            <span>Protege</span>
+            <span>Mobilisable</span>
+          </div>
         </div>
+      </div>
+
+      <!-- Autres apports + Travaux -->
+      <div class="fields-grid" style="margin-top:1rem;">
         <div class="field-group">
-          <label class="field-label" for="input-aide-famille">Aide familiale</label>
-          <div class="euro-wrap"><input type="number" id="input-aide-famille" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+          <label class="field-label" for="input-aide-famille">Autres apports</label>
+          <div class="euro-wrap"><input type="number" id="input-aide-famille" class="field-input" placeholder="ex : don familial, vente d'un bien..." min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
         </div>
         <div class="field-group">
           <label class="field-label" for="input-travaux-apport">Travaux prevus</label>
           <div class="euro-wrap"><input type="number" id="input-travaux-apport" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
         </div>
-        <div class="field-group">
-          <label class="field-label" for="input-mobilier">Mobilier / emmenagement</label>
-          <div class="euro-wrap"><input type="number" id="input-mobilier" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
-        </div>
-        <div class="field-group">
-          <label class="field-label" for="input-reserve">Reserve imprevu apres achat</label>
-          <div class="euro-wrap"><input type="number" id="input-reserve" class="field-input" placeholder="ex : 2000" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
+      </div>
+
+      <!-- Modifier les hypotheses — accordeon -->
+      <div style="margin-top:0.75rem;">
+        <button class="params-toggle" onclick="toggleHypotheses()">Modifier les hypotheses &#x25B8;</button>
+        <div class="params-body" id="hypotheses-body">
+          <div class="field-group">
+            <label class="field-label" for="input-epargne-bloquee" style="font-size:0.78rem;">Epargne bloquee ou non mobilisable</label>
+            <div class="euro-wrap"><input type="number" id="input-epargne-bloquee" class="field-input" placeholder="0" min="0" inputmode="numeric" style="font-size:0.84rem;"/><span class="euro-suffix">&euro;</span></div>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="input-reserve" style="font-size:0.78rem;">Montant minimum a conserver apres achat</label>
+            <div class="euro-wrap"><input type="number" id="input-reserve" class="field-input" placeholder="ex : 2000" min="0" inputmode="numeric" style="font-size:0.84rem;"/><span class="euro-suffix">&euro;</span></div>
+          </div>
         </div>
       </div>
 
-      <div class="gauge-wrap" style="margin-top:1rem;">
-        <div class="slider-header"><span class="slider-label">Epargne protegee</span><span class="slider-value" id="val-protege">--</span></div>
-        <div class="gauge-bar"><div class="gauge-fill gauge-green" id="fill-protege" style="width:0%"></div></div>
-      </div>
-      <div class="gauge-wrap" style="margin-top:0.5rem;">
-        <div class="slider-header"><span class="slider-label">Apport mobilisable</span><span class="slider-value" id="val-mobilisable">--</span></div>
-        <div class="gauge-bar"><div class="gauge-fill" id="fill-mobilisable" style="width:0%;background:var(--accent-strong)"></div></div>
-      </div>
-
-      <div id="warning-apport" class="warning-box" style="display:none">
+      <div id="warning-apport" class="warning-box" style="display:none;margin-top:0.5rem;">
         <span>&#x26A0;&#xFE0F;</span>
         <span id="warning-apport-text"></span>
       </div>
 
-      <div class="result-cards" style="margin-top:0.75rem;">
-        <div class="result-card"><div class="result-card-value" id="rc-apport-mob">--</div><div class="result-card-label">Apport mobilisable</div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-apport-reste">--</div><div class="result-card-label">Reste apres achat</div></div>
+      <!-- Hero card apport mobilisable -->
+      <div class="apport-hero" id="apport-hero" style="margin-top:1rem;">
+        <div class="apport-hero-bg">&#x1F3E0;</div>
+        <div class="apport-hero-label">TON APPORT MOBILISABLE</div>
+        <div class="apport-hero-value" id="apport-hero-value">--</div>
+        <div class="apport-hero-sub" id="apport-hero-sub"></div>
+        <button class="btn-hero-primary" onclick="goScreen(4)" style="align-self:flex-start;">Continuer</button>
       </div>
 
       <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(3)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(5)">Continuer</button>
+        <button class="btn-hero-secondary" onclick="goScreen(2)">Retour</button>
+        <span></span>
       </div>
     </div>
   </div>
 
-  <!-- ─── ECRAN 5 : Le vrai cout d'achat ──────────────────── -->
-  <div id="screen-5" class="screen">
+  <!-- ─── ECRAN 4 : Le vrai cout d'achat (ex-ecran 5) ──────── -->
+  <div id="screen-4" class="screen">
     <div class="brick-card">
-      <div class="brick-kicker">ETAPE 5 / 8 &middot; COUT REEL</div>
+      <div class="brick-kicker">ETAPE 4 / 8 &middot; COUT REEL</div>
       <h2 class="brick-title">Le prix affiche n'est pas le cout total.</h2>
       <p class="brick-subtitle">On additionne les couts visibles et invisibles.</p>
 
@@ -564,7 +687,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
           <div class="euro-wrap"><input type="number" id="input-prix-bien" class="field-input" placeholder="ex : 200000" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
         </div>
         <div class="field-group">
-          <label class="field-label" for="input-frais-notaire">Frais de notaire (estimation)</label>
+          <label class="field-label" for="input-frais-notaire"><span class="glossary-term" onclick="showGlossaryPopover(this,'Frais de notaire')" tabindex="0">Frais de notaire</span> (estimation)</label>
           <div class="euro-wrap"><input type="number" id="input-frais-notaire" class="field-input" placeholder="auto" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
           <div class="field-help" id="help-notaire">Estimation modifiable. Voir la regle ci-dessous.</div>
         </div>
@@ -573,11 +696,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
           <div class="euro-wrap"><input type="number" id="input-frais-agence" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
         </div>
         <div class="field-group">
-          <label class="field-label" for="input-frais-garantie">Frais de garantie</label>
+          <label class="field-label" for="input-frais-garantie"><span class="glossary-term" onclick="showGlossaryPopover(this,'Garantie bancaire')" tabindex="0">Frais de garantie</span></label>
           <div class="euro-wrap"><input type="number" id="input-frais-garantie" class="field-input" placeholder="ex : 2000" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
         </div>
         <div class="field-group">
-          <label class="field-label" for="input-frais-dossier">Frais de dossier bancaire</label>
+          <label class="field-label" for="input-frais-dossier"><span class="glossary-term" onclick="showGlossaryPopover(this,'Frais de dossier')" tabindex="0">Frais de dossier bancaire</span></label>
           <div class="euro-wrap"><input type="number" id="input-frais-dossier" class="field-input" placeholder="ex : 500" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
         </div>
         <div class="field-group">
@@ -598,11 +721,11 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
         <div class="brick-kicker" style="margin-bottom:0;">COUTS MENSUELS PROPRIETAIRE</div>
         <div class="fields-grid fields-2col">
           <div class="field-group">
-            <label class="field-label" for="input-taxe-fonciere">Taxe fonciere / an</label>
+            <label class="field-label" for="input-taxe-fonciere"><span class="glossary-term" onclick="showGlossaryPopover(this,'Taxe fonciere')" tabindex="0">Taxe fonciere</span> / an</label>
             <div class="euro-wrap"><input type="number" id="input-taxe-fonciere" class="field-input" placeholder="ex : 1200" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
           </div>
           <div class="field-group">
-            <label class="field-label" for="input-charges-copro">Charges copro / mois</label>
+            <label class="field-label" for="input-charges-copro"><span class="glossary-term" onclick="showGlossaryPopover(this,'Charges de copropriete')" tabindex="0">Charges copro</span> / mois</label>
             <div class="euro-wrap"><input type="number" id="input-charges-copro" class="field-input" placeholder="ex : 150" min="0" inputmode="numeric"/><span class="euro-suffix">&euro;</span></div>
           </div>
           <div class="field-group">
@@ -634,16 +757,16 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       </div>
 
       <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(4)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(6)">Continuer</button>
+        <button class="btn-hero-secondary" onclick="goScreen(3)">Retour</button>
+        <button class="btn-hero-primary" onclick="goScreen(5)">Continuer</button>
       </div>
     </div>
   </div>
 
-  <!-- ─── ECRAN 6 : Capacite d'achat ──────────────────────── -->
-  <div id="screen-6" class="screen">
+  <!-- ─── ECRAN 5 : Capacite d'achat (ex-ecran 6) ────────────── -->
+  <div id="screen-5" class="screen">
     <div class="brick-card">
-      <div class="brick-kicker">ETAPE 6 / 8 &middot; SIMULATEUR</div>
+      <div class="brick-kicker">ETAPE 5 / 8 &middot; SIMULATEUR</div>
       <h2 class="brick-title">Combien peux-tu viser ?</h2>
       <p class="brick-subtitle">On transforme mensualite + apport + frais en budget d'achat realiste.</p>
 
@@ -673,7 +796,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
       <div class="result-cards" style="margin-top:0.75rem;">
         <div class="result-card"><div class="result-card-value" id="rc-sim-mensualite">--</div><div class="result-card-label">Mensualite</div></div>
-        <div class="result-card"><div class="result-card-value" id="rc-sim-effort">--</div><div class="result-card-label">Taux d'effort</div></div>
+        <div class="result-card"><div class="result-card-value" id="rc-sim-effort">--</div><div class="result-card-label"><span class="glossary-term" onclick="showGlossaryPopover(this,'Taux d\\\'effort')" tabindex="0">Taux d'effort</span></div></div>
         <div class="result-card"><div class="result-card-value" id="rc-sim-rav">--</div><div class="result-card-label">Reste a vivre</div></div>
         <div class="result-card"><div class="result-card-value" id="rc-sim-emprunt">--</div><div class="result-card-label">Emprunt necessaire</div></div>
       </div>
@@ -685,16 +808,16 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       </div>
 
       <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(5)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(7)">Continuer</button>
+        <button class="btn-hero-secondary" onclick="goScreen(4)">Retour</button>
+        <button class="btn-hero-primary" onclick="goScreen(6)">Continuer</button>
       </div>
     </div>
   </div>
 
-  <!-- ─── ECRAN 7 : Investissement locatif (HYBRIDE) ──────── -->
-  <div id="screen-7" class="screen">
+  <!-- ─── ECRAN 6 : Investissement locatif (ex-ecran 7) ──────── -->
+  <div id="screen-6" class="screen">
     <div class="brick-card">
-      <div class="brick-kicker">ETAPE 7 / 8 &middot; INVESTISSEMENT LOCATIF</div>
+      <div class="brick-kicker">ETAPE 6 / 8 &middot; INVESTISSEMENT LOCATIF</div>
       <h2 class="brick-title">Acheter pour louer : il faut regarder plus que le loyer.</h2>
 
       <div class="invest-toggle-card">
@@ -740,9 +863,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
         </div>
 
         <div class="result-cards" id="results-invest" style="margin-top:1rem;">
-          <div class="result-card"><div class="result-card-value" id="rc-rdt-brut">--</div><div class="result-card-label">Rendement brut</div></div>
-          <div class="result-card"><div class="result-card-value" id="rc-rdt-net">--</div><div class="result-card-label">Rendement net simplifie</div></div>
-          <div class="result-card"><div class="result-card-value" id="rc-cashflow">--</div><div class="result-card-label">Cash-flow mensuel</div></div>
+          <div class="result-card"><div class="result-card-value" id="rc-rdt-brut">--</div><div class="result-card-label"><span class="glossary-term" onclick="showGlossaryPopover(this,'Rendement brut')" tabindex="0">Rendement brut</span></div></div>
+          <div class="result-card"><div class="result-card-value" id="rc-rdt-net">--</div><div class="result-card-label"><span class="glossary-term" onclick="showGlossaryPopover(this,'Rendement net simplifie')" tabindex="0">Rendement net simplifie</span></div></div>
+          <div class="result-card"><div class="result-card-value" id="rc-cashflow">--</div><div class="result-card-label"><span class="glossary-term" onclick="showGlossaryPopover(this,'Cash-flow')" tabindex="0">Cash-flow mensuel</span></div></div>
           <div class="result-card"><div class="result-card-value" id="rc-effort-loc">--</div><div class="result-card-label">Effort d'epargne</div></div>
         </div>
 
@@ -753,16 +876,16 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       </div>
 
       <div class="nav-btns" style="margin-top:1rem;">
-        <button class="btn-hero-secondary" onclick="goScreen(6)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(8)">Continuer</button>
+        <button class="btn-hero-secondary" onclick="goScreen(5)">Retour</button>
+        <button class="btn-hero-primary" onclick="goScreen(7)">Continuer</button>
       </div>
     </div>
   </div>
 
-  <!-- ─── ECRAN 8 : Les etapes d'un achat ─────────────────── -->
-  <div id="screen-8" class="screen">
+  <!-- ─── ECRAN 7 : Les etapes d'un achat (ex-ecran 8) ─────── -->
+  <div id="screen-7" class="screen">
     <div class="brick-card">
-      <div class="brick-kicker">ETAPE 8 / 8 &middot; PROCESSUS</div>
+      <div class="brick-kicker">ETAPE 7 / 8 &middot; PROCESSUS</div>
       <h2 class="brick-title">Les grandes etapes avant les cles.</h2>
       <p class="brick-subtitle">Clique sur une etape pour voir le detail.</p>
 
@@ -771,14 +894,14 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
       </div>
 
       <div class="nav-btns">
-        <button class="btn-hero-secondary" onclick="goScreen(7)">Retour</button>
-        <button class="btn-hero-primary" onclick="goScreen(9)">Voir mon diagnostic</button>
+        <button class="btn-hero-secondary" onclick="goScreen(6)">Retour</button>
+        <button class="btn-hero-primary" onclick="goScreen(8)">Voir mon diagnostic</button>
       </div>
     </div>
   </div>
 
-  <!-- ─── ECRAN FINAL : Diagnostic ─────────────────────────── -->
-  <div id="screen-9" class="screen">
+  <!-- ─── ECRAN FINAL 8 : Diagnostic (ex-ecran 9) ────────────── -->
+  <div id="screen-8" class="screen">
     <div class="brick-card" style="text-align:center;">
       <div class="brick-kicker">DIAGNOSTIC IMMOBILIER</div>
       <h2 class="brick-title">Ton premier diagnostic immobilier est pret.</h2>
@@ -825,7 +948,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
     </div>
 
     <div class="nav-btns" style="margin-top:1rem;">
-      <button class="btn-hero-secondary" onclick="goScreen(8)">Retour</button>
+      <button class="btn-hero-secondary" onclick="goScreen(7)">Retour</button>
       <button class="btn-hero-primary" onclick="validerEtDashboard()">Ajouter mon projet au dashboard</button>
     </div>
   </div>
@@ -838,28 +961,38 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 <script>
 /* ─── CONSTANTS ──────────────────────────────────────────── */
 var BRICK_ID = 'achat_immobilier';
-var TOTAL_SCREENS = 10; // 0-9
+var TOTAL_SCREENS = 9; // 0-8
 var EFFORT_MAX = 0.35;
 var NOTARY_RATE_LOW = 0.10;
 var NOTARY_RATE_ANCIEN = 0.07;
 var NOTARY_RATE_NEUF = 0.025;
 var PRICE_THRESHOLD_LOW = 75000;
 
+/* ─── ASSURANCE AUTO PAR AGE ─────────────────────────────── */
+var ASSURANCE_RATES = {
+  '15_17': 0.0015, '18_24': 0.0015,
+  '25_34': 0.0020,
+  '35_54': 0.0030,
+  '55_64': 0.0045,
+  '65_plus': 0.0060
+};
+
 /* ─── STATE ──────────────────────────────────────────────── */
 var S = {
   currentScreen: 0,
   projectType: '', horizon: '', status: '', primo: '', propertyType: '', usage: '', location: '',
-  revenus: 0, charges: 0, credits: 0, loyer: 0,
+  revenus: 0, revenusCompl: 0, charges: 0, credits: 0, loyer: 0,
   duree: 20, taux: 3.5, assurance: 0, presetMode: 'equilibre',
   epargneTotale: 0, matelasActuel: 0, matelasCible: 0, aideFamille: 0,
-  travauxApport: 0, mobilier: 0, reserve: 0,
+  travauxApport: 0, epargneBloquee: 0, reserve: 0,
   prixBien: 0, fraisNotaire: 0, fraisAgence: 0, fraisGarantie: 0, fraisDossier: 0,
   travauxCout: 0, meublesCout: 0, demenagement: 0,
   taxeFonciere: 0, chargesCopro: 0, assuranceHab: 0, entretien: 0,
   investEnabled: false,
   loyerEstime: 0, vacance: 1, chargesLoc: 0, taxeFoncLoc: 0,
   assurancePno: 0, gestionLoc: 0,
-  score: 0, scoreStatus: '', actions: [], nextBrick: null
+  score: 0, scoreStatus: '', actions: [], nextBrick: null,
+  ageGroup: '25_34'
 };
 
 /* ─── GLOSSARY DATA ──────────────────────────────────────── */
@@ -903,15 +1036,18 @@ var GLOSSARY = [
     { t: 'Rendement brut', d: 'Loyers annuels divises par le cout total du projet. Vision simplifiee de la rentabilite.', ex: '9 600 EUR de loyers / 200 000 EUR de cout total = 4.8% brut.', w: 'Le rendement brut ne prend pas en compte les charges ni la fiscalite.' },
     { t: 'Rendement net simplifie', d: 'Loyers annuels diminues des charges et taxes, divises par le cout total du projet.', ex: '(9 600 - 2 400) / 200 000 = 3.6% net simplifie.', w: 'Plus realiste que le brut, mais ne prend pas en compte l\'impot sur le revenu.' },
     { t: 'Cash-flow', d: 'Ce qui rentre moins ce qui sort chaque mois. Positif = le bien se finance seul.', ex: '800 EUR de loyer - 1 000 EUR de mensualite - 100 EUR de charges = -300 EUR de cash-flow.', w: 'Un cash-flow negatif n\'est pas forcement un probleme, mais il faut pouvoir le supporter.' }
+  ]},
+  { cat: 'Autres', sub: '', terms: [
+    { t: 'Primo-accedant', d: 'Personne qui achete sa residence principale pour la premiere fois (ou qui n\'a pas ete proprietaire de sa residence principale au cours des 2 dernieres annees).', ex: 'Tu es locataire depuis 3 ans : tu es primo-accedant.', w: 'Donne acces a certaines aides (PTZ, exonerations locales).' }
   ]}
 ];
 
 /* ─── TIMELINE DATA ──────────────────────────────────────── */
 var TIMELINE = [
   { num: 1, title: 'Clarifier le projet', who: 'Toi', docs: 'Aucun', risk: 'Acheter sans savoir ce qu\'on cherche', action: 'Utilise la brique Achat immobilier pour cadrer ton projet.' },
-  { num: 2, title: 'Estimer la capacite', who: 'Toi / courtier', docs: 'Revenus, charges, epargne', risk: 'Sous-estimer les charges ou le taux d\'effort', action: 'Simule ta capacite dans l\'ecran 6 de cette brique.' },
+  { num: 2, title: 'Estimer la capacite', who: 'Toi / courtier', docs: 'Revenus, charges, epargne', risk: 'Sous-estimer les charges ou le taux d\'effort', action: 'Simule ta capacite dans l\'ecran 5 de cette brique.' },
   { num: 3, title: 'Preparer le dossier banque', who: 'Toi', docs: 'Bulletins, avis d\'imposition, releves bancaires, epargne', risk: 'Dossier incomplet = retard ou refus', action: 'Lance le parcours Achat immobilier pour preparer ton dossier.' },
-  { num: 4, title: 'Chercher le bien', who: 'Toi / agent immobilier', docs: 'Annonces, visites', risk: 'Coup de coeur sans analyse du budget total', action: 'Compare le prix affiche au cout total (ecran 5).' },
+  { num: 4, title: 'Chercher le bien', who: 'Toi / agent immobilier', docs: 'Annonces, visites', risk: 'Coup de coeur sans analyse du budget total', action: 'Compare le prix affiche au cout total (ecran 4).' },
   { num: 5, title: 'Faire une offre', who: 'Toi', docs: 'Offre ecrite', risk: 'Proposer un prix sans connaitre sa limite', action: 'Verifie ta capacite avant de faire une offre.' },
   { num: 6, title: 'Signer le compromis', who: 'Notaire', docs: 'Compromis, diagnostics, titre de propriete', risk: 'Ne pas verifier les conditions suspensives', action: 'Verifie prix, financement, conditions suspensives, diagnostics.', legal: 'Tu disposes de 10 jours calendaires de retractation apres signature.' },
   { num: 7, title: 'Delai de retractation (10 jours)', who: 'Toi', docs: 'Aucun', risk: 'Laisser passer le delai sans reflexion', action: 'Prends le temps de relire le compromis et de verifier les diagnostics.' },
@@ -954,16 +1090,20 @@ function estimateAcquisitionFees(price, propertyType) {
   return Math.round(price * NOTARY_RATE_ANCIEN);
 }
 
+function getAutoAssurance() {
+  var rate = ASSURANCE_RATES[S.ageGroup] || 0.0020;
+  var cap = calculateBorrowingCapacity(getMensualiteCible(), S.taux, S.duree * 12) || 150000;
+  return Math.round(cap * rate / 12);
+}
+
 function calculateRealEstateScore(st) {
   var score = 0;
-  // Financement 25pts
-  var effort = calculateDebtRatio(st.credits, getMensualiteCible() + n(st.assurance), st.revenus);
-  if (st.revenus > 0) {
+  var effort = calculateDebtRatio(st.credits, getMensualiteCible() + n(st.assurance), getTotalRevenus());
+  if (getTotalRevenus() > 0) {
     if (effort <= 0.30) score += 25;
     else if (effort <= 0.35) score += 15;
     else if (effort <= 0.45) score += 5;
   }
-  // Apport 20pts
   var mob = getApportMobilisable();
   var fees = estimateAcquisitionFees(st.prixBien, st.propertyType);
   if (mob > 0) {
@@ -971,17 +1111,13 @@ function calculateRealEstateScore(st) {
     else if (mob >= fees) score += 10;
     else score += 5;
   }
-  // Budget 20pts
   if (st.prixBien > 0 && st.taxeFonciere > 0) score += 20;
   else if (st.prixBien > 0) score += 10;
   else score += 5;
-  // Dossier 15pts — proportionnel aux ecrans completes
   var screensVisited = 0;
-  for (var i = 1; i <= 8; i++) { if (document.getElementById('screen-' + i)) screensVisited++; }
-  score += Math.min(15, Math.round(screensVisited / 8 * 15));
-  // Notaire 10pts — timeline viewed
+  for (var i = 1; i <= 7; i++) { if (document.getElementById('screen-' + i)) screensVisited++; }
+  score += Math.min(15, Math.round(screensVisited / 7 * 15));
   score += 10;
-  // Coherence 10pts
   if (st.projectType && st.horizon && st.propertyType) score += 10;
   else if (st.projectType) score += 5;
   return Math.min(100, score);
@@ -991,27 +1127,14 @@ function recommendNextBrick(st) {
   var profil = loadFromStorage('fund_profil') || {};
   var budgetData = loadFromStorage('fund_brick_budget_base');
   var matelasData = loadFromStorage('fund_brick_fonds_urgence');
-  // 1. Budget non fait
   if (!budgetData) return { slug: 'budget_base', label: 'Stabilise ton mois', reason: 'Avant d\'acheter, connais ton vrai reste a vivre.' };
-  // 2. Matelas incomplet
   if (!matelasData || n(st.matelasActuel) < n(st.matelasCible) * 0.5)
     return { slug: 'fonds_urgence', label: 'Ton matelas de securite', reason: 'Acheter sans reserve rend le projet fragile.' };
-  // 3. Credits eleves
-  var effort = calculateDebtRatio(st.credits, 0, st.revenus);
+  var effort = calculateDebtRatio(st.credits, 0, getTotalRevenus());
   if (effort > 0.25) return { slug: 'gestion_decouvert', label: 'Sortir du rouge', reason: 'Tes credits existants reduisent ta capacite d\'achat.' };
-  // 4. Budget OK + apport OK
   var apportMob = getApportMobilisable();
   if (apportMob > 0 && st.prixBien > 0) return { slug: 'plan_multi_objectifs', label: 'Tes objectifs en parallele', reason: 'Ton socle est pret pour planifier plusieurs projets.' };
-  // 5. Default
   return { slug: 'fonds_urgence', label: 'Ton matelas de securite', reason: 'Consolider ton epargne renforcera ton projet.' };
-}
-
-function recommendLifePath(st) {
-  if (['moins_3_mois','3_6_mois','6_12_mois'].indexOf(st.horizon) >= 0) return true;
-  if (st.projectType === 'investissement_locatif') return true;
-  if (st.projectType === 'achat_travaux') return true;
-  if (st.prixBien > 0) return true;
-  return false;
 }
 
 /* ─── HELPERS ────────────────────────────────────────────── */
@@ -1022,9 +1145,10 @@ function fmt(v) {
 }
 function fmtPct(v) { return (Math.round(v * 1000) / 10) + ' %'; }
 function $(id) { return document.getElementById(id); }
+function getTotalRevenus() { return n(S.revenus) + n(S.revenusCompl); }
 
 function getMensualiteCible() {
-  var revenus = n(S.revenus);
+  var revenus = getTotalRevenus();
   var credits = n(S.credits);
   var presetRatio = S.presetMode === 'prudent' ? 0.28 : (S.presetMode === 'ambitieux' ? 0.35 : 0.33);
   var maxMens = revenus * presetRatio - credits;
@@ -1033,37 +1157,60 @@ function getMensualiteCible() {
 
 function getApportMobilisable() {
   var protectedAmount = Math.max(n(S.matelasCible), n(S.matelasActuel));
-  return calculateMobilizableDownPayment(S.epargneTotale, S.aideFamille, protectedAmount, 0, n(S.reserve));
+  return calculateMobilizableDownPayment(S.epargneTotale, S.aideFamille, protectedAmount, n(S.epargneBloquee), n(S.reserve));
+}
+
+/* ─── PROJECT CARD SELECTION (ecran 1 bloc A) ────────────── */
+function selectProjectCard(el) {
+  var val = el.getAttribute('data-val');
+  // Deselect all project-type-cards AND the "je ne sais pas" pill
+  document.querySelectorAll('.project-type-card').forEach(function(c) { c.classList.remove('selected'); });
+  document.querySelectorAll('#screen-1 .pill-sm[data-val="ne_sait_pas"]').forEach(function(p) { p.classList.remove('selected'); });
+  el.classList.add('selected');
+  S.projectType = val;
+  updateModeCard();
+
+  // Auto-set usage for investissement locatif
+  if (val === 'investissement_locatif') {
+    S.usage = 'louer';
+    var usageQ = $('usage-question');
+    if (usageQ) usageQ.style.display = 'none';
+    var toggle = $('toggle-invest');
+    if (toggle && !toggle.checked) { toggle.checked = true; }
+  } else {
+    var usageQ2 = $('usage-question');
+    if (usageQ2) usageQ2.style.display = '';
+  }
+
+  // Show bloc B with animation
+  var blocB = $('bloc-b');
+  if (blocB && blocB.style.display === 'none') {
+    blocB.style.display = 'block';
+    blocB.style.animation = 'fadeSlideUp 0.3s ease both';
+  }
 }
 
 /* ─── SCREEN NAVIGATION ──────────────────────────────────── */
 function goScreen(idx) {
   if (idx < 0 || idx >= TOTAL_SCREENS) return;
-  // Sync state from inputs before leaving current screen
   syncStateFromScreen(S.currentScreen);
-  // Hide current
   var cur = $('screen-' + S.currentScreen);
   if (cur) cur.classList.remove('active-screen');
-  // Show target
   var target = $('screen-' + idx);
   if (target) target.classList.add('active-screen');
   S.currentScreen = idx;
-  // Update progress
   var pct = Math.round(idx / (TOTAL_SCREENS - 1) * 100);
   $('progress-fill').style.width = pct + '%';
   $('progress-text').textContent = idx + ' / ' + (TOTAL_SCREENS - 1);
-  // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Screen-specific init
-  if (idx === 2) buildGlossary();
-  if (idx === 3) updateCapacity();
-  if (idx === 4) updateApport();
-  if (idx === 5) updateCost();
-  if (idx === 6) initSimulator();
-  if (idx === 7) initInvestment();
-  if (idx === 8) buildTimeline();
-  if (idx === 9) buildFinalScreen();
-  // Autosave draft
+  if (idx === 2) { S.assurance = getAutoAssurance(); updateCapacity(); }
+  if (idx === 3) updateApport();
+  if (idx === 4) updateCost();
+  if (idx === 5) initSimulator();
+  if (idx === 6) initInvestment();
+  if (idx === 7) buildTimeline();
+  if (idx === 8) buildFinalScreen();
   if (typeof autosaveBrickProgress === 'function') {
     autosaveBrickProgress(BRICK_ID, idx, S);
   }
@@ -1073,25 +1220,25 @@ function syncStateFromScreen(screenIdx) {
   if (screenIdx === 1) {
     S.location = ($('input-location') || {}).value || '';
   }
-  if (screenIdx === 3) {
+  if (screenIdx === 2) {
     S.revenus = n(($('input-revenus') || {}).value);
+    S.revenusCompl = n(($('input-revenus-compl') || {}).value);
     S.charges = n(($('input-charges') || {}).value);
     S.credits = n(($('input-credits') || {}).value);
     S.loyer = n(($('input-loyer') || {}).value);
     S.duree = n(($('slider-duree') || {}).value);
     S.taux = n(($('slider-taux') || {}).value);
-    S.assurance = n(($('slider-assurance') || {}).value);
   }
-  if (screenIdx === 4) {
+  if (screenIdx === 3) {
     S.epargneTotale = n(($('input-epargne-totale') || {}).value);
     S.matelasActuel = n(($('input-matelas-actuel') || {}).value);
     S.matelasCible = n(($('input-matelas-cible') || {}).value);
     S.aideFamille = n(($('input-aide-famille') || {}).value);
     S.travauxApport = n(($('input-travaux-apport') || {}).value);
-    S.mobilier = n(($('input-mobilier') || {}).value);
+    S.epargneBloquee = n(($('input-epargne-bloquee') || {}).value);
     S.reserve = n(($('input-reserve') || {}).value);
   }
-  if (screenIdx === 5) {
+  if (screenIdx === 4) {
     S.prixBien = n(($('input-prix-bien') || {}).value);
     S.fraisNotaire = n(($('input-frais-notaire') || {}).value);
     S.fraisAgence = n(($('input-frais-agence') || {}).value);
@@ -1105,7 +1252,7 @@ function syncStateFromScreen(screenIdx) {
     S.assuranceHab = n(($('input-assurance-hab') || {}).value);
     S.entretien = n(($('input-entretien') || {}).value);
   }
-  if (screenIdx === 7) {
+  if (screenIdx === 6) {
     S.loyerEstime = n(($('input-loyer-estime') || {}).value);
     S.vacance = n(($('input-vacance') || {}).value);
     S.chargesLoc = n(($('input-charges-loc') || {}).value);
@@ -1115,26 +1262,20 @@ function syncStateFromScreen(screenIdx) {
   }
 }
 
-/* ─── PILLS SELECTION ────────────────────────────────────── */
+/* ─── PILLS SELECTION (compact pills — bloc B) ───────────── */
 function initPills() {
-  document.querySelectorAll('.pills-group').forEach(function(group) {
-    group.querySelectorAll('.pill-option').forEach(function(pill) {
+  document.querySelectorAll('.pills-compact').forEach(function(group) {
+    group.querySelectorAll('.pill-sm').forEach(function(pill) {
       pill.addEventListener('click', function() {
-        group.querySelectorAll('.pill-option').forEach(function(p) { p.classList.remove('selected'); });
+        group.querySelectorAll('.pill-sm').forEach(function(p) { p.classList.remove('selected'); });
         pill.classList.add('selected');
         var field = group.id.replace('pills-', '');
         S[field] = pill.getAttribute('data-val');
-        updateModeCard();
         // SCI warning
         if (field === 'status' && S[field] === 'sci') {
           $('sci-warning').style.display = 'flex';
         } else if (field === 'status') {
           $('sci-warning').style.display = 'none';
-        }
-        // Auto-enable invest toggle if project type is locatif
-        if (field === 'projectType' && S.projectType === 'investissement_locatif') {
-          var toggle = $('toggle-invest');
-          if (toggle && !toggle.checked) { toggle.checked = true; toggleInvestment(); }
         }
       });
     });
@@ -1158,26 +1299,8 @@ function updateModeCard() {
   text.textContent = mode.m;
 }
 
-/* ─── GLOSSARY ───────────────────────────────────────────── */
+/* ─── GLOSSARY POPOVER ──────────────────────────────────── */
 var activePopover = null;
-
-function buildGlossary() {
-  var container = $('glossary-section');
-  if (container.children.length > 0) return; // Already built
-  GLOSSARY.forEach(function(cat) {
-    var div = document.createElement('div');
-    div.className = 'glossary-category';
-    var html = '<div class="glossary-cat-title">' + cat.cat + '</div>';
-    html += '<div class="glossary-cat-sub">' + cat.sub + '</div>';
-    html += '<div class="glossary-terms">';
-    cat.terms.forEach(function(term) {
-      html += '<span class="glossary-term" onclick="showGlossaryPopover(this, \'' + escapeAttr(term.t) + '\')" tabindex="0">' + term.t + '</span>';
-    });
-    html += '</div>';
-    div.innerHTML = html;
-    container.appendChild(div);
-  });
-}
 
 function escapeAttr(s) {
   return s.replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -1203,7 +1326,6 @@ function showGlossaryPopover(el, termName) {
     '<p>' + term.d + '</p>' +
     '<div class="gp-label">Exemple</div><p>' + term.ex + '</p>' +
     '<div class="gp-label">Pourquoi ca compte</div><p>' + term.w + '</p>';
-  // Position near the term
   var rect = el.getBoundingClientRect();
   var scrollY = window.scrollY || window.pageYOffset;
   pop.style.position = 'absolute';
@@ -1211,7 +1333,6 @@ function showGlossaryPopover(el, termName) {
   pop.style.top = (rect.bottom + scrollY + 8) + 'px';
   document.body.appendChild(pop);
   activePopover = pop;
-  // Close on outside click
   setTimeout(function() {
     document.addEventListener('click', closePopoverOnOutside);
   }, 10);
@@ -1228,30 +1349,49 @@ function closePopoverOnOutside(e) {
   }
 }
 
-/* ─── ECRAN 3 : CAPACITY ────────────────────────────────── */
+/* ─── TOGGLE HELPERS ─────────────────────────────────────── */
+function toggleRevCompl() {
+  var wrap = $('rev-compl-wrap');
+  if (wrap) wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleParams() {
+  var body = $('params-body-s2');
+  if (body) body.classList.toggle('open');
+}
+
+function toggleHypotheses() {
+  var body = $('hypotheses-body');
+  if (body) body.classList.toggle('open');
+}
+
+/* ─── ECRAN 2 : CAPACITY (ex-ecran 3) ───────────────────── */
 function updateCapacity() {
-  var revenus = n(($('input-revenus') || {}).value);
+  var revenus = n(($('input-revenus') || {}).value) + n(($('input-revenus-compl') || {}).value);
   var charges = n(($('input-charges') || {}).value);
   var credits = n(($('input-credits') || {}).value);
   var loyer = n(($('input-loyer') || {}).value);
   var duree = n(($('slider-duree') || {}).value);
   var taux = n(($('slider-taux') || {}).value);
-  var assurance = n(($('slider-assurance') || {}).value);
 
   $('val-duree').textContent = duree + ' ans';
   $('val-taux').textContent = taux.toFixed(1) + ' %';
-  $('val-assurance').textContent = assurance + ' \u20AC';
+  $('params-summary').textContent = 'Duree : ' + duree + ' ans \u00b7 Taux estime : ' + taux.toFixed(1) + '%';
 
-  S.revenus = revenus; S.charges = charges; S.credits = credits; S.loyer = loyer;
-  S.duree = duree; S.taux = taux; S.assurance = assurance;
+  S.revenus = n(($('input-revenus') || {}).value);
+  S.revenusCompl = n(($('input-revenus-compl') || {}).value);
+  S.charges = charges; S.credits = credits; S.loyer = loyer;
+  S.duree = duree; S.taux = taux;
+
+  // Auto assurance
+  S.assurance = getAutoAssurance();
 
   var presetRatio = S.presetMode === 'prudent' ? 0.28 : (S.presetMode === 'ambitieux' ? 0.35 : 0.33);
-  var mensMax = revenus * presetRatio - credits - assurance;
+  var mensMax = revenus * presetRatio - credits - S.assurance;
   mensMax = Math.max(0, mensMax);
 
-  var effort = revenus > 0 ? (credits + mensMax + assurance) / revenus : 0;
-  var rav = revenus - charges - credits - mensMax - assurance;
-  var ecart = mensMax - loyer;
+  var effort = revenus > 0 ? (credits + mensMax + S.assurance) / revenus : 0;
+  var rav = revenus - charges - credits - mensMax - S.assurance;
 
   // Update gauge
   var effortPct = Math.min(effort * 100, 50);
@@ -1271,7 +1411,32 @@ function updateCapacity() {
 
   $('rc-mensualite').textContent = fmt(mensMax);
   $('rc-rav').textContent = fmt(rav);
-  $('rc-ecart').textContent = (ecart >= 0 ? '+' : '') + fmt(ecart);
+
+  // Loyer delta inline
+  var deltaEl = $('loyer-delta');
+  if (deltaEl && loyer > 0) {
+    var ecart = mensMax - loyer;
+    if (ecart > 0) {
+      deltaEl.className = 'loyer-delta positive';
+      deltaEl.textContent = 'La mensualite serait +' + fmt(ecart) + ' de plus que ton loyer actuel';
+    } else if (ecart < 0) {
+      deltaEl.className = 'loyer-delta negative';
+      deltaEl.textContent = 'La mensualite serait ' + fmt(ecart) + ' de moins que ton loyer actuel';
+    } else {
+      deltaEl.className = 'loyer-delta neutral';
+      deltaEl.textContent = 'Identique a ton loyer actuel';
+    }
+  } else if (deltaEl) {
+    deltaEl.textContent = '';
+  }
+
+  // Assurance info
+  var assInfo = $('assurance-info');
+  if (assInfo && S.assurance > 0) {
+    assInfo.textContent = 'Assurance estimee : ~' + fmt(S.assurance) + '/mois (adaptee a ton age)';
+  } else if (assInfo) {
+    assInfo.textContent = '';
+  }
 }
 
 function applyPreset(preset) {
@@ -1282,26 +1447,45 @@ function applyPreset(preset) {
   updateCapacity();
 }
 
-/* ─── ECRAN 4 : APPORT ──────────────────────────────────── */
+/* ─── ECRAN 3 : APPORT (ex-ecran 4) ─────────────────────── */
 function updateApport() {
   var total = n(($('input-epargne-totale') || {}).value);
   var mAct = n(($('input-matelas-actuel') || {}).value);
   var mCib = n(($('input-matelas-cible') || {}).value);
   var aide = n(($('input-aide-famille') || {}).value);
   var reserve = n(($('input-reserve') || {}).value);
+  var bloquee = n(($('input-epargne-bloquee') || {}).value);
 
   var protege = Math.max(mCib, mAct);
-  var mob = calculateMobilizableDownPayment(total, aide, protege, 0, reserve);
+  var mob = calculateMobilizableDownPayment(total, aide, protege, bloquee, reserve);
 
-  // Gauges
+  // Update epargne module display values
+  var eiEpVal = $('ei-epargne-val');
+  if (eiEpVal) eiEpVal.textContent = fmt(total);
+  var eiMatVal = $('ei-matelas-val');
+  if (eiMatVal) eiMatVal.textContent = fmt(mAct);
+
+  // Repartition bar
   if (total > 0) {
-    $('fill-protege').style.width = Math.min(100, protege / total * 100) + '%';
-    $('fill-mobilisable').style.width = Math.min(100, mob / total * 100) + '%';
+    var pctProtege = Math.min(100, protege / total * 100);
+    var pctMob = Math.min(100 - pctProtege, mob / total * 100);
+    $('repartition-protege').style.width = pctProtege + '%';
+    $('repartition-mobilisable').style.width = pctMob + '%';
   }
-  $('val-protege').textContent = fmt(protege);
-  $('val-mobilisable').textContent = fmt(mob);
-  $('rc-apport-mob').textContent = fmt(mob);
-  $('rc-apport-reste').textContent = fmt(total - mob);
+
+  // Hero card
+  $('apport-hero-value').textContent = fmt(mob);
+  var fees = estimateAcquisitionFees(S.prixBien, S.propertyType);
+  var heroSub = $('apport-hero-sub');
+  if (heroSub) {
+    heroSub.textContent = 'sur ' + fmt(total) + ' d\'epargne totale \u2014 ' + fmt(protege) + ' proteges pour ton matelas';
+  }
+
+  // Color the hero based on ratio
+  var hero = $('apport-hero');
+  if (hero) {
+    hero.style.borderColor = mob > fees && fees > 0 ? 'rgba(34,197,94,0.3)' : mob > 0 ? 'rgba(245,158,11,0.3)' : 'rgba(239,68,68,0.2)';
+  }
 
   // Warnings
   var warnEl = $('warning-apport');
@@ -1316,10 +1500,21 @@ function updateApport() {
   }
 }
 
-/* ─── ECRAN 5 : COST ─────────────────────────────────────── */
+/* ─── EPARGNE MODULE INLINE EDIT ─────────────────────────── */
+function editEpargneItem(item, inputId) {
+  item.classList.add('editing');
+  var inp = $(inputId);
+  if (inp) inp.focus();
+}
+function closeEpargneItem(inp) {
+  var item = inp.closest('.epargne-item');
+  if (item) item.classList.remove('editing');
+  updateApport();
+}
+
+/* ─── ECRAN 4 : COST (ex-ecran 5) ───────────────────────── */
 function updateCost() {
   var prix = n(($('input-prix-bien') || {}).value);
-  // Auto-calculate notary fees if empty
   var notaireInput = $('input-frais-notaire');
   if (prix > 0 && !notaireInput.value) {
     var estimated = estimateAcquisitionFees(prix, S.propertyType);
@@ -1348,7 +1543,6 @@ function updateCost() {
   $('rc-cout-mensuel').textContent = fmt(coutMensuelProprio);
   $('val-cout-total').textContent = fmt(coutTotal);
 
-  // Stacked bar
   var segments = [
     { label: 'Prix', val: prix, color: '#5B21B6' },
     { label: 'Notaire', val: notaire, color: '#7C3AED' },
@@ -1371,10 +1565,9 @@ function updateCost() {
   }
 }
 
-/* ─── ECRAN 6 : SIMULATOR ───────────────────────────────── */
+/* ─── ECRAN 5 : SIMULATOR (ex-ecran 6) ──────────────────── */
 function initSimulator() {
   var mob = getApportMobilisable();
-  // Set slider defaults from previous screens
   if (S.prixBien > 0) $('slider-prix-sim').value = S.prixBien;
   if (mob > 0) { $('slider-apport-sim').value = Math.min(mob, 200000); $('slider-apport-sim').max = Math.max(200000, mob + 50000); }
   $('slider-taux-sim').value = S.taux || 3.5;
@@ -1394,20 +1587,18 @@ function updateSimulator() {
   $('val-duree-sim').textContent = duree + ' ans';
 
   var fees = estimateAcquisitionFees(prix, S.propertyType);
-  var emprunt = prix + fees - apport;
-  emprunt = Math.max(0, emprunt);
+  var emprunt = Math.max(0, prix + fees - apport);
   var months = duree * 12;
   var mensualite = calculateMonthlyPayment(emprunt, taux, months);
   var totalMens = mensualite + n(S.assurance);
-  var effort = calculateDebtRatio(S.credits, totalMens, S.revenus);
-  var rav = S.revenus - S.charges - S.credits - totalMens;
+  var effort = calculateDebtRatio(S.credits, totalMens, getTotalRevenus());
+  var rav = getTotalRevenus() - S.charges - S.credits - totalMens;
 
   $('rc-sim-mensualite').textContent = fmt(mensualite);
   $('rc-sim-effort').textContent = fmtPct(effort);
   $('rc-sim-rav').textContent = fmt(rav);
   $('rc-sim-emprunt').textContent = fmt(emprunt);
 
-  // Status
   var statusCard = $('sim-status');
   var statusText = $('sim-status-text');
   var statusSub = $('sim-status-sub');
@@ -1421,7 +1612,7 @@ function updateSimulator() {
     statusCard.className = 'status-card orange';
     statusIcon.innerHTML = '&#x26A0;&#xFE0F;';
     statusText.textContent = 'Projet a ajuster';
-    statusSub.textContent = 'Marge serree — ajuste le prix ou la duree';
+    statusSub.textContent = 'Marge serree \u2014 ajuste le prix ou la duree';
   } else {
     statusCard.className = 'status-card green';
     statusIcon.innerHTML = '&#x2705;';
@@ -1444,7 +1635,7 @@ function quickAction(action) {
   updateSimulator();
 }
 
-/* ─── ECRAN 7 : INVESTMENT ───────────────────────────────── */
+/* ─── ECRAN 6 : INVESTMENT (ex-ecran 7) ──────────────────── */
 function initInvestment() {
   var isLocatif = S.projectType === 'investissement_locatif' || S.usage === 'louer';
   var toggle = $('toggle-invest');
@@ -1468,7 +1659,6 @@ function updateInvestment() {
   var pno = n(($('input-assurance-pno') || {}).value);
   var gestion = n(($('input-gestion-loc') || {}).value);
 
-  // Use prix from screen 5 or simulator
   var prixTotal = S.prixBien > 0 ? S.prixBien + estimateAcquisitionFees(S.prixBien, S.propertyType) : n($('slider-prix-sim').value);
   var loyerAnnuel = loyerM * 12;
   var vacanceCost = loyerM * vacance;
@@ -1487,7 +1677,7 @@ function updateInvestment() {
   $('rc-effort-loc').textContent = effortLoc > 0 ? fmt(effortLoc) + '/mois' : 'Autofinance';
 }
 
-/* ─── ECRAN 8 : TIMELINE ─────────────────────────────────── */
+/* ─── ECRAN 7 : TIMELINE (ex-ecran 8) ───────────────────── */
 function buildTimeline() {
   var container = $('timeline');
   if (container.children.length > 0) return;
@@ -1516,12 +1706,10 @@ function toggleTimelineStep(el) {
   if (detail) detail.classList.toggle('open');
 }
 
-/* ─── ECRAN FINAL : DIAGNOSTIC ───────────────────────────── */
+/* ─── ECRAN FINAL 8 : DIAGNOSTIC (ex-ecran 9) ───────────── */
 function buildFinalScreen() {
   syncStateFromScreen(S.currentScreen);
-  // Calculate score
   S.score = calculateRealEstateScore(S);
-  // Status
   var status, icon;
   if (S.score >= 80) { status = 'Pret a approfondir'; icon = '\u2705'; }
   else if (S.score >= 60) { status = 'A approfondir'; icon = '\uD83D\uDD35'; }
@@ -1529,7 +1717,6 @@ function buildFinalScreen() {
   else { status = 'Projet fragile'; icon = '\u274C'; }
   S.scoreStatus = status;
 
-  // Score ring
   var circumference = 264;
   var offset = circumference - (S.score / 100) * circumference;
   $('score-ring-fill').setAttribute('stroke-dashoffset', offset);
@@ -1541,14 +1728,13 @@ function buildFinalScreen() {
   else if (S.score >= 40) statusCard.className = 'status-card orange';
   else statusCard.className = 'status-card red';
 
-  // Summary grid
   var mob = getApportMobilisable();
   var mensualite = getMensualiteCible();
-  var effort = calculateDebtRatio(S.credits, mensualite + n(S.assurance), S.revenus);
+  var effort = calculateDebtRatio(S.credits, mensualite + n(S.assurance), getTotalRevenus());
   var borrowing = calculateBorrowingCapacity(mensualite, S.taux, S.duree * 12);
   var fees = estimateAcquisitionFees(S.prixBien, S.propertyType);
   var prixCible = borrowing + mob - fees;
-  var rav = S.revenus - S.charges - S.credits - mensualite - n(S.assurance);
+  var rav = getTotalRevenus() - S.charges - S.credits - mensualite - n(S.assurance);
   var coutMensuelProprio = S.taxeFonciere / 12 + S.chargesCopro + S.assuranceHab + S.entretien / 12;
 
   var items = [
@@ -1569,7 +1755,6 @@ function buildFinalScreen() {
     grid.innerHTML += '<div class="summary-item"><div class="summary-item-val">' + it.val + '</div><div class="summary-item-label">' + it.label + '</div></div>';
   });
 
-  // Actions
   S.actions = buildActions();
   var actionsList = $('actions-list');
   actionsList.innerHTML = '';
@@ -1577,7 +1762,6 @@ function buildFinalScreen() {
     actionsList.innerHTML += '<div class="action-item">' + a + '</div>';
   });
 
-  // Next brick recommendation
   S.nextBrick = recommendNextBrick(S);
   $('reco-next-title').textContent = S.nextBrick.label;
   $('reco-next-text').textContent = S.nextBrick.reason;
@@ -1586,11 +1770,9 @@ function buildFinalScreen() {
 function buildActions() {
   var actions = [];
   var budgetData = loadFromStorage('fund_brick_budget_base');
-  var matelasData = loadFromStorage('fund_brick_fonds_urgence');
-
   if (!budgetData) actions.push('Finaliser la brique Budget pour connaitre ton vrai reste a vivre.');
   if (S.matelasActuel < S.matelasCible * 0.5) actions.push('Consolider ton matelas de securite avant d\'acheter.');
-  var effort = calculateDebtRatio(S.credits, getMensualiteCible() + n(S.assurance), S.revenus);
+  var effort = calculateDebtRatio(S.credits, getMensualiteCible() + n(S.assurance), getTotalRevenus());
   if (effort > EFFORT_MAX) actions.push('Reduire tes charges ou credits pour baisser le taux d\'effort.');
   var mob = getApportMobilisable();
   var fees = estimateAcquisitionFees(S.prixBien, S.propertyType);
@@ -1631,7 +1813,7 @@ function validerEtDashboard() {
   syncStateFromScreen(S.currentScreen);
   var mob = getApportMobilisable();
   var mensualite = getMensualiteCible();
-  var effort = calculateDebtRatio(S.credits, mensualite + n(S.assurance), S.revenus);
+  var effort = calculateDebtRatio(S.credits, mensualite + n(S.assurance), getTotalRevenus());
   var borrowing = calculateBorrowingCapacity(mensualite, S.taux, S.duree * 12);
   var fees = estimateAcquisitionFees(S.prixBien, S.propertyType);
   var prixCible = borrowing + mob - fees;
@@ -1642,7 +1824,7 @@ function validerEtDashboard() {
     source: 'brick',
     userProfile: {
       householdType: S.status,
-      monthlyNetIncome: S.revenus,
+      monthlyNetIncome: getTotalRevenus(),
       existingCreditsMonthly: S.credits,
       fixedChargesMonthly: S.charges,
       currentRent: S.loyer,
@@ -1672,7 +1854,7 @@ function validerEtDashboard() {
       estimatedAcquisitionFees: fees,
       mobilizableDownPayment: mob,
       debtRatioAfterProject: effort,
-      remainingToLive: S.revenus - S.charges - S.credits - mensualite - n(S.assurance)
+      remainingToLive: getTotalRevenus() - S.charges - S.credits - mensualite - n(S.assurance)
     },
     investment: {
       enabled: S.investEnabled,
@@ -1721,9 +1903,7 @@ function validerEtDashboard() {
     });
   }
 
-  // Save brick data
   saveToStorage('fund_brick_achat_immobilier', rawData);
-
   setTimeout(function() { goToDashboard(); }, 300);
 }
 
@@ -1747,6 +1927,9 @@ function validerEtDashboard() {
     var matelasData = loadFromStorage('fund_brick_fonds_urgence') || {};
     var mData = (matelasData && matelasData.data) ? matelasData.data : matelasData;
 
+    // Age group for assurance auto
+    S.ageGroup = profil.age_group || '25_34';
+
     // Prefill revenus
     var revInput = $('input-revenus');
     if (revInput) {
@@ -1765,17 +1948,29 @@ function validerEtDashboard() {
       var cr = n(bData.credits) || 0;
       if (cr > 0) { creditsInput.value = cr; $('badge-credits').style.display = 'inline'; S.credits = cr; }
     }
+    // Prefill loyer
+    var loyerInput = $('input-loyer');
+    if (loyerInput) {
+      var loy = n(bData.loyer) || 0;
+      if (loy > 0) {
+        loyerInput.value = loy;
+        $('badge-loyer').style.display = 'inline';
+        S.loyer = loy;
+        var loyerSrc = $('loyer-source');
+        if (loyerSrc) { loyerSrc.style.display = 'block'; loyerSrc.textContent = 'Depuis ton budget : ' + fmt(loy); }
+      }
+    }
     // Prefill epargne
     var epInput = $('input-epargne-totale');
     if (epInput) {
       var ep = n(profil.epargne_liquide_total) || n(profil.montant_livrets) || n(mData.epargneDisponible) || 0;
-      if (ep > 0) { epInput.value = ep; $('badge-epargne').style.display = 'inline'; S.epargneTotale = ep; }
+      if (ep > 0) { epInput.value = ep; $('badge-epargne-mod').style.display = 'inline'; S.epargneTotale = ep; }
     }
     // Prefill matelas
     var matInput = $('input-matelas-actuel');
     if (matInput) {
       var mat = n(mData.matelasActuel) || n(mData.fonds_urgence_actuel) || 0;
-      if (mat > 0) { matInput.value = mat; $('badge-matelas').style.display = 'inline'; S.matelasActuel = mat; }
+      if (mat > 0) { matInput.value = mat; S.matelasActuel = mat; }
     }
     var matCibInput = $('input-matelas-cible');
     if (matCibInput) {
@@ -1783,31 +1978,30 @@ function validerEtDashboard() {
       if (matC > 0) { matCibInput.value = matC; S.matelasCible = matC; }
     }
 
-    // Attach listeners for live recalculation
     attachLiveListeners();
     initPills();
   })();
 })();
 
 function attachLiveListeners() {
-  // Screen 3 inputs
-  ['input-revenus', 'input-charges', 'input-credits', 'input-loyer'].forEach(function(id) {
+  // Screen 2 inputs
+  ['input-revenus', 'input-revenus-compl', 'input-charges', 'input-credits', 'input-loyer'].forEach(function(id) {
     var el = $(id);
     if (el) el.addEventListener('input', updateCapacity);
   });
-  // Screen 4 inputs
-  ['input-epargne-totale', 'input-matelas-actuel', 'input-matelas-cible', 'input-aide-famille', 'input-reserve'].forEach(function(id) {
+  // Screen 3 inputs
+  ['input-epargne-totale', 'input-matelas-actuel', 'input-matelas-cible', 'input-aide-famille', 'input-reserve', 'input-epargne-bloquee', 'input-travaux-apport'].forEach(function(id) {
     var el = $(id);
     if (el) el.addEventListener('input', updateApport);
   });
-  // Screen 5 inputs
+  // Screen 4 inputs
   ['input-prix-bien', 'input-frais-notaire', 'input-frais-agence', 'input-frais-garantie', 'input-frais-dossier',
    'input-travaux-cout', 'input-meubles-cout', 'input-demenagement',
    'input-taxe-fonciere', 'input-charges-copro', 'input-assurance-hab', 'input-entretien'].forEach(function(id) {
     var el = $(id);
     if (el) el.addEventListener('input', updateCost);
   });
-  // Screen 7 inputs
+  // Screen 6 inputs
   ['input-loyer-estime', 'input-vacance', 'input-charges-loc', 'input-taxe-fonc-loc', 'input-assurance-pno', 'input-gestion-loc'].forEach(function(id) {
     var el = $(id);
     if (el) el.addEventListener('input', updateInvestment);
