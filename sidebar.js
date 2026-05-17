@@ -20,8 +20,12 @@
     if (isDashboard) return { title: 'Dashboard', crumb: '' };
     if (isPlan)      return { title: 'Mon plan', crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>Mon plan</b>' };
     if (isBrique) {
-      const h1 = document.querySelector('.brick-title, .brique-title, h1');
-      const nom = h1 ? h1.textContent.trim().slice(0, 32) : 'Brique';
+      // Priorité 1 : attribut data-brick-name sur le <body>
+      const bodyName = document.body.getAttribute('data-brick-name');
+      if (bodyName) return { title: bodyName, crumb: '\u00b7\u00a0\u00a0Mon plan\u00a0/\u00a0<b>' + bodyName + '</b>' };
+      // Priorité 2 : premier élément avec .brick-title ou .brique-title (pas h1 générique)
+      const el = document.querySelector('.brick-title, .brique-title');
+      const nom = el ? el.textContent.trim().slice(0, 40) : 'Brique';
       return { title: nom, crumb: '\u00b7\u00a0\u00a0Mon plan\u00a0/\u00a0<b>' + nom + '</b>' };
     }
     return { title: 'Fundamental', crumb: '' };
@@ -226,7 +230,7 @@
 
     /* ── Ctx-header sticky ── */
     .f-ctx-header {
-      position: sticky; top: 0; z-index: 100;
+      position: sticky; top: 0; z-index: 400;
       height: 56px;
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 2rem;

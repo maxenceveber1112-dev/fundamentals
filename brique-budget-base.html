@@ -991,7 +991,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
 
   </style>
 </head>
-<body>
+<body data-brick-name="Budget de base">
 
 <canvas id="bg-canvas" aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none;display:none;"></canvas>
 
@@ -1039,17 +1039,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             </div>
           </div>
 
-          <!-- Card "En cours" si session existante -->
-          <div id="resume-card" style="display:none;">
-            <div class="insight-card" style="border-color:var(--accent-soft);">
-              <div class="insight-kicker">Reprendre où tu t'es arrêté·e</div>
-              <div class="insight-figure">Tu avais commencé cette brique. <em>Continuer ?</em></div>
-              <div style="display:flex;gap:0.75rem;margin-top:0.875rem;flex-wrap:wrap;">
-                <button class="btn-hero-primary" id="btn-resume" style="padding:0.5rem 1.125rem;font-size:0.825rem;">Reprendre →</button>
-                <button class="btn-hero-secondary" onclick="document.getElementById('resume-card').style.display='none'">Recommencer</button>
-              </div>
-            </div>
-          </div>
+
         </div>
 
         <!-- ═══ SCREEN 1 — Diagnostic & dépenses ═══ -->
@@ -1577,10 +1567,7 @@ const budgetData = {
   // 4. Titre d'intro personnalisé
   applyIntroVariant();
 
-  // 5. Vérifier reprise de session
-  await checkResume();
-
-  // 6. Pré-remplir les champs
+  // 5. Pré-remplir les champs
   prefillFromProfil();
 
   // 7. Init sticky bar
@@ -1603,60 +1590,7 @@ function applyIntroVariant() {
   if (descEl && v.levier) descEl.textContent = 'En moins de 10 minutes : ' + v.levier;
 }
 
-// ── Reprise de session ────────────────────────────────────────
-async function checkResume() {
-  let saved = null;
-  // Essayer localStorage d'abord (rapide)
-  if (typeof loadFromStorage === 'function') {
-    saved = loadFromStorage('fund_brick_' + BRICK_ID);
-  }
-  // Essayer Supabase (plus fiable)
-  if (!saved && typeof loadBrickState === 'function') {
-    const state = await loadBrickState(BRICK_ID);
-    if (state && state.screenCourant > 0 && !state.completed) {
-      saved = { screen: state.screenCourant, data: state.data };
-    }
-  }
-  if (!saved || saved.screen <= 0) return;
 
-  const resumeCard = document.getElementById('resume-card');
-  const btnResume  = document.getElementById('btn-resume');
-  if (!resumeCard || !btnResume) return;
-
-  resumeCard.style.display = 'block';
-  btnResume.onclick = () => {
-    // Restaurer données
-    if (saved.data) Object.assign(budgetData, saved.data);
-    restoreFieldsFromData();
-    resumeCard.style.display = 'none';
-    goToScreen(saved.screen);
-  };
-}
-
-// Restaure les inputs depuis budgetData (après reprise)
-function restoreFieldsFromData() {
-  const map = {
-    'f-revenus':       budgetData.revenus,
-    'f-aides':         budgetData.aides,
-    'f-loyer':         budgetData.loyer,
-    'f-courses':       budgetData.courses,
-    'f-transport':     budgetData.transport,
-    'f-abonnements':   budgetData.abonnements_total,
-    'f-sorties':       budgetData.sorties,
-    'f-epargne':       budgetData.epargne,
-    'f-repas':         budgetData.repas,
-    'f-shopping':      budgetData.shopping,
-    'f-sante':         budgetData.sante,
-    'f-transport-var': budgetData.transport_variable,
-    'f-pro':           budgetData.depenses_pro,
-    'f-autres':        budgetData.autres,
-  };
-  Object.entries(map).forEach(([id, val]) => {
-    const el = document.getElementById(id);
-    if (el && val) el.value = val;
-  });
-  updateStickyBar();
-}
 
 // ── Pré-remplissage depuis profil ─────────────────────────────
 function prefillFromProfil() {
