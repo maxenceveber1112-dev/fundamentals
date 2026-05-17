@@ -294,7 +294,7 @@ function getMockProfile() {
     confort_numerique: 'moyen', fraude_experience: 'non',
     urgence_principale: 'projet_prochain_mois',
     briques_recommandees: ['budget_base','gestion_decouvert','fonds_urgence',
-      'plan_desendettement','anti_arnaques','plan_multi_objectifs','projet_immo']
+      'plan_desendettement','anti_arnaques','plan_multi_objectifs','achat_immobilier']
   };
 }
 
@@ -307,7 +307,7 @@ function getMockDashboard() {
       { id:'plan_desendettement', statut:'a_faire', progression:0 },
       { id:'anti_arnaques', statut:'terminee', progression:100 },
       { id:'plan_multi_objectifs', statut:'a_faire', progression:0 },
-      { id:'projet_immo', statut:'a_faire', progression:0 }
+      { id:'achat_immobilier', statut:'a_faire', progression:0 }
     ],
     brique_active_id: 'budget_base',
     engagements: [

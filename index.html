@@ -1230,7 +1230,7 @@ var BRIQUES = {
   transmission:             { title:'Transmission du patrimoine' },
   clarification_contrats:   { title:'Clarifier ses contrats' }
 };
-var PRIORITY = ['budget_base','gestion_decouvert','paiements_fractionnes','fonds_urgence','droits_aides','plan_desendettement','dispositifs_bdf','anti_arnaques','premiers_pas_bancaires','emmenagement','plan_multi_objectifs','projet_immo','treso_dirigeant','structuration_patrimoine','investissement_long_terme','diversification_allocation','produits_complexes_vs_simples','fiscalite_epargne','retraite','transmission','clarification_contrats'];
+var PRIORITY = ['budget_base','gestion_decouvert','paiements_fractionnes','fonds_urgence','droits_aides','plan_desendettement','dispositifs_bdf','anti_arnaques','premiers_pas_bancaires','emmenagement','plan_multi_objectifs','achat_immobilier','treso_dirigeant','structuration_patrimoine','investissement_long_terme','diversification_allocation','produits_complexes_vs_simples','fiscalite_epargne','retraite','transmission','clarification_contrats'];
 
 function computeBriques() {
   var age=A.q_age_group, rev=A.q_revenu_sentiment, stress=parseInt(A.q_stress_budget)||0,
@@ -1249,9 +1249,9 @@ function computeBriques() {
   if (['15_17','18_24','65_plus'].includes(age)||confort==='peu_a_l_aise'||fraude==='oui') s.add('anti_arnaques');
   if (['15_17','18_24'].includes(age)&&['college_lycee','etudiant'].includes(status)) s.add('premiers_pas_bancaires');
   if (['je_vais_demenager','je_veux_acheter'].includes(lp)) s.add('emmenagement');
-  if (lp==='je_veux_acheter') s.add('projet_immo');
+  if (lp==='je_veux_acheter') s.add('achat_immobilier');
   if (['financer_projet_court_terme','acheter_logement','preparer_retraite'].some(function(o){return obj.includes(o);})&&rev!=='difficile_fin_mois') s.add('plan_multi_objectifs');
-  if (dettes.includes('credit_immo')) s.add('projet_immo');
+  if (dettes.includes('credit_immo')) s.add('achat_immobilier');
   if (status==='indep_tpe') s.add('treso_dirigeant');
   if (rev==='a_l_aise'||['assurance_vie','pea','per','immo_locatif'].some(function(p){return produits.includes(p);})) s.add('structuration_patrimoine');
   if (obj.includes('investir_long_terme')) { s.add('investissement_long_terme'); s.add('diversification_allocation'); if (['pea','assurance_vie','per'].some(function(p){return produits.includes(p);})) s.add('fiscalite_epargne'); }
