@@ -2236,6 +2236,88 @@ html.dark .s4-result-card--mensuel {
     border-top: 1px solid #eee;
     padding-top: 12px;
   }
+
+  .pdf-part-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #8b5cf6;
+    text-transform: uppercase;
+    margin: 20px 0 12px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #8b5cf6;
+  }
+
+  .pdf-step {
+    margin-bottom: 14px;
+    padding: 12px;
+    background: #f9f8ff;
+    border-radius: 8px;
+    border-left: 3px solid #8b5cf6;
+    page-break-inside: avoid;
+  }
+
+  .pdf-step-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+
+  .pdf-step-phase {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #8b5cf6;
+    text-transform: uppercase;
+    background: rgba(139,92,246,0.1);
+    padding: 2px 7px;
+    border-radius: 9999px;
+  }
+
+  .pdf-step-num {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #8b5cf6;
+    min-width: 24px;
+  }
+
+  .pdf-step-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    flex: 1;
+  }
+
+  .pdf-step-who {
+    font-size: 0.65rem;
+    color: #666;
+    background: #eee;
+    padding: 2px 8px;
+    border-radius: 9999px;
+  }
+
+  .pdf-step-risk {
+    display: none;
+  }
+
+  .pdf-data-table {
+    background: rgba(139,92,246,0.05);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin: 6px 0;
+  }
+
+  .pdf-note {
+    font-size: 0.72rem;
+    color: #888;
+    font-style: italic;
+    margin: 4px 0 12px;
+    padding: 6px 10px;
+    border-left: 2px solid #d8b4fe;
+    background: #faf9ff;
+  }
 }
 </style>
 </head>
@@ -5390,81 +5472,215 @@ function downloadPDFResume() {
 function buildPDFContent(date) {
   var html = '';
 
-  // Header
-  html += '<div class="pdf-header">';
-  html += '<div class="pdf-logo">FUNDAMENTALS</div>';
-  html += '<div class="pdf-date">' + date + '</div>';
-  html += '</div>';
-  html += '<h1 class="pdf-title">Mon projet immobilier</h1>';
+  // ═══ HEADER ═══
+  html += '<div class="pdf-header"><div class="pdf-logo">FUNDAMENTALS</div><div class="pdf-date">' + date + '</div></div>';
+  html += '<h1 class="pdf-title">Mon projet immobilier — Résumé complet</h1>';
+
+  // ═══ PARTIE 1 : RÉSUMÉ FINANCIER ═══
+  html += '<div class="pdf-part-title">RÉSUMÉ FINANCIER</div>';
 
   // Section Projet
-  html += '<div class="pdf-section">';
-  html += '<div class="pdf-kicker">MON PROJET</div>';
-  html += '<div class="pdf-row"><span>Type de bien</span><span>' + (S.typeBien || '—') + '</span></div>';
-  html += '<div class="pdf-row"><span>Localisation</span><span>' + (S.codePostal || '—') + '</span></div>';
-  html += '<div class="pdf-row"><span>Horizon</span><span>' + (S.horizonLabel || S.horizon || '—') + '</span></div>';
-  html += '</div>';
+  html += pdfSection('MON PROJET', [
+    ['Type de bien', S.typeBien || '—'],
+    ['Localisation', S.codePostal || '—'],
+    ['Horizon', getHorizonLabel(S.horizon)],
+    ['Usage', getUsageLabel(S.usage || S.projectType)]
+  ]);
 
   // Section Capacité
-  html += '<div class="pdf-section">';
-  html += '<div class="pdf-kicker">MA CAPACITÉ FINANCIÈRE</div>';
-  html += pdfRow('Revenus du foyer', formatEuro(S.revenus) + '/mois');
-  if (S.autresEntrees > 0) html += pdfRow('Autres entrées / Aides', formatEuro(S.autresEntrees) + '/mois');
-  html += pdfRow('Crédits existants', formatEuro(S.credits) + '/mois');
-  html += pdfRow('Charges fixes', formatEuro(S.chargesFixes) + '/mois');
-  html += '<div class="pdf-divider"></div>';
-  html += pdfRow('Capacité d\'emprunt', formatEuro(S.capitalEmpruntable), true);
-  html += pdfRow('Mensualité maximale', formatEuro(S.mensualiteMax) + '/mois');
-  html += pdfRow('Taux d\'effort', Math.round(S.tauxEffortA || 0) + '%');
-  html += pdfRow('Reste à vivre', formatEuro(S.resteVivreB) + '/mois');
-  html += '</div>';
+  var totalRev = (S.revenus||0) + (S.autresEntrees||0);
+  html += pdfSection('MA CAPACITÉ FINANCIÈRE', [
+    ['Revenus nets du foyer', formatEuro(S.revenus) + '/mois'],
+    S.autresEntrees > 0 ? ['Autres entrées / Aides', formatEuro(S.autresEntrees) + '/mois'] : null,
+    ['Crédits existants', formatEuro(S.credits) + '/mois'],
+    ['Charges fixes', formatEuro(S.chargesFixes) + '/mois'],
+    ['Taux d\'effort actuel', Math.round(S.tauxEffortA||0) + '%'],
+    ['Mensualité maximale immo', formatEuro(S.mensualiteMax || S.mensualiteCible) + '/mois'],
+    ['Capacité d\'emprunt', formatEuro(S.capitalEmpruntable), true],
+    ['Reste à vivre estimé', formatEuro(S.resteVivreB) + '/mois']
+  ].filter(Boolean));
 
   // Section Apport
-  html += '<div class="pdf-section">';
-  html += '<div class="pdf-kicker">MON APPORT</div>';
-  html += pdfRow('Apport mobilisable', formatEuro(S.apport));
-  html += pdfRow('Épargne de précaution', formatEuro(S.matelasActuel));
-  html += '</div>';
+  var budgetTotal = (S.capitalEmpruntable||0) + (S.apport||0);
+  html += pdfSection('MON APPORT', [
+    ['Épargne de précaution', formatEuro(S.matelasActuel)],
+    ['Apport mobilisable', formatEuro(S.apport), true],
+    ['Budget total (emprunt + apport)', formatEuro(budgetTotal), true]
+  ]);
 
-  // Section Coût
-  html += '<div class="pdf-section">';
-  html += '<div class="pdf-kicker">LE VRAI COÛT D\'ACHAT</div>';
-  html += pdfRow('Prix du bien', formatEuro(S.prixBien));
-  html += pdfRow('Frais de notaire', formatEuro(S.fraisNotaire));
-  html += pdfRow('Frais de garantie', formatEuro(S.fraisGarantie));
-  html += pdfRow('Frais de dossier', formatEuro(S.fraisDossier));
-  html += '<div class="pdf-divider"></div>';
-  html += pdfRow('Coût total acquisition', formatEuro((S.prixBien||0)+(S.fraisNotaire||0)+(S.fraisGarantie||0)+(S.fraisDossier||0)), true);
-  html += '</div>';
+  // Section Prix d'achat
+  var coutTotal = (S.prixBien||0) + (S.fraisNotaire||0) + (S.fraisGarantie||0) + (S.fraisDossier||0) + (S.travauxAutres||0);
+  html += pdfSection('PRIX TOTAL D\'ACHAT', [
+    ['Prix du bien', formatEuro(S.prixBien)],
+    ['Frais de notaire', formatEuro(S.fraisNotaire)],
+    ['Frais de garantie', formatEuro(S.fraisGarantie)],
+    ['Frais de dossier', formatEuro(S.fraisDossier)],
+    S.travauxAutres > 0 ? ['Travaux & Installation', formatEuro(S.travauxAutres)] : null,
+    ['Coût total acquisition', formatEuro(coutTotal), true],
+    ['Mensualité propriétaire', formatEuro((S.mensualiteMax||0) + (S.assuranceEmprunteur||22)) + '/mois', true]
+  ].filter(Boolean));
+
+  // Section Charges récurrentes
+  var chargesAn = (S.chargesCopro||0) + ((S.assuranceHab||S.assuranceHabitation||0)*12) + (S.entretienAnnuel||0);
+  html += pdfSection('CHARGES RÉCURRENTES', [
+    ['Charges copropriété', formatEuro(S.chargesCopro||0) + '/an'],
+    ['Assurance habitation', formatEuro(S.assuranceHab||S.assuranceHabitation||0) + '/mois'],
+    ['Entretien annuel estimé', formatEuro(S.entretienAnnuel||0) + '/an'],
+    ['Total charges récurrentes', formatEuro(chargesAn) + '/an', true]
+  ]);
 
   // Section Hypothèses
-  html += '<div class="pdf-section">';
-  html += '<div class="pdf-kicker">HYPOTHÈSES DU CRÉDIT</div>';
-  html += pdfRow('Durée', (S.duree || 25) + ' ans');
-  html += pdfRow('Taux nominal', (S.taux || 3.0).toFixed(1) + '%');
-  html += pdfRow('Assurance emprunteur', (S.assuranceEmprunteur || 22) + ' €/mois');
-  html += '</div>';
+  html += pdfSection('HYPOTHÈSES DU CRÉDIT', [
+    ['Durée', (S.duree||25) + ' ans'],
+    ['Taux nominal', (S.taux||3.0).toFixed(1) + '%'],
+    ['Assurance emprunteur', (S.assuranceEmprunteur||22) + ' €/mois']
+  ]);
 
   // Section Locatif (conditionnelle)
-  if (S.projectType === 'investissement_locatif' && S.loyerEstime > 0) {
-    html += '<div class="pdf-section">';
-    html += '<div class="pdf-kicker">ANALYSE LOCATIVE</div>';
-    html += pdfRow('Loyer estimé', formatEuro(S.loyerEstime) + '/mois');
-    html += pdfRow('Rendement brut', (S.rendementBrut || 0).toFixed(1) + '%');
-    html += pdfRow('Rendement net', (S.rendementNet || 0).toFixed(1) + '%');
-    var cf = S.cashFlow || 0;
-    html += pdfRow('Cash-flow mensuel', (cf >= 0 ? '+' : '') + formatEuro(cf));
-    html += '</div>';
+  if (S.projectType === 'investissement_locatif' || S.usage === 'locatif') {
+    var loyerRetenu = (S.loyerEstime||0) * 0.70;
+    html += pdfSection('ANALYSE LOCATIVE', [
+      ['Loyer mensuel estimé (CC)', formatEuro(S.loyerEstime) + '/mois'],
+      ['Rendement brut', (S.rendementBrut||0).toFixed(1) + '%'],
+      ['Rendement net', (S.rendementNet||0).toFixed(1) + '%'],
+      ['Cash-flow mensuel', ((S.cashFlow||0) >= 0 ? '+' : '') + formatEuro(S.cashFlow)],
+      ['Statut', (S.cashFlow||0) >= 0 ? 'Autofinancé' : 'Effort d\'épargne mensuel'],
+      ['Capacité d\'emprunt résiduelle', formatEuro(S.capaciteResiduelle||0), true]
+    ]);
+    html += '<div class="pdf-note">Les banques retiennent 70% des revenus locatifs dans le calcul de capacité. Avec ' + formatEuro(S.loyerEstime) + ' de loyer, ' + formatEuro(Math.round(loyerRetenu)) + ' supplémentaires sont retenus, ce qui porte la capacité résiduelle estimée à ' + formatEuro(S.capaciteResiduelle||0) + '.</div>';
   }
 
+  // ═══ PARTIE 2 : RÉSUMÉ DES ÉTAPES ═══
+  html += '<div class="pdf-part-title" style="margin-top:24px">LES ÉTAPES DE TON PROJET</div>';
+
+  // Étape 1
+  html += pdfStep('PRÉPARATION', '01', 'Définir son budget', 'Toi',
+    pdfDataTable([
+      ['Capacité d\'emprunt', formatEuro(S.capitalEmpruntable)],
+      ['Apport mobilisable', formatEuro(S.apport)],
+      ['Budget total', formatEuro(budgetTotal)],
+      ['Type de bien', S.typeBien || '—'],
+      ['Horizon', getHorizonLabel(S.horizon)]
+    ]),
+    'Surestimer sa capacité sans tenir compte de tous les frais annexes.'
+  );
+
+  // Étape 2
+  html += pdfStep('PRÉPARATION', '02', 'Calculer sa capacité', 'Toi / Banque',
+    pdfDataTable([
+      ['Revenus nets', formatEuro(S.revenus) + '/mois'],
+      ['Crédits existants', formatEuro(S.credits) + '/mois'],
+      ['Taux d\'effort actuel', Math.round(S.tauxEffortA||0) + '%'],
+      ['Mensualité max immo', formatEuro(S.mensualiteMax||S.mensualiteCible) + '/mois']
+    ]),
+    'Ne pas tenir compte des crédits en cours dans le calcul.'
+  );
+
+  // Étape 3 (primo si applicable)
+  if (S.primo === 'oui') {
+    html += pdfStep('PRÉPARATION', '02b', 'Vérifier les aides primo-accédant', 'Toi / Conseiller',
+      '<p style="font-size:0.8rem;color:#555">Vérifier l\'éligibilité au PTZ sur service-public.fr/particuliers/vosdroits/F16162</p>',
+      'Ne pas en bénéficier par méconnaissance.'
+    );
+  }
+
+  // Étape 4 — Monter son dossier
+  html += pdfStep('FINANCEMENT', '03', 'Monter son dossier bancaire', 'Toi',
+    '<p style="font-size:0.8rem;color:#555">Préparer les justificatifs de revenus, d\'épargne et d\'identité. Le parcours de vie Achat Immobilier contient une checklist complète.</p>',
+    'Dossier incomplet ou justificatifs manquants.'
+  );
+
+  // Étape 5 — Chercher un bien
+  html += pdfStep('FINANCEMENT', '04', 'Chercher un bien', 'Toi',
+    '<p style="font-size:0.8rem;color:#555">Comparer les annonces et les prix au marché. Un partenaire de recherche sera bientôt disponible.</p>',
+    'Visiter sans critères clairs ou négliger les frais de travaux.'
+  );
+
+  // Étape 6 — Faire une offre
+  var prixMax = Math.max(S.prixBien||0, budgetTotal);
+  html += pdfStep('FINANCEMENT', '05', 'Faire une offre d\'achat', 'Toi',
+    pdfDataTable([
+      ['Prix cible saisi', formatEuro(S.prixBien)],
+      ['Budget maximum', formatEuro(budgetTotal)]
+    ]) + '<p style="font-size:0.8rem;color:#555;margin-top:6px">Le parcours de vie inclut un modèle d\'offre d\'achat automatique personnalisé.</p>' +
+    ((S.prixBien||0) > budgetTotal ? '<p style="font-size:0.75rem;color:#d97706">Le prix saisi dépasse ta capacité calculée.</p>' : ''),
+    'Proposer un prix sans connaître sa limite réelle.'
+  );
+
+  // Étape 7 — Compromis
+  html += pdfStep('COMPROMIS & ACTE', '06', 'Signer le compromis', 'Notaire / Toi',
+    '<p style="font-size:0.8rem;color:#555">Le compromis engage vendeur et acheteur. Tu disposes d\'un délai légal de rétractation de 10 jours. Les conditions suspensives (financement, diagnostics) y sont précisées.</p>',
+    'Signer sans lire les conditions suspensives.'
+  );
+
+  // Étape 8 — Financement
+  html += pdfStep('COMPROMIS & ACTE', '07', 'Obtenir son financement', 'Banque / Courtier',
+    '<p style="font-size:0.8rem;color:#555">En cas de refus, tu peux te référer à la clause suspensive du compromis. Les banques demandent généralement deux refus de prêt de banques différentes pour libérer l\'acheteur avant la date limite.</p>',
+    'Refus de prêt après expiration du délai de la clause suspensive.'
+  );
+
+  // Étape 9 — Acte authentique
+  html += pdfStep('COMPROMIS & ACTE', '08', 'Signer l\'acte authentique', 'Notaire',
+    '<p style="font-size:0.8rem;color:#555">L\'appel de fonds notaire doit être préparé à l\'avance : ton apport doit être disponible sur le compte du notaire avant la signature. Présenter l\'attestation d\'assurance habitation (ou PNO si locatif) le jour de la signature.</p>',
+    'Fonds non disponibles à temps ou assurance manquante.'
+  );
+
+  // Étape 10 — Emménager / Gérer
+  var etape10Content = '';
+  if (S.usage === 'locatif' || S.projectType === 'investissement_locatif') {
+    etape10Content = '<p style="font-size:0.8rem;color:#555">Consulter la brique Investissement Locatif pour gérer votre bien.</p>';
+  } else {
+    etape10Content = '<p style="font-size:0.8rem;color:#555">Consulter la brique Emménager / Déménager pour organiser votre installation.</p>';
+  }
+  html += pdfStep('INSTALLATION', '09', 'Emménager ou mettre en location', 'Toi',
+    etape10Content,
+    'Sous-estimer les délais ou les coûts d\'installation.'
+  );
+
+  // Étape 11 — Budget propriétaire
+  html += pdfStep('INSTALLATION', '10', 'Gérer son budget propriétaire', 'Toi',
+    pdfDataTable([
+      ['Charges copropriété', formatEuro(S.chargesCopro||0) + '/an'],
+      ['Assurance habitation', formatEuro(S.assuranceHab||S.assuranceHabitation||0) + '/mois'],
+      ['Entretien annuel estimé', formatEuro(S.entretienAnnuel||0) + '/an']
+    ]),
+    'Sous-estimer les charges récurrentes après l\'achat.'
+  );
+
   // Footer
-  html += '<div class="pdf-footer">Généré par Fundamentals · Ce document est une estimation, non un conseil financier.</div>';
+  html += '<div class="pdf-footer">Généré par Fundamentals · Ce document est une estimation, non un conseil financier. · ' + date + '</div>';
 
   return html;
 }
 
-function pdfRow(label, value, bold) {
-  return '<div class="pdf-row' + (bold ? ' pdf-row-bold' : '') + '"><span>' + label + '</span><span>' + value + '</span></div>';
+function pdfSection(title, rows) {
+  var html = '<div class="pdf-section"><div class="pdf-kicker">' + title + '</div>';
+  rows.forEach(function(r) {
+    html += '<div class="pdf-row' + (r[2] ? ' pdf-row-bold' : '') + '"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function pdfStep(phase, num, title, who, content, risk) {
+  return '<div class="pdf-step"><div class="pdf-step-header"><span class="pdf-step-phase">' + phase + '</span><span class="pdf-step-num">' + num + '</span><span class="pdf-step-title">' + title + '</span><span class="pdf-step-who">' + who + '</span></div>' + (content || '') + '<div class="pdf-step-risk">Risque : ' + risk + '</div></div>';
+}
+
+function pdfDataTable(rows) {
+  var html = '<div class="pdf-data-table">';
+  rows.forEach(function(r) { html += '<div class="pdf-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>'; });
+  html += '</div>';
+  return html;
+}
+
+function getUsageLabel(u) {
+  var labels = {'principale':'Résidence principale','locatif':'Investissement locatif','investissement_locatif':'Investissement locatif','secondaire':'Résidence secondaire'};
+  return labels[u] || u || '—';
+}
+
+function getHorizonLabel(h) {
+  var labels = {'0-6':'Moins de 6 mois','6-12':'6 à 12 mois','12-24':'1 à 2 ans','24+':'Plus de 2 ans'};
+  return labels[h] || h || '—';
 }
 </script>
 
