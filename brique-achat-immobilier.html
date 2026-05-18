@@ -1133,19 +1133,47 @@ html.dark .s6-rendement-kicker { color:#a78bfa; }
 .s6-pill-green { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); }
 .s6-pill-amber { background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); }
 
-/* Capacité résiduelle bubble */
+/* Capacité résiduelle bubble — lightweight border-left style */
 .s6-capacity-bubble {
-  margin-top:0.75rem; padding:0.875rem 1rem; border-radius:1rem;
-  background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.12);
-  display:flex; align-items:flex-start; gap:0.5rem;
-  font-size:0.82rem; color:var(--text-muted); line-height:1.5;
+  display:flex; align-items:flex-start; gap:8px;
+  padding:8px 0; padding-left:12px;
+  border-left:2px solid rgba(139,92,246,0.4);
+  font-size:0.82rem; color:var(--text-faint);
+  margin:8px 0; background:transparent; border-radius:0;
+  line-height:1.5;
 }
-html.dark .s6-capacity-bubble { background:rgba(59,130,246,0.1); border-color:rgba(59,130,246,0.18); }
+html.dark .s6-capacity-bubble { border-left-color:rgba(139,92,246,0.5); }
 .s6-capacity-bubble .s6-cap-icon { font-size:1.1rem; flex-shrink:0; margin-top:0.1rem; }
 .s6-capacity-bubble strong {
-  font-family:var(--font-display); font-weight:600; color:var(--accent-strong);
+  font-family:var(--font-display); font-weight:600; color:#8b5cf6;
 }
 html.dark .s6-capacity-bubble strong { color:#a78bfa; }
+
+/* Prix hint — conditional popup */
+.s6-prix-hint {
+  display:flex; gap:10px; align-items:flex-start;
+  padding:12px 16px;
+  background:rgba(245,158,11,0.07);
+  border-left:3px solid rgba(245,158,11,0.5);
+  border-radius:0 12px 12px 0;
+  font-size:0.8rem;
+  animation:fadeSlideUp 0.3s ease-out;
+  margin-top:12px;
+}
+.s6-prix-hint-icon { font-size:1rem; flex-shrink:0; }
+.s6-prix-hint-text { color:var(--text-faint); margin-bottom:6px; }
+.s6-prix-hint-btn {
+  background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.3);
+  border-radius:9999px; padding:4px 14px; font-size:0.75rem;
+  color:#f59e0b; cursor:pointer;
+}
+.s6-prix-hint-btn:hover { background:rgba(245,158,11,0.25); }
+
+/* Disclaimer fiscal — inline */
+.s6-disclaimer {
+  font-size:0.7rem; color:var(--text-faint); font-style:italic;
+  text-align:center; margin:16px 0 8px; opacity:0.6;
+}
 
 /* Result grid — now 2 cards (rendement + cashflow) */
 .s6-result-grid-v2 {
@@ -2818,17 +2846,12 @@ html.dark .s4-result-card--mensuel {
 
             <div id="s6-invest-full" style="display:none;">
 
-              <!-- Taxe foncière — faint inline -->
-              <div class="s6-taxe-faint" id="s6-taxe-fonciere-line">
-                Taxe foncière : <span id="s6-taxe-fonciere-val">--</span>&thinsp;€/an · <a onclick="goToScreen(4)">Repris de l'étape 4</a>
-              </div>
-
               <!-- Hero loyer input -->
               <div class="s6-loyer-hero">
                 <div class="s6-hero-watermark">
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
                 </div>
-                <div class="s6-loyer-kicker">● Loyer mensuel estimé</div>
+                <div class="s6-loyer-kicker">● Loyer mensuel estimé, charges comprises</div>
                 <div class="s6-loyer-value-wrap">
                   <input type="number" id="input-loyer-estime-s6" placeholder="Saisis un loyer" min="0" inputmode="numeric" oninput="recalcLocatif()"/>
                   <span class="s6-loyer-suffix">€/mois</span>
@@ -2874,6 +2897,11 @@ html.dark .s4-result-card--mensuel {
                 </div>
               </div>
 
+              <!-- Taxe foncière — faint inline -->
+              <div class="s6-taxe-faint" id="s6-taxe-fonciere-line">
+                Taxe foncière : <span id="s6-taxe-fonciere-val">--</span>&thinsp;€/an · <a onclick="goToScreen(4)">Repris de l'étape 4</a>
+              </div>
+
               <!-- Gestion locative — 2 choice cards -->
               <div class="s6-gestion-section">
                 <div class="s6-gestion-label">
@@ -2891,14 +2919,14 @@ html.dark .s4-result-card--mensuel {
                     <div class="s6-gc-check">✓</div>
                     <div class="s6-gc-icon">🏢</div>
                     <div class="s6-gc-title">Gestion déléguée</div>
-                    <div class="s6-gc-desc">≈ 6–7 % du loyer · Confort total</div>
+                    <div class="s6-gc-desc">≈ 7 % du loyer · Confort total</div>
                   </div>
                 </div>
                 <div class="s6-gestion-input-wrap" id="field-gestion-loc">
                   <div class="s6-gestion-input-inner">
                     <label class="field-label" for="input-gestion-loc-s6">Frais de gestion locative</label>
                     <div class="euro-wrap"><input type="number" id="input-gestion-loc-s6" class="field-input" value="0" min="0" inputmode="numeric" oninput="recalcLocatif()"/><span class="euro-suffix">€/mois</span></div>
-                    <span class="s6-field-helper" id="helper-gestion">≈ 6–7 % du loyer</span>
+                    <span class="s6-field-helper" id="helper-gestion">≈ 7 % du loyer</span>
                   </div>
                 </div>
               </div>
@@ -2957,6 +2985,15 @@ html.dark .s4-result-card--mensuel {
                     </div>
                   </div>
 
+                  <!-- Prix hint — conditionnel cashflow<0 ou rendNet<5% -->
+                  <div class="s6-prix-hint" id="s6-prix-hint" style="display:none; grid-column:1/-1;">
+                    <span class="s6-prix-hint-icon">💡</span>
+                    <div>
+                      <div class="s6-prix-hint-text">Pour améliorer votre rentabilité ou votre cash-flow, essayez de négocier le prix&nbsp;!</div>
+                      <button class="s6-prix-hint-btn" onclick="goToScreen(4)">Ajuster le prix cible →</button>
+                    </div>
+                  </div>
+
                 </div>
               </div>
 
@@ -2966,16 +3003,8 @@ html.dark .s4-result-card--mensuel {
                 <span>Grâce au loyer perçu, votre capacité d'emprunt résiduelle est de <strong id="s6-cap-residuelle">--</strong></span>
               </div>
 
-              <!-- Quick action -->
-              <div class="quick-actions" style="margin-top:1rem;">
-                <button class="quick-action" onclick="goToScreen(4)">Ajuster le prix cible →</button>
-              </div>
-
-              <!-- Warning fiscal (mode-card neutre) -->
-              <div class="s6-info-card" style="margin-top:0.75rem;">
-                <span>ℹ️</span>
-                <span>Simulation simplifiée. La fiscalité (IR, CSG, LMNP…) peut modifier significativement le résultat net.</span>
-              </div>
+              <!-- Disclaimer fiscal — inline -->
+              <p class="s6-disclaimer">Simulation simplifiée — la fiscalité (IR, CSG, LMNP…) peut modifier significativement le résultat net.</p>
             </div>
 
             <div class="pdf-pill-wrap">
@@ -4569,10 +4598,10 @@ function setGestionMode(mode) {
     if (cardMoi) cardMoi.classList.remove('active');
     if (cardAgence) cardAgence.classList.add('active');
     var loyer = n(($('input-loyer-estime-s6') || {}).value) || n(S.loyerEstime);
-    if (input) input.value = Math.round(loyer * 0.065);
+    if (input) input.value = Math.round(loyer * 0.07);
     if (field) field.classList.add('open');
     var helper2 = $('helper-gestion');
-    if (helper2) helper2.textContent = '\u2248 6\u20137 % du loyer';
+    if (helper2) helper2.textContent = '\u2248 7 % du loyer';
   }
   recalcLocatif();
 }
@@ -4695,14 +4724,31 @@ function recalcLocatif() {
     }
   }
 
-  // Capacité résiduelle bubble
+  // Prix hint — conditionnel
+  var prixHint = $('s6-prix-hint');
+  if (prixHint) {
+    var showHint = cashFlow < 0 || rendNet < 5;
+    prixHint.style.display = showHint ? 'flex' : 'none';
+  }
+
+  // Capacité résiduelle bubble — 70% des revenus locatifs retenus par les banques
   var capEl = $('s6-cap-residuelle');
   if (capEl) {
-    var capRes = n(S.capitalEmpruntable);
-    if (capRes > 0) {
-      capEl.textContent = Math.round(capRes).toLocaleString('fr-FR') + ' €';
+    var loyerBrut = S.loyerEstime || 0;
+    var loyerRetenu = loyerBrut * 0.70;
+    var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
+    var mensualiteMaxAvecLoyer = (revenusAvecLoyer * 0.35) - (S.credits || 0) - (S.assuranceEmprunteur || 22);
+    var rCap = ((S.taux || 3.0) / 12) / 100;
+    var nCap = (S.duree || 25) * 12;
+    var capaciteResiduelle = mensualiteMaxAvecLoyer > 0
+      ? Math.round(mensualiteMaxAvecLoyer * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
+      : 0;
+    if (capaciteResiduelle > 0) {
+      capEl.textContent = Math.round(capaciteResiduelle).toLocaleString('fr-FR') + ' €';
+      if (capBubble) capBubble.style.display = '';
     } else {
-      capEl.textContent = '--';
+      capEl.textContent = 'Tes crédits existants limitent ta capacité résiduelle.';
+      if (capBubble) capBubble.style.display = '';
     }
   }
 
