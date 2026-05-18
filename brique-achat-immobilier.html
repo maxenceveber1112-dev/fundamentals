@@ -3419,17 +3419,6 @@ html.dark .s4-result-card--mensuel {
               <p class="s6-disclaimer">Simulation simplifiée — la fiscalité (IR, CSG, LMNP…) peut modifier significativement le résultat net.</p>
             </div>
 
-            <div class="pdf-pill-wrap">
-              <button class="pdf-pill" onclick="downloadPDFResume()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                Télécharger mon résumé PDF
-              </button>
-            </div>
-
             <div class="nav-btns" style="margin-top:1.5rem;">
               <button class="btn-hero-secondary" onclick="goToScreen(4)">← Retour</button>
               <button class="btn-hero-primary" onclick="goToScreen(7)">
@@ -3452,17 +3441,6 @@ html.dark .s4-result-card--mensuel {
             </div>
 
             <div class="tl-progress" id="tl-progress">0 / 10 étapes consultées</div>
-
-            <div class="pdf-pill-wrap">
-              <button class="pdf-pill" onclick="downloadPDFResume()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                Télécharger mon résumé PDF
-              </button>
-            </div>
 
             <div class="nav-btns" style="margin-top:1.5rem;">
               <button class="btn-hero-secondary" onclick="goToScreen(6)">← Retour</button>
@@ -3565,17 +3543,6 @@ html.dark .s4-result-card--mensuel {
               <p class="reco-desc" id="reco-next-text">--</p>
               <button class="btn-hero-primary" id="reco-next-btn" onclick="goToNextBrick()" style="align-self:flex-start;">Commencer</button>
             </div>
-          </div>
-
-          <div class="pdf-pill-wrap">
-            <button class="pdf-pill" onclick="downloadPDFResume()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              Télécharger mon résumé PDF
-            </button>
           </div>
 
           <div class="nav-btns" style="margin-top:1rem;">
@@ -5517,16 +5484,7 @@ function buildFinalScreen() {
   else { status = 'Projet fragile'; icon = '❌'; }
   S.scoreStatus = status;
 
-  var circumference = 264;
-  var offset = circumference - (S.score / 100) * circumference;
-  $('score-ring-fill').setAttribute('stroke-dashoffset', offset);
-  $('score-ring-text').textContent = S.score + '/100';
-  $('score-status-text').textContent = status;
-  $('score-status-icon').textContent = icon;
-  var statusCard = $('score-status');
-  if (S.score >= 60) statusCard.className = 'status-card green';
-  else if (S.score >= 40) statusCard.className = 'status-card orange';
-  else statusCard.className = 'status-card red';
+  // score ring elements removed from DOM — no-op
 
   var mob = getApportMobilisable();
   var mensualite = getMensualiteCible();
@@ -5566,8 +5524,7 @@ function buildFinalScreen() {
     });
   }
 
-  // Build diagnostic cards
-  buildDiagnosticCards(items, effort);
+  // diagnostic cards removed from DOM — no-op
 
   S.nextBrick = recommendNextBrick(S);
   $('reco-next-title').textContent = S.nextBrick.label;
