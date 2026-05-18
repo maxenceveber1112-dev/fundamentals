@@ -484,73 +484,113 @@ html.dark .brick-kicker { color:#A5B4FC; }
 /* ══════════════════════════════════════════════════════════════
    PILLS — project cards + compact pills
 ══════════════════════════════════════════════════════════════ */
-/* Project type cards — premium layout */
+/* Project type cards — premium illustrated layout */
 .project-type-grid {
-  display:grid; grid-template-columns:1fr; gap:0.75rem;
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.875rem;
 }
 .project-type-card {
   position:relative; overflow:hidden;
-  background:rgba(255,255,255,0.03); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-  border:1.5px solid rgba(255,255,255,0.08);
-  border-radius:1.125rem;
-  padding:1.25rem 1.25rem;
-  cursor:pointer; transition:all 0.25s ease; text-align:left;
-  display:flex; align-items:center; gap:1rem;
+  border-radius:1.25rem;
+  padding:1.5rem 1.25rem 1.25rem;
+  cursor:pointer; transition:all 0.3s cubic-bezier(0.16,1,0.3,1); text-align:center;
+  display:flex; flex-direction:column; align-items:center; gap:0.625rem;
 }
-.project-type-card .ptc-icon {
-  width:3rem; height:3rem; border-radius:0.875rem;
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.5rem; flex-shrink:0;
-  background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.12);
-  transition:all 0.25s ease;
+/* SVG watermark */
+.project-type-card::before {
+  content:''; position:absolute; top:-10px; right:-10px;
+  width:100px; height:100px; opacity:0.05;
+  background-size:contain; background-repeat:no-repeat; background-position:center;
+  transition:opacity 0.3s ease;
+  pointer-events:none;
 }
-.project-type-card .ptc-text { display:flex; flex-direction:column; gap:0.15rem; flex:1; }
-.project-type-card .ptc-title { font-size:0.9rem; font-weight:600; color:#fff; transition:color 0.2s; }
-.project-type-card .ptc-sub { font-size:0.75rem; color:rgba(255,255,255,0.45); line-height:1.4; }
-.project-type-card .ptc-arrow {
-  flex-shrink:0; width:1.5rem; height:1.5rem; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  border:1.5px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.25);
-  font-size:0.7rem; transition:all 0.25s ease;
+/* — Violet: Résidence principale */
+.project-type-card[data-val="residence_principale"] {
+  background:linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(99,102,241,0.05) 100%);
+  border:1.5px solid rgba(139,92,246,0.25);
 }
-.project-type-card:hover {
-  border-color:rgba(139,92,246,0.35); background:rgba(139,92,246,0.06);
-  box-shadow:0 0 24px -6px rgba(139,92,246,0.2);
+.project-type-card[data-val="residence_principale"]:hover {
+  border-color:rgba(139,92,246,0.55); background:linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(99,102,241,0.08) 100%);
+  box-shadow:0 4px 28px -4px rgba(139,92,246,0.25); transform:translateY(-3px) scale(1.015);
 }
-.project-type-card:hover .ptc-icon { background:rgba(139,92,246,0.15); border-color:rgba(139,92,246,0.25); }
-.project-type-card:hover .ptc-arrow { border-color:rgba(139,92,246,0.4); color:rgba(139,92,246,0.7); }
-.project-type-card.selected {
-  border-color:#8b5cf6;
-  background:rgba(139,92,246,0.1);
-  box-shadow:0 0 0 2px rgba(139,92,246,0.15), 0 0 32px -8px rgba(139,92,246,0.3);
+.project-type-card[data-val="residence_principale"].selected {
+  border-color:#8b5cf6; background:linear-gradient(135deg, rgba(139,92,246,0.22) 0%, rgba(99,102,241,0.12) 100%);
+  box-shadow:0 0 0 2px rgba(139,92,246,0.2), 0 4px 32px -4px rgba(139,92,246,0.35); transform:scale(1.02);
 }
-.project-type-card.selected .ptc-icon { background:rgba(139,92,246,0.2); border-color:#8b5cf6; }
-.project-type-card.selected .ptc-title { color:#c4b5fd; }
-.project-type-card.selected .ptc-arrow { border-color:#8b5cf6; color:#8b5cf6; background:rgba(139,92,246,0.1); }
-/* Featured card (first / recommended) */
-.project-type-card.ptc-featured {
-  padding:1.5rem 1.5rem;
-  border:1.5px solid rgba(139,92,246,0.18);
-  background:linear-gradient(135deg, rgba(139,92,246,0.06) 0%, rgba(99,102,241,0.04) 100%);
+/* — Teal: Résidence secondaire */
+.project-type-card[data-val="residence_secondaire"] {
+  background:linear-gradient(135deg, rgba(20,184,166,0.12) 0%, rgba(20,184,166,0.04) 100%);
+  border:1.5px solid rgba(20,184,166,0.25);
 }
-.project-type-card.ptc-featured .ptc-icon {
-  width:3.5rem; height:3.5rem; font-size:1.75rem;
-  background:linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.1));
-  border-color:rgba(139,92,246,0.25);
+.project-type-card[data-val="residence_secondaire"]:hover {
+  border-color:rgba(20,184,166,0.55); background:linear-gradient(135deg, rgba(20,184,166,0.18) 0%, rgba(20,184,166,0.08) 100%);
+  box-shadow:0 4px 28px -4px rgba(20,184,166,0.25); transform:translateY(-3px) scale(1.015);
 }
-.project-type-card.ptc-featured .ptc-title { font-size:1rem; }
+.project-type-card[data-val="residence_secondaire"].selected {
+  border-color:#14b8a6; background:linear-gradient(135deg, rgba(20,184,166,0.22) 0%, rgba(20,184,166,0.12) 100%);
+  box-shadow:0 0 0 2px rgba(20,184,166,0.2), 0 4px 32px -4px rgba(20,184,166,0.35); transform:scale(1.02);
+}
+/* — Amber: Investissement locatif */
+.project-type-card[data-val="investissement_locatif"] {
+  background:linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.04) 100%);
+  border:1.5px solid rgba(245,158,11,0.25);
+}
+.project-type-card[data-val="investissement_locatif"]:hover {
+  border-color:rgba(245,158,11,0.55); background:linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(245,158,11,0.08) 100%);
+  box-shadow:0 4px 28px -4px rgba(245,158,11,0.25); transform:translateY(-3px) scale(1.015);
+}
+.project-type-card[data-val="investissement_locatif"].selected {
+  border-color:#f59e0b; background:linear-gradient(135deg, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0.12) 100%);
+  box-shadow:0 0 0 2px rgba(245,158,11,0.2), 0 4px 32px -4px rgba(245,158,11,0.35); transform:scale(1.02);
+}
+/* Card illustration SVG */
+.project-type-card .ptc-illustration {
+  width:72px; height:72px; flex-shrink:0; margin-bottom:0.25rem;
+  transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.project-type-card:hover .ptc-illustration { transform:scale(1.08); }
+.project-type-card.selected .ptc-illustration { transform:scale(1.05); }
+.project-type-card .ptc-text { display:flex; flex-direction:column; gap:0.2rem; }
+.project-type-card .ptc-title { font-size:1rem; font-weight:700; color:#f5f5f4; transition:color 0.2s; letter-spacing:-0.01em; }
+.project-type-card .ptc-sub { font-size:0.78rem; color:rgba(255,255,255,0.5); line-height:1.4; }
+/* Selected title color per variant */
+.project-type-card[data-val="residence_principale"].selected .ptc-title { color:#c4b5fd; }
+.project-type-card[data-val="residence_secondaire"].selected .ptc-title { color:#5eead4; }
+.project-type-card[data-val="investissement_locatif"].selected .ptc-title { color:#fcd34d; }
+/* Selected sub color per variant */
+.project-type-card[data-val="residence_principale"].selected .ptc-sub { color:rgba(196,181,253,0.7); }
+.project-type-card[data-val="residence_secondaire"].selected .ptc-sub { color:rgba(94,234,212,0.65); }
+.project-type-card[data-val="investissement_locatif"].selected .ptc-sub { color:rgba(252,211,77,0.65); }
+/* Badge "Le plus courant" */
 .ptc-reco-badge {
-  position:absolute; top:0.75rem; right:0.75rem;
-  font-size:0.6rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-  padding:0.2rem 0.6rem; border-radius:9999px;
-  background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.2);
+  position:absolute; top:0.625rem; right:0.625rem;
+  font-size:0.575rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+  padding:0.2rem 0.55rem; border-radius:9999px;
+  background:rgba(139,92,246,0.2); color:#c4b5fd; border:1px solid rgba(139,92,246,0.3);
 }
-.ptc-compact-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
-html.dark .project-type-card.selected .ptc-title { color:var(--v3-accent-strong,#c4b5fd); }
+/* Mode kicker pill */
+.mode-kicker-pill {
+  display:inline-flex; align-items:center; gap:0.4rem;
+  padding:0.5rem 1rem; border-radius:9999px;
+  font-size:0.8rem; font-weight:500; line-height:1.4;
+  transition:all 0.35s cubic-bezier(0.16,1,0.3,1);
+  animation:popIn 0.3s ease both;
+}
+.mode-kicker-pill[data-mode="residence_principale"] {
+  background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.25); color:#c4b5fd;
+}
+.mode-kicker-pill[data-mode="residence_secondaire"] {
+  background:rgba(20,184,166,0.12); border:1px solid rgba(20,184,166,0.25); color:#5eead4;
+}
+.mode-kicker-pill[data-mode="investissement_locatif"] {
+  background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.25); color:#fcd34d;
+}
+.mode-kicker-pill[data-mode="ne_sait_pas"] {
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.5);
+}
 
 /* Profil section card */
 .profil-section {
-  background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07);
+  background:#1a1a2e; border:1px solid #2a2a4a;
   border-radius:1rem; padding:1rem 1.125rem; display:flex; flex-direction:column; gap:0.75rem;
 }
 .profil-section-label {
@@ -592,13 +632,11 @@ html.dark .pill-sm.selected { color:#A78BFA; }
 
 /* Mode card */
 .mode-card {
-  padding:0.875rem 1rem; border-radius:0.875rem;
-  background:var(--surface-2); border:1px solid var(--border-subtle);
-  margin-top:0.75rem; animation:fadeSlideUp 0.25s var(--ease-out) both;
+  text-align:center; margin-top:0.75rem;
+  animation:fadeSlideUp 0.25s var(--ease-out) both;
 }
-.mode-card-title { font-size:0.78rem; font-weight:700; color:var(--accent-strong); margin-bottom:0.2rem; }
-html.dark .mode-card-title { color:var(--v3-accent-strong); }
-.mode-card-text { font-size:0.8rem; color:var(--text-muted); line-height:1.5; }
+.mode-card-title { display:none; }
+.mode-card-text { display:none; }
 
 /* ══════════════════════════════════════════════════════════════
    GLOSSARY TOOLTIPS
@@ -1572,10 +1610,79 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
   .brique-layout { padding:1rem 1rem 5rem; }
   .brick-card { padding:1.5rem 1.25rem; }
   .hero-cream { padding:2rem 1.5rem; }
-  .ptc-compact-row { grid-template-columns:1fr; }
+  .project-type-grid { grid-template-columns:1fr; }
   .epargne-grid { grid-template-columns:1fr; }
   .z1-row--primary, .z1-row--secondary { grid-template-columns:1fr; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   BRIGHT MODE FIX — Force dark premium inside brique
+   The brique is designed dark-only. When the dashboard toggles
+   light mode (html without .dark), we override all CSS vars
+   on .brique-layout so the brique stays dark and readable.
+══════════════════════════════════════════════════════════════ */
+html:not(.dark) .brique-layout {
+  --bg:              #0B0B1A;
+  --bg-elevated:     #161824;
+  --bg-glass:        rgba(255,255,255,0.04);
+  --cream-grad:      linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  --cream-border:    rgba(255,255,255,0.08);
+  --border-subtle:   rgba(255,255,255,0.06);
+  --border-mid:      rgba(255,255,255,0.10);
+  --border-hover:    rgba(255,255,255,0.16);
+  --text:            #F5F5F4;
+  --text-secondary:  #D4D4D8;
+  --text-muted:      #A1A1AA;
+  --text-faint:      #71717A;
+  --accent:          linear-gradient(90deg, #8B5CF6 0%, #6366F1 60%, #3B82F6 100%);
+  --accent-strong:   #A78BFA;
+  --accent-fill:     linear-gradient(90deg, #A78BFA, #60A5FA);
+  --accent-soft:     rgba(167,139,250,0.14);
+  --accent-pill-text:#FFFFFF;
+  --track:           rgba(255,255,255,0.08);
+  --dot-invest:      #4ADE80;
+  --shadow-card:     0 1px 2px rgba(0,0,0,0.4), 0 4px 24px rgba(0,0,0,0.20);
+  --shadow-hover:    0 4px 28px rgba(0,0,0,0.45);
+  --green:           #4ade80;
+  --surface:         rgba(255,255,255,0.04);
+  --surface-2:       rgba(255,255,255,0.06);
+  --surface-3:       rgba(255,255,255,0.09);
+  --border:          rgba(255,255,255,0.06);
+  --indigo:          #818CF8;
+  --violet:          #A78BFA;
+  --indigo-dim:      rgba(99,102,241,0.14);
+  --indigo-glow:     rgba(99,102,241,0.22);
+  --v3-bg-elevated:  #161824;
+  --v3-border-subtle:rgba(255,255,255,.08);
+  --v3-text:         #F5F5F4;
+  --v3-text-secondary:#D4D4D8;
+  --v3-text-muted:   #A1A1AA;
+  --v3-text-faint:   #71717A;
+  --v3-accent-strong:#A78BFA;
+  --v3-accent-soft:  rgba(167,139,250,.14);
+  --v3-track:        rgba(255,255,255,.08);
+  --v3-dot-invest:   #4ADE80;
+  --v3-shadow-card:  0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
+  --green-soft:      rgba(74,222,128,.12);
+  --orange-soft:     rgba(251,191,36,.12);
+  --red-soft:        rgba(248,113,113,.12);
+
+  color: #F5F5F4;
+}
+html:not(.dark) .brique-layout .brick-card {
+  background:#161824;
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+}
+html:not(.dark) .brique-layout .brique-progress-card {
+  background:#161824;
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+}
+html:not(.dark) .f-content {
+  background: radial-gradient(1100px 600px at 70% -5%, #1E1B4B 0%, transparent 55%),
+              linear-gradient(180deg, #0B0B1A 0%, #050507 100%);
+}
+/* Ensure pill-sm stays dark in light mode inside brique */
+html:not(.dark) .brique-layout .pill-sm.selected { color:#A78BFA; }
 
 /* ══════════════════════════════════════════════════════════════
    SCREEN 2 v3 — ARCHITECTURE UNIFIÉE (3 zones)
@@ -2564,39 +2671,71 @@ html.dark .s4-result-card--mensuel {
             <h2 class="brick-title">Quel achat tu prépares&nbsp;?</h2>
             <p class="brick-subtitle">On adapte les calculs selon ton type de projet.</p>
 
-            <!-- BLOC A — 3 cards premium de type de projet -->
+            <!-- BLOC A — 3 cards premium illustrées de type de projet -->
             <div class="project-type-grid" id="project-type-grid">
-              <div class="project-type-card ptc-featured" data-val="residence_principale" onclick="selectProjectCard(this)">
-                <span class="ptc-reco-badge">Recommandé</span>
-                <div class="ptc-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <!-- Résidence principale — violet/indigo -->
+              <div class="project-type-card" data-val="residence_principale" onclick="selectProjectCard(this)">
+                <span class="ptc-reco-badge">Le plus courant</span>
+                <div class="ptc-illustration">
+                  <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
+                    <rect x="14" y="34" width="44" height="28" rx="3" fill="rgba(139,92,246,0.15)" stroke="#8b5cf6" stroke-width="1.5"/>
+                    <path d="M8 36L36 14L64 36" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="rgba(139,92,246,0.08)"/>
+                    <rect x="28" y="46" width="16" height="16" rx="2" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <line x1="36" y1="46" x2="36" y2="62" stroke="#6366f1" stroke-width="0.75" opacity="0.5"/>
+                    <rect x="18" y="40" width="7" height="7" rx="1" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="0.75"/>
+                    <rect x="47" y="40" width="7" height="7" rx="1" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="0.75"/>
+                    <circle cx="55" cy="18" r="5" fill="rgba(253,224,71,0.15)" stroke="#fcd34d" stroke-width="1" opacity="0.6"/>
+                  </svg>
                 </div>
                 <div class="ptc-text">
                   <div class="ptc-title">Résidence principale</div>
-                  <div class="ptc-sub">Pour y vivre au quotidien — mensualité, apport et reste à vivre</div>
+                  <div class="ptc-sub">Pour y vivre au quotidien</div>
                 </div>
-                <div class="ptc-arrow">›</div>
               </div>
-              <div class="ptc-compact-row">
-                <div class="project-type-card" data-val="investissement_locatif" onclick="selectProjectCard(this)">
-                  <div class="ptc-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                  </div>
-                  <div class="ptc-text">
-                    <div class="ptc-title">Investissement locatif</div>
-                    <div class="ptc-sub">Acheter pour louer</div>
-                  </div>
-                  <div class="ptc-arrow">›</div>
+
+              <!-- Résidence secondaire — teal -->
+              <div class="project-type-card" data-val="residence_secondaire" onclick="selectProjectCard(this)">
+                <div class="ptc-illustration">
+                  <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
+                    <path d="M4 52 C18 42, 30 48, 42 40 C50 35, 58 38, 68 32" stroke="#14b8a6" stroke-width="1.5" fill="none" opacity="0.4"/>
+                    <path d="M4 56 C20 48, 34 54, 48 46 C56 42, 62 44, 68 40" stroke="#14b8a6" stroke-width="1" fill="none" opacity="0.25"/>
+                    <rect x="18" y="30" width="28" height="22" rx="2" fill="rgba(20,184,166,0.12)" stroke="#14b8a6" stroke-width="1.5"/>
+                    <path d="M14 32L32 18L50 32" stroke="#14b8a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="rgba(20,184,166,0.06)"/>
+                    <rect x="27" y="40" width="10" height="12" rx="1.5" fill="rgba(20,184,166,0.18)" stroke="#14b8a6" stroke-width="0.75"/>
+                    <circle cx="56" cy="16" r="7" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-width="1"/>
+                    <line x1="56" y1="7" x2="56" y2="5" stroke="#f59e0b" stroke-width="1" stroke-linecap="round"/>
+                    <line x1="63" y1="16" x2="65" y2="16" stroke="#f59e0b" stroke-width="1" stroke-linecap="round"/>
+                    <line x1="61.5" y1="10.5" x2="63" y2="9" stroke="#f59e0b" stroke-width="1" stroke-linecap="round"/>
+                    <path d="M8 58C14 55 22 58 30 56C40 53 50 57 64 54" stroke="#14b8a6" stroke-width="1" fill="rgba(20,184,166,0.06)" opacity="0.5"/>
+                  </svg>
                 </div>
-                <div class="project-type-card" data-val="residence_secondaire" onclick="selectProjectCard(this)">
-                  <div class="ptc-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-                  </div>
-                  <div class="ptc-text">
-                    <div class="ptc-title">Résidence secondaire</div>
-                    <div class="ptc-sub">Pied-à-terre ou vacances</div>
-                  </div>
-                  <div class="ptc-arrow">›</div>
+                <div class="ptc-text">
+                  <div class="ptc-title">Résidence secondaire</div>
+                  <div class="ptc-sub">Vacances & patrimoine</div>
+                </div>
+              </div>
+
+              <!-- Investissement locatif — amber/orange -->
+              <div class="project-type-card" data-val="investissement_locatif" onclick="selectProjectCard(this)">
+                <div class="ptc-illustration">
+                  <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
+                    <rect x="20" y="18" width="32" height="44" rx="3" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
+                    <rect x="24" y="24" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="40" y="24" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="24" y="34" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="40" y="34" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="24" y="44" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="40" y="44" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="31" y="52" width="10" height="10" rx="1.5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1"/>
+                    <circle cx="12" cy="48" r="6" fill="none" stroke="#f59e0b" stroke-width="1" opacity="0.5"/>
+                    <text x="12" y="51" text-anchor="middle" font-size="8" font-weight="700" fill="#f59e0b" opacity="0.6">€</text>
+                    <polyline points="56,52 58,46 61,48 64,38 67,40" stroke="#4ade80" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+                    <circle cx="67" cy="40" r="2" fill="#4ade80" opacity="0.5"/>
+                  </svg>
+                </div>
+                <div class="ptc-text">
+                  <div class="ptc-title">Investissement locatif</div>
+                  <div class="ptc-sub">Rendement & revenus</div>
                 </div>
               </div>
             </div>
@@ -2604,7 +2743,7 @@ html.dark .s4-result-card--mensuel {
               <span class="pill-sm" data-val="ne_sait_pas" onclick="selectProjectCard(this)" style="font-size:0.78rem;color:var(--text-faint);">Je ne sais pas encore</span>
             </div>
 
-            <!-- Mode card dynamique -->
+            <!-- Mode kicker pill — replaces the old grey mode-card -->
             <div class="mode-card" id="mode-card" style="display:none">
               <div class="mode-card-title" id="mode-card-title"></div>
               <div class="mode-card-text" id="mode-card-text"></div>
@@ -4024,19 +4163,15 @@ function selectProjectCard(el) {
 
 function updateModeCard() {
   var card = $('mode-card');
-  var title = $('mode-card-title');
-  var text = $('mode-card-text');
   if (!S.projectType || S.projectType === 'ne_sait_pas') { card.style.display = 'none'; return; }
   card.style.display = 'block';
-  var modes = {
-    residence_principale: { t: 'Mode : Résidence principale', m: 'On regarde surtout mensualité, apport, reste à vivre et stabilité.' },
-    investissement_locatif: { t: 'Mode : Investissement locatif', m: 'On ajoute loyer, rentabilité, charges, taxe foncière et cash-flow.' },
-    residence_secondaire: { t: 'Mode : Résidence secondaire', m: 'On intègre le surcoût d\'une deuxième charge de logement.' },
-    achat_travaux: { t: 'Mode : Achat avec travaux', m: 'On ajoute une réserve travaux et une marge de sécurité.' }
+  var kickers = {
+    residence_principale: '\ud83d\udcb0 On optimise ta capacit\u00e9 d\u2019emprunt et ton reste \u00e0 vivre',
+    investissement_locatif: '\ud83d\udcc8 On simule ton rendement et ton cashflow',
+    residence_secondaire: '\ud83c\udfd6\ufe0f On calcule le co\u00fbt r\u00e9el et les implications fiscales'
   };
-  var mode = modes[S.projectType] || { t: 'Mode de calcul', m: 'Les calculs s\'adaptent à ton type de projet.' };
-  title.textContent = mode.t;
-  text.textContent = mode.m;
+  var msg = kickers[S.projectType] || 'Les calculs s\u2019adaptent \u00e0 ton projet';
+  card.innerHTML = '<span class="mode-kicker-pill" data-mode="' + S.projectType + '">' + msg + '</span>';
 }
 
 /* ─── PILLS SELECTION (compact pills — bloc B) ───────────── */
