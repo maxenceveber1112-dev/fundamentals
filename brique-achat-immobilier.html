@@ -1798,6 +1798,128 @@ html.dark .s4-result-card--mensuel {
   .s4-prix-value, .s4-prix-input { font-size:1.5rem; }
   .s4-group { padding:1rem; }
 }
+
+/* ── PDF pill ── */
+.pdf-pill-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+.pdf-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #a78bfa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pdf-pill:hover {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+  transform: translateY(-1px);
+}
+
+/* ── PDF preview (hidden normally, visible @media print) ── */
+#pdf-preview {
+  display: none;
+}
+
+@media print {
+  body > * { display: none !important; }
+  #pdf-preview {
+    display: block !important;
+    font-family: 'Inter', sans-serif;
+    color: #1a1a2e;
+    background: white;
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .pdf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #8b5cf6;
+  }
+
+  .pdf-logo {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #8b5cf6;
+  }
+
+  .pdf-date {
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  .pdf-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin: 12px 0 24px;
+  }
+
+  .pdf-section {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f9f8ff;
+    border-radius: 8px;
+    border-left: 3px solid #8b5cf6;
+    page-break-inside: avoid;
+  }
+
+  .pdf-kicker {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #8b5cf6;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .pdf-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.85rem;
+    color: #333;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .pdf-row-bold {
+    font-weight: 700;
+    color: #1a1a2e;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(139,92,246,0.2);
+    padding: 6px 0;
+  }
+
+  .pdf-divider {
+    height: 1px;
+    background: rgba(139,92,246,0.2);
+    margin: 8px 0;
+  }
+
+  .pdf-footer {
+    margin-top: 24px;
+    font-size: 0.7rem;
+    color: #999;
+    text-align: center;
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+  }
+}
 </style>
 </head>
 <body data-brick-name="Achat immobilier">
@@ -2461,6 +2583,17 @@ html.dark .s4-result-card--mensuel {
 
             <div class="tl-progress" id="tl-progress">0 / 12 étapes consultées</div>
 
+            <div class="pdf-pill-wrap">
+              <button class="pdf-pill" onclick="downloadPDFResume()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Télécharger mon résumé PDF
+              </button>
+            </div>
+
             <div class="nav-btns" style="margin-top:1.5rem;">
               <button class="btn-hero-secondary" onclick="goToScreen(5)">← Retour</button>
               <button class="btn-hero-primary" onclick="goToScreen(7)">
@@ -2576,6 +2709,17 @@ html.dark .s4-result-card--mensuel {
               <p class="reco-desc" id="reco-next-text">--</p>
               <button class="btn-hero-primary" id="reco-next-btn" onclick="goToNextBrick()" style="align-self:flex-start;">Commencer</button>
             </div>
+          </div>
+
+          <div class="pdf-pill-wrap">
+            <button class="pdf-pill" onclick="downloadPDFResume()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Télécharger mon résumé PDF
+            </button>
           </div>
 
           <div class="nav-btns" style="margin-top:1rem;">
@@ -4525,8 +4669,98 @@ function attachLiveListeners() {
     if (el) el.addEventListener('input', updateInvestment);
   });
 }
+
+/* ── PDF Résumé ── */
+function downloadPDFResume() {
+  var preview = document.getElementById('pdf-preview');
+  if (!preview) return;
+  var date = new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
+  preview.innerHTML = buildPDFContent(date);
+  window.print();
+}
+
+function buildPDFContent(date) {
+  var html = '';
+
+  // Header
+  html += '<div class="pdf-header">';
+  html += '<div class="pdf-logo">FUNDAMENTALS</div>';
+  html += '<div class="pdf-date">' + date + '</div>';
+  html += '</div>';
+  html += '<h1 class="pdf-title">Mon projet immobilier</h1>';
+
+  // Section Projet
+  html += '<div class="pdf-section">';
+  html += '<div class="pdf-kicker">MON PROJET</div>';
+  html += '<div class="pdf-row"><span>Type de bien</span><span>' + (S.typeBien || '—') + '</span></div>';
+  html += '<div class="pdf-row"><span>Localisation</span><span>' + (S.codePostal || '—') + '</span></div>';
+  html += '<div class="pdf-row"><span>Horizon</span><span>' + (S.horizonLabel || S.horizon || '—') + '</span></div>';
+  html += '</div>';
+
+  // Section Capacité
+  html += '<div class="pdf-section">';
+  html += '<div class="pdf-kicker">MA CAPACITÉ FINANCIÈRE</div>';
+  html += pdfRow('Revenus du foyer', formatEuro(S.revenus) + '/mois');
+  if (S.autresEntrees > 0) html += pdfRow('Autres entrées / Aides', formatEuro(S.autresEntrees) + '/mois');
+  html += pdfRow('Crédits existants', formatEuro(S.credits) + '/mois');
+  html += pdfRow('Charges fixes', formatEuro(S.chargesFixes) + '/mois');
+  html += '<div class="pdf-divider"></div>';
+  html += pdfRow('Capacité d\'emprunt', formatEuro(S.capitalEmpruntable), true);
+  html += pdfRow('Mensualité maximale', formatEuro(S.mensualiteMax) + '/mois');
+  html += pdfRow('Taux d\'effort', Math.round(S.tauxEffortA || 0) + '%');
+  html += pdfRow('Reste à vivre', formatEuro(S.resteVivreB) + '/mois');
+  html += '</div>';
+
+  // Section Apport
+  html += '<div class="pdf-section">';
+  html += '<div class="pdf-kicker">MON APPORT</div>';
+  html += pdfRow('Apport mobilisable', formatEuro(S.apport));
+  html += pdfRow('Épargne de précaution', formatEuro(S.matelasActuel));
+  html += '</div>';
+
+  // Section Coût
+  html += '<div class="pdf-section">';
+  html += '<div class="pdf-kicker">LE VRAI COÛT D\'ACHAT</div>';
+  html += pdfRow('Prix du bien', formatEuro(S.prixBien));
+  html += pdfRow('Frais de notaire', formatEuro(S.fraisNotaire));
+  html += pdfRow('Frais de garantie', formatEuro(S.fraisGarantie));
+  html += pdfRow('Frais de dossier', formatEuro(S.fraisDossier));
+  html += '<div class="pdf-divider"></div>';
+  html += pdfRow('Coût total acquisition', formatEuro((S.prixBien||0)+(S.fraisNotaire||0)+(S.fraisGarantie||0)+(S.fraisDossier||0)), true);
+  html += '</div>';
+
+  // Section Hypothèses
+  html += '<div class="pdf-section">';
+  html += '<div class="pdf-kicker">HYPOTHÈSES DU CRÉDIT</div>';
+  html += pdfRow('Durée', (S.duree || 25) + ' ans');
+  html += pdfRow('Taux nominal', (S.taux || 3.0).toFixed(1) + '%');
+  html += pdfRow('Assurance emprunteur', (S.assuranceEmprunteur || 22) + ' €/mois');
+  html += '</div>';
+
+  // Section Locatif (conditionnelle)
+  if (S.projectType === 'investissement_locatif' && S.loyerEstime > 0) {
+    html += '<div class="pdf-section">';
+    html += '<div class="pdf-kicker">ANALYSE LOCATIVE</div>';
+    html += pdfRow('Loyer estimé', formatEuro(S.loyerEstime) + '/mois');
+    html += pdfRow('Rendement brut', (S.rendementBrut || 0).toFixed(1) + '%');
+    html += pdfRow('Rendement net', (S.rendementNet || 0).toFixed(1) + '%');
+    var cf = S.cashFlow || 0;
+    html += pdfRow('Cash-flow mensuel', (cf >= 0 ? '+' : '') + formatEuro(cf));
+    html += '</div>';
+  }
+
+  // Footer
+  html += '<div class="pdf-footer">Généré par Fundamentals · Ce document est une estimation, non un conseil financier.</div>';
+
+  return html;
+}
+
+function pdfRow(label, value, bold) {
+  return '<div class="pdf-row' + (bold ? ' pdf-row-bold' : '') + '"><span>' + label + '</span><span>' + value + '</span></div>';
+}
 </script>
 
+<div id="pdf-preview" style="display:none"></div>
 <script src="feedback-widget.js"></script>
 </body>
 </html>
