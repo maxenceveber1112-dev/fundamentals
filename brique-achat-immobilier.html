@@ -4737,11 +4737,15 @@ function recalcLocatif() {
     var loyerBrut = S.loyerEstime || 0;
     var loyerRetenu = loyerBrut * 0.70;
     var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
-    var mensualiteMaxAvecLoyer = (revenusAvecLoyer * 0.35) - (S.credits || 0) - (S.assuranceEmprunteur || 22);
+    var mensualiteImmo = S.mensualiteCible || S.mensualiteMax || S.mensualiteMaxImmo || 0;
+    var mensualiteMaxResiduelle = (revenusAvecLoyer * 0.35)
+      - (S.credits || 0)
+      - mensualiteImmo
+      - (S.assuranceEmprunteur || 22);
     var rCap = ((S.taux || 3.0) / 12) / 100;
     var nCap = (S.duree || 25) * 12;
-    var capaciteResiduelle = mensualiteMaxAvecLoyer > 0
-      ? Math.round(mensualiteMaxAvecLoyer * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
+    var capaciteResiduelle = mensualiteMaxResiduelle > 0
+      ? Math.round(mensualiteMaxResiduelle * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
       : 0;
     if (capaciteResiduelle > 0) {
       capEl.textContent = Math.round(capaciteResiduelle).toLocaleString('fr-FR') + ' €';
