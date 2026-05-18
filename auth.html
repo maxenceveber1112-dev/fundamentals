@@ -117,6 +117,12 @@
       justify-content:center;
       padding:3rem;
       overflow:hidden;
+      background-image: radial-gradient(circle, rgba(139,92,246,0.12) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    html.dark .auth-left {
+      background-image: radial-gradient(circle, rgba(139,92,246,0.18) 1px, transparent 1px);
+      background-size: 24px 24px;
     }
     .auth-left-content { display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem; }
 
@@ -164,15 +170,28 @@
       font-size:15px; color:var(--text-secondary); max-width:38ch; line-height:1.65;
       margin-bottom:2.5rem;
     }
-    .auth-features { display:flex; flex-direction:column; gap:1rem; margin-top:auto; }
-    .auth-feat { display:flex; align-items:flex-start; gap:0.875rem; }
-    .auth-feat-icon {
-      width:34px; height:34px; border-radius:0.625rem; flex-shrink:0;
-      background:var(--accent-soft); border:1px solid var(--border-mid);
-      display:flex; align-items:center; justify-content:center;
+    .auth-features { display:flex; flex-direction:column; gap:1.25rem; margin-top:auto; }
+    .auth-feat { display:flex; align-items:flex-start; gap:0.75rem; padding-left:0.875rem; border-left:2px solid var(--accent-strong); }
+    .auth-feat.feat-teal { border-left-color:#14B8A6; }
+    .auth-feat.feat-amber { border-left-color:#F59E0B; }
+    .auth-feat-icon { flex-shrink:0; display:flex; align-items:center; justify-content:center; width:20px; height:20px; }
+    .auth-feat-text { line-height:1.4; }
+    .auth-feat-text strong { color:var(--text); font-weight:600; font-size:14px; display:block; margin-bottom:2px; }
+    .auth-feat-text span { font-size:13px; color:var(--text-muted); }
+
+    /* ── QUOTE ── */
+    .auth-quote { position:relative; }
+    .auth-quote::before {
+      content:'\201C';
+      position:absolute;
+      top:-1rem; left:-0.5rem;
+      font-family:'Fraunces','Instrument Serif',Georgia,serif;
+      font-size:5rem; line-height:1;
+      color:rgba(139,92,246,0.15);
+      pointer-events:none;
     }
-    .auth-feat-text { font-size:13px; color:var(--text-muted); line-height:1.4; padding-top:1px; }
-    .auth-feat-text strong { color:var(--text); font-weight:600; display:block; margin-bottom:1px; }
+    html.dark .auth-quote::before { color:rgba(139,92,246,0.22); }
+    .auth-quote-stars { color:#f59e0b; font-size:12px; letter-spacing:2px; margin-bottom:0.5rem; }
 
     /* ── CARD TITLE ── */
     .auth-card-title { font-size:22px; font-weight:600; color:var(--text); letter-spacing:-.015em; }
@@ -292,36 +311,37 @@
       <div class="auth-features">
         <div class="auth-feat">
           <div class="auth-feat-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12c0-4.97 4.03-9 9-9 4.97 0 9 4.03 9 9"/><path d="M21 12c0 4.97-4.03 9-9 9-4.97 0-9-4.03-9-9"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12c0-4.97 4.03-9 9-9 4.97 0 9 4.03 9 9"/><path d="M21 12c0 4.97-4.03 9-9 9-4.97 0-9-4.03-9-9"/><circle cx="12" cy="12" r="3"/></svg>
           </div>
           <div class="auth-feat-text">
-            <strong>Parcours sur-mesure</strong>
-            Calibré selon ton âge, ta situation, tes objectifs.
+            <strong>Ton parcours, pas un cours</strong>
+            <span>Calibré selon ta situation réelle — pas un contenu générique.</span>
           </div>
         </div>
-        <div class="auth-feat">
+        <div class="auth-feat feat-teal">
           <div class="auth-feat-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="16" rx="1"/><rect x="15" y="13" width="6" height="7" rx="1"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="16" rx="1"/><rect x="15" y="13" width="6" height="7" rx="1"/></svg>
           </div>
           <div class="auth-feat-text">
-            <strong>21 briques financières</strong>
-            De la survie au long terme, en passant par les projets.
+            <strong>Tout ce qu'il faut pour maîtriser ta finance</strong>
+            <span>De la survie budgétaire à l'investissement, dans un parcours guidé et personnalisé.</span>
           </div>
         </div>
-        <div class="auth-feat">
+        <div class="auth-feat feat-amber">
           <div class="auth-feat-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-strong)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </div>
           <div class="auth-feat-text">
-            <strong>Progression sauvegardée</strong>
-            Reprends exactement où tu t'es arrêté, sur tous tes appareils.
+            <strong>Tu reprends où tu t'es arrêté</strong>
+            <span>Ta progression est sauvegardée, sur tous tes appareils.</span>
           </div>
         </div>
       </div>
 
       <div class="auth-quote" style="margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border-subtle);">
-        <p style="font-family:'Fraunces','Instrument Serif',Georgia,serif;font-style:italic;font-size:17px;color:var(--text-secondary);line-height:1.5;margin-bottom:0.75rem;">
-          &ldquo;En 3 semaines, j&rsquo;ai compris où partait 20% de mon salaire. Maintenant je gère.&rdquo;
+        <div class="auth-quote-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p style="font-family:'Fraunces','Instrument Serif',Georgia,serif;font-style:italic;font-size:16px;color:var(--text-secondary);line-height:1.5;margin-bottom:0.75rem;">
+          &ldquo;Pour la première fois, j&rsquo;ai vraiment compris mes finances — et j&rsquo;ai pu appliquer les bases immédiatement. Le parcours guidé rend tout concret.&rdquo;
         </p>
         <p style="font-size:12px;color:var(--text-faint);font-weight:500;">— Camille, 27 ans · Bêta testeur</p>
       </div>
