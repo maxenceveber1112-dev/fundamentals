@@ -1002,167 +1002,158 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
   .hero-cream { padding:2rem 1.5rem; }
   .project-type-grid { grid-template-columns:1fr; }
   .epargne-grid { grid-template-columns:1fr; }
-  .diag-grid { grid-template-columns:1fr !important; }
-  .ab-container { grid-template-columns:1fr; }
+  .z1-row--primary, .z1-row--secondary { grid-template-columns:1fr; }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   SCREEN 2 — DIAGNOSTIC CARD GRID + PROPORTION BAR
+   SCREEN 2 v3 — ARCHITECTURE UNIFIÉE (3 zones)
 ══════════════════════════════════════════════════════════════ */
-.diag-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;
-}
-.diag-card {
+
+/* ── ZONE 1 : Data chips ── */
+.z1-row { display:grid; gap:0.75rem; }
+.z1-row--primary { grid-template-columns:1fr 1fr; }
+.z1-row--secondary { grid-template-columns:1fr 1fr; margin-top:0.5rem; }
+
+.z1-chip {
   position:relative; overflow:hidden;
   background:var(--surface-2); border:1.5px solid var(--border-mid);
-  border-radius:1rem; padding:1.125rem 1rem;
-  cursor:pointer; transition:all 0.2s ease;
+  border-radius:1rem; cursor:pointer; transition:all 0.2s ease;
 }
-.diag-card:hover { transform:scale(1.01); box-shadow:var(--shadow-hover); border-color:var(--border-hover); }
-.diag-card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; }
-.diag-card-label { font-size:0.78rem; font-weight:600; color:var(--text-secondary); }
-.diag-card-badge {
+.z1-chip--lg { padding:1.25rem 1.125rem; }
+.z1-chip--sm { padding:0.875rem 1rem; }
+.z1-chip:hover { transform:scale(1.01); box-shadow:var(--shadow-hover); border-color:var(--border-hover); }
+
+.z1-chip-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; }
+.z1-chip-label { font-size:0.78rem; font-weight:600; color:var(--text-secondary); }
+.z1-chip-badge {
   font-size:0.6rem; font-weight:700; letter-spacing:0.06em;
   padding:0.15rem 0.5rem; border-radius:9999px; white-space:nowrap;
 }
-.diag-badge-budget { color:var(--accent-strong); background:var(--accent-soft); }
-html.dark .diag-badge-budget { color:#C4B5FD; }
-.diag-badge-optionnel { color:var(--text-faint); background:var(--surface-3); }
-.diag-badge-modifie { color:#d97706; background:rgba(217,119,6,0.1); }
-.diag-card-value {
-  font-family:var(--font-display); font-size:1.75rem; font-weight:400;
+.z1-badge-budget { color:var(--accent-strong); background:var(--accent-soft); }
+html.dark .z1-badge-budget { color:#C4B5FD; }
+.z1-badge-optionnel { color:var(--text-faint); background:var(--surface-3); }
+.z1-badge-modifie { color:#d97706; background:rgba(217,119,6,0.1); }
+
+.z1-chip-value {
+  font-family:var(--font-display); font-weight:400;
   color:var(--text); line-height:1.1; transition:opacity 0.15s ease;
 }
-.diag-card-input {
+.z1-chip--lg .z1-chip-value { font-size:2rem; }
+.z1-chip--sm .z1-chip-value { font-size:1.4rem; }
+
+.z1-chip-input {
   display:none; width:100%; border:none; background:transparent;
-  font-family:var(--font-display); font-size:1.75rem; font-weight:400;
+  font-family:var(--font-display); font-weight:400;
   color:var(--accent-strong); outline:none; line-height:1.1;
 }
-html.dark .diag-card-input { color:var(--v3-accent-strong); }
-.diag-card.editing .diag-card-value { display:none; }
-.diag-card.editing .diag-card-input { display:block; }
-.diag-card.editing { border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
-.diag-card-desc { font-size:0.72rem; color:var(--text-faint); margin-top:0.35rem; line-height:1.4; }
-.diag-card-watermark {
+.z1-chip--lg .z1-chip-input { font-size:2rem; }
+.z1-chip--sm .z1-chip-input { font-size:1.4rem; }
+html.dark .z1-chip-input { color:var(--v3-accent-strong); }
+.z1-chip.editing .z1-chip-value { display:none; }
+.z1-chip.editing .z1-chip-input { display:block; }
+.z1-chip.editing { border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+
+.z1-chip-desc { font-size:0.72rem; color:var(--text-faint); margin-top:0.35rem; line-height:1.4; }
+.z1-chip--sm .z1-chip-desc { font-size:0.68rem; margin-top:0.25rem; }
+.z1-chip-watermark {
   position:absolute; right:-10px; bottom:-10px;
   opacity:0.07; width:80px; height:80px; pointer-events:none;
   color:var(--text);
 }
+.z1-chip--sm .z1-chip-watermark { width:60px; height:60px; }
 
-/* ── A/B Diagnostic Cards ── */
-.ab-container {
-  display:grid; grid-template-columns:1fr 1fr; gap:1rem;
+/* ── ZONE 2 : Hero diagnostic ── */
+.z2-hero {
+  text-align:center; padding:1.75rem 1rem 1.25rem;
   margin-top:0.75rem;
 }
-.ab-card {
-  background:var(--bg-elevated); border:1px solid var(--border-subtle);
-  border-radius:1.25rem; box-shadow:var(--shadow-card);
-  padding:1.25rem; display:flex; flex-direction:column; gap:0.75rem;
-  transition:background 0.3s ease, border-color 0.3s ease;
+.z2-hero-label {
+  font-size:0.82rem; color:var(--text-muted); margin-bottom:0.5rem;
+  display:flex; align-items:center; justify-content:center; gap:0.35rem;
 }
-html.dark .ab-card { backdrop-filter:blur(12px); }
-.ab-card--b {
-  background:var(--accent-soft); border-color:rgba(196,181,253,0.3);
+.z2-capital {
+  font-family:var(--font-display); font-size:clamp(2.5rem,5vw,3.75rem); font-weight:400;
+  color:#8b5cf6; line-height:1; margin:0.25rem 0;
 }
-html.dark .ab-card--b { background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.18); }
-.ab-badge {
-  font-size:0.65rem; font-weight:700; padding:0.2rem 0.6rem;
-  border-radius:9999px; white-space:nowrap; align-self:flex-start;
-  letter-spacing:0.04em; text-transform:uppercase;
-}
-.ab-badge--a { color:var(--text-muted); background:var(--surface-3); }
-.ab-badge--b { color:var(--accent-pill-text); background:var(--accent-fill); }
-html.dark .ab-badge--b { color:#fff; }
-
-.ab-pct {
-  font-family:var(--font-display); font-size:2.25rem; font-weight:400;
-  color:var(--text); line-height:1;
-}
-.ab-pct-label {
-  font-size:0.72rem; font-weight:500; color:var(--text-muted);
-  margin-top:-0.25rem;
+html.dark .z2-capital { color:var(--v3-accent-strong); }
+.z2-mensualite {
+  font-size:1.1rem; color:var(--text-muted); margin-top:0.25rem;
 }
 
-.ab-capital {
-  font-family:var(--font-display); font-size:2rem; font-weight:400;
-  color:var(--accent-strong); line-height:1;
+/* Premium bar */
+.z2-bar-wrap {
+  position:relative; margin:1.5rem 0 0.5rem; padding:22px 0 0;
 }
-html.dark .ab-capital { color:var(--v3-accent-strong); }
-.ab-mensualite {
-  font-size:0.82rem; color:var(--text-secondary); margin-top:-0.35rem;
+.z2-bar {
+  display:flex; height:13px; border-radius:9999px; overflow:hidden;
+  background:var(--track); position:relative;
 }
+.z2-seg { height:100%; transition:width 400ms ease; min-width:0; }
+.z2-seg--charges  { background:rgba(139,92,246,0.4); border-radius:9999px 0 0 9999px; }
+.z2-seg--mensualite { background:#8b5cf6; }
+.z2-seg--assurance { background:rgba(139,92,246,0.6); }
+.z2-seg--rav { background:rgba(255,255,255,0.08); border-radius:0 9999px 9999px 0; }
 
-/* Proportion bars inside A/B cards */
-.ab-bar-wrap { position:relative; margin:0.25rem 0; }
-.ab-bar {
-  display:flex; height:14px; border-radius:9999px; overflow:hidden;
-  background:var(--track);
+/* Marker "Tu es ici" */
+.z2-marker {
+  position:absolute; top:-2px; z-index:3;
+  transition:left 400ms ease;
 }
-.ab-seg {
-  height:100%; transition:width 400ms ease; min-width:0;
+.z2-marker-line {
+  width:2px; height:calc(13px + 8px); background:rgba(255,255,255,0.85);
+  margin:0 auto;
 }
-.ab-seg-credits { background:#6366F1; border-radius:9999px 0 0 9999px; }
-.ab-seg-mensualite { background:var(--green); }
-.ab-seg-assurance { background:var(--orange); }
-.ab-seg-rav { background:var(--surface-3); border-radius:0 9999px 9999px 0; }
+.z2-marker-label {
+  position:absolute; bottom:calc(100% + 2px); left:50%;
+  transform:translateX(-50%); white-space:nowrap;
+  font-size:0.68rem; font-weight:600; color:rgba(255,255,255,0.9);
+  background:rgba(139,92,246,0.7); padding:2px 8px; border-radius:9999px;
+}
+html:not(.dark) .z2-marker-line { background:rgba(28,25,23,0.7); }
+html:not(.dark) .z2-marker-label { color:#fff; background:rgba(91,33,182,0.8); }
 
-/* HCSF 35% threshold line */
-.ab-hcsf-line {
+/* HCSF 35% line */
+.z2-hcsf {
   position:absolute; left:35%; top:-4px; bottom:-4px;
-  width:2px; border-left:2px dashed var(--red);
   z-index:2; pointer-events:none;
 }
-.ab-hcsf-label {
-  position:absolute; left:35%; top:-18px;
-  transform:translateX(-50%);
-  font-size:0.6rem; font-weight:700; color:var(--red);
-  white-space:nowrap;
+.z2-hcsf-line {
+  width:2px; height:calc(13px + 12px); border-left:2px dashed rgba(255,255,255,0.5);
+}
+html:not(.dark) .z2-hcsf-line { border-left-color:rgba(28,25,23,0.3); }
+.z2-hcsf-label {
+  position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+  font-size:0.58rem; font-weight:700; color:rgba(255,255,255,0.5);
+  white-space:nowrap; letter-spacing:0.04em;
+}
+html:not(.dark) .z2-hcsf-label { color:var(--text-faint); }
+
+/* Legend */
+.z2-legend {
+  display:flex; flex-wrap:wrap; gap:0.75rem; justify-content:center;
+  font-size:0.7rem; color:var(--text-faint); margin-top:0.5rem;
+}
+.z2-legend-item { display:flex; align-items:center; gap:0.3rem; }
+.z2-legend-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+
+/* Context line */
+.z2-context {
+  font-size:0.85rem; color:var(--text-muted); text-align:center;
+  margin-top:0.75rem;
 }
 
-/* Legend under bars */
-.ab-legend {
-  display:flex; flex-wrap:wrap; gap:0.5rem;
-  font-size:0.62rem; color:var(--text-faint);
+/* Reste à vivre */
+.z2-rav {
+  font-size:0.875rem; color:var(--text-secondary); text-align:center;
+  margin-top:0.5rem; padding:0.5rem 0.75rem;
+  background:var(--surface-2); border-radius:0.75rem; display:inline-block;
 }
-.ab-legend-item { display:flex; align-items:center; gap:0.25rem; }
-.ab-legend-dot { width:7px; height:7px; border-radius:2px; flex-shrink:0; }
+.z2-rav strong { font-weight:600; color:var(--text); }
+.z2-rav.warning { color:var(--orange); }
+.z2-rav.warning strong { color:var(--orange); }
+.z2-rav-wrap { text-align:center; }
 
-.ab-rav {
-  font-size:0.78rem; color:var(--text-secondary);
-}
-.ab-rav strong { font-weight:600; color:var(--text); }
-
-.ab-status-badge {
-  font-size:0.68rem; font-weight:700; padding:0.2rem 0.6rem;
-  border-radius:9999px; white-space:nowrap; align-self:flex-start;
-  animation:pulse-badge 2s ease-in-out infinite;
-}
-@keyframes pulse-badge {
-  0%, 100% { opacity:1; }
-  50% { opacity:0.8; }
-}
-.ab-status-badge.badge-green { color:#15803d; background:var(--green-soft); }
-.ab-status-badge.badge-orange { color:#c2410c; background:var(--orange-soft); }
-.ab-status-badge.badge-red { color:#dc2626; background:var(--red-soft); }
-html.dark .ab-status-badge.badge-green { color:#4ade80; }
-html.dark .ab-status-badge.badge-orange { color:#fb923c; }
-html.dark .ab-status-badge.badge-red { color:#f87171; }
-
-.ab-note {
-  font-size:0.72rem; color:var(--text-faint); line-height:1.4;
-  font-style:italic;
-}
-
-/* Alert card for zero capacity */
-.ab-alert {
-  background:var(--red-soft); border:1px solid var(--red);
-  border-radius:1rem; padding:1.25rem; margin-top:0.75rem;
-  display:flex; gap:0.75rem; align-items:flex-start;
-}
-.ab-alert-icon { font-size:1.25rem; flex-shrink:0; }
-.ab-alert-text { font-size:0.82rem; color:var(--text); line-height:1.5; }
-
-/* Glossary info icon tooltip (reuses field-tooltip pattern) */
+/* Glossary info icon tooltip */
 .glossary-info {
   position:relative; display:inline-flex; align-items:center;
   margin-left:0.25rem; cursor:help; vertical-align:middle;
@@ -1185,45 +1176,60 @@ html.dark .ab-status-badge.badge-red { color:#f87171; }
 }
 .glossary-info:hover .gi-tip { display:block; }
 
-@media(max-width:520px) {
-  .ab-container { grid-template-columns:1fr; }
-  .ab-pct { font-size:1.75rem; }
-  .ab-capital { font-size:1.5rem; }
+/* Pedagogical note */
+.z2-note {
+  font-size:0.8rem; color:var(--text-faint); line-height:1.5;
+  font-style:italic; text-align:center; margin-top:0.75rem;
+  max-width:520px; margin-left:auto; margin-right:auto;
 }
 
-/* ── Hypotheses block ── */
-.hypotheses-compact {
-  position:relative;
-  display:flex; justify-content:space-between; align-items:center;
-  padding:0.875rem 1rem; border-radius:0.875rem;
-  background:var(--surface-2); border:1px solid var(--border-subtle);
-  margin-top:1rem;
+/* Alert card for zero capacity */
+.z2-alert {
+  background:var(--red-soft); border:1px solid var(--red);
+  border-radius:1rem; padding:1.25rem; margin-top:0.75rem;
+  display:flex; gap:0.75rem; align-items:flex-start;
 }
-.hypotheses-summary {
-  font-size:0.82rem; color:var(--text-muted); font-weight:500;
-}
-.hypotheses-btn {
-  font-size:0.78rem; font-weight:600; color:var(--accent-strong);
-  cursor:pointer; background:none; border:none; padding:0.25rem 0.5rem;
-  border-radius:var(--r-sm); transition:background 0.15s ease;
-}
-html.dark .hypotheses-btn { color:var(--v3-accent-strong); }
-.hypotheses-btn:hover { background:var(--accent-soft); }
+.z2-alert-icon { font-size:1.25rem; flex-shrink:0; }
+.z2-alert-text { font-size:0.82rem; color:var(--text); line-height:1.5; }
 
-/* Hypotheses popup (position:absolute, NOT fixed) */
-.hypotheses-popup-wrap { position:relative; }
+/* ── ZONE 3 : Hypotheses pill ── */
+.z3-pill-wrap { position:relative; text-align:center; margin-top:1.25rem; }
+.hypotheses-pill {
+  display:inline-flex; align-items:center; gap:12px;
+  background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2);
+  border-radius:9999px; padding:10px 20px;
+  font-size:0.85rem; color:rgba(255,255,255,0.7);
+  cursor:default;
+}
+html:not(.dark) .hypotheses-pill { color:var(--text-muted); }
+.hypotheses-pill .pill-star { color:#8b5cf6; }
+.hypotheses-pill .modifier-btn {
+  color:#8b5cf6; cursor:pointer; font-weight:500;
+  background:none; border:none; font:inherit; padding:0;
+}
+.hypotheses-pill .modifier-btn:hover { color:#a78bfa; }
+
+/* Hypotheses popup (position:absolute, opens UP) */
 .hypotheses-popup {
-  position:absolute; bottom:calc(100% + 8px); left:0; right:0; z-index:200;
+  position:absolute; bottom:calc(100% + 12px);
+  left:50%; transform:translateX(-50%);
+  width:340px; max-width:calc(100vw - 2rem); z-index:200;
   background:var(--bg-elevated); border:1px solid var(--border-mid);
   border-radius:1rem; padding:1.25rem;
-  box-shadow:0 8px 32px rgba(0,0,0,0.12);
+  box-shadow:0 8px 32px rgba(0,0,0,0.18);
   backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   display:none; flex-direction:column; gap:1rem;
-  opacity:0; transform:translateY(8px);
-  transition:opacity 0.25s ease, transform 0.25s ease;
+  opacity:0; transform:translateX(-50%) translateY(8px);
+  transition:opacity 0.2s ease, transform 0.2s ease;
+}
+@keyframes slideUpFade {
+  from { opacity:0; transform:translateX(-50%) translateY(8px); }
+  to   { opacity:1; transform:translateX(-50%) translateY(0); }
 }
 .hypotheses-popup.open {
-  display:flex; opacity:1; transform:translateY(0);
+  display:flex; opacity:1;
+  transform:translateX(-50%) translateY(0);
+  animation:slideUpFade 200ms ease;
 }
 .hypotheses-popup-title {
   font-size:0.875rem; font-weight:700; color:var(--text);
@@ -1241,6 +1247,11 @@ html.dark .hypotheses-btn { color:var(--v3-accent-strong); }
 }
 .hypotheses-close-btn:hover { filter:brightness(0.95); }
 html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
+
+@media(max-width:520px) {
+  .z1-row--primary, .z1-row--secondary { grid-template-columns:1fr; }
+  .z2-capital { font-size:2.25rem; }
+}
 </style>
 </head>
 <body data-brick-name="Achat immobilier">
@@ -1436,54 +1447,54 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
             <p class="brick-subtitle">Tes données budget, modifiables en un clic. Le diagnostic se recalcule en temps réel.</p>
 
-            <!-- Grille données 2×2 -->
-            <div class="diag-grid">
-              <!-- Revenus du foyer -->
-              <div class="diag-card" id="diag-revenus" onclick="editDiagCard(this,'input-revenus')">
-                <svg class="diag-card-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <div class="diag-card-header">
-                  <span class="diag-card-label">Revenus du foyer</span>
-                  <span class="diag-card-badge diag-badge-budget" id="badge-revenus">Budget</span>
+            <!-- ═══ ZONE 1 — DONNÉES ═══ -->
+            <!-- Niveau 1 : Revenus + Crédits (grands) -->
+            <div class="z1-row z1-row--primary">
+              <div class="z1-chip z1-chip--lg" id="diag-revenus" onclick="editDiagCard(this,'input-revenus')">
+                <svg class="z1-chip-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <div class="z1-chip-header">
+                  <span class="z1-chip-label">Revenus du foyer</span>
+                  <span class="z1-chip-badge z1-badge-budget" id="badge-revenus">Budget</span>
                 </div>
-                <div class="diag-card-value" id="diag-revenus-val">0 €</div>
-                <input type="number" class="diag-card-input" id="input-revenus" min="0" inputmode="numeric" placeholder="ex : 2 500" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
-                <div class="diag-card-desc">Base de calcul de capacité.</div>
+                <div class="z1-chip-value" id="diag-revenus-val">0 €</div>
+                <input type="number" class="z1-chip-input" id="input-revenus" min="0" inputmode="numeric" placeholder="ex : 2 500" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                <div class="z1-chip-desc">Base de calcul de capacité.</div>
               </div>
 
-              <!-- Autres entrées -->
-              <div class="diag-card" id="diag-aides" onclick="editDiagCard(this,'input-aides')">
-                <svg class="diag-card-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                <div class="diag-card-header">
-                  <span class="diag-card-label">Autres entrées / Aides</span>
-                  <span class="diag-card-badge diag-badge-optionnel" id="badge-aides">Optionnel</span>
+              <div class="z1-chip z1-chip--lg" id="diag-credits" onclick="editDiagCard(this,'input-credits')">
+                <svg class="z1-chip-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                <div class="z1-chip-header">
+                  <span class="z1-chip-label">Crédits existants</span>
+                  <span class="z1-chip-badge z1-badge-budget" id="badge-credits">Budget</span>
                 </div>
-                <div class="diag-card-value" id="diag-aides-val">0 €</div>
-                <input type="number" class="diag-card-input" id="input-aides" min="0" inputmode="numeric" placeholder="0" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
-                <div class="diag-card-desc">APL, allocations, revenus locatifs...</div>
+                <div class="z1-chip-value" id="diag-credits-val">0 €/mois</div>
+                <input type="number" class="z1-chip-input" id="input-credits" min="0" inputmode="numeric" placeholder="ex : 200" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                <div class="z1-chip-desc">Réduit directement ta capacité d'emprunt.</div>
+              </div>
+            </div>
+
+            <!-- Niveau 2 : Aides + Charges (compacts) -->
+            <div class="z1-row z1-row--secondary">
+              <div class="z1-chip z1-chip--sm" id="diag-aides" onclick="editDiagCard(this,'input-aides')">
+                <svg class="z1-chip-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <div class="z1-chip-header">
+                  <span class="z1-chip-label">Autres entrées / Aides</span>
+                  <span class="z1-chip-badge z1-badge-optionnel" id="badge-aides">Optionnel</span>
+                </div>
+                <div class="z1-chip-value" id="diag-aides-val">0 €</div>
+                <input type="number" class="z1-chip-input" id="input-aides" min="0" inputmode="numeric" placeholder="0" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                <div class="z1-chip-desc">APL, allocations, revenus locatifs...</div>
               </div>
 
-              <!-- Crédits existants -->
-              <div class="diag-card" id="diag-credits" onclick="editDiagCard(this,'input-credits')">
-                <svg class="diag-card-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
-                <div class="diag-card-header">
-                  <span class="diag-card-label">Crédits existants</span>
-                  <span class="diag-card-badge diag-badge-budget" id="badge-credits">Budget</span>
+              <div class="z1-chip z1-chip--sm" id="diag-charges" onclick="editDiagCard(this,'input-charges')">
+                <svg class="z1-chip-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                <div class="z1-chip-header">
+                  <span class="z1-chip-label">Charges fixes</span>
+                  <span class="z1-chip-badge z1-badge-budget" id="badge-charges">Budget</span>
                 </div>
-                <div class="diag-card-value" id="diag-credits-val">0 €/mois</div>
-                <input type="number" class="diag-card-input" id="input-credits" min="0" inputmode="numeric" placeholder="ex : 200" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
-                <div class="diag-card-desc">Réduit directement ta capacité d'emprunt.</div>
-              </div>
-
-              <!-- Charges fixes -->
-              <div class="diag-card" id="diag-charges" onclick="editDiagCard(this,'input-charges')">
-                <svg class="diag-card-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                <div class="diag-card-header">
-                  <span class="diag-card-label">Charges fixes</span>
-                  <span class="diag-card-badge diag-badge-budget" id="badge-charges">Budget</span>
-                </div>
-                <div class="diag-card-value" id="diag-charges-val">0 €/mois</div>
-                <input type="number" class="diag-card-input" id="input-charges" min="0" inputmode="numeric" placeholder="ex : 800" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
-                <div class="diag-card-desc">Sert à estimer ton reste à vivre.</div>
+                <div class="z1-chip-value" id="diag-charges-val">0 €/mois</div>
+                <input type="number" class="z1-chip-input" id="input-charges" min="0" inputmode="numeric" placeholder="ex : 800" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                <div class="z1-chip-desc">Sert à estimer ton reste à vivre.</div>
               </div>
             </div>
 
@@ -1491,72 +1502,74 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
             <input type="hidden" id="input-revenus-compl" value="0"/>
             <input type="hidden" id="input-loyer" value="0"/>
 
-            <!-- DIAGNOSTIC A/B — Double état avant/après -->
-            <div class="ab-container" id="ab-container">
-              <!-- Card A — Aujourd'hui (sans crédit immo) -->
-              <div class="ab-card ab-card--a" id="ab-card-a">
-                <span class="ab-badge ab-badge--a">Aujourd'hui</span>
-                <div>
-                  <div class="ab-pct" id="ab-pct-a">0 %</div>
-                  <div class="ab-pct-label">taux d'effort<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Part de tes revenus consacrée au remboursement de crédits.</span></span></div>
+            <!-- ═══ ZONE 2 — HERO DIAGNOSTIC ═══ -->
+            <div class="z2-hero" id="z2-hero">
+              <!-- 2A: Chiffre hero -->
+              <div class="z2-hero-label">
+                Ta capacité d'emprunt maximale
+                <span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Capital maximum que la banque peut te prêter selon tes revenus.</span></span>
+              </div>
+              <div class="z2-capital" id="z2-capital">--</div>
+              <div class="z2-mensualite" id="z2-mensualite">Mensualité<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Montant mensuel remboursé à la banque, capital + intérêts inclus.</span></span> : --</div>
+
+              <!-- 2B: Barre premium unifiée -->
+              <div class="z2-bar-wrap" id="z2-bar-wrap">
+                <!-- Marqueur "Tu es ici" -->
+                <div class="z2-marker" id="z2-marker" style="left:0%">
+                  <div class="z2-marker-label" id="z2-marker-label">● 0% aujourd'hui</div>
+                  <div class="z2-marker-line"></div>
                 </div>
-                <div class="ab-bar-wrap">
-                  <div class="ab-hcsf-label">35% HCSF<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Le Haut Conseil de Stabilité Financière limite le taux d'endettement à 35% pour protéger les emprunteurs.</span></span></div>
-                  <div class="ab-hcsf-line"></div>
-                  <div class="ab-bar" id="ab-bar-a">
-                    <div class="ab-seg ab-seg-credits" id="ab-seg-a-credits" style="width:0%"></div>
-                    <div class="ab-seg ab-seg-rav" id="ab-seg-a-rav" style="width:0%"></div>
-                  </div>
+                <!-- HCSF 35% -->
+                <div class="z2-hcsf">
+                  <div class="z2-hcsf-label">35% HCSF<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Le Haut Conseil de Stabilité Financière limite le taux d'endettement à 35%.</span></span></div>
+                  <div class="z2-hcsf-line"></div>
                 </div>
-                <div class="ab-legend">
-                  <span class="ab-legend-item"><span class="ab-legend-dot" style="background:#6366F1"></span>Crédits</span>
-                  <span class="ab-legend-item"><span class="ab-legend-dot" style="background:var(--surface-3)"></span>Reste à vivre<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Ce qu'il te reste chaque mois après charges et crédits.</span></span></span>
+                <!-- Bar segments -->
+                <div class="z2-bar">
+                  <div class="z2-seg z2-seg--charges" id="z2-seg-charges" style="width:0%"></div>
+                  <div class="z2-seg z2-seg--mensualite" id="z2-seg-mensualite" style="width:0%"></div>
+                  <div class="z2-seg z2-seg--assurance" id="z2-seg-assurance" style="width:0%"></div>
+                  <div class="z2-seg z2-seg--rav" id="z2-seg-rav" style="width:0%"></div>
                 </div>
-                <div class="ab-rav">Reste à vivre : <strong id="ab-rav-a">--</strong></div>
-                <span class="ab-status-badge badge-green" id="ab-status-a">Confortable</span>
               </div>
 
-              <!-- Card B — Avec crédit immo (HCSF max) -->
-              <div class="ab-card ab-card--b" id="ab-card-b">
-                <span class="ab-badge ab-badge--b">Capacité max HCSF</span>
-                <div>
-                  <div class="ab-capital" id="ab-capital">--</div>
-                  <div class="ab-pct-label">capacité d'emprunt<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Capital maximum que la banque peut te prêter selon tes revenus.</span></span></div>
-                </div>
-                <div class="ab-mensualite" id="ab-mensualite">Mensualité<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Montant mensuel remboursé à la banque, intérêts et capital inclus.</span></span> : --</div>
-                <div class="ab-bar-wrap">
-                  <div class="ab-hcsf-label">35% HCSF</div>
-                  <div class="ab-hcsf-line"></div>
-                  <div class="ab-bar" id="ab-bar-b">
-                    <div class="ab-seg ab-seg-credits" id="ab-seg-b-credits" style="width:0%"></div>
-                    <div class="ab-seg ab-seg-mensualite" id="ab-seg-b-mensualite" style="width:0%"></div>
-                    <div class="ab-seg ab-seg-assurance" id="ab-seg-b-assurance" style="width:0%"></div>
-                    <div class="ab-seg ab-seg-rav" id="ab-seg-b-rav" style="width:0%"></div>
-                  </div>
-                </div>
-                <div class="ab-legend">
-                  <span class="ab-legend-item"><span class="ab-legend-dot" style="background:#6366F1"></span>Crédits</span>
-                  <span class="ab-legend-item"><span class="ab-legend-dot" style="background:var(--green)"></span>Mensualité</span>
-                  <span class="ab-legend-item"><span class="ab-legend-dot" style="background:var(--orange)"></span>Assurance</span>
-                  <span class="ab-legend-item"><span class="ab-legend-dot" style="background:var(--surface-3)"></span>Reste à vivre</span>
-                </div>
-                <div class="ab-rav">Reste à vivre : <strong id="ab-rav-b">--</strong></div>
-                <div class="ab-note" id="ab-note">Ce montant est calculé sans apport. L'écran suivant te permettra d'ajouter ton apport. Les banques demandent généralement ~10% d'apport minimum.</div>
+              <!-- Legend -->
+              <div class="z2-legend">
+                <span class="z2-legend-item"><span class="z2-legend-dot" style="background:rgba(139,92,246,0.4)"></span>Charges+Crédits</span>
+                <span class="z2-legend-item"><span class="z2-legend-dot" style="background:#8b5cf6"></span>Mensualité</span>
+                <span class="z2-legend-item"><span class="z2-legend-dot" style="background:rgba(139,92,246,0.6)"></span>Assurance</span>
+                <span class="z2-legend-item"><span class="z2-legend-dot" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15)"></span>Reste à vivre</span>
               </div>
+
+              <!-- 2C: Ligne contextuelle -->
+              <div class="z2-context" id="z2-context">
+                Aujourd'hui tu es à <strong>0%</strong> · <strong>+35%</strong> disponibles avant la limite HCSF
+              </div>
+
+              <!-- 2D: Reste à vivre -->
+              <div class="z2-rav-wrap">
+                <div class="z2-rav" id="z2-rav">
+                  Reste à vivre<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Ce qu'il te reste après charges, crédits et mensualité immo.</span></span> avec crédit immo : <strong id="z2-rav-val">--</strong>
+                </div>
+              </div>
+
+              <!-- 2E: Note pédagogique -->
+              <div class="z2-note">Ce montant est calculé sans apport. L'écran suivant te permettra d'ajouter ton apport et d'obtenir ton budget total. Les banques demandent généralement ~10% minimum.</div>
             </div>
 
             <!-- Alert for zero capacity -->
-            <div class="ab-alert" id="ab-alert" style="display:none;">
-              <span class="ab-alert-icon">⚠️</span>
-              <div class="ab-alert-text" id="ab-alert-text"></div>
+            <div class="z2-alert" id="z2-alert" style="display:none;">
+              <span class="z2-alert-icon">⚠️</span>
+              <div class="z2-alert-text" id="z2-alert-text"></div>
             </div>
 
-            <!-- HYPOTHÈSES compact + popup -->
-            <div class="hypotheses-compact" id="hypotheses-compact">
-              <span class="hypotheses-summary" id="hypotheses-summary">25 ans · 3,0% fixe · assurance ~0 €/mois</span>
-              <button class="hypotheses-btn" onclick="toggleHypothesesPopup()">Modifier ›</button>
-            </div>
-            <div class="hypotheses-popup-wrap">
+            <!-- ═══ ZONE 3 — HYPOTHÈSES PILL ═══ -->
+            <div class="z3-pill-wrap" id="z3-pill-wrap">
+              <div class="hypotheses-pill" id="hypotheses-pill">
+                <span class="pill-star">✦</span>
+                <span id="hypotheses-summary">25 ans · 3,0% fixe · assurance 22 €/mois</span>
+                <button class="modifier-btn" onclick="toggleHypothesesPopup()">Modifier ›</button>
+              </div>
               <div class="hypotheses-popup" id="hypotheses-popup">
                 <div class="hypotheses-popup-title">Modifier les hypothèses</div>
                 <div class="slider-group">
@@ -1571,7 +1584,7 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
                   <label class="field-label" for="input-assurance-mens" style="font-size:0.78rem;">Assurance / mois</label>
                   <div class="euro-wrap"><input type="number" id="input-assurance-mens" class="field-input" placeholder="auto" min="0" inputmode="numeric" style="font-size:0.875rem;" oninput="updateHypotheses()"/><span class="euro-suffix">€</span></div>
                 </div>
-                <button class="hypotheses-close-btn" onclick="toggleHypothesesPopup()">Fermer et recalculer</button>
+                <button class="hypotheses-close-btn" onclick="toggleHypothesesPopup()">Fermer</button>
               </div>
             </div>
 
@@ -2109,9 +2122,10 @@ var S = {
   currentScreen: 0,
   projectType: '', horizon: '3m', status: '', primo: '', propertyType: '',
   codePostal: '', prixM2: 2500, deptName: '',
-  revenus: 0, revenusCompl: 0, autresEntrees: 0, charges: 0, credits: 0, loyer: 0,
-  duree: 25, taux: 3.0, assurance: 0, presetMode: 'equilibre',
-  mensualiteCible: 0, tauxEffort: 0, resteAVivre: 0,
+  revenus: 0, revenusCompl: 0, autresEntrees: 0, charges: 0, chargesFixes: 0, credits: 0, loyer: 0,
+  duree: 25, taux: 3.0, assurance: 0, assuranceEmprunteur: 0, presetMode: 'equilibre',
+  mensualiteCible: 0, mensualiteMax: 0, tauxEffort: 0, tauxEffortA: 0, resteAVivre: 0, resteVivreB: 0,
+  capitalEmpruntable: 0,
   _prefill_revenus: undefined, _prefill_aides: undefined, _prefill_credits: undefined, _prefill_charges: undefined,
   epargneTotale: 0, matelasActuel: 0, matelasCible: 0, aideFamille: 0,
   travauxApport: 0, epargneBloquee: 0, reserve: 0,
@@ -2342,6 +2356,7 @@ function syncStateFromScreen(screenIdx) {
     S.revenusCompl = n(($('input-revenus-compl') || {}).value);
     S.autresEntrees = n(($('input-aides') || {}).value);
     S.charges = n(($('input-charges') || {}).value);
+    S.chargesFixes = n(($('input-charges') || {}).value);
     S.credits = n(($('input-credits') || {}).value);
     S.duree = n(($('slider-duree') || {}).value);
     S.taux = n(($('slider-taux') || {}).value);
@@ -2630,7 +2645,7 @@ function editDiagCard(card, inputId) {
   if (inp) { inp.focus(); inp.select(); }
 }
 function closeDiagCard(inp) {
-  var card = inp.closest('.diag-card');
+  var card = inp.closest('.z1-chip');
   if (card) card.classList.remove('editing');
   updateCapacity();
 }
@@ -2644,12 +2659,22 @@ function toggleHypothesesPopup() {
     setTimeout(function() { popup.style.display = 'none'; }, 250);
   } else {
     popup.style.display = 'flex';
-    // Force reflow for animation
     popup.offsetHeight;
     popup.classList.add('open');
   }
   updateCapacity();
 }
+// Close popup on click outside
+document.addEventListener('click', function(e) {
+  var popup = $('hypotheses-popup');
+  var pill = $('hypotheses-pill');
+  if (!popup || !popup.classList.contains('open')) return;
+  if (!popup.contains(e.target) && !pill.contains(e.target)) {
+    popup.classList.remove('open');
+    setTimeout(function() { popup.style.display = 'none'; }, 250);
+    updateCapacity();
+  }
+});
 
 function updateHypotheses() {
   var duree = n(($('slider-duree') || {}).value);
@@ -2670,42 +2695,42 @@ function updateHypotheses() {
 
 /* ─── SCREEN 2 : DEDUCE DURATION FROM PROJECT TYPE ──────── */
 function deduceDuration() {
-  var pt = S.projectType;
-  if (pt === 'investissement_locatif' || pt === 'residence_secondaire') return 20;
-  if (pt === 'residence_principale' || pt === 'achat_travaux') return 25;
-  // Fallback: if status is propriétaire → likely investment → 20
-  if (S.status === 'proprietaire') return 20;
-  return 25; // default
+  var usage = S.usage || S.projectType || '';
+  var statut = S.statut || S.status || '';
+  if (usage === 'locatif' || usage === 'investissement_locatif' || usage === 'secondaire' || usage === 'residence_secondaire' || statut === 'proprietaire') return 20;
+  return 25;
 }
 
-/* ─── ÉCRAN 2 : CAPACITY (double état A/B) ──────────────── */
+/* ─── ÉCRAN 2 : CAPACITY (architecture unifiée v3) ─────── */
 function updateCapacity() {
   var revenus = n(($('input-revenus') || {}).value) + n(($('input-revenus-compl') || {}).value);
   var autresEntrees = n(($('input-aides') || {}).value);
-  var revenusTotaux = revenus + autresEntrees;
-  var charges = n(($('input-charges') || {}).value);
-  var credits = n(($('input-credits') || {}).value);
+  var totalRevenus = revenus + autresEntrees;
+  var chargesFixes = n(($('input-charges') || {}).value);
+  var creditsCours = n(($('input-credits') || {}).value);
   var duree = n(($('slider-duree') || {}).value);
-  var taux = n(($('slider-taux') || {}).value);
+  var tauxNominal = n(($('slider-taux') || {}).value);
 
   S.revenus = n(($('input-revenus') || {}).value);
   S.revenusCompl = n(($('input-revenus-compl') || {}).value);
   S.autresEntrees = autresEntrees;
-  S.charges = charges; S.credits = credits;
-  S.duree = duree; S.taux = taux;
+  S.charges = chargesFixes; S.credits = creditsCours;
+  S.chargesFixes = chargesFixes;
+  S.duree = duree; S.taux = tauxNominal;
 
   S.assurance = getAutoAssurance();
   var assurance = n(($('input-assurance-mens') || {}).value) || S.assurance;
+  S.assuranceEmprunteur = assurance;
 
-  // Update diag card display values
+  // Update chip display values
   var revVal = $('diag-revenus-val');
   if (revVal) revVal.textContent = fmt(S.revenus);
   var aidesVal = $('diag-aides-val');
   if (aidesVal) aidesVal.textContent = fmt(autresEntrees);
   var credVal = $('diag-credits-val');
-  if (credVal) credVal.textContent = fmt(credits) + '/mois';
+  if (credVal) credVal.textContent = fmt(creditsCours) + '/mois';
   var chVal = $('diag-charges-val');
-  if (chVal) chVal.textContent = fmt(charges) + '/mois';
+  if (chVal) chVal.textContent = fmt(chargesFixes) + '/mois';
 
   // Update badges if values were modified from prefill
   updateDiagBadge('input-revenus', 'badge-revenus', S._prefill_revenus);
@@ -2713,112 +2738,104 @@ function updateCapacity() {
   updateDiagBadge('input-credits', 'badge-credits', S._prefill_credits);
   updateDiagBadge('input-charges', 'badge-charges', S._prefill_charges);
 
+  // Hypotheses summary (always update)
+  var hypSum = $('hypotheses-summary');
+  if (hypSum) {
+    hypSum.textContent = duree + ' ans · ' + tauxNominal.toFixed(1).replace('.', ',') + '% fixe · assurance ' + fmt(assurance) + '/mois';
+  }
+
   // Guard: nothing to compute if no revenue
-  if (revenusTotaux <= 0) {
-    var pctA = $('ab-pct-a'); if (pctA) pctA.textContent = '-- %';
-    var capEl = $('ab-capital'); if (capEl) capEl.textContent = '--';
-    var mensEl = $('ab-mensualite'); if (mensEl) mensEl.innerHTML = 'Mensualité<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Montant mensuel remboursé à la banque, intérêts et capital inclus.</span></span> : --';
-    var ravA = $('ab-rav-a'); if (ravA) ravA.textContent = '--';
-    var ravB = $('ab-rav-b'); if (ravB) ravB.textContent = '--';
-    var alert = $('ab-alert'); if (alert) alert.style.display = 'none';
-    // Hypotheses summary
-    var hypSum = $('hypotheses-summary');
-    if (hypSum) hypSum.textContent = duree + ' ans · ' + taux.toFixed(1).replace('.', ',') + '% fixe · assurance ~' + fmt(assurance) + '/mois';
+  if (totalRevenus <= 0) {
+    var capEl = $('z2-capital'); if (capEl) capEl.textContent = '--';
+    var mensEl = $('z2-mensualite'); if (mensEl) mensEl.innerHTML = 'Mensualité<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Montant mensuel remboursé à la banque, capital + intérêts inclus.</span></span> : --';
+    var ravEl = $('z2-rav-val'); if (ravEl) ravEl.textContent = '--';
+    var ctxEl = $('z2-context'); if (ctxEl) ctxEl.innerHTML = '';
+    var alertEl = $('z2-alert'); if (alertEl) alertEl.style.display = 'none';
     return;
   }
 
-  // ─── ÉTAT A — Sans crédit immo ───
-  var tauxEffortA = (credits / revenusTotaux) * 100;
-  var resteVivreA = revenusTotaux - charges - credits;
+  // État A — Sans crédit immo
+  var tauxEffortA = (creditsCours / totalRevenus) * 100;
+  S.tauxEffortA = tauxEffortA;
 
-  // ─── ÉTAT B — Avec crédit immo (HCSF max) ───
-  var mensualiteMaxImmo = (revenusTotaux * 0.35) - credits - assurance;
+  // État B — Avec crédit immo (HCSF max)
+  var mensualiteMaxImmo = (totalRevenus * 0.35) - creditsCours - assurance;
   var capitalEmpruntable = 0;
   var tauxEffortB = 0;
   var resteVivreB = 0;
 
-  var alertEl = $('ab-alert');
-  var alertTextEl = $('ab-alert-text');
-  var cardB = $('ab-card-b');
+  var alertEl = $('z2-alert');
+  var alertTextEl = $('z2-alert-text');
 
   if (mensualiteMaxImmo <= 0) {
-    // Zero capacity alert
     if (alertEl) {
       alertEl.style.display = 'flex';
-      if (alertTextEl) alertTextEl.textContent = 'Tes crédits existants (' + fmt(credits) + '/mois) absorbent déjà l\'intégralité de ta capacité HCSF. Pour emprunter, il faudra rembourser un crédit en cours ou augmenter tes revenus.';
+      if (alertTextEl) alertTextEl.textContent = 'Tes crédits existants (' + fmt(creditsCours) + '/mois) absorbent déjà l\'intégralité de ta capacité HCSF. Pour emprunter, il faudra rembourser un crédit en cours ou augmenter tes revenus.';
     }
     mensualiteMaxImmo = 0;
   } else {
     if (alertEl) alertEl.style.display = 'none';
-    var r = taux / 12 / 100;
+    var r = tauxNominal / 12 / 100;
     var nb = duree * 12;
     if (r > 0) {
       capitalEmpruntable = mensualiteMaxImmo * ((1 - Math.pow(1 + r, -nb)) / r);
     } else {
       capitalEmpruntable = mensualiteMaxImmo * nb;
     }
-    tauxEffortB = ((credits + mensualiteMaxImmo + assurance) / revenusTotaux) * 100;
-    resteVivreB = revenusTotaux - charges - credits - mensualiteMaxImmo - assurance;
+    tauxEffortB = ((creditsCours + mensualiteMaxImmo + assurance) / totalRevenus) * 100;
+    resteVivreB = totalRevenus - chargesFixes - creditsCours - mensualiteMaxImmo - assurance;
   }
 
-  // Keep compat with existing state
+  // Compat state
   S.mensualiteCible = mensualiteMaxImmo;
+  S.mensualiteMax = mensualiteMaxImmo;
   S.tauxEffort = tauxEffortB;
   S.resteAVivre = resteVivreB;
+  S.resteVivreB = resteVivreB;
+  S.capitalEmpruntable = capitalEmpruntable;
 
-  // ─── Update Card A ───
-  var pctAEl = $('ab-pct-a');
-  if (pctAEl) pctAEl.textContent = (Math.round(tauxEffortA * 10) / 10) + ' %';
+  // ─── Update ZONE 2 hero ───
+  var capEl2 = $('z2-capital');
+  if (capEl2) capEl2.textContent = capitalEmpruntable > 0 ? Math.round(capitalEmpruntable).toLocaleString('fr-FR') + ' €' : '--';
 
-  var statusA = $('ab-status-a');
-  if (statusA) {
-    statusA.className = 'ab-status-badge';
-    if (tauxEffortA < 30) { statusA.textContent = 'Confortable'; statusA.classList.add('badge-green'); }
-    else if (tauxEffortA <= 35) { statusA.textContent = 'Limite HCSF'; statusA.classList.add('badge-orange'); }
-    else { statusA.textContent = 'Trop tendu'; statusA.classList.add('badge-red'); }
-  }
+  var mensEl2 = $('z2-mensualite');
+  if (mensEl2) mensEl2.innerHTML = 'Mensualité<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Montant mensuel remboursé à la banque, capital + intérêts inclus.</span></span> : ' + (mensualiteMaxImmo > 0 ? fmt(Math.round(mensualiteMaxImmo)) + '/mois' : '--');
 
-  var ravAEl = $('ab-rav-a');
-  if (ravAEl) ravAEl.textContent = fmt(resteVivreA);
+  // ─── Premium bar segments ───
+  var pctCharges = Math.max(0, (chargesFixes + creditsCours) / totalRevenus * 100);
+  var pctMens = Math.max(0, mensualiteMaxImmo / totalRevenus * 100);
+  var pctAss = Math.max(0, assurance / totalRevenus * 100);
+  var pctRav = Math.max(0, resteVivreB / totalRevenus * 100);
+  // Ensure total doesn't exceed 100
+  var total = pctCharges + pctMens + pctAss + pctRav;
+  if (total > 100) { pctRav = Math.max(0, 100 - pctCharges - pctMens - pctAss); }
 
-  // Bar A segments (credits vs reste)
-  var pctCreditsA = Math.max(0, credits / revenusTotaux * 100);
-  var pctRavA = Math.max(0, 100 - pctCreditsA);
-  var segACred = $('ab-seg-a-credits');
-  var segARav = $('ab-seg-a-rav');
-  if (segACred) segACred.style.width = pctCreditsA + '%';
-  if (segARav) segARav.style.width = pctRavA + '%';
+  var segCharges = $('z2-seg-charges');
+  var segMens = $('z2-seg-mensualite');
+  var segAss = $('z2-seg-assurance');
+  var segRav = $('z2-seg-rav');
+  if (segCharges) segCharges.style.width = pctCharges + '%';
+  if (segMens) segMens.style.width = pctMens + '%';
+  if (segAss) segAss.style.width = pctAss + '%';
+  if (segRav) segRav.style.width = pctRav + '%';
 
-  // ─── Update Card B ───
-  var capEl2 = $('ab-capital');
-  if (capEl2) capEl2.textContent = capitalEmpruntable > 0 ? fmt(Math.round(capitalEmpruntable)) : '--';
+  // ─── Marker "Tu es ici" ───
+  var marker = $('z2-marker');
+  var markerLabel = $('z2-marker-label');
+  if (marker) marker.style.left = Math.min(tauxEffortA, 100) + '%';
+  if (markerLabel) markerLabel.textContent = '● ' + Math.round(tauxEffortA * 10) / 10 + '% aujourd\'hui';
 
-  var mensEl2 = $('ab-mensualite');
-  if (mensEl2) mensEl2.innerHTML = 'Mensualité<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Montant mensuel remboursé à la banque, intérêts et capital inclus.</span></span> : ' + (mensualiteMaxImmo > 0 ? fmt(Math.round(mensualiteMaxImmo)) + '/mois' : '--');
+  // ─── Context line ───
+  var margeDisponible = Math.max(0, 35 - tauxEffortA);
+  var ctxEl = $('z2-context');
+  if (ctxEl) ctxEl.innerHTML = 'Aujourd\'hui tu es à <strong>' + (Math.round(tauxEffortA * 10) / 10) + '%</strong><span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Part de tes revenus consacrée au remboursement de crédits.</span></span> · <strong>+' + (Math.round(margeDisponible * 10) / 10) + '%</strong> disponibles avant la limite HCSF';
 
-  var ravBEl = $('ab-rav-b');
-  if (ravBEl) ravBEl.textContent = mensualiteMaxImmo > 0 ? fmt(Math.round(resteVivreB)) : '--';
-
-  // Bar B segments
-  if (mensualiteMaxImmo > 0) {
-    var pctCreditsB = Math.max(0, credits / revenusTotaux * 100);
-    var pctMensB = Math.max(0, mensualiteMaxImmo / revenusTotaux * 100);
-    var pctAssB = Math.max(0, assurance / revenusTotaux * 100);
-    var pctRavB = Math.max(0, 100 - pctCreditsB - pctMensB - pctAssB);
-    var segBCred = $('ab-seg-b-credits');
-    var segBMens = $('ab-seg-b-mensualite');
-    var segBAss = $('ab-seg-b-assurance');
-    var segBRav = $('ab-seg-b-rav');
-    if (segBCred) segBCred.style.width = pctCreditsB + '%';
-    if (segBMens) segBMens.style.width = pctMensB + '%';
-    if (segBAss) segBAss.style.width = pctAssB + '%';
-    if (segBRav) segBRav.style.width = pctRavB + '%';
-  }
-
-  // Hypotheses summary
-  var hypSum = $('hypotheses-summary');
-  if (hypSum) {
-    hypSum.textContent = duree + ' ans · ' + taux.toFixed(1).replace('.', ',') + '% fixe · assurance ~' + fmt(assurance) + '/mois';
+  // ─── Reste à vivre ───
+  var ravValEl = $('z2-rav-val');
+  var ravWrap = $('z2-rav');
+  if (ravValEl) ravValEl.textContent = mensualiteMaxImmo > 0 ? fmt(Math.round(resteVivreB)) : '--';
+  if (ravWrap) {
+    ravWrap.classList.toggle('warning', resteVivreB > 0 && resteVivreB < 800);
   }
 }
 
@@ -2829,7 +2846,7 @@ function updateDiagBadge(inputId, badgeId, prefillVal) {
   var currentVal = n(inp.value);
   if (prefillVal !== undefined && currentVal !== prefillVal && currentVal > 0) {
     badge.textContent = 'Modifié';
-    badge.className = 'diag-card-badge diag-badge-modifie';
+    badge.className = 'z1-chip-badge z1-badge-modifie';
   }
 }
 
