@@ -1435,6 +1435,27 @@ html:not(.dark) .bpc-synthese-logement {
 .bpc-logement-label { font-size:0.6rem; color:var(--text-faint); font-weight:600; }
 .bpc-logement-surface { font-size:0.65rem; color:var(--text); font-weight:500; }
 html.dark .bpc-logement-surface { color:var(--v3-text); }
+/* Apport hint badge */
+.syn-apport-hint {
+  display:inline-flex;
+  align-items:center;
+  font-size:0.62rem;
+  font-weight:500;
+  border-radius:9999px;
+  padding:2px 8px;
+  margin-top:4px;
+}
+.syn-apport-hint.pending {
+  background:rgba(245,158,11,0.12);
+  color:#f59e0b;
+  border:1px solid rgba(245,158,11,0.25);
+}
+.syn-apport-hint.warning {
+  background:rgba(239,68,68,0.12);
+  color:#ef4444;
+  border:1px solid rgba(239,68,68,0.25);
+}
+
 .bpc-logement-status {
   font-size:0.6rem; color:var(--accent-strong);
   margin-top:0.15rem;
@@ -2327,7 +2348,7 @@ html.dark .cs-logement-status { color:var(--v3-accent-strong); }
           </div>
 
           <!-- Module synthèse live -->
-          <div class="bpc-synthese">
+          <div class="bpc-synthese" style="display:none;">
             <div class="bpc-synthese-title">● TON PROJET EN CHIFFRES</div>
 
             <div class="bpc-synthese-line" id="syn-emprunt">
@@ -2350,7 +2371,8 @@ html.dark .cs-logement-status { color:var(--v3-accent-strong); }
               <div class="bpc-synthese-icon">🏠</div>
               <div class="bpc-synthese-content">
                 <div class="bpc-synthese-label">Budget total</div>
-                <div class="bpc-synthese-value">—  <span class="bpc-step-hint">étape 3+</span></div>
+                <div class="bpc-synthese-value" id="syn-budget-val">—  <span class="bpc-step-hint">étape 3+</span></div>
+                <span id="syn-apport-hint" class="syn-apport-hint" style="display:none;"></span>
               </div>
             </div>
 
@@ -2638,6 +2660,12 @@ function goToScreen(idx) {
   var target = $('screen-' + idx);
   if (target) target.classList.add('active');
   S.currentScreen = idx;
+
+  // Show/hide synthèse panel based on screen
+  var synthese = document.querySelector('.bpc-synthese');
+  if (synthese) {
+    synthese.style.display = (idx >= 2) ? 'block' : 'none';
+  }
 
   updateProgressPanel(idx);
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3227,15 +3255,31 @@ function updateSynthesePanel() {
     if (apportLine) apportLine.classList.remove('locked');
   }
 
-  // Budget total (emprunt + apport)
-  if (S.capitalEmpruntable > 0 && S.apport > 0) {
-    var budgetTotal = S.capitalEmpruntable + S.apport;
-    var budgetEl = document.querySelector('#syn-budget .bpc-synthese-value');
+  // Budget total = capitalEmpruntable + apport (dès écran 2, même sans apport)
+  if (S.capitalEmpruntable > 0) {
+    var budgetTotal = S.capitalEmpruntable + (S.apport || 0);
+    var budgetEl = $('syn-budget-val');
     if (budgetEl) budgetEl.textContent = fmt(budgetTotal);
     var budgetLine = $('syn-budget');
     if (budgetLine) budgetLine.classList.remove('locked');
 
-    // Logements
+    // Apport hint badge
+    var apportHintEl = $('syn-apport-hint');
+    if (apportHintEl) {
+      if (!S.apport || S.apport === 0) {
+        apportHintEl.textContent = '\u26A0 Apport \u00e0 compl\u00e9ter';
+        apportHintEl.className = 'syn-apport-hint pending';
+        apportHintEl.style.display = 'inline-flex';
+      } else if (S.apport < budgetTotal * 0.05) {
+        apportHintEl.textContent = '\u26A0 Apport peut \u00eatre trop faible (< 5% recommand\u00e9)';
+        apportHintEl.className = 'syn-apport-hint warning';
+        apportHintEl.style.display = 'inline-flex';
+      } else {
+        apportHintEl.style.display = 'none';
+      }
+    }
+
+    // Logements (actifs dès écran 2 avec budget = capitalEmpruntable seul ou + apport)
     var prixM2 = S.prixM2 || 2500;
     var surfaces = { studio: 30, '2p': 50, '3p': 70 };
     var ids = ['studio', '2p', '3p'];
@@ -3248,7 +3292,7 @@ function updateSynthesePanel() {
       card.classList.remove('locked', 'in-budget', 'out-budget');
       if (prixLogement <= budgetTotal) {
         card.classList.add('in-budget');
-        if (statusEl) statusEl.textContent = '✓ Atteignable';
+        if (statusEl) statusEl.textContent = '\u2713 Atteignable';
       } else {
         card.classList.add('out-budget');
         if (statusEl) statusEl.textContent = 'Hors budget';
