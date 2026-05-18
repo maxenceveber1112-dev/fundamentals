@@ -1252,6 +1252,194 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
   .z1-row--primary, .z1-row--secondary { grid-template-columns:1fr; }
   .z2-capital { font-size:2.25rem; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 2 v4 — PILLS FUSION (2 grandes pills)
+══════════════════════════════════════════════════════════════ */
+.z1-pill {
+  position:relative; overflow:hidden;
+  background:rgba(139,92,246,0.05); border:1.5px solid rgba(139,92,246,0.15);
+  border-radius:1rem; padding:1.25rem 1.125rem;
+  transition:all 0.2s ease;
+}
+.z1-pill:hover { transform:scale(1.01); box-shadow:var(--shadow-hover); border-color:rgba(139,92,246,0.3); }
+.z1-pill-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; }
+.z1-pill-label { font-size:0.78rem; font-weight:600; color:var(--text-secondary); }
+.z1-pill-badge {
+  font-size:0.6rem; font-weight:700; letter-spacing:0.06em;
+  padding:0.15rem 0.5rem; border-radius:9999px; white-space:nowrap;
+}
+.z1-pill-badge-budget { color:#7c3aed; background:rgba(139,92,246,0.15); }
+html.dark .z1-pill-badge-budget { color:#C4B5FD; background:rgba(196,181,253,0.18); }
+.z1-pill-badge-modifie { color:#d97706; background:rgba(217,119,6,0.12); }
+
+.z1-pill-main {
+  display:flex; align-items:center; gap:0.5rem; cursor:pointer;
+}
+.z1-pill-value {
+  font-family:var(--font-display); font-size:2rem; font-weight:400;
+  color:var(--text); line-height:1.1; transition:opacity 0.15s ease;
+}
+.z1-pill-input {
+  display:none; width:100%; border:none; background:transparent;
+  font-family:var(--font-display); font-size:2rem; font-weight:400;
+  color:var(--accent-strong); outline:none; line-height:1.1;
+}
+html.dark .z1-pill-input { color:var(--v3-accent-strong); }
+.z1-pill.editing .z1-pill-value { display:none; }
+.z1-pill.editing .z1-pill-input { display:block; }
+.z1-pill.editing { border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+
+.z1-pill-sub {
+  display:flex; align-items:center; gap:0.4rem;
+  font-size:0.75rem; color:var(--text-faint); margin-top:0.4rem;
+  line-height:1.4;
+}
+.z1-pill-sub-link {
+  color:var(--accent-strong); cursor:pointer; font-weight:500;
+  background:none; border:none; font:inherit; font-size:0.72rem;
+  padding:0; text-decoration:underline; text-underline-offset:2px;
+}
+html.dark .z1-pill-sub-link { color:var(--v3-accent-strong); }
+.z1-pill-sub-link:hover { opacity:0.8; }
+
+.z1-pill-expand {
+  max-height:0; overflow:hidden; transition:max-height 0.3s ease, padding 0.3s ease;
+  padding:0 0;
+}
+.z1-pill-expand.open {
+  max-height:80px; padding:0.5rem 0 0;
+}
+.z1-pill-expand .field-input {
+  font-size:0.875rem; padding:0.5rem 0.75rem;
+}
+
+.z1-pill-watermark {
+  position:absolute; right:-10px; bottom:-10px;
+  opacity:0.07; width:80px; height:80px; pointer-events:none;
+  color:var(--text);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 2 v4 — CARD DASHBOARD (Zone 2 wrapper)
+══════════════════════════════════════════════════════════════ */
+.z2-dashboard-card {
+  position:relative; overflow:hidden;
+  background:linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(139,92,246,0.05) 100%);
+  border:1px solid rgba(139,92,246,0.2);
+  border-radius:20px;
+  padding:1.5rem;
+  margin-top:0.75rem;
+  box-shadow:0 2px 12px rgba(99,102,241,0.06);
+}
+.z2-dashboard-card-kicker {
+  font-size:0.6875rem; font-weight:600;
+  letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--accent-strong);
+  display:flex; align-items:center; gap:0.4rem;
+  margin-bottom:0.25rem;
+}
+html.dark .z2-dashboard-card-kicker { color:var(--v3-accent-strong); }
+.z2-dashboard-card-kicker .kicker-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--accent-strong); flex-shrink:0;
+}
+html.dark .z2-dashboard-card-kicker .kicker-dot { background:var(--v3-accent-strong); }
+.z2-dashboard-card-bg {
+  position:absolute; right:10px; top:10px;
+  opacity:0.05; width:120px; height:120px; pointer-events:none;
+  color:var(--text);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PANEL DROIT — COMPACT STEPS + SYNTHÈSE
+══════════════════════════════════════════════════════════════ */
+/* Compact steps override */
+.bpc-steps.compact { gap:0.2rem; margin-bottom:1rem; }
+.bpc-steps.compact .bpc-step {
+  padding:0.25rem 0.5rem; font-size:0.75rem;
+}
+.bpc-steps.compact .bpc-step-num {
+  width:18px; height:18px; font-size:9px;
+}
+.bpc-steps.compact .bpc-step-label { font-size:0.72rem; }
+.bpc-steps.compact .bpc-step.active .bpc-step-label { font-size:0.75rem; }
+
+/* Synthèse module */
+.bpc-synthese {
+  margin-top:1.5rem;
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding-top:1rem;
+}
+html:not(.dark) .bpc-synthese { border-top-color:var(--v3-border-subtle); }
+
+.bpc-synthese-title {
+  font-size:0.65rem; font-weight:700;
+  letter-spacing:0.08em;
+  color:var(--accent-strong, #8b5cf6);
+  margin-bottom:0.75rem;
+  text-transform:uppercase;
+}
+html.dark .bpc-synthese-title { color:var(--v3-accent-strong); }
+
+.bpc-synthese-line {
+  display:flex; align-items:center; gap:0.75rem;
+  padding:0.5rem 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  transition:opacity 0.3s;
+}
+html:not(.dark) .bpc-synthese-line { border-bottom-color:var(--v3-border-subtle); }
+.bpc-synthese-line.locked { opacity:0.4; }
+
+.bpc-synthese-icon { font-size:1.1rem; width:24px; text-align:center; }
+
+.bpc-synthese-label {
+  font-size:0.7rem; color:var(--text-faint); line-height:1.2;
+}
+.bpc-synthese-value {
+  font-size:0.95rem; font-weight:700;
+  color:var(--text); line-height:1.2;
+}
+html.dark .bpc-synthese-value { color:var(--v3-text); }
+
+.bpc-step-hint {
+  font-size:0.65rem; color:var(--accent-strong);
+  font-weight:400; cursor:pointer;
+}
+html.dark .bpc-step-hint { color:var(--v3-accent-strong); }
+
+.bpc-synthese-logements {
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:0.4rem; margin-top:0.75rem;
+}
+.bpc-synthese-logement {
+  background:rgba(255,255,255,0.03);
+  border-radius:10px; padding:0.5rem 0.3rem;
+  text-align:center;
+  border:1px solid rgba(255,255,255,0.06);
+  transition:all 0.3s;
+}
+html:not(.dark) .bpc-synthese-logement {
+  background:var(--surface-2);
+  border-color:var(--border-subtle);
+}
+.bpc-synthese-logement.locked { opacity:0.35; }
+.bpc-synthese-logement.in-budget {
+  border-color:rgba(139,92,246,0.4);
+  background:rgba(139,92,246,0.08);
+  opacity:1;
+}
+.bpc-synthese-logement.out-budget { opacity:0.3; }
+
+.bpc-logement-icon { font-size:1.3rem; margin-bottom:0.2rem; }
+.bpc-logement-label { font-size:0.6rem; color:var(--text-faint); font-weight:600; }
+.bpc-logement-surface { font-size:0.65rem; color:var(--text); font-weight:500; }
+html.dark .bpc-logement-surface { color:var(--v3-text); }
+.bpc-logement-status {
+  font-size:0.6rem; color:var(--accent-strong);
+  margin-top:0.15rem;
+}
+html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
 </style>
 </head>
 <body data-brick-name="Achat immobilier">
@@ -1447,54 +1635,52 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
             <p class="brick-subtitle">Tes données budget, modifiables en un clic. Le diagnostic se recalcule en temps réel.</p>
 
-            <!-- ═══ ZONE 1 — DONNÉES ═══ -->
-            <!-- Niveau 1 : Revenus + Crédits (grands) -->
+            <!-- ═══ ZONE 1 — DONNÉES (2 grandes pills fusionnées) ═══ -->
             <div class="z1-row z1-row--primary">
-              <div class="z1-chip z1-chip--lg" id="diag-revenus" onclick="editDiagCard(this,'input-revenus')">
-                <svg class="z1-chip-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <div class="z1-chip-header">
-                  <span class="z1-chip-label">Revenus du foyer</span>
-                  <span class="z1-chip-badge z1-badge-budget" id="badge-revenus">Budget</span>
+              <!-- PILL REVENUS -->
+              <div class="z1-pill" id="pill-revenus">
+                <svg class="z1-pill-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <div class="z1-pill-header">
+                  <span class="z1-pill-label">Revenus du foyer</span>
+                  <span class="z1-pill-badge z1-pill-badge-budget" id="badge-revenus">Budget</span>
                 </div>
-                <div class="z1-chip-value" id="diag-revenus-val">0 €</div>
-                <input type="number" class="z1-chip-input" id="input-revenus" min="0" inputmode="numeric" placeholder="ex : 2 500" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
-                <div class="z1-chip-desc">Base de calcul de capacité.</div>
+                <div class="z1-pill-main" onclick="editPill(this.parentElement,'input-revenus')">
+                  <span class="z1-pill-value" id="pill-revenus-val">0 €</span>
+                  <input type="number" class="z1-pill-input" id="input-revenus" min="0" inputmode="numeric" placeholder="ex : 2 500" onblur="closePill(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                </div>
+                <div class="z1-pill-sub" id="pill-revenus-sub">
+                  <span id="pill-aides-text">+ 0 € d'aides</span>
+                  <button class="z1-pill-sub-link" onclick="togglePillExpand(event,'pill-revenus-expand')">modifier</button>
+                </div>
+                <div class="z1-pill-expand" id="pill-revenus-expand">
+                  <div class="euro-wrap">
+                    <input type="number" id="input-aides" class="field-input" placeholder="Aides mensuelles (APL, allocations...)" min="0" inputmode="numeric"/>
+                    <span class="euro-suffix">€</span>
+                  </div>
+                </div>
               </div>
 
-              <div class="z1-chip z1-chip--lg" id="diag-credits" onclick="editDiagCard(this,'input-credits')">
-                <svg class="z1-chip-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
-                <div class="z1-chip-header">
-                  <span class="z1-chip-label">Crédits existants</span>
-                  <span class="z1-chip-badge z1-badge-budget" id="badge-credits">Budget</span>
+              <!-- PILL CRÉDITS -->
+              <div class="z1-pill" id="pill-credits">
+                <svg class="z1-pill-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                <div class="z1-pill-header">
+                  <span class="z1-pill-label">Crédits existants</span>
+                  <span class="z1-pill-badge z1-pill-badge-budget" id="badge-credits">Budget</span>
                 </div>
-                <div class="z1-chip-value" id="diag-credits-val">0 €/mois</div>
-                <input type="number" class="z1-chip-input" id="input-credits" min="0" inputmode="numeric" placeholder="ex : 200" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
-                <div class="z1-chip-desc">Réduit directement ta capacité d'emprunt.</div>
-              </div>
-            </div>
-
-            <!-- Niveau 2 : Aides + Charges (compacts) -->
-            <div class="z1-row z1-row--secondary">
-              <div class="z1-chip z1-chip--sm" id="diag-aides" onclick="editDiagCard(this,'input-aides')">
-                <svg class="z1-chip-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                <div class="z1-chip-header">
-                  <span class="z1-chip-label">Autres entrées / Aides</span>
-                  <span class="z1-chip-badge z1-badge-optionnel" id="badge-aides">Optionnel</span>
+                <div class="z1-pill-main" onclick="editPill(this.parentElement,'input-credits')">
+                  <span class="z1-pill-value" id="pill-credits-val">0 €/mois</span>
+                  <input type="number" class="z1-pill-input" id="input-credits" min="0" inputmode="numeric" placeholder="ex : 200" onblur="closePill(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
                 </div>
-                <div class="z1-chip-value" id="diag-aides-val">0 €</div>
-                <input type="number" class="z1-chip-input" id="input-aides" min="0" inputmode="numeric" placeholder="0" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
-                <div class="z1-chip-desc">APL, allocations, revenus locatifs...</div>
-              </div>
-
-              <div class="z1-chip z1-chip--sm" id="diag-charges" onclick="editDiagCard(this,'input-charges')">
-                <svg class="z1-chip-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                <div class="z1-chip-header">
-                  <span class="z1-chip-label">Charges fixes</span>
-                  <span class="z1-chip-badge z1-badge-budget" id="badge-charges">Budget</span>
+                <div class="z1-pill-sub" id="pill-credits-sub">
+                  <span id="pill-charges-text">+ 0 € de charges fixes</span>
+                  <button class="z1-pill-sub-link" onclick="togglePillExpand(event,'pill-credits-expand')">modifier</button>
                 </div>
-                <div class="z1-chip-value" id="diag-charges-val">0 €/mois</div>
-                <input type="number" class="z1-chip-input" id="input-charges" min="0" inputmode="numeric" placeholder="ex : 800" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
-                <div class="z1-chip-desc">Sert à estimer ton reste à vivre.</div>
+                <div class="z1-pill-expand" id="pill-credits-expand">
+                  <div class="euro-wrap">
+                    <input type="number" id="input-charges" class="field-input" placeholder="Charges fixes mensuelles" min="0" inputmode="numeric"/>
+                    <span class="euro-suffix">€</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1502,7 +1688,10 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
             <input type="hidden" id="input-revenus-compl" value="0"/>
             <input type="hidden" id="input-loyer" value="0"/>
 
-            <!-- ═══ ZONE 2 — HERO DIAGNOSTIC ═══ -->
+            <!-- ═══ ZONE 2 — HERO DIAGNOSTIC (card dashboard) ═══ -->
+            <div class="z2-dashboard-card">
+              <div class="z2-dashboard-card-kicker"><span class="kicker-dot"></span> DIAGNOSTIC CAPACITÉ</div>
+              <svg class="z2-dashboard-card-bg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm3-4H7v-2h8v2zm0-4H7V7h8v2z"/></svg>
             <div class="z2-hero" id="z2-hero">
               <!-- 2A: Chiffre hero -->
               <div class="z2-hero-label">
@@ -1556,6 +1745,7 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
               <!-- 2E: Note pédagogique -->
               <div class="z2-note">Ce montant est calculé sans apport. L'écran suivant te permettra d'ajouter ton apport et d'obtenir ton budget total. Les banques demandent généralement ~10% minimum.</div>
             </div>
+            </div><!-- /z2-dashboard-card -->
 
             <!-- Alert for zero capacity -->
             <div class="z2-alert" id="z2-alert" style="display:none;">
@@ -2009,8 +2199,8 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
             </svg>
           </div>
 
-          <!-- Steps list -->
-          <div class="bpc-steps" id="bpc-steps">
+          <!-- Steps list (compact) -->
+          <div class="bpc-steps compact" id="bpc-steps">
             <div class="bpc-step active" data-screen="0">
               <div class="bpc-step-num">0</div>
               <div class="bpc-step-label">Introduction</div>
@@ -2046,6 +2236,56 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
             <div class="bpc-step" data-screen="8">
               <div class="bpc-step-num">✓</div>
               <div class="bpc-step-label">C'est noté.</div>
+            </div>
+          </div>
+
+          <!-- Module synthèse live -->
+          <div class="bpc-synthese">
+            <div class="bpc-synthese-title">● TON PROJET EN CHIFFRES</div>
+
+            <div class="bpc-synthese-line" id="syn-emprunt">
+              <div class="bpc-synthese-icon">🏦</div>
+              <div class="bpc-synthese-content">
+                <div class="bpc-synthese-label">Capacité d'emprunt</div>
+                <div class="bpc-synthese-value" id="syn-emprunt-val">—</div>
+              </div>
+            </div>
+
+            <div class="bpc-synthese-line locked" id="syn-apport">
+              <div class="bpc-synthese-icon">💰</div>
+              <div class="bpc-synthese-content">
+                <div class="bpc-synthese-label">Ton apport</div>
+                <div class="bpc-synthese-value">—  <span class="bpc-step-hint">étape 3</span></div>
+              </div>
+            </div>
+
+            <div class="bpc-synthese-line locked" id="syn-budget">
+              <div class="bpc-synthese-icon">🏠</div>
+              <div class="bpc-synthese-content">
+                <div class="bpc-synthese-label">Budget total</div>
+                <div class="bpc-synthese-value">—  <span class="bpc-step-hint">étape 3+</span></div>
+              </div>
+            </div>
+
+            <div class="bpc-synthese-logements" id="syn-logements">
+              <div class="bpc-synthese-logement locked" id="syn-studio">
+                <div class="bpc-logement-icon">🏢</div>
+                <div class="bpc-logement-label">Studio / T1</div>
+                <div class="bpc-logement-surface">≈ 30 m²</div>
+                <div class="bpc-logement-status" id="syn-studio-status">—</div>
+              </div>
+              <div class="bpc-synthese-logement locked" id="syn-2p">
+                <div class="bpc-logement-icon">🏠</div>
+                <div class="bpc-logement-label">2 pièces</div>
+                <div class="bpc-logement-surface">≈ 50 m²</div>
+                <div class="bpc-logement-status" id="syn-2p-status">—</div>
+              </div>
+              <div class="bpc-synthese-logement locked" id="syn-3p">
+                <div class="bpc-logement-icon">🏡</div>
+                <div class="bpc-logement-label">3 pièces</div>
+                <div class="bpc-logement-surface">≈ 70 m²</div>
+                <div class="bpc-logement-status" id="syn-3p-status">—</div>
+              </div>
             </div>
           </div>
 
@@ -2360,6 +2600,7 @@ function syncStateFromScreen(screenIdx) {
     S.credits = n(($('input-credits') || {}).value);
     S.duree = n(($('slider-duree') || {}).value);
     S.taux = n(($('slider-taux') || {}).value);
+    updateSynthesePanel();
   }
   if (screenIdx === 3) {
     S.epargneTotale = n(($('input-epargne-totale') || {}).value);
@@ -2369,6 +2610,7 @@ function syncStateFromScreen(screenIdx) {
     S.travauxApport = n(($('input-travaux-apport') || {}).value);
     S.epargneBloquee = n(($('input-epargne-bloquee') || {}).value);
     S.reserve = n(($('input-reserve') || {}).value);
+    updateSynthesePanel();
   }
   if (screenIdx === 4) {
     S.prixBien = n(($('input-prix-bien') || {}).value);
@@ -2650,6 +2892,29 @@ function closeDiagCard(inp) {
   updateCapacity();
 }
 
+/* ─── SCREEN 2 v4 : PILL INLINE EDIT ────────────────────── */
+function editPill(pill, inputId) {
+  pill.classList.add('editing');
+  var inp = $(inputId);
+  if (inp) { inp.focus(); inp.select(); }
+}
+function closePill(inp) {
+  var pill = inp.closest('.z1-pill');
+  if (pill) pill.classList.remove('editing');
+  updateCapacity();
+}
+function togglePillExpand(e, expandId) {
+  e.stopPropagation();
+  var el = $(expandId);
+  if (el) {
+    el.classList.toggle('open');
+    if (el.classList.contains('open')) {
+      var inp = el.querySelector('input');
+      if (inp) inp.focus();
+    }
+  }
+}
+
 /* ─── SCREEN 2 : HYPOTHESES POPUP ───────────────────────── */
 function toggleHypothesesPopup() {
   var popup = $('hypotheses-popup');
@@ -2722,21 +2987,19 @@ function updateCapacity() {
   var assurance = n(($('input-assurance-mens') || {}).value) || S.assurance;
   S.assuranceEmprunteur = assurance;
 
-  // Update chip display values
-  var revVal = $('diag-revenus-val');
+  // Update pill display values
+  var revVal = $('pill-revenus-val');
   if (revVal) revVal.textContent = fmt(S.revenus);
-  var aidesVal = $('diag-aides-val');
-  if (aidesVal) aidesVal.textContent = fmt(autresEntrees);
-  var credVal = $('diag-credits-val');
+  var aidesText = $('pill-aides-text');
+  if (aidesText) aidesText.textContent = autresEntrees > 0 ? '+ ' + fmt(autresEntrees) + ' d\'aides' : '+ 0 € d\'aides';
+  var credVal = $('pill-credits-val');
   if (credVal) credVal.textContent = fmt(creditsCours) + '/mois';
-  var chVal = $('diag-charges-val');
-  if (chVal) chVal.textContent = fmt(chargesFixes) + '/mois';
+  var chText = $('pill-charges-text');
+  if (chText) chText.textContent = '+ ' + fmt(chargesFixes) + ' de charges fixes';
 
   // Update badges if values were modified from prefill
-  updateDiagBadge('input-revenus', 'badge-revenus', S._prefill_revenus);
-  updateDiagBadge('input-aides', 'badge-aides', S._prefill_aides);
-  updateDiagBadge('input-credits', 'badge-credits', S._prefill_credits);
-  updateDiagBadge('input-charges', 'badge-charges', S._prefill_charges);
+  updatePillBadge('input-revenus', 'badge-revenus', S._prefill_revenus);
+  updatePillBadge('input-credits', 'badge-credits', S._prefill_credits);
 
   // Hypotheses summary (always update)
   var hypSum = $('hypotheses-summary');
@@ -2837,6 +3100,68 @@ function updateCapacity() {
   if (ravWrap) {
     ravWrap.classList.toggle('warning', resteVivreB > 0 && resteVivreB < 800);
   }
+
+  // Update synthèse panel
+  updateSynthesePanel();
+}
+
+function updatePillBadge(inputId, badgeId, prefillVal) {
+  var inp = $(inputId);
+  var badge = $(badgeId);
+  if (!inp || !badge) return;
+  var currentVal = n(inp.value);
+  if (prefillVal !== undefined && currentVal !== prefillVal && currentVal > 0) {
+    badge.textContent = 'Modifié';
+    badge.className = 'z1-pill-badge z1-pill-badge-modifie';
+  }
+}
+
+/* ─── SYNTHÈSE PANEL (colonne droite) ───────────────────── */
+function updateSynthesePanel() {
+  // Capacité emprunt (dès écran 2)
+  if (S.capitalEmpruntable && S.capitalEmpruntable > 0) {
+    var el = $('syn-emprunt-val');
+    if (el) el.textContent = fmt(S.capitalEmpruntable);
+    var line = $('syn-emprunt');
+    if (line) line.classList.remove('locked');
+  }
+
+  // Apport (écran 3)
+  if (S.apport && S.apport > 0) {
+    var apportEl = document.querySelector('#syn-apport .bpc-synthese-value');
+    if (apportEl) apportEl.textContent = fmt(S.apport);
+    var apportLine = $('syn-apport');
+    if (apportLine) apportLine.classList.remove('locked');
+  }
+
+  // Budget total (emprunt + apport)
+  if (S.capitalEmpruntable > 0 && S.apport > 0) {
+    var budgetTotal = S.capitalEmpruntable + S.apport;
+    var budgetEl = document.querySelector('#syn-budget .bpc-synthese-value');
+    if (budgetEl) budgetEl.textContent = fmt(budgetTotal);
+    var budgetLine = $('syn-budget');
+    if (budgetLine) budgetLine.classList.remove('locked');
+
+    // Logements
+    var prixM2 = S.prixM2 || 2500;
+    var surfaces = { studio: 30, '2p': 50, '3p': 70 };
+    var ids = ['studio', '2p', '3p'];
+    ids.forEach(function(id) {
+      var surface = surfaces[id];
+      var prixLogement = surface * prixM2;
+      var card = $('syn-' + id);
+      var statusEl = $('syn-' + id + '-status');
+      if (!card) return;
+      card.classList.remove('locked', 'in-budget', 'out-budget');
+      if (prixLogement <= budgetTotal) {
+        card.classList.add('in-budget');
+        if (statusEl) statusEl.textContent = '✓ Atteignable';
+      } else {
+        card.classList.add('out-budget');
+        if (statusEl) statusEl.textContent = 'Hors budget';
+      }
+    });
+  }
 }
 
 function updateDiagBadge(inputId, badgeId, prefillVal) {
@@ -2910,6 +3235,10 @@ function updateApport() {
   } else {
     warnEl.style.display = 'none';
   }
+
+  // Update apport in state for synthèse panel
+  S.apport = mob;
+  updateSynthesePanel();
 }
 
 /* ─── ÉPARGNE MODULE INLINE EDIT ─────────────────────────── */
@@ -3030,6 +3359,7 @@ function updateScreen5() {
 
   S.capaciteEmprunt = capacite;
   S.apport = apport;
+  updateSynthesePanel();
 
   // Hero card
   var heroAmount = $('s5-budget-max');
@@ -3442,15 +3772,15 @@ function validerEtDashboard() {
       updateSliderTrack($(id));
     });
 
-    // Update diag card display values from prefill
-    var diagRevVal = $('diag-revenus-val');
-    if (diagRevVal && S.revenus > 0) diagRevVal.textContent = fmt(S.revenus);
-    var diagAidesVal = $('diag-aides-val');
-    if (diagAidesVal && S.autresEntrees > 0) diagAidesVal.textContent = fmt(S.autresEntrees);
-    var diagCredVal = $('diag-credits-val');
-    if (diagCredVal && S.credits > 0) diagCredVal.textContent = fmt(S.credits) + '/mois';
-    var diagChVal = $('diag-charges-val');
-    if (diagChVal && S.charges > 0) diagChVal.textContent = fmt(S.charges) + '/mois';
+    // Update pill display values from prefill
+    var pillRevVal = $('pill-revenus-val');
+    if (pillRevVal && S.revenus > 0) pillRevVal.textContent = fmt(S.revenus);
+    var pillAidesText = $('pill-aides-text');
+    if (pillAidesText && S.autresEntrees > 0) pillAidesText.textContent = '+ ' + fmt(S.autresEntrees) + ' d\'aides';
+    var pillCredVal = $('pill-credits-val');
+    if (pillCredVal && S.credits > 0) pillCredVal.textContent = fmt(S.credits) + '/mois';
+    var pillChText = $('pill-charges-text');
+    if (pillChText && S.charges > 0) pillChText.textContent = '+ ' + fmt(S.charges) + ' de charges fixes';
   })();
 })();
 
