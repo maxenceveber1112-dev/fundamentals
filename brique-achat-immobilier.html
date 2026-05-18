@@ -5243,8 +5243,8 @@ function _tlDetailHTML(key) {
       return '<p class="tl-body-text">L\'appel de fonds notaire doit être préparé à l\'avance : ton apport doit être disponible sur le compte du notaire avant la signature. Tu dois également présenter ton attestation d\'assurance habitation (ou PNO si investissement locatif) le jour de la signature.</p>';
     case 'emmenager':
       return '<div class="tl-pills-row">'
-        + '<a href="brique-demenagement.html" class="tl-cta-pill tl-cta-secondary" id="tl10-emmenager" onclick="event.stopPropagation();">📦 Brique Emménager / Déménager →</a>'
-        + '<a href="brique-investissement-locatif.html" class="tl-cta-pill tl-cta-secondary" id="tl10-locatif" style="display:none" onclick="event.stopPropagation();">🏢 Brique Investissement locatif →</a>'
+        + '<span class="tl-cta-pill tl-cta-secondary" id="tl10-emmenager" style="opacity:0.4;cursor:not-allowed;" title="Bientôt disponible">📦 Brique Emménager / Déménager (bientôt)</span>'
+        + '<span class="tl-cta-pill tl-cta-secondary" id="tl10-locatif" style="display:none;opacity:0.4;cursor:not-allowed;" title="Bientôt disponible">🏢 Brique Investissement locatif (bientôt)</span>'
         + '</div>';
     case 'budget_proprio':
       return '<div class="tl-user-data">'

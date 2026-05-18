@@ -1478,9 +1478,9 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
       Plus de 80 €/an hors incidents ? Il est temps de comparer.
     </div>
 
-    <!-- CTA premiers pas bancaires -->
-    <button class="abo-add-brique" id="abo-add-ppb-btn" onclick="ajouterPremiersPasBancaires()">
-      + Ajouter "Premiers pas bancaires" à mon parcours
+    <!-- CTA premiers pas bancaires (bientôt disponible) -->
+    <button class="abo-add-brique" id="abo-add-ppb-btn" disabled style="opacity:0.4;cursor:not-allowed;pointer-events:none;" title="Bientôt disponible">
+      Premiers pas bancaires (bientôt disponible)
     </button>
 
     <!-- Bouton valider -->
@@ -2240,9 +2240,9 @@ function buildLeviers() {
   // Leviers selon situation
   const leviersConfig = {
     deficit: [
-      { icon:'\u{1F6A8}', title:'Identifier les charges coupables', sub:`Ton budget est en déficit de ${formatEuro(Math.abs(reste))}/mois. Commence par lister les charges réductibles.`, color:'#EF4444', cta:'brique-gestion-decouvert.html', ctaLabel:'Gérer mon découvert' },
+      { icon:'\u{1F6A8}', title:'Identifier les charges coupables', sub:`Ton budget est en déficit de ${formatEuro(Math.abs(reste))}/mois. Commence par lister les charges réductibles.`, color:'#EF4444', cta:null, ctaLabel:'Gérer mon découvert', bientot:true },
       { icon:'\u{1F4F5}', title:'Suspendre les abonnements non essentiels', sub: budgetData.abonnements_total > 0 ? `Tes abonnements (${formatEuro(budgetData.abonnements_total)}/mois) sont le levier le plus rapide.` : 'Les abonnements sont souvent le levier le plus rapide à activer.', color:'#F97316' },
-      { icon:'\u{1F4B3}', title:'Prioriser le remboursement des dettes coûteuses', sub:'Découvert, crédit renouvelable — ce sont eux qui creusent le trou. Voir la brique dédiée.', color:'#EF4444', cta:'brique-gestion-decouvert.html', ctaLabel:'Voir la brique dettes' },
+      { icon:'\u{1F4B3}', title:'Prioriser le remboursement des dettes coûteuses', sub:'Découvert, crédit renouvelable — ce sont eux qui creusent le trou. Voir la brique dédiée.', color:'#EF4444', cta:null, ctaLabel:'Voir la brique dettes', bientot:true },
     ],
     tendu: [
       { icon:'\u{1F50D}', title:'Optimiser les abonnements', sub: budgetData.abonnements_total > 0 ? `${formatEuro(budgetData.abonnements_total)}/mois d'abonnements — y a-t-il des doublons ou inutilisés ?` : 'Passe en revue tes abonnements récurrents.', color:'#F97316' },
@@ -2252,7 +2252,7 @@ function buildLeviers() {
     equilibre: [
       { icon:'\u{1F3E6}', title:'Automatiser une épargne de précaution', sub: budgetData.epargne === 0 ? `Tu as ${formatEuro(reste)}/mois de marge — mets-en au moins la moitié en épargne automatique dès le 1er.` : `Tu éparges déjà ${formatEuro(budgetData.epargne)}/mois. Peux-tu augmenter ?`, color:'#22C55E', cta:'brique-fonds-urgence.html', ctaLabel:'Brique fonds d\'urgence' },
       { icon:'\u{1F4C9}', title:'Réduire 1 poste de dépenses variables', sub:`Choisir un seul poste à réduire de 15% libère ${formatEuro(Math.round(budgetData.total_envies * 0.15))}/mois.`, color:'#8B5CF6' },
-      { icon:'\u{1F4A1}', title:'Vérifier tes frais bancaires', sub:'Carte, découvert autorisé, assurances redondantes — souvent 15 à 30€/mois invisibles.', color:'#6366F1', cta:'brique-premiers-pas-bancaires.html', ctaLabel:'Optimiser mes frais' },
+      { icon:'\u{1F4A1}', title:'Vérifier tes frais bancaires', sub:'Carte, découvert autorisé, assurances redondantes — souvent 15 à 30€/mois invisibles.', color:'#6366F1', cta:null, ctaLabel:'Optimiser mes frais', bientot:true },
     ],
     aise: [
       { icon:'\u{1F4B0}', title:'Automatiser l\'épargne dès le 1er du mois', sub: budgetData.epargne === 0 ? `Tu as ${formatEuro(reste)}/mois disponibles — l'épargne automatique est la meilleure décision que tu puisses prendre.` : `Tu éparges ${formatEuro(budgetData.epargne)}/mois. Peux-tu viser ${formatEuro(Math.round(reste * 0.5))}/mois ?`, color:'#22C55E', cta:'brique-fonds-urgence.html', ctaLabel:'Brique épargne' },
@@ -2281,7 +2281,7 @@ function buildLeviers() {
   leviers.forEach(l => {
     const card = document.createElement('div');
     card.className = 'levier-card';
-    const ctaHtml = l.cta ? `<a href="${l.cta}" class="levier-cta">${l.ctaLabel} \u2192</a>` : '';
+    const ctaHtml = l.bientot ? `<span class="levier-cta" style="opacity:0.4;cursor:not-allowed;pointer-events:none;">${l.ctaLabel} (bientôt)</span>` : l.cta ? `<a href="${l.cta}" class="levier-cta">${l.ctaLabel} \u2192</a>` : '';
     card.innerHTML = `
       <div class="levier-icon" style="color:${l.color};">${l.icon}</div>
       <div class="levier-body">
@@ -2449,10 +2449,10 @@ const DETTE_TYPES = [
 const DETTE_CLASSIFICATION = {
   credit_immo:          { badge:'vert',   emoji:'🟢', label:'Bonne dette',          msg:"Pas d'action urgente ici.", cta:null },
   pret_etudiant:        { badge:'jaune',  emoji:'🟡', label:'Contexte spécifique',   msg:"À analyser selon ton TAEG.", cta:null },
-  credit_conso:         { badge:'orange', emoji:'🟠', label:'Alerte',                msg:"Ce crédit coûte cher.", cta:'brique-gestion-decouvert.html' },
-  decouvert_regulier:   { badge:'rouge',  emoji:'🔴', label:'Alerte forte',          msg:"L'un des pièges les plus coûteux.", cta:'brique-gestion-decouvert.html' },
-  credit_renouvelable:  { badge:'rouge',  emoji:'🔴', label:'Piège à intérêts',      msg:"Priorité absolue.", cta:'brique-gestion-decouvert.html' },
-  paiement_fractionne:  { badge:'rouge',  emoji:'🔴', label:'Alerte',                msg:"S'accumulent vite.", cta:'brique-paiements-fractionnes.html' },
+  credit_conso:         { badge:'orange', emoji:'🟠', label:'Alerte',                msg:"Ce crédit coûte cher.", cta:null, bientot:true },
+  decouvert_regulier:   { badge:'rouge',  emoji:'🔴', label:'Alerte forte',          msg:"L'un des pièges les plus coûteux.", cta:null, bientot:true },
+  credit_renouvelable:  { badge:'rouge',  emoji:'🔴', label:'Piège à intérêts',      msg:"Priorité absolue.", cta:null, bientot:true },
+  paiement_fractionne:  { badge:'rouge',  emoji:'🔴', label:'Alerte',                msg:"S'accumulent vite.", cta:null, bientot:true },
   autre:                { badge:'jaune',  emoji:'🟡', label:'À analyser',            msg:"Vérifie ton TAEG.", cta:null },
 };
 
@@ -2489,7 +2489,7 @@ function renderDettes() {
         <div class="dette-classification">
           <span class="badge-dette ${clf.badge}">${clf.label}</span>
           <span class="dette-msg">${clf.msg}</span>
-          ${clf.cta ? `<a href="${clf.cta}" class="dette-cta">Voir la brique →</a>` : ''}
+          ${clf.bientot ? `<span class="dette-cta" style="opacity:0.4;cursor:not-allowed;pointer-events:none;">Voir la brique (bientôt)</span>` : clf.cta ? `<a href="${clf.cta}" class="dette-cta">Voir la brique →</a>` : ''}
         </div>
       </div>
       <button class="dette-row-delete" onclick="removeDette(${idx})" aria-label="Supprimer">×</button>
@@ -2586,11 +2586,14 @@ function buildReco() {
   if (!target) return;
 
   const meta = (typeof BRIQUES_META !== 'undefined' ? BRIQUES_META[target] : null) || { nom: target, tagline:'', icon:'📋' };
-  const file = (typeof BRICK_FILES !== 'undefined' ? BRICK_FILES[target] : null) || (target + '.html');
+  const file = (typeof BRICK_FILES !== 'undefined' ? BRICK_FILES[target] : null);
 
   budgetData.brique_recommandee = target;
 
   const dotClass = meta.pack === 'Survie & stabilité' ? 'dot-survie' : meta.pack === 'Construction & projets' ? 'dot-construction' : 'dot-invest';
+  const ctaBtn = file
+    ? `<a href="${file}" class="btn-hero-primary" style="display:inline-flex;">Commencer ${meta.nom} →</a>`
+    : `<span class="btn-hero-primary" style="display:inline-flex;opacity:0.4;cursor:not-allowed;pointer-events:none;">${meta.nom} (bientôt disponible)</span>`;
   wrap.innerHTML = `
     <div class="reco-card" data-glyph="${meta.icon || '📋'}">
       <div class="reco-kicker">
@@ -2599,9 +2602,7 @@ function buildReco() {
       </div>
       <div class="reco-title">${meta.nom}</div>
       <div class="reco-desc">${meta.tagline}</div>
-      <a href="${file}" class="btn-hero-primary" style="display:inline-flex;">
-        Commencer ${meta.nom} →
-      </a>
+      ${ctaBtn}
     </div>
   `;
 }
@@ -2638,19 +2639,19 @@ function buildPrioritesPersonnalisees() {
 
   const prioritesConfig = {
     deficit: [
-      { num:'1', titre:'Stoppe l\u2019h\u00E9morragie cette semaine', sub:`Ton budget est en d\u00E9ficit de ${formatEuro(Math.abs(reste))}/mois. Liste tes 3 d\u00E9penses les plus r\u00E9ductibles et coupe-en au moins une d\u00E8s aujourd\u2019hui.`, horizon:'Cette semaine', cta: hasDetteRouge ? { href:'brique-gestion-decouvert.html', label:'Voir Gestion du d\u00E9couvert' } : null },
+      { num:'1', titre:'Stoppe l\u2019h\u00E9morragie cette semaine', sub:`Ton budget est en d\u00E9ficit de ${formatEuro(Math.abs(reste))}/mois. Liste tes 3 d\u00E9penses les plus r\u00E9ductibles et coupe-en au moins une d\u00E8s aujourd\u2019hui.`, horizon:'Cette semaine', cta: hasDetteRouge ? { href:null, label:'Voir Gestion du d\u00E9couvert', bientot:true } : null },
       { num:'2', titre:'Ren\u00E9gocie ou coupe 1 abonnement', sub: aboTotal > 0 ? `Tes ${formatEuro(aboTotal)}/mois d\u2019abonnements sont ton levier le plus rapide. Appelle, n\u00E9gocie ou r\u00E9silie-en un.` : 'Passe en revue tous tes abonnements r\u00E9currents. Un seul supprim\u00E9 = de l\u2019air imm\u00E9diat.', horizon:'Ce mois' },
-      { num:'3', titre:'Parle \u00E0 ta banque avant que \u00E7a empire', sub:'Un d\u00E9couvert non g\u00E9r\u00E9 co\u00FBte tr\u00E8s cher. Un simple appel peut \u00E9viter les frais d\u2019incident. La brique d\u00E9di\u00E9e t\u2019aide \u00E0 pr\u00E9parer ce RDV.', horizon:'Dans les 2 semaines', cta:{ href:'brique-gestion-decouvert.html', label:'G\u00E9rer mon d\u00E9couvert' } },
+      { num:'3', titre:'Parle \u00E0 ta banque avant que \u00E7a empire', sub:'Un d\u00E9couvert non g\u00E9r\u00E9 co\u00FBte tr\u00E8s cher. Un simple appel peut \u00E9viter les frais d\u2019incident. La brique d\u00E9di\u00E9e t\u2019aide \u00E0 pr\u00E9parer ce RDV.', horizon:'Dans les 2 semaines', cta:{ href:null, label:'G\u00E9rer mon d\u00E9couvert', bientot:true } },
     ],
     tendu: [
       { num:'1', titre:`Mets ${formatEuro(epargCible)} de c\u00F4t\u00E9 d\u00E8s la prochaine paie`, sub:'M\u00EAme un petit montant automatis\u00E9 cr\u00E9e une habitude. Vire-le d\u00E8s le 1er, avant de d\u00E9penser.', horizon:'D\u00E8s ce mois', cta:{ href:'brique-fonds-urgence.html', label:'Brique Fonds d\u2019urgence' } },
       { num:'2', titre:'Audite tes abonnements', sub: aboTotal > 0 ? `${formatEuro(aboTotal)}/mois d\u2019abonnements \u2014 certains sont s\u00FBrement inutilis\u00E9s ou doublonn\u00E9s. 15 min peuvent lib\u00E9rer 20-30\u20AC/mois.` : 'Liste tous tes pr\u00E9l\u00E8vements automatiques et identifie les inutilis\u00E9s.', horizon:'Ce week-end' },
-      { num:'3', titre:'V\u00E9rifie tes frais bancaires', sub:'Carte, assurances redondantes, d\u00E9couvert autoris\u00E9 \u2014 souvent 15 \u00E0 25\u20AC/mois invisibles r\u00E9cup\u00E9rables en changeant d\u2019offre.', horizon:'Ce mois', cta:{ href:'brique-premiers-pas-bancaires.html', label:'Optimiser mes frais' } },
+      { num:'3', titre:'V\u00E9rifie tes frais bancaires', sub:'Carte, assurances redondantes, d\u00E9couvert autoris\u00E9 \u2014 souvent 15 \u00E0 25\u20AC/mois invisibles r\u00E9cup\u00E9rables en changeant d\u2019offre.', horizon:'Ce mois', cta:{ href:null, label:'Optimiser mes frais', bientot:true } },
     ],
     equilibre: [
       { num:'1', titre:`Automatise ${formatEuro(epargCible)}/mois d\u00E8s maintenant`, sub:'Tu as de la marge \u2014 ne la laisse pas "fondre" en d\u00E9penses invisibles. Un virement automatique le jour de la paie est la meilleure d\u00E9cision que tu puisses prendre.', horizon:'D\u00E8s ce mois', cta:{ href:'brique-fonds-urgence.html', label:'Commencer le fonds' } },
       { num:'2', titre:'Identifie ton prochain objectif \u00E0 6 mois', sub:'Voyage, v\u00E9hicule, projet perso \u2014 nommer l\u2019objectif le rend concret et oriente les d\u00E9cisions du quotidien.', horizon:'Cette semaine' },
-      { num:'3', titre:'Optimise tes frais fixes', sub:`${formatEuro(budgetData.total_besoins)} de charges fixes chaque mois. Certains sont n\u00E9gociables (assurances, forfaits). 30 min de comparaison peuvent d\u00E9gager 20-40\u20AC/mois.`, horizon:'Ce mois', cta:{ href:'brique-premiers-pas-bancaires.html', label:'Voir Premiers pas bancaires' } },
+      { num:'3', titre:'Optimise tes frais fixes', sub:`${formatEuro(budgetData.total_besoins)} de charges fixes chaque mois. Certains sont n\u00E9gociables (assurances, forfaits). 30 min de comparaison peuvent d\u00E9gager 20-40\u20AC/mois.`, horizon:'Ce mois', cta:{ href:null, label:'Voir Premiers pas bancaires', bientot:true } },
     ],
     aise: [
       { num:'1', titre:'Lance une \u00E9pargne automatique mensuelle', sub: budgetData.epargne > 0 ? `Tu \u00E9pargnes d\u00E9j\u00E0 ${formatEuro(budgetData.epargne)}/mois. Peux-tu viser ${formatEuro(Math.round(budgetData.epargne * 1.5 / 5) * 5)}/mois ? L\u2019automatiser sur un compte s\u00E9par\u00E9 est la cl\u00E9.` : `Tu as ${formatEuro(reste)}/mois disponibles. L\u2019\u00E9pargne automatique le jour de la paie est ton levier #1.`, horizon:'D\u00E8s ce mois', cta:{ href:'brique-fonds-urgence.html', label:'Brique Fonds d\u2019urgence' } },
@@ -2673,7 +2674,7 @@ function buildPrioritesPersonnalisees() {
         <div class="priorite-titre">${p.titre}</div>
         <div class="priorite-sub">${p.sub}</div>
         <div class="priorite-horizon">${p.horizon}</div>
-        ${p.cta ? `<a href="${p.cta.href}" class="priorite-cta">${p.cta.label} \u2192</a>` : ''}
+        ${p.cta && p.cta.bientot ? `<span class="priorite-cta" style="opacity:0.4;cursor:not-allowed;pointer-events:none;">${p.cta.label} (bientôt)</span>` : p.cta ? `<a href="${p.cta.href}" class="priorite-cta">${p.cta.label} \u2192</a>` : ''}
       </div>
     </div>
   `).join('');

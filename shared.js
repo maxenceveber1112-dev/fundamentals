@@ -528,12 +528,9 @@ function buildInsights(brickId, profil, data) {
 
 // ─── BRICK FILES + NAVIGATION ────────────────────────────────────────────
 const BRICK_FILES = {
-  budget_base:             'brique-budget-base.html',
-  gestion_decouvert:       'brique-gestion-decouvert.html',
-  paiements_fractionnes:   'brique-paiements-fractionnes.html',
-  fonds_urgence:           'brique-fonds-urgence.html',
-  premiers_pas_bancaires:  'brique-premiers-pas-bancaires.html',
-  achat_immobilier:        'brique-achat-immobilier.html'
+  budget_base:      'brique-budget-base.html',
+  fonds_urgence:    'brique-fonds-urgence.html',
+  achat_immobilier: 'brique-achat-immobilier.html'
 };
 
 function getNextBrick(currentBrickId) {

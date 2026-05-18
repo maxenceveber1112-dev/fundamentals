@@ -1159,21 +1159,29 @@
 
     const activeId  = dash.brique_active_id;
     const planIds   = new Set((dash.briques || []).map(b => b.id));
-    const disponibles = (dash.briques || []).filter(b => b.statut !== 'terminee');
+    const disponibles = (dash.briques || []).filter(b => b.statut !== 'terminee' && BRICK_FILES[b.id]);
     const realisees   = (dash.briques || []).filter(b => b.statut === 'terminee');
-    const bientot     = Object.values(BRIQUES_META)
+
+    // Briques hors plan (pas dans briques_recommandees)
+    const horsplan = Object.values(BRIQUES_META)
       .filter(m => !planIds.has(m.id))
       .map(m => ({ id: m.id, statut: 'bientot', progression: 0 }));
+
+    // Briques dans le plan mais sans fichier disponible (non validées)
+    const nonDispo = (dash.briques || [])
+      .filter(b => b.statut !== 'terminee' && !BRICK_FILES[b.id])
+      .map(b => ({ ...b, statut: 'bientot' }));
+
+    const bientot = [...nonDispo, ...horsplan];
 
     /* Max 4 disponibles visibles + bouton dépliage */
     const toShow = briquesExpanded ? disponibles : disponibles.slice(0, MAX_BRIQUES_VISIBLE);
     const hasMore = disponibles.length > MAX_BRIQUES_VISIBLE;
 
-    /* Action "Voir tout" dans le header — toujours visible si bientôt existe */
+    /* Action "Voir tout" dans le header */
     const actionEl = document.getElementById('briques-voir-tout-action');
     if (actionEl) {
-      const hasMoreOrSoon = hasMore || bientot.length > 0;
-      actionEl.style.display = hasMoreOrSoon ? '' : 'none';
+      actionEl.style.display = hasMore ? '' : 'none';
       if (briquesExpanded) {
         actionEl.textContent = 'Réduire ↑';
       } else {
@@ -1199,8 +1207,8 @@
       }
     }
 
-    /* Bientôt disponibles — grayed (visible uniquement si briquesExpanded) */
-    if (briquesExpanded && bientot.length > 0) {
+    /* Bientôt disponibles — toujours visibles, grisées */
+    if (bientot.length > 0) {
       const hdr = document.createElement('p');
       hdr.className = 'soon-header'; hdr.textContent = 'Bientôt disponibles';
       container.appendChild(hdr);
