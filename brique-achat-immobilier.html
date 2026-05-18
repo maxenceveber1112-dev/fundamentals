@@ -915,32 +915,108 @@ html.dark .toggle-switch input:checked + .toggle-slider { background:var(--v3-ac
 .warning-box.red-warning { background:var(--red-soft); border-color:rgba(248,113,113,0.2); }
 
 /* ══════════════════════════════════════════════════════════════
-   TIMELINE (écran 7)
+   TIMELINE (écran 7) — dark cards refonte
 ══════════════════════════════════════════════════════════════ */
-.timeline { display:flex; flex-direction:column; gap:0; }
-.timeline-step {
-  position:relative; padding-left:2rem; padding-bottom:1rem;
-  border-left:2px solid var(--border-mid); cursor:pointer; transition:all 0.2s ease;
+.tl-container { display:flex; flex-direction:column; gap:1.25rem; }
+
+/* Phase separator */
+.tl-phase-sep {
+  display:flex; align-items:center; gap:0.75rem; margin:0.75rem 0 0.25rem;
+  font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;
+  color:var(--text-faint,rgba(255,255,255,0.38));
 }
-.timeline-step:last-child { border-left-color:transparent; padding-bottom:0; }
-.timeline-step::before {
-  content:attr(data-num); position:absolute; left:-11px; top:0;
-  width:22px; height:22px; border-radius:50%;
-  background:var(--bg-elevated); border:2px solid var(--accent-strong);
-  font-size:0.65rem; font-weight:700; color:var(--accent-strong);
-  display:flex; align-items:center; justify-content:center;
+.tl-phase-sep::before, .tl-phase-sep::after {
+  content:''; flex:1; height:1px; background:currentColor; opacity:0.25;
 }
-html.dark .timeline-step::before { color:var(--v3-accent-strong); border-color:var(--v3-accent-strong); }
-.timeline-step-title { font-size:0.875rem; font-weight:600; color:var(--text); padding:0 0 0.15rem; transition:color 0.15s; }
-.timeline-step-title:hover { color:var(--accent-strong); }
-html.dark .timeline-step-title:hover { color:var(--v3-accent-strong); }
-.timeline-detail { display:none; padding:0.5rem 0; font-size:0.8rem; color:var(--text-secondary); line-height:1.55; }
-.timeline-detail.open { display:block; animation:fadeSlideUp 0.25s ease; }
-.timeline-detail-row { display:flex; gap:0.5rem; margin-bottom:0.35rem; }
-.timeline-detail-label { font-size:0.72rem; font-weight:700; color:var(--accent-strong); text-transform:uppercase; letter-spacing:0.03em; min-width:70px; }
-html.dark .timeline-detail-label { color:var(--v3-accent-strong); }
-.timeline-detail-val { font-size:0.8rem; color:var(--text-secondary); }
-.timeline-legal { margin-top:0.25rem; padding:0.5rem 0.75rem; border-radius:0.625rem; background:var(--orange-soft); font-size:0.75rem; color:var(--text); border:1px solid rgba(251,163,60,0.15); }
+
+/* Card */
+.tl-card {
+  position:relative; overflow:hidden; cursor:pointer;
+  background:rgba(255,255,255,0.03); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  border-radius:18px; padding:1.25rem 1.35rem 1.15rem; border:none;
+  box-shadow:0 2px 12px rgba(0,0,0,0.3); transition:box-shadow 0.2s ease, transform 0.15s ease;
+}
+.tl-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.4); transform:translateY(-1px); }
+.tl-card.tl-greyed { opacity:0.45; pointer-events:auto; }
+
+/* Glyph decorative */
+.tl-glyph {
+  position:absolute; bottom:0.5rem; right:0.75rem;
+  font-size:2.8rem; opacity:0.07; pointer-events:none; line-height:1;
+}
+
+/* Header row: dot + kicker + who pill */
+.tl-header { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.55rem; flex-wrap:wrap; }
+.tl-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.tl-kicker { font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; }
+.tl-who {
+  margin-left:auto; font-size:0.65rem; font-weight:600; padding:0.15rem 0.55rem;
+  border-radius:9999px; white-space:nowrap;
+}
+
+/* Number + title row */
+.tl-title-row { display:flex; align-items:baseline; gap:0.55rem; margin-bottom:0.35rem; }
+.tl-num { font-size:2rem; font-weight:700; line-height:1; }
+.tl-title { font-size:1.1rem; font-weight:700; color:#fff; line-height:1.3; }
+
+/* Risk — always visible */
+.tl-risk { font-size:0.82rem; font-style:italic; color:var(--text-muted,rgba(255,255,255,0.5)); line-height:1.45; margin-top:0.2rem; }
+
+/* Badges */
+.tl-badge {
+  display:inline-flex; align-items:center; gap:0.25rem;
+  font-size:0.65rem; font-weight:700; padding:0.15rem 0.55rem;
+  border-radius:9999px; white-space:nowrap;
+}
+.tl-badge-legal { background:rgba(245,158,11,0.15); color:#f59e0b; }
+.tl-badge-urgent { background:rgba(239,68,68,0.18); color:#f87171; }
+.tl-badge-na { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.45); }
+
+/* Detail panel (revealed on click) */
+.tl-detail {
+  display:none; margin-top:0.85rem; padding-top:0.75rem;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.tl-detail.open { display:block; animation:fadeSlideUp 0.25s ease-out; }
+.tl-docs { font-size:0.8rem; color:var(--text-secondary,rgba(255,255,255,0.6)); line-height:1.55; margin-bottom:0.5rem; }
+.tl-docs span { display:block; padding:0.1rem 0; }
+.tl-legal-block {
+  margin-top:0.5rem; padding:0.55rem 0.75rem; border-radius:12px;
+  background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.15);
+  font-size:0.78rem; color:rgba(255,255,255,0.75); line-height:1.5;
+}
+.tl-legal-badge { display:inline-flex; align-items:center; gap:0.2rem; font-size:0.68rem; font-weight:700; color:#f59e0b; margin-bottom:0.25rem; }
+.tl-action-btn {
+  display:inline-flex; align-items:center; gap:0.4rem; margin-top:0.6rem;
+  padding:0.5rem 1rem; border-radius:9999px; font-size:0.8rem; font-weight:600;
+  border:none; cursor:pointer; transition:filter 0.2s ease, transform 0.12s ease;
+  background:var(--accent,#6366f1); color:#fff;
+  box-shadow:0 4px 16px -4px rgba(99,102,241,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.tl-action-btn:hover { filter:brightness(1.08); }
+.tl-action-btn:active { transform:scale(0.97); }
+
+/* Duration indicator between cards */
+.tl-duration {
+  text-align:center; font-size:0.75rem; font-weight:600;
+  color:var(--text-faint,rgba(255,255,255,0.32)); padding:0.15rem 0;
+}
+
+/* Progress counter */
+.tl-progress {
+  text-align:center; font-size:0.8rem; color:var(--text-faint,rgba(255,255,255,0.38));
+  margin-top:0.75rem;
+}
+
+/* Responsive mobile */
+@media (max-width:600px) {
+  .tl-card { padding:1rem 1rem 0.9rem; border-radius:14px; }
+  .tl-num { font-size:1.6rem; }
+  .tl-title { font-size:1rem; }
+  .tl-glyph { font-size:2.2rem; }
+  .tl-who { margin-left:0; }
+  .tl-header { gap:0.35rem; }
+}
 
 /* ══════════════════════════════════════════════════════════════
    ÉCRAN FINAL — score ring + summary + reco cards
@@ -2162,9 +2238,11 @@ html.dark .cs-logement-status { color:var(--v3-accent-strong); }
             <h2 class="brick-title">Les grandes étapes avant les clés.</h2>
             <p class="brick-subtitle">Clique sur une étape pour voir le détail.</p>
 
-            <div class="timeline" id="timeline">
-              <!-- Populated by JS -->
+            <div class="tl-container" id="timeline">
+              <!-- Populated by buildTimeline() -->
             </div>
+
+            <div class="tl-progress" id="tl-progress">0 / 12 étapes consultées</div>
 
             <div class="nav-btns" style="margin-top:1.5rem;">
               <button class="btn-hero-secondary" onclick="goToScreen(5)">← Retour</button>
@@ -2535,19 +2613,37 @@ var GLOSSARY = [
 
 /* ─── TIMELINE DATA ──────────────────────────────────────── */
 var TIMELINE = [
-  { num: 1, title: 'Clarifier le projet', who: 'Toi', docs: 'Aucun', risk: 'Acheter sans savoir ce qu\'on cherche', action: 'Utilise la brique Achat immobilier pour cadrer ton projet.' },
-  { num: 2, title: 'Estimer la capacité', who: 'Toi / courtier', docs: 'Revenus, charges, épargne', risk: 'Sous-estimer les charges ou le taux d\'effort', action: 'Simule ta capacité dans l\'écran 2 de cette brique.' },
-  { num: 3, title: 'Préparer le dossier banque', who: 'Toi', docs: 'Bulletins, avis d\'imposition, relevés bancaires, épargne', risk: 'Dossier incomplet = retard ou refus', action: 'Lance le parcours Achat immobilier pour préparer ton dossier.' },
-  { num: 4, title: 'Chercher le bien', who: 'Toi / agent immobilier', docs: 'Annonces, visites', risk: 'Coup de cœur sans analyse du budget total', action: 'Compare le prix affiché au coût total (écran 4).' },
-  { num: 5, title: 'Faire une offre', who: 'Toi', docs: 'Offre écrite', risk: 'Proposer un prix sans connaître sa limite', action: 'Vérifie ta capacité avant de faire une offre.' },
-  { num: 6, title: 'Signer le compromis', who: 'Notaire', docs: 'Compromis, diagnostics, titre de propriété', risk: 'Ne pas vérifier les conditions suspensives', action: 'Vérifie prix, financement, conditions suspensives, diagnostics.', legal: 'Tu disposes de 10 jours calendaires de rétractation après signature.' },
-  { num: 7, title: 'Délai de rétractation (10 jours)', who: 'Toi', docs: 'Aucun', risk: 'Laisser passer le délai sans réflexion', action: 'Prends le temps de relire le compromis et de vérifier les diagnostics.' },
-  { num: 8, title: "Obtenir l'offre de prêt", who: 'Banque / courtier', docs: 'Dossier complet, compromis signé', risk: 'Refus de prêt ou conditions défavorables', action: 'Compare au moins 3 banques ou passe par un courtier.' },
-  { num: 9, title: "Délai de réflexion offre de prêt (10 jours)", who: 'Toi', docs: 'Offre de prêt reçue', risk: 'Accepter trop vite sans comparer', action: "Lis l'offre en détail : taux, assurance, garantie, pénalités.", legal: 'Tu ne peux pas accepter l\'offre avant 10 jours calendaires après réception.' },
-  { num: 10, title: "Signer l'acte authentique", who: 'Notaire', docs: 'Fonds, assurance habitation, prêt signé', risk: 'Fonds non disponibles ou assurance manquante', action: 'Vérifie que les fonds sont chez le notaire et que l\'assurance est active.' },
-  { num: 11, title: 'Emménager ou mettre en location', who: 'Toi', docs: 'Bail, état des lieux si location', risk: 'Oublier les démarches (EDF, assurance, taxe foncière)', action: 'Mets à jour ton budget propriétaire.' },
-  { num: 12, title: 'Mettre à jour son budget propriétaire', who: 'Toi', docs: 'Budget actualisé', risk: 'Sous-estimer les charges récurrentes', action: 'Reviens sur la brique Budget pour intégrer tes nouvelles charges.' }
+  { num: 1, title: 'Clarifier le projet', who: 'Toi', docs: ['Aucun document requis'], risk: 'Acheter sans savoir ce qu\'on cherche.', action: 'Utilise la brique Achat immobilier pour cadrer ton projet.', glyph: '🎯' },
+  { num: 2, title: 'Estimer la capacité', who: 'Toi / Courtier', docs: ['Revenus', 'Charges', 'Épargne'], risk: 'Sous-estimer les charges ou le taux d\'effort.', action: 'Simule ta capacité', actionScreen: 2, glyph: '🏦' },
+  { num: 3, title: 'Préparer le dossier banque', who: 'Toi', docs: ['Bulletins de salaire', 'Avis d\'imposition', 'Relevés bancaires', 'Justificatifs d\'épargne'], risk: 'Dossier incomplet = retard ou refus.', action: 'Lance le parcours Achat immobilier pour préparer ton dossier.', glyph: '📋' },
+  { num: 4, title: 'Chercher le bien', who: 'Toi / Agent immobilier', docs: ['Annonces', 'Comptes-rendus de visites'], risk: 'Coup de cœur sans analyse du budget total.', action: 'Compare le prix affiché au coût total', actionScreen: 4, glyph: '💰' },
+  { num: 5, title: 'Faire une offre', who: 'Toi', docs: ['Offre écrite'], risk: 'Proposer un prix sans connaître sa limite.', action: 'Vérifie ta capacité avant de faire une offre.', actionScreen: 2, glyph: '✍️' },
+  { num: 6, title: 'Signer le compromis', who: 'Notaire', docs: ['Compromis de vente', 'Diagnostics techniques', 'Titre de propriété'], risk: 'Ne pas vérifier les conditions suspensives.', action: 'Vérifie prix, financement, conditions suspensives, diagnostics.', legal: 'Tu disposes de 10 jours calendaires de rétractation après signature.', glyph: '⏱' },
+  { num: 7, title: 'Délai de rétractation (10 jours)', who: 'Toi', docs: ['Compromis signé'], risk: 'Laisser passer le délai sans réflexion.', action: 'Prends le temps de relire le compromis et de vérifier les diagnostics.', glyph: '🤝' },
+  { num: 8, title: 'Obtenir l\'offre de prêt', who: 'Banque / Courtier', docs: ['Dossier complet', 'Compromis signé'], risk: 'Refus de prêt ou conditions défavorables.', action: 'Compare au moins 3 banques ou passe par un courtier.', glyph: '🔍' },
+  { num: 9, title: 'Délai de réflexion offre de prêt (10 jours)', who: 'Toi', docs: ['Offre de prêt reçue'], risk: 'Accepter trop vite sans comparer.', action: 'Lis l\'offre en détail : taux, assurance, garantie, pénalités.', legal: 'Tu ne peux pas accepter l\'offre avant 10 jours calendaires après réception.', glyph: '📝' },
+  { num: 10, title: 'Signer l\'acte authentique', who: 'Notaire', docs: ['Fonds disponibles', 'Assurance habitation', 'Prêt signé'], risk: 'Fonds non disponibles ou assurance manquante.', action: 'Vérifie que les fonds sont chez le notaire et que l\'assurance est active.', glyph: '🔑' },
+  { num: 11, title: 'Emménager ou mettre en location', who: 'Toi', docs: ['Bail (si location)', 'État des lieux'], risk: 'Oublier les démarches (EDF, assurance, taxe foncière).', action: 'Mets à jour ton budget propriétaire.', glyph: '📦' },
+  { num: 12, title: 'Mettre à jour son budget propriétaire', who: 'Toi', docs: ['Budget actualisé'], risk: 'Sous-estimer les charges récurrentes.', action: 'Reviens sur la brique Budget pour intégrer tes nouvelles charges.', glyph: '🏠' }
 ];
+
+var TIMELINE_PHASES = [
+  { name: 'PRÉPARATION', color: '#8b5cf6', range: [1, 3] },
+  { name: 'FINANCEMENT', color: '#6366f1', range: [4, 6] },
+  { name: 'COMPROMIS & ACTE', color: '#14b8a6', range: [7, 9] },
+  { name: 'INSTALLATION', color: '#f59e0b', range: [10, 12] }
+];
+
+var TIMELINE_DURATIONS = { 5: '↓ ~45 jours', 7: '↓ ~3 mois', 9: '↓ ~1 semaine' };
+
+var TL_PRIMO_STEP = {
+  num: '2b', title: 'Vérifier les aides primo-accédant', who: 'Toi / Conseiller',
+  docs: ['Justificatifs revenus', 'Avis d\'imposition'],
+  risk: 'Ne pas en bénéficier par méconnaissance.',
+  action: 'Simuler le PTZ sur le site du gouvernement',
+  legal: 'Le PTZ est soumis à conditions de ressources et de zone géographique.',
+  glyph: '🎁'
+};
 
 /* ─── CALCULATION FUNCTIONS ──────────────────────────────── */
 function calculateMonthlyPayment(loanAmount, annualRate, months) {
@@ -3526,26 +3622,198 @@ function updateInvestment() {
 }
 
 /* ─── ÉCRAN 7 : TIMELINE ─────────────────────────────────── */
+var _tlConsulted = {};
+var _tlTotal = 12;
+
+function _tlGetPhase(num) {
+  var n = typeof num === 'string' ? parseFloat(num) : num;
+  for (var i = 0; i < TIMELINE_PHASES.length; i++) {
+    var p = TIMELINE_PHASES[i];
+    if (n >= p.range[0] && n <= p.range[1]) return { idx: i + 1, name: p.name, color: p.color };
+  }
+  return { idx: 1, name: 'PRÉPARATION', color: '#8b5cf6' };
+}
+
+function _tlIsLegal(step) {
+  return !!step.legal || step.num === 6 || step.num === 9;
+}
+
+function _tlBuildSteps() {
+  var steps = TIMELINE.slice();
+  if (S.primo === 'oui') {
+    var insertIdx = -1;
+    for (var i = 0; i < steps.length; i++) {
+      if (steps[i].num === 2) { insertIdx = i + 1; break; }
+    }
+    if (insertIdx >= 0) steps.splice(insertIdx, 0, TL_PRIMO_STEP);
+  }
+  return steps;
+}
+
+function _tlIsGreyed(step) {
+  var usage = S.usage || S.projectType || '';
+  if (step.num === 11 && (usage === 'principale' || usage === 'residence_principale')) return true;
+  return false;
+}
+
+function _tlIsUrgent(step) {
+  var n = typeof step.num === 'string' ? parseFloat(step.num) : step.num;
+  return S.horizon === '3m' && n >= 1 && n <= 3;
+}
+
+function _tlActionOnclick(step) {
+  if (step.actionScreen) return 'goToScreen(' + step.actionScreen + ')';
+  var a = (step.action || '').toLowerCase();
+  if (a.indexOf('capacité') !== -1) return 'goToScreen(2)';
+  if (a.indexOf('apport') !== -1) return 'goToScreen(3)';
+  if (a.indexOf('coût total') !== -1 || a.indexOf('écran 4') !== -1) return 'goToScreen(4)';
+  return '';
+}
+
+function _tlUpdateProgress() {
+  var count = Object.keys(_tlConsulted).length;
+  var el = $('tl-progress');
+  if (el) el.textContent = count + ' / ' + _tlTotal + ' étapes consultées';
+}
+
 function buildTimeline() {
   var container = $('timeline');
-  if (container.children.length > 0) return;
-  TIMELINE.forEach(function(step) {
-    var div = document.createElement('div');
-    div.className = 'timeline-step';
-    div.setAttribute('data-num', step.num);
-    var html = '<div class="timeline-step-title" onclick="toggleTimelineStep(this)">' + step.title + '</div>';
-    html += '<div class="timeline-detail" id="tl-detail-' + step.num + '">';
-    html += '<div class="timeline-detail-row"><span class="timeline-detail-label">Qui</span><span class="timeline-detail-val">' + step.who + '</span></div>';
-    html += '<div class="timeline-detail-row"><span class="timeline-detail-label">Documents</span><span class="timeline-detail-val">' + step.docs + '</span></div>';
-    html += '<div class="timeline-detail-row"><span class="timeline-detail-label">Risque</span><span class="timeline-detail-val">' + step.risk + '</span></div>';
-    html += '<div class="timeline-detail-row"><span class="timeline-detail-label">Action</span><span class="timeline-detail-val">' + step.action + '</span></div>';
-    if (step.legal) {
-      html += '<div class="timeline-legal">' + step.legal + '</div>';
+  if (!container) return;
+  container.innerHTML = '';
+  _tlConsulted = {};
+
+  var steps = _tlBuildSteps();
+  _tlTotal = steps.length;
+  _tlUpdateProgress();
+
+  var lastPhaseIdx = -1;
+  var firstPertinent = null;
+
+  for (var i = 0; i < steps.length; i++) {
+    var step = steps[i];
+    var phase = _tlGetPhase(step.num);
+    var isLegal = _tlIsLegal(step);
+    var isGreyed = _tlIsGreyed(step);
+    var isUrgent = _tlIsUrgent(step);
+    var numColor = isLegal ? '#f59e0b' : phase.color;
+
+    // Phase separator
+    if (phase.idx !== lastPhaseIdx) {
+      lastPhaseIdx = phase.idx;
+      var sep = document.createElement('div');
+      sep.className = 'tl-phase-sep';
+      sep.style.color = phase.color;
+      sep.textContent = 'PHASE ' + phase.idx + ' · ' + phase.name;
+      container.appendChild(sep);
+    }
+
+    // Card
+    var card = document.createElement('div');
+    card.className = 'tl-card' + (isGreyed ? ' tl-greyed' : '');
+    card.setAttribute('data-step', step.num);
+
+    var html = '';
+
+    // Glyph
+    html += '<div class="tl-glyph">' + (step.glyph || '') + '</div>';
+
+    // Header: dot + kicker + badges + who
+    html += '<div class="tl-header">';
+    html += '<span class="tl-dot" style="background:' + phase.color + '"></span>';
+    html += '<span class="tl-kicker" style="color:' + phase.color + '">' + phase.name + '</span>';
+    if (isLegal) html += '<span class="tl-badge tl-badge-legal">⚖️ Délai légal</span>';
+    if (isUrgent) html += '<span class="tl-badge tl-badge-urgent">⚡ Urgent</span>';
+    if (isGreyed) html += '<span class="tl-badge tl-badge-na">Non applicable</span>';
+    html += '<span class="tl-who" style="background:rgba(' + _tlHexToRgb(phase.color) + ',0.15);color:' + phase.color + '">' + step.who + '</span>';
+    html += '</div>';
+
+    // Number + title
+    html += '<div class="tl-title-row">';
+    html += '<span class="tl-num" style="color:' + numColor + '">' + (typeof step.num === 'number' && step.num < 10 ? '0' + step.num : step.num) + '</span>';
+    html += '<span class="tl-title">' + step.title + '</span>';
+    html += '</div>';
+
+    // Risk always visible
+    html += '<div class="tl-risk">⚠ ' + step.risk + '</div>';
+
+    // Detail (hidden)
+    html += '<div class="tl-detail" id="tl-detail-' + step.num + '">';
+
+    // Docs
+    var docs = Array.isArray(step.docs) ? step.docs : [step.docs];
+    html += '<div class="tl-docs">';
+    for (var d = 0; d < docs.length; d++) {
+      html += '<span>📄 ' + docs[d] + '</span>';
     }
     html += '</div>';
-    div.innerHTML = html;
-    container.appendChild(div);
-  });
+
+    // Action CTA
+    var onclick = _tlActionOnclick(step);
+    if (onclick) {
+      html += '<button class="tl-action-btn" onclick="' + onclick + '; event.stopPropagation();">' + step.action + '</button>';
+    } else {
+      html += '<button class="tl-action-btn" style="cursor:default;">' + step.action + '</button>';
+    }
+
+    // Legal block
+    if (step.legal) {
+      html += '<div class="tl-legal-block">';
+      html += '<div class="tl-legal-badge">⚖️ Délai légal</div>';
+      html += '<div>' + step.legal + '</div>';
+      html += '</div>';
+    }
+
+    html += '</div>'; // .tl-detail
+
+    card.innerHTML = html;
+    if (!isGreyed) {
+      card.onclick = (function(s) { return function(e) { toggleTimelineCard(s, e); }; })(step.num);
+    }
+    container.appendChild(card);
+
+    if (!isGreyed && firstPertinent === null) firstPertinent = step.num;
+
+    // Duration indicator after certain steps
+    var numKey = typeof step.num === 'number' ? step.num : 0;
+    if (TIMELINE_DURATIONS[numKey]) {
+      var dur = document.createElement('div');
+      dur.className = 'tl-duration';
+      dur.textContent = TIMELINE_DURATIONS[numKey];
+      container.appendChild(dur);
+    }
+  }
+
+  // Auto-open first pertinent step
+  if (firstPertinent !== null) {
+    setTimeout(function() { _tlOpenCard(firstPertinent); }, 120);
+  }
+}
+
+function _tlHexToRgb(hex) {
+  var r = parseInt(hex.slice(1, 3), 16);
+  var g = parseInt(hex.slice(3, 5), 16);
+  var b = parseInt(hex.slice(5, 7), 16);
+  return r + ',' + g + ',' + b;
+}
+
+function _tlOpenCard(num) {
+  var detail = document.getElementById('tl-detail-' + num);
+  if (detail && !detail.classList.contains('open')) {
+    detail.classList.add('open');
+    _tlConsulted[num] = true;
+    _tlUpdateProgress();
+  }
+}
+
+function toggleTimelineCard(num, e) {
+  if (e && e.target && (e.target.classList.contains('tl-action-btn') || e.target.closest('.tl-action-btn'))) return;
+  var detail = document.getElementById('tl-detail-' + num);
+  if (!detail) return;
+  detail.classList.toggle('open');
+  if (detail.classList.contains('open')) {
+    _tlConsulted[num] = true;
+    _tlUpdateProgress();
+  }
 }
 
 function toggleTimelineStep(el) {
