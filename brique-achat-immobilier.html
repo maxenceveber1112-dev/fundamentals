@@ -1002,7 +1002,188 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
   .hero-cream { padding:2rem 1.5rem; }
   .project-type-grid { grid-template-columns:1fr; }
   .epargne-grid { grid-template-columns:1fr; }
+  .diag-grid { grid-template-columns:1fr !important; }
+  .proportion-minicards { grid-template-columns:1fr !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 2 — DIAGNOSTIC CARD GRID + PROPORTION BAR
+══════════════════════════════════════════════════════════════ */
+.diag-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;
+}
+.diag-card {
+  position:relative; overflow:hidden;
+  background:var(--surface-2); border:1.5px solid var(--border-mid);
+  border-radius:1rem; padding:1.125rem 1rem;
+  cursor:pointer; transition:all 0.2s ease;
+}
+.diag-card:hover { transform:scale(1.01); box-shadow:var(--shadow-hover); border-color:var(--border-hover); }
+.diag-card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; }
+.diag-card-label { font-size:0.78rem; font-weight:600; color:var(--text-secondary); }
+.diag-card-badge {
+  font-size:0.6rem; font-weight:700; letter-spacing:0.06em;
+  padding:0.15rem 0.5rem; border-radius:9999px; white-space:nowrap;
+}
+.diag-badge-budget { color:var(--accent-strong); background:var(--accent-soft); }
+html.dark .diag-badge-budget { color:#C4B5FD; }
+.diag-badge-optionnel { color:var(--text-faint); background:var(--surface-3); }
+.diag-badge-modifie { color:#d97706; background:rgba(217,119,6,0.1); }
+.diag-card-value {
+  font-family:var(--font-display); font-size:1.75rem; font-weight:400;
+  color:var(--text); line-height:1.1; transition:opacity 0.15s ease;
+}
+.diag-card-input {
+  display:none; width:100%; border:none; background:transparent;
+  font-family:var(--font-display); font-size:1.75rem; font-weight:400;
+  color:var(--accent-strong); outline:none; line-height:1.1;
+}
+html.dark .diag-card-input { color:var(--v3-accent-strong); }
+.diag-card.editing .diag-card-value { display:none; }
+.diag-card.editing .diag-card-input { display:block; }
+.diag-card.editing { border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+.diag-card-desc { font-size:0.72rem; color:var(--text-faint); margin-top:0.35rem; line-height:1.4; }
+.diag-card-watermark {
+  position:absolute; right:-10px; bottom:-10px;
+  opacity:0.07; width:80px; height:80px; pointer-events:none;
+  color:var(--text);
+}
+
+/* Proportion bar container */
+.proportion-card {
+  background:var(--bg-elevated); border:1px solid var(--border-subtle);
+  border-radius:1.25rem; box-shadow:var(--shadow-card);
+  padding:1.5rem; margin-top:0.5rem;
+  transition:background 0.3s ease, border-color 0.3s ease;
+}
+html.dark .proportion-card { backdrop-filter:blur(12px); }
+.proportion-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.proportion-title { font-size:0.82rem; font-weight:600; color:var(--text); }
+.proportion-badge {
+  font-size:0.72rem; font-weight:700; padding:0.25rem 0.75rem;
+  border-radius:9999px; white-space:nowrap;
+  animation:pulse-badge 2s ease-in-out infinite;
+}
+@keyframes pulse-badge {
+  0%, 100% { opacity:1; }
+  50% { opacity:0.8; }
+}
+.proportion-badge.badge-green { color:#15803d; background:var(--green-soft); }
+.proportion-badge.badge-orange { color:#c2410c; background:var(--orange-soft); }
+.proportion-badge.badge-red { color:#dc2626; background:var(--red-soft); }
+html.dark .proportion-badge.badge-green { color:#4ade80; }
+html.dark .proportion-badge.badge-orange { color:#fb923c; }
+html.dark .proportion-badge.badge-red { color:#f87171; }
+
+/* The big % */
+.proportion-pct {
+  font-family:var(--font-display); font-size:3rem; font-weight:400;
+  color:var(--text); text-align:center; line-height:1;
+  margin-bottom:0.25rem;
+  animation:countUp 0.5s var(--ease-out) both;
+}
+.proportion-pct-label {
+  font-size:0.75rem; font-weight:500; color:var(--text-muted);
+  text-align:center; margin-bottom:1rem;
+}
+
+/* Proportion bar */
+.proportion-bar {
+  display:flex; height:16px; border-radius:9999px; overflow:hidden;
+  background:var(--track); margin-bottom:0.5rem;
+}
+.proportion-seg {
+  height:100%; transition:width 400ms ease; min-width:0;
+}
+.proportion-seg-charges { background:#8B5CF6; border-radius:9999px 0 0 9999px; }
+.proportion-seg-credits { background:#6366F1; }
+.proportion-seg-mensualite { transition:width 400ms ease, background 400ms ease; }
+.proportion-seg-rav { background:var(--surface-3); border-radius:0 9999px 9999px 0; }
+
+/* Proportion legend */
+.proportion-legend {
+  display:flex; flex-wrap:wrap; gap:0.75rem; margin-bottom:1rem;
+  font-size:0.68rem; color:var(--text-faint);
+}
+.proportion-legend-item { display:flex; align-items:center; gap:0.3rem; }
+.proportion-legend-dot { width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+
+/* 3 mini-cards */
+.proportion-minicards {
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:0.625rem;
+  margin-bottom:1rem;
+}
+.proportion-minicard {
+  padding:0.75rem; border-radius:0.875rem;
+  background:var(--surface-2); border:1px solid var(--border-subtle);
+  text-align:center;
+}
+.proportion-minicard-value {
+  font-family:var(--font-display); font-size:1.125rem; font-weight:400;
+  color:var(--text); line-height:1.2;
+}
+.proportion-minicard-value.minicard-red { color:var(--red); }
+.proportion-minicard-label {
+  font-size:0.68rem; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.05em; color:var(--text-faint); margin-top:0.15rem;
+}
+
+/* Interpretation phrase */
+.proportion-interpretation {
+  font-size:0.82rem; color:var(--text-muted); text-align:center;
+  font-style:italic; line-height:1.5;
+}
+
+/* ── Hypotheses block ── */
+.hypotheses-compact {
+  position:relative;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:0.875rem 1rem; border-radius:0.875rem;
+  background:var(--surface-2); border:1px solid var(--border-subtle);
+  margin-top:1rem;
+}
+.hypotheses-summary {
+  font-size:0.82rem; color:var(--text-muted); font-weight:500;
+}
+.hypotheses-btn {
+  font-size:0.78rem; font-weight:600; color:var(--accent-strong);
+  cursor:pointer; background:none; border:none; padding:0.25rem 0.5rem;
+  border-radius:var(--r-sm); transition:background 0.15s ease;
+}
+html.dark .hypotheses-btn { color:var(--v3-accent-strong); }
+.hypotheses-btn:hover { background:var(--accent-soft); }
+
+/* Hypotheses popup (position:absolute, NOT fixed) */
+.hypotheses-popup-wrap { position:relative; }
+.hypotheses-popup {
+  position:absolute; top:0.5rem; left:0; right:0; z-index:200;
+  background:var(--bg-elevated); border:1px solid var(--border-mid);
+  border-radius:1rem; padding:1.25rem;
+  box-shadow:0 8px 32px rgba(0,0,0,0.12);
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  display:none; flex-direction:column; gap:1rem;
+  opacity:0; transform:translateY(-8px);
+  transition:opacity 0.25s ease, transform 0.25s ease;
+}
+.hypotheses-popup.open {
+  display:flex; opacity:1; transform:translateY(0);
+}
+.hypotheses-popup-title {
+  font-size:0.875rem; font-weight:700; color:var(--text);
+}
+.hypotheses-popup .slider-group { gap:0.3rem; }
+.hypotheses-popup .slider-label { font-size:0.78rem; }
+.hypotheses-popup .slider-value { font-size:0.78rem; }
+.hypotheses-close-btn {
+  align-self:flex-end;
+  display:inline-flex; align-items:center; gap:0.4rem;
+  padding:0.5rem 1rem; border-radius:9999px;
+  background:var(--accent); color:var(--accent-pill-text);
+  font-size:0.8rem; font-weight:600; border:none; cursor:pointer;
+  transition:filter 0.2s ease;
+}
+.hypotheses-close-btn:hover { filter:brightness(0.95); }
+html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
 </style>
 </head>
 <body data-brick-name="Achat immobilier">
@@ -1191,98 +1372,135 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
           </div>
         </div>
 
-        <!-- ═══ SCREEN 2 — Capacité mensuelle ═══ -->
+        <!-- ═══ SCREEN 2 — Carte diagnostic live ═══ -->
         <div class="screen" id="screen-2">
           <div class="brick-card">
             <div class="brick-kicker">ÉTAPE 2 / 8 · CAPACITÉ MENSUELLE</div>
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
-            <p class="brick-subtitle">On transforme tes revenus et charges en <button class="glossary-term" onclick="showGlossaryPopover(this,'Mensualité')" tabindex="0">mensualité</button> cible.</p>
+            <p class="brick-subtitle">Tes données budget, modifiables en un clic. Le diagnostic se recalcule en temps réel.</p>
 
-            <div style="display:flex;flex-direction:column;gap:1.25rem;">
-              <div class="field-group">
-                <label class="field-label" for="input-revenus">Revenus nets du foyer <span class="badge-prefilled" id="badge-revenus" style="display:none">Prérempli</span></label>
-                <div class="euro-wrap"><input type="number" id="input-revenus" class="field-input" placeholder="ex : 2 500" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-                <button type="button" id="link-rev-compl" style="font-size:0.75rem;color:var(--accent-strong);margin-top:0.2rem;text-decoration:none;background:none;border:none;cursor:pointer;text-align:left;padding:0;" onclick="toggleRevCompl()">+ Ajouter des revenus complémentaires</button>
-                <div id="rev-compl-wrap" style="display:none;margin-top:0.4rem;">
-                  <div class="field-group">
-                    <label class="field-label" for="input-revenus-compl" style="font-size:0.78rem;">Revenus complémentaires (primes, variable...)</label>
-                    <div class="euro-wrap"><input type="number" id="input-revenus-compl" class="field-input" placeholder="0" min="0" inputmode="numeric" style="font-size:0.875rem;"/><span class="euro-suffix">€</span></div>
-                  </div>
+            <!-- Grille données 2×2 -->
+            <div class="diag-grid">
+              <!-- Revenus du foyer -->
+              <div class="diag-card" id="diag-revenus" onclick="editDiagCard(this,'input-revenus')">
+                <svg class="diag-card-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <div class="diag-card-header">
+                  <span class="diag-card-label">Revenus du foyer</span>
+                  <span class="diag-card-badge diag-badge-budget" id="badge-revenus">Budget</span>
+                </div>
+                <div class="diag-card-value" id="diag-revenus-val">0 €</div>
+                <input type="number" class="diag-card-input" id="input-revenus" min="0" inputmode="numeric" placeholder="ex : 2 500" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                <div class="diag-card-desc">Base de calcul de capacité.</div>
+              </div>
+
+              <!-- Autres entrées -->
+              <div class="diag-card" id="diag-aides" onclick="editDiagCard(this,'input-aides')">
+                <svg class="diag-card-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                <div class="diag-card-header">
+                  <span class="diag-card-label">Autres entrées / Aides</span>
+                  <span class="diag-card-badge diag-badge-optionnel" id="badge-aides">Optionnel</span>
+                </div>
+                <div class="diag-card-value" id="diag-aides-val">0 €</div>
+                <input type="number" class="diag-card-input" id="input-aides" min="0" inputmode="numeric" placeholder="0" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                <div class="diag-card-desc">APL, allocations, revenus locatifs...</div>
+              </div>
+
+              <!-- Crédits existants -->
+              <div class="diag-card" id="diag-credits" onclick="editDiagCard(this,'input-credits')">
+                <svg class="diag-card-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                <div class="diag-card-header">
+                  <span class="diag-card-label">Crédits existants</span>
+                  <span class="diag-card-badge diag-badge-budget" id="badge-credits">Budget</span>
+                </div>
+                <div class="diag-card-value" id="diag-credits-val">0 €/mois</div>
+                <input type="number" class="diag-card-input" id="input-credits" min="0" inputmode="numeric" placeholder="ex : 200" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                <div class="diag-card-desc">Réduit directement ta capacité d'emprunt.</div>
+              </div>
+
+              <!-- Charges fixes -->
+              <div class="diag-card" id="diag-charges" onclick="editDiagCard(this,'input-charges')">
+                <svg class="diag-card-watermark" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                <div class="diag-card-header">
+                  <span class="diag-card-label">Charges fixes</span>
+                  <span class="diag-card-badge diag-badge-budget" id="badge-charges">Budget</span>
+                </div>
+                <div class="diag-card-value" id="diag-charges-val">0 €/mois</div>
+                <input type="number" class="diag-card-input" id="input-charges" min="0" inputmode="numeric" placeholder="ex : 800" onblur="closeDiagCard(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                <div class="diag-card-desc">Sert à estimer ton reste à vivre.</div>
+              </div>
+            </div>
+
+            <!-- Hidden inputs preserved for compatibility -->
+            <input type="hidden" id="input-revenus-compl" value="0"/>
+            <input type="hidden" id="input-loyer" value="0"/>
+
+            <!-- TAUX D'EFFORT — Barre de proportion animée -->
+            <div class="proportion-card" id="proportion-card">
+              <div class="proportion-header">
+                <span class="proportion-title">Ton taux d'effort</span>
+                <span class="proportion-badge badge-green" id="proportion-badge">Confortable</span>
+              </div>
+
+              <div class="proportion-pct" id="proportion-pct">0 %</div>
+              <div class="proportion-pct-label">taux d'effort</div>
+
+              <div class="proportion-bar" id="proportion-bar">
+                <div class="proportion-seg proportion-seg-charges" id="seg-charges" style="width:0%"></div>
+                <div class="proportion-seg proportion-seg-credits" id="seg-credits" style="width:0%"></div>
+                <div class="proportion-seg proportion-seg-mensualite" id="seg-mensualite" style="width:0%"></div>
+                <div class="proportion-seg proportion-seg-rav" id="seg-rav" style="width:0%"></div>
+              </div>
+
+              <div class="proportion-legend">
+                <span class="proportion-legend-item"><span class="proportion-legend-dot" style="background:#8B5CF6"></span>Charges</span>
+                <span class="proportion-legend-item"><span class="proportion-legend-dot" style="background:#6366F1"></span>Crédits</span>
+                <span class="proportion-legend-item"><span class="proportion-legend-dot" style="background:var(--green)"></span>Mensualité cible</span>
+                <span class="proportion-legend-item"><span class="proportion-legend-dot" style="background:var(--surface-3)"></span>Reste à vivre</span>
+              </div>
+
+              <div class="proportion-minicards">
+                <div class="proportion-minicard">
+                  <div class="proportion-minicard-value" id="mc-mensualite">--</div>
+                  <div class="proportion-minicard-label">Mensualité cible</div>
+                </div>
+                <div class="proportion-minicard">
+                  <div class="proportion-minicard-value" id="mc-rav">--</div>
+                  <div class="proportion-minicard-label">Reste à vivre</div>
+                </div>
+                <div class="proportion-minicard">
+                  <div class="proportion-minicard-value" id="mc-marge">--</div>
+                  <div class="proportion-minicard-label">Marge avant 35%</div>
                 </div>
               </div>
 
-              <div class="field-group">
-                <label class="field-label" for="input-aides">Autres entrées / Aides <span class="badge-prefilled" id="badge-aides" style="display:none">Prérempli</span></label>
-                <div class="euro-wrap"><input type="number" id="input-aides" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-                <div class="field-help">APL, allocations, etc. — s'ajoutent aux revenus pour le calcul de capacité</div>
+              <div class="proportion-interpretation" id="proportion-interpretation">
+                Saisis tes revenus pour voir ton diagnostic.
               </div>
+            </div>
 
-              <!-- Crédits existants EN PREMIER (grand, visible) -->
-              <div class="field-group">
-                <label class="field-label" for="input-credits" style="font-size:0.9rem;">Crédits existants / mois <span class="badge-prefilled" id="badge-credits" style="display:none">Prérempli</span></label>
-                <div class="euro-wrap"><input type="number" id="input-credits" class="field-input" placeholder="ex : 200" min="0" inputmode="numeric" style="font-size:1rem;padding:0.85rem 1rem;border-width:2px;"/><span class="euro-suffix">€</span></div>
-                <div class="field-help">Crédits conso, auto, etc. — impacte directement ta capacité d'emprunt</div>
-              </div>
-
-              <!-- Charges fixes en secondaire -->
-              <div class="fields-2col">
+            <!-- HYPOTHÈSES compact + popup -->
+            <div class="hypotheses-compact" id="hypotheses-compact">
+              <span class="hypotheses-summary" id="hypotheses-summary">25 ans · 3,0% fixe · assurance ~0 €/mois</span>
+              <button class="hypotheses-btn" onclick="toggleHypothesesPopup()">Modifier ›</button>
+            </div>
+            <div class="hypotheses-popup-wrap">
+              <div class="hypotheses-popup" id="hypotheses-popup">
+                <div class="hypotheses-popup-title">Modifier les hypothèses</div>
+                <div class="slider-group">
+                  <div class="slider-header"><span class="slider-label">Durée du prêt</span><span class="slider-value" id="hyp-duree-val">25 ans</span></div>
+                  <input type="range" id="slider-duree" min="10" max="30" value="25" step="1" oninput="updateHypotheses()"/>
+                </div>
+                <div class="slider-group">
+                  <div class="slider-header"><span class="slider-label">Taux nominal</span><span class="slider-value" id="hyp-taux-val">3,0 %</span></div>
+                  <input type="range" id="slider-taux" min="1" max="8" value="3.0" step="0.1" oninput="updateHypotheses()"/>
+                </div>
                 <div class="field-group">
-                  <label class="field-label" for="input-charges" style="font-size:0.78rem;color:var(--text-secondary);">Charges fixes <span class="badge-prefilled" id="badge-charges" style="display:none">Prérempli</span></label>
-                  <div class="euro-wrap"><input type="number" id="input-charges" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric" style="font-size:0.875rem;"/><span class="euro-suffix">€</span></div>
+                  <label class="field-label" for="input-assurance-mens" style="font-size:0.78rem;">Assurance / mois</label>
+                  <div class="euro-wrap"><input type="number" id="input-assurance-mens" class="field-input" placeholder="auto" min="0" inputmode="numeric" style="font-size:0.875rem;" oninput="updateHypotheses()"/><span class="euro-suffix">€</span></div>
                 </div>
-                <div class="field-group">
-                  <label class="field-label" for="input-loyer" style="font-size:0.78rem;color:var(--text-secondary);">Loyer actuel <span class="badge-prefilled" id="badge-loyer" style="display:none">Prérempli</span></label>
-                  <div class="euro-wrap"><input type="number" id="input-loyer" class="field-input" placeholder="ex : 700" min="0" inputmode="numeric" style="font-size:0.875rem;"/><span class="euro-suffix">€</span></div>
-                  <div id="loyer-source" class="field-help" style="display:none;"></div>
-                  <div class="loyer-delta neutral" id="loyer-delta"></div>
-                </div>
+                <button class="hypotheses-close-btn" onclick="toggleHypothesesPopup()">Fermer et recalculer</button>
               </div>
             </div>
-
-            <!-- Sliders durée + taux TOUJOURS VISIBLES -->
-            <div style="display:flex;flex-direction:column;gap:1rem;margin-top:1.25rem;">
-              <div class="slider-group">
-                <div class="slider-header"><span class="slider-label">Durée du prêt</span></div>
-                <div class="slider-chip-wrap">
-                  <div class="slider-chip" id="chip-duree">20 ans</div>
-                  <input type="range" id="slider-duree" min="5" max="30" value="20" step="1" oninput="updateCapacity()"/>
-                </div>
-              </div>
-              <div class="slider-group">
-                <div class="slider-header"><span class="slider-label">Taux nominal</span></div>
-                <div class="slider-chip-wrap">
-                  <div class="slider-chip" id="chip-taux">3.5 %</div>
-                  <input type="range" id="slider-taux" min="1" max="7" value="3.5" step="0.1" oninput="updateCapacity()"/>
-                </div>
-              </div>
-            </div>
-
-            <div id="warning-effort" class="warning-box" style="display:none;margin-top:0.75rem;">
-              <span>⚠️</span>
-              <span id="warning-effort-text">Taux d'effort élevé.</span>
-            </div>
-
-            <!-- Result cards -->
-            <div class="result-cards" id="results-s2" style="margin-top:1rem;">
-              <div class="result-card"><div class="result-card-value" id="rc-mensualite">--</div><div class="result-card-label">Mensualité cible</div></div>
-              <div class="result-card"><div class="result-card-value" id="rc-rav">--</div><div class="result-card-label">Reste à vivre</div></div>
-            </div>
-
-            <!-- Jauge taux d'effort segmentée -->
-            <div class="effort-gauge" style="margin-top:0.75rem;">
-              <div class="slider-header"><span class="slider-label" style="font-size:0.75rem;">Taux d'effort</span><span class="slider-value" id="val-effort" style="font-size:0.75rem;">0 %</span></div>
-              <div class="effort-gauge-bar">
-                <div class="effort-seg effort-seg-green"></div>
-                <div class="effort-seg effort-seg-orange"></div>
-                <div class="effort-seg effort-seg-red"></div>
-                <div class="effort-indicator" id="effort-indicator" style="left:0%"></div>
-              </div>
-              <div class="effort-gauge-labels"><span>0%</span><span>30%</span><span>35%</span><span>50%</span></div>
-              <div class="effort-gauge-status effort-status-green" id="effort-status">0% de taux d'effort — Confortable</div>
-            </div>
-
-            <!-- Assurance estimée -->
-            <div id="assurance-info" style="font-size:0.75rem;color:var(--text-faint);margin-top:0.35rem;"></div>
 
             <div class="nav-btns" style="margin-top:1.5rem;">
               <button class="btn-hero-secondary" onclick="goToScreen(1)">← Retour</button>
@@ -1819,7 +2037,9 @@ var S = {
   projectType: '', horizon: '3m', status: '', primo: '', propertyType: '',
   codePostal: '', prixM2: 2500, deptName: '',
   revenus: 0, revenusCompl: 0, autresEntrees: 0, charges: 0, credits: 0, loyer: 0,
-  duree: 20, taux: 3.5, assurance: 0, presetMode: 'equilibre',
+  duree: 25, taux: 3.0, assurance: 0, presetMode: 'equilibre',
+  mensualiteCible: 0, tauxEffort: 0, resteAVivre: 0,
+  _prefill_revenus: undefined, _prefill_aides: undefined, _prefill_credits: undefined, _prefill_charges: undefined,
   epargneTotale: 0, matelasActuel: 0, matelasCible: 0, aideFamille: 0,
   travauxApport: 0, epargneBloquee: 0, reserve: 0,
   prixBien: 0, fraisNotaire: 0, fraisAgence: 0, fraisGarantie: 0, fraisDossier: 0,
@@ -1985,8 +2205,8 @@ function getTotalRevenus() { return n(S.revenus) + n(S.revenusCompl) + n(S.autre
 function getMensualiteCible() {
   var revenus = getTotalRevenus();
   var credits = n(S.credits);
-  var maxMens = revenus * 0.33 - credits;
-  return Math.max(0, maxMens - n(S.assurance));
+  var maxMens = revenus * 0.35 - credits;
+  return Math.max(0, maxMens);
 }
 
 function getApportMobilisable() {
@@ -2009,7 +2229,22 @@ function goToScreen(idx) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   // Screen-specific init
-  if (idx === 2) { S.assurance = getAutoAssurance(); updateCapacity(); }
+  if (idx === 2) {
+    // Deduce duration from project type selected on screen 1
+    var dur = deduceDuration();
+    S.duree = dur; S.taux = S.taux || 3.0;
+    var sd = $('slider-duree'); if (sd) sd.value = dur;
+    var st = $('slider-taux'); if (st) st.value = S.taux;
+    var hdv = $('hyp-duree-val'); if (hdv) hdv.textContent = dur + ' ans';
+    var htv = $('hyp-taux-val'); if (htv) htv.textContent = S.taux.toFixed(1).replace('.', ',') + ' %';
+    updateSliderTrack($('slider-duree'));
+    updateSliderTrack($('slider-taux'));
+    S.assurance = getAutoAssurance();
+    // Prefill assurance input placeholder
+    var assInput = $('input-assurance-mens');
+    if (assInput && !assInput.value) assInput.placeholder = '~' + S.assurance;
+    updateCapacity();
+  }
   if (idx === 3) updateApport();
   if (idx === 4) updateCost();
   if (idx === 5) updateScreen5();
@@ -2035,7 +2270,6 @@ function syncStateFromScreen(screenIdx) {
     S.autresEntrees = n(($('input-aides') || {}).value);
     S.charges = n(($('input-charges') || {}).value);
     S.credits = n(($('input-credits') || {}).value);
-    S.loyer = n(($('input-loyer') || {}).value);
     S.duree = n(($('slider-duree') || {}).value);
     S.taux = n(($('slider-taux') || {}).value);
   }
@@ -2316,83 +2550,185 @@ function toggleHypotheses() {
   if (body) body.classList.toggle('open');
 }
 
-/* ─── ÉCRAN 2 : CAPACITY ─────────────────────────────────── */
+/* ─── SCREEN 2 : DIAGNOSTIC CARD INLINE EDIT ────────────── */
+function editDiagCard(card, inputId) {
+  card.classList.add('editing');
+  var inp = $(inputId);
+  if (inp) { inp.focus(); inp.select(); }
+}
+function closeDiagCard(inp) {
+  var card = inp.closest('.diag-card');
+  if (card) card.classList.remove('editing');
+  updateCapacity();
+}
+
+/* ─── SCREEN 2 : HYPOTHESES POPUP ───────────────────────── */
+function toggleHypothesesPopup() {
+  var popup = $('hypotheses-popup');
+  if (!popup) return;
+  if (popup.classList.contains('open')) {
+    popup.classList.remove('open');
+    setTimeout(function() { popup.style.display = 'none'; }, 250);
+  } else {
+    popup.style.display = 'flex';
+    // Force reflow for animation
+    popup.offsetHeight;
+    popup.classList.add('open');
+  }
+  updateCapacity();
+}
+
+function updateHypotheses() {
+  var duree = n(($('slider-duree') || {}).value);
+  var taux = n(($('slider-taux') || {}).value);
+  var dureeVal = $('hyp-duree-val');
+  var tauxVal = $('hyp-taux-val');
+  if (dureeVal) dureeVal.textContent = duree + ' ans';
+  if (tauxVal) tauxVal.textContent = taux.toFixed(1).replace('.', ',') + ' %';
+
+  S.duree = duree; S.taux = taux;
+
+  // Update slider track styling
+  updateSliderTrack($('slider-duree'));
+  updateSliderTrack($('slider-taux'));
+
+  updateCapacity();
+}
+
+/* ─── SCREEN 2 : DEDUCE DURATION FROM PROJECT TYPE ──────── */
+function deduceDuration() {
+  var pt = S.projectType;
+  if (pt === 'investissement_locatif' || pt === 'residence_secondaire') return 20;
+  if (pt === 'residence_principale' || pt === 'achat_travaux') return 25;
+  // Fallback: if status is propriétaire → likely investment → 20
+  if (S.status === 'proprietaire') return 20;
+  return 25; // default
+}
+
+/* ─── ÉCRAN 2 : CAPACITY (refonte proportion bar) ────────── */
 function updateCapacity() {
-  var revenus = n(($('input-revenus') || {}).value) + n(($('input-revenus-compl') || {}).value) + n(($('input-aides') || {}).value);
+  var revenus = n(($('input-revenus') || {}).value) + n(($('input-revenus-compl') || {}).value);
+  var autresEntrees = n(($('input-aides') || {}).value);
+  var revenusTotaux = revenus + autresEntrees;
   var charges = n(($('input-charges') || {}).value);
   var credits = n(($('input-credits') || {}).value);
-  var loyer = n(($('input-loyer') || {}).value);
   var duree = n(($('slider-duree') || {}).value);
   var taux = n(($('slider-taux') || {}).value);
 
-  // Position chips
-  positionChip('slider-duree', 'chip-duree', duree + ' ans');
-  positionChip('slider-taux', 'chip-taux', taux.toFixed(1) + ' %');
-
   S.revenus = n(($('input-revenus') || {}).value);
   S.revenusCompl = n(($('input-revenus-compl') || {}).value);
-  S.autresEntrees = n(($('input-aides') || {}).value);
-  S.charges = charges; S.credits = credits; S.loyer = loyer;
+  S.autresEntrees = autresEntrees;
+  S.charges = charges; S.credits = credits;
   S.duree = duree; S.taux = taux;
 
   S.assurance = getAutoAssurance();
 
-  var mensMax = revenus * 0.33 - credits - S.assurance;
-  mensMax = Math.max(0, mensMax);
+  // HCSF rule: mensualité max = revenusTotaux × 0.35 - credits
+  var mensualiteMax = Math.max(0, revenusTotaux * 0.35 - credits);
+  var resteAVivre = revenusTotaux - charges - credits - mensualiteMax;
+  var tauxEffort = revenusTotaux > 0 ? ((credits + mensualiteMax) / revenusTotaux * 100) : 0;
+  var margeAvant35 = Math.max(0, revenusTotaux * 0.35 - credits - mensualiteMax);
 
-  var effort = revenus > 0 ? (credits + mensMax + S.assurance) / revenus : 0;
-  var rav = revenus - charges - credits - mensMax - S.assurance;
+  S.mensualiteCible = mensualiteMax;
+  S.tauxEffort = tauxEffort;
+  S.resteAVivre = resteAVivre;
 
-  // Segmented effort gauge
-  var effortPct = Math.min(effort * 100, 50);
-  var indicatorPos = effortPct / 50 * 100;
-  var indicator = $('effort-indicator');
-  if (indicator) indicator.style.left = indicatorPos + '%';
-  $('val-effort').textContent = fmtPct(effort);
+  // Update diag card display values
+  var revVal = $('diag-revenus-val');
+  if (revVal) revVal.textContent = fmt(S.revenus);
+  var aidesVal = $('diag-aides-val');
+  if (aidesVal) aidesVal.textContent = fmt(autresEntrees);
+  var credVal = $('diag-credits-val');
+  if (credVal) credVal.textContent = fmt(credits) + '/mois';
+  var chVal = $('diag-charges-val');
+  if (chVal) chVal.textContent = fmt(charges) + '/mois';
 
-  var statusEl = $('effort-status');
-  if (statusEl) {
-    var effortLabel, effortClass;
-    if (effort <= 0.30) { effortLabel = 'Confortable'; effortClass = 'effort-status-green'; }
-    else if (effort <= 0.35) { effortLabel = 'Limite HCSF'; effortClass = 'effort-status-orange'; }
-    else { effortLabel = 'Trop tendu'; effortClass = 'effort-status-red'; }
-    statusEl.textContent = fmtPct(effort) + ' de taux d\'effort — ' + effortLabel;
-    statusEl.className = 'effort-gauge-status ' + effortClass;
-  }
+  // Update badges if values were modified from prefill
+  updateDiagBadge('input-revenus', 'badge-revenus', S._prefill_revenus);
+  updateDiagBadge('input-aides', 'badge-aides', S._prefill_aides);
+  updateDiagBadge('input-credits', 'badge-credits', S._prefill_credits);
+  updateDiagBadge('input-charges', 'badge-charges', S._prefill_charges);
 
-  var warnEl = $('warning-effort');
-  if (effort > EFFORT_MAX && revenus > 0) {
-    warnEl.style.display = 'flex';
-    $('warning-effort-text').textContent = 'Taux d\'effort à ' + fmtPct(effort) + '. Les normes HCSF limitent à 35% assurance incluse.';
-  } else {
-    warnEl.style.display = 'none';
-  }
+  // Proportion bar segments
+  if (revenusTotaux > 0) {
+    var pctCharges = Math.max(0, charges / revenusTotaux * 100);
+    var pctCredits = Math.max(0, credits / revenusTotaux * 100);
+    var pctMens = Math.max(0, mensualiteMax / revenusTotaux * 100);
+    var pctRav = Math.max(0, 100 - pctCharges - pctCredits - pctMens);
 
-  $('rc-mensualite').textContent = fmt(mensMax);
-  $('rc-rav').textContent = fmt(rav);
+    var segCharges = $('seg-charges');
+    var segCredits = $('seg-credits');
+    var segMens = $('seg-mensualite');
+    var segRav = $('seg-rav');
+    if (segCharges) segCharges.style.width = pctCharges + '%';
+    if (segCredits) segCredits.style.width = pctCredits + '%';
+    if (segMens) segMens.style.width = pctMens + '%';
+    if (segRav) segRav.style.width = pctRav + '%';
 
-  var deltaEl = $('loyer-delta');
-  if (deltaEl && loyer > 0) {
-    var ecart = mensMax - loyer;
-    if (ecart > 0) {
-      deltaEl.className = 'loyer-delta positive';
-      deltaEl.textContent = 'La mensualité serait +' + fmt(ecart) + ' de plus que ton loyer actuel';
-    } else if (ecart < 0) {
-      deltaEl.className = 'loyer-delta negative';
-      deltaEl.textContent = 'La mensualité serait ' + fmt(ecart) + ' de moins que ton loyer actuel';
-    } else {
-      deltaEl.className = 'loyer-delta neutral';
-      deltaEl.textContent = 'Identique à ton loyer actuel';
+    // Dynamic color for mensualité segment
+    if (segMens) {
+      if (tauxEffort < 30) segMens.style.background = 'var(--green)';
+      else if (tauxEffort <= 35) segMens.style.background = 'var(--orange)';
+      else segMens.style.background = 'var(--red)';
     }
-  } else if (deltaEl) {
-    deltaEl.textContent = '';
   }
 
-  var assInfo = $('assurance-info');
-  if (assInfo && S.assurance > 0) {
-    assInfo.textContent = 'Assurance estimée : ~' + fmt(S.assurance) + '/mois (adaptée à ton âge)';
-  } else if (assInfo) {
-    assInfo.textContent = '';
+  // Big % display
+  var pctEl = $('proportion-pct');
+  if (pctEl) pctEl.textContent = Math.round(tauxEffort * 10) / 10 + ' %';
+
+  // Badge
+  var badge = $('proportion-badge');
+  if (badge) {
+    badge.className = 'proportion-badge';
+    if (tauxEffort < 30) { badge.textContent = 'Confortable'; badge.classList.add('badge-green'); }
+    else if (tauxEffort <= 35) { badge.textContent = 'Limite HCSF'; badge.classList.add('badge-orange'); }
+    else { badge.textContent = 'Trop tendu'; badge.classList.add('badge-red'); }
+  }
+
+  // Mini-cards
+  var mcMens = $('mc-mensualite');
+  if (mcMens) mcMens.textContent = fmt(mensualiteMax);
+  var mcRav = $('mc-rav');
+  if (mcRav) mcRav.textContent = fmt(resteAVivre);
+  var mcMarge = $('mc-marge');
+  if (mcMarge) {
+    if (margeAvant35 > 0) {
+      mcMarge.textContent = fmt(margeAvant35);
+      mcMarge.className = 'proportion-minicard-value';
+    } else {
+      mcMarge.textContent = 'Dépassé';
+      mcMarge.className = 'proportion-minicard-value minicard-red';
+    }
+  }
+
+  // Interpretation text
+  var interp = $('proportion-interpretation');
+  if (interp && revenusTotaux > 0) {
+    if (tauxEffort < 25) interp.textContent = 'Ton budget peut absorber une mensualité confortable, avec une bonne marge.';
+    else if (tauxEffort < 30) interp.textContent = 'Ton budget peut absorber une mensualité confortable.';
+    else if (tauxEffort <= 35) interp.textContent = 'Tu es proche de la limite HCSF de 35%. Vérifie ton reste à vivre.';
+    else interp.textContent = 'Attention : ton taux d\'effort dépasse la limite HCSF de 35%.';
+  } else if (interp) {
+    interp.textContent = 'Saisis tes revenus pour voir ton diagnostic.';
+  }
+
+  // Hypotheses summary
+  var hypSum = $('hypotheses-summary');
+  if (hypSum) {
+    var assuranceMens = n(($('input-assurance-mens') || {}).value) || S.assurance;
+    hypSum.textContent = duree + ' ans · ' + taux.toFixed(1).replace('.', ',') + '% fixe · assurance ~' + fmt(assuranceMens) + '/mois';
+  }
+}
+
+function updateDiagBadge(inputId, badgeId, prefillVal) {
+  var inp = $(inputId);
+  var badge = $(badgeId);
+  if (!inp || !badge) return;
+  var currentVal = n(inp.value);
+  if (prefillVal !== undefined && currentVal !== prefillVal && currentVal > 0) {
+    badge.textContent = 'Modifié';
+    badge.className = 'diag-card-badge diag-badge-modifie';
   }
 }
 
@@ -2915,43 +3251,50 @@ function validerEtDashboard() {
 
     S.ageGroup = profil.age_group || '25_34';
 
-    // Durée déduite de l'âge
-    var dureeDeduite = DUREE_PAR_AGE[S.ageGroup] || DUREE_PAR_AGE[profil.age_group] || 20;
+    // Durée déduite du type de projet (pas de l'âge)
+    var dureeDeduite = deduceDuration();
     S.duree = dureeDeduite;
+    S.taux = 3.0;
     var sliderDuree = $('slider-duree');
     if (sliderDuree) sliderDuree.value = dureeDeduite;
+    var sliderTaux = $('slider-taux');
+    if (sliderTaux) sliderTaux.value = 3.0;
+    var hypDureeVal = $('hyp-duree-val');
+    if (hypDureeVal) hypDureeVal.textContent = dureeDeduite + ' ans';
+    var hypTauxVal = $('hyp-taux-val');
+    if (hypTauxVal) hypTauxVal.textContent = '3,0 %';
 
     // Prefill aides
     var aidesInput = $('input-aides');
     if (aidesInput) {
       var aides = n(bData.aides) || 0;
-      if (aides > 0) { aidesInput.value = aides; $('badge-aides').style.display = 'inline'; S.autresEntrees = aides; }
+      S._prefill_aides = aides;
+      if (aides > 0) { aidesInput.value = aides; S.autresEntrees = aides; }
     }
 
     var revInput = $('input-revenus');
     if (revInput) {
       var rev = n(bData.revenus) || n(profil.revenusMensuels) || 0;
-      if (rev > 0) { revInput.value = rev; $('badge-revenus').style.display = 'inline'; S.revenus = rev; }
+      S._prefill_revenus = rev;
+      if (rev > 0) { revInput.value = rev; S.revenus = rev; }
     }
     var chargesInput = $('input-charges');
     if (chargesInput) {
       var ch = n(bData.chargesFixes) || 0;
-      if (ch > 0) { chargesInput.value = ch; $('badge-charges').style.display = 'inline'; S.charges = ch; }
+      S._prefill_charges = ch;
+      if (ch > 0) { chargesInput.value = ch; S.charges = ch; }
     }
     var creditsInput = $('input-credits');
     if (creditsInput) {
       var cr = n(bData.credits) || 0;
-      if (cr > 0) { creditsInput.value = cr; $('badge-credits').style.display = 'inline'; S.credits = cr; }
+      S._prefill_credits = cr;
+      if (cr > 0) { creditsInput.value = cr; S.credits = cr; }
     }
+    // Loyer prefill preserved in hidden input for downstream screens
     var loyerInput = $('input-loyer');
     if (loyerInput) {
       var loy = n(bData.loyer) || 0;
-      if (loy > 0) {
-        loyerInput.value = loy;
-        $('badge-loyer').style.display = 'inline';
-        var loyerSrc = $('loyer-source');
-        if (loyerSrc) { loyerSrc.style.display = 'block'; loyerSrc.textContent = 'Depuis ton budget : ' + fmt(loy); }
-      }
+      if (loy > 0) { loyerInput.value = loy; S.loyer = loy; }
     }
     // Prefill epargne
     var epInput = $('input-epargne-totale');
@@ -2980,12 +3323,22 @@ function validerEtDashboard() {
     ['slider-duree', 'slider-taux', 'slider-horizon'].forEach(function(id) {
       updateSliderTrack($(id));
     });
+
+    // Update diag card display values from prefill
+    var diagRevVal = $('diag-revenus-val');
+    if (diagRevVal && S.revenus > 0) diagRevVal.textContent = fmt(S.revenus);
+    var diagAidesVal = $('diag-aides-val');
+    if (diagAidesVal && S.autresEntrees > 0) diagAidesVal.textContent = fmt(S.autresEntrees);
+    var diagCredVal = $('diag-credits-val');
+    if (diagCredVal && S.credits > 0) diagCredVal.textContent = fmt(S.credits) + '/mois';
+    var diagChVal = $('diag-charges-val');
+    if (diagChVal && S.charges > 0) diagChVal.textContent = fmt(S.charges) + '/mois';
   })();
 })();
 
 function attachLiveListeners() {
-  // Screen 2 inputs
-  ['input-revenus', 'input-revenus-compl', 'input-aides', 'input-charges', 'input-credits', 'input-loyer'].forEach(function(id) {
+  // Screen 2 inputs (loyer removed from screen 2)
+  ['input-revenus', 'input-aides', 'input-charges', 'input-credits'].forEach(function(id) {
     var el = $(id);
     if (el) el.addEventListener('input', updateCapacity);
   });
