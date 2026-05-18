@@ -3482,33 +3482,15 @@ html.dark .s4-result-card--mensuel {
               <h2 class="diag-premium-title">Ton premier diagnostic immobilier est prêt.</h2>
             </div>
 
-            <div class="diag-score-wrap">
-              <svg class="score-ring" viewBox="0 0 100 100">
-                <defs>
-                  <linearGradient id="diag-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#8b5cf6"/>
-                    <stop offset="50%" stop-color="#6366f1"/>
-                    <stop offset="100%" stop-color="#14b8a6"/>
-                  </linearGradient>
-                </defs>
-                <circle class="ring-bg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="0"/>
-                <circle class="ring-fill" id="score-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
-                <text id="score-ring-text" x="50" y="50">--</text>
-              </svg>
-
-              <!-- Score progress bar -->
-              <div class="diag-score-bar">
-                <div class="diag-score-bar-fill" id="diag-score-bar-fill" style="width:0%"></div>
-              </div>
-              <div id="score-status" class="status-card green" style="justify-content:center;margin:0.5rem 0;">
-                <span class="status-icon" id="score-status-icon">✅</span>
-                <div class="status-text" id="score-status-text">--</div>
-              </div>
-            </div>
-
-            <!-- Diagnostic detail cards -->
-            <div class="diag-cards-grid" id="diag-cards-grid">
-              <!-- Populated by buildDiagnosticCards() -->
+            <div class="pdf-pill-wrap" style="display:flex;justify-content:center;margin-top:1.5rem;">
+              <button class="pdf-pill" onclick="downloadPDFResume()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Télécharger mon diagnostic PDF
+              </button>
             </div>
           </div>
           <div class="closing-summary">
