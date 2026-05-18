@@ -1174,32 +1174,29 @@
 
     const bientot = [...nonDispo, ...horsplan];
 
-    /* Max 4 disponibles visibles + bouton dépliage */
-    const toShow = briquesExpanded ? disponibles : disponibles.slice(0, MAX_BRIQUES_VISIBLE);
-    const hasMore = disponibles.length > MAX_BRIQUES_VISIBLE;
-
-    /* Action "Voir tout" dans le header */
+    /* Action "Voir tout" dans le header — pilote l'affichage des bientôt */
     const actionEl = document.getElementById('briques-voir-tout-action');
     if (actionEl) {
-      actionEl.style.display = hasMore ? '' : 'none';
-      if (briquesExpanded) {
-        actionEl.textContent = 'Réduire ↑';
-      } else {
-        const totalVisible = disponibles.length;
-        actionEl.textContent = `Voir tout (${totalVisible}) →`;
-      }
+      actionEl.style.display = bientot.length > 0 ? '' : 'none';
+      actionEl.textContent = briquesExpanded
+        ? 'Réduire ↑'
+        : `Voir tout (${bientot.length}) →`;
     }
 
-    /* Grid disponibles */
-    if (toShow.length > 0) {
+    /* Grid disponibles — toujours toutes affichées, à gauche */
+    if (disponibles.length > 0) {
+      const hdrDispo = document.createElement('p');
+      hdrDispo.className = 'soon-header';
+      hdrDispo.textContent = 'Disponibles';
+      container.appendChild(hdrDispo);
       const grid = document.createElement('div');
       grid.className = 'briques-grid'; grid.setAttribute('role', 'list');
-      toShow.forEach(item => {
+      disponibles.forEach(item => {
         const meta = BRIQUES_META[item.id]; if (!meta) return;
         grid.appendChild(makeBriqueCard(item, meta, activeId));
       });
       container.appendChild(grid);
-      if (toShow.length > 2) {
+      if (disponibles.length > 2) {
         const scrollHint = document.createElement('p');
         scrollHint.style.cssText = 'font-size:0.68rem;color:var(--text-faint);margin:0.25rem 0 0;text-align:right;';
         scrollHint.textContent = '← Faire défiler →';
@@ -1207,8 +1204,8 @@
       }
     }
 
-    /* Bientôt disponibles — toujours visibles, grisées */
-    if (bientot.length > 0) {
+    /* Bientôt disponibles — visibles uniquement si briquesExpanded */
+    if (briquesExpanded && bientot.length > 0) {
       const hdr = document.createElement('p');
       hdr.className = 'soon-header'; hdr.textContent = 'Bientôt disponibles';
       container.appendChild(hdr);
