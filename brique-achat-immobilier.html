@@ -484,27 +484,96 @@ html.dark .brick-kicker { color:#A5B4FC; }
 /* ══════════════════════════════════════════════════════════════
    PILLS — project cards + compact pills
 ══════════════════════════════════════════════════════════════ */
-/* Project type cards 2×2 */
-.project-type-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+/* Project type cards — premium layout */
+.project-type-grid {
+  display:grid; grid-template-columns:1fr; gap:0.75rem;
+}
 .project-type-card {
-  background:var(--surface-2);
-  border:1.5px solid var(--border-mid);
-  border-radius:1rem;
-  padding:1.25rem 1rem;
-  cursor:pointer; transition:all 0.2s ease; text-align:center;
-  display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+  position:relative; overflow:hidden;
+  background:rgba(255,255,255,0.03); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:1.125rem;
+  padding:1.25rem 1.25rem;
+  cursor:pointer; transition:all 0.25s ease; text-align:left;
+  display:flex; align-items:center; gap:1rem;
 }
-.project-type-card:hover { border-color:var(--accent-strong); background:var(--accent-soft); }
+.project-type-card .ptc-icon {
+  width:3rem; height:3rem; border-radius:0.875rem;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.5rem; flex-shrink:0;
+  background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.12);
+  transition:all 0.25s ease;
+}
+.project-type-card .ptc-text { display:flex; flex-direction:column; gap:0.15rem; flex:1; }
+.project-type-card .ptc-title { font-size:0.9rem; font-weight:600; color:#fff; transition:color 0.2s; }
+.project-type-card .ptc-sub { font-size:0.75rem; color:rgba(255,255,255,0.45); line-height:1.4; }
+.project-type-card .ptc-arrow {
+  flex-shrink:0; width:1.5rem; height:1.5rem; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  border:1.5px solid rgba(255,255,255,0.12); color:rgba(255,255,255,0.25);
+  font-size:0.7rem; transition:all 0.25s ease;
+}
+.project-type-card:hover {
+  border-color:rgba(139,92,246,0.35); background:rgba(139,92,246,0.06);
+  box-shadow:0 0 24px -6px rgba(139,92,246,0.2);
+}
+.project-type-card:hover .ptc-icon { background:rgba(139,92,246,0.15); border-color:rgba(139,92,246,0.25); }
+.project-type-card:hover .ptc-arrow { border-color:rgba(139,92,246,0.4); color:rgba(139,92,246,0.7); }
 .project-type-card.selected {
-  border-color:var(--accent-strong);
-  background:var(--accent-soft);
-  box-shadow:0 0 0 3px var(--accent-soft);
+  border-color:#8b5cf6;
+  background:rgba(139,92,246,0.1);
+  box-shadow:0 0 0 2px rgba(139,92,246,0.15), 0 0 32px -8px rgba(139,92,246,0.3);
 }
-.project-type-card .ptc-icon { font-size:2rem; }
-.project-type-card .ptc-title { font-size:0.875rem; font-weight:600; color:var(--text); }
-.project-type-card .ptc-sub { font-size:0.75rem; color:var(--text-muted); line-height:1.4; }
-.project-type-card.selected .ptc-title { color:var(--accent-strong); }
-html.dark .project-type-card.selected .ptc-title { color:var(--v3-accent-strong); }
+.project-type-card.selected .ptc-icon { background:rgba(139,92,246,0.2); border-color:#8b5cf6; }
+.project-type-card.selected .ptc-title { color:#c4b5fd; }
+.project-type-card.selected .ptc-arrow { border-color:#8b5cf6; color:#8b5cf6; background:rgba(139,92,246,0.1); }
+/* Featured card (first / recommended) */
+.project-type-card.ptc-featured {
+  padding:1.5rem 1.5rem;
+  border:1.5px solid rgba(139,92,246,0.18);
+  background:linear-gradient(135deg, rgba(139,92,246,0.06) 0%, rgba(99,102,241,0.04) 100%);
+}
+.project-type-card.ptc-featured .ptc-icon {
+  width:3.5rem; height:3.5rem; font-size:1.75rem;
+  background:linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.1));
+  border-color:rgba(139,92,246,0.25);
+}
+.project-type-card.ptc-featured .ptc-title { font-size:1rem; }
+.ptc-reco-badge {
+  position:absolute; top:0.75rem; right:0.75rem;
+  font-size:0.6rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+  padding:0.2rem 0.6rem; border-radius:9999px;
+  background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.2);
+}
+.ptc-compact-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+html.dark .project-type-card.selected .ptc-title { color:var(--v3-accent-strong,#c4b5fd); }
+
+/* Profil section card */
+.profil-section {
+  background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07);
+  border-radius:1rem; padding:1rem 1.125rem; display:flex; flex-direction:column; gap:0.75rem;
+}
+.profil-section-label {
+  font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em;
+  color:rgba(255,255,255,0.35);
+}
+.profil-section-fields { display:flex; flex-direction:column; gap:0.75rem; }
+
+/* Status reminder banner (screen 2) */
+.statut-banner {
+  display:flex; align-items:center; gap:0.625rem;
+  padding:0.65rem 1rem; border-radius:9999px;
+  background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2);
+  font-size:0.8rem; color:#fbbf24; line-height:1.4;
+  margin-bottom:0.75rem;
+}
+.statut-banner-icon { font-size:1rem; flex-shrink:0; }
+.statut-banner-text { flex:1; }
+.statut-banner-close {
+  background:none; border:none; color:rgba(245,158,11,0.5); cursor:pointer;
+  font-size:1rem; padding:0; line-height:1; flex-shrink:0;
+}
+.statut-banner-close:hover { color:#fbbf24; }
 
 /* Compact pills (bloc B) */
 .compact-question { display:flex; flex-direction:column; gap:0.375rem; }
@@ -1289,12 +1358,29 @@ html.dark .s6-info-card { background:rgba(255,255,255,0.04); border-color:rgba(2
 .tl-badge-urgent { background:rgba(239,68,68,0.18); color:#f87171; }
 .tl-badge-na { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.45); }
 
-/* Detail panel (revealed on click) */
+/* Detail panel (accordion) */
 .tl-detail {
-  display:none; margin-top:0.85rem; padding-top:0.75rem;
+  max-height:0; overflow:hidden; transition:max-height 0.25s ease-in-out;
+  margin-top:0; padding-top:0;
+}
+.tl-detail.open {
+  max-height:600px; margin-top:0.85rem; padding-top:0.75rem;
   border-top:1px solid rgba(255,255,255,0.06);
 }
-.tl-detail.open { display:block; animation:fadeSlideUp 0.25s ease-out; }
+/* Kicker preview (always visible) */
+.tl-kicker-preview {
+  font-size:0.78rem; color:rgba(255,255,255,0.4); line-height:1.4;
+  margin-top:0.2rem; transition:opacity 0.2s;
+}
+.tl-card.tl-open .tl-kicker-preview { opacity:0.3; }
+/* Accordion arrow */
+.tl-arrow {
+  position:absolute; top:1.25rem; right:1.25rem;
+  font-size:0.7rem; color:rgba(255,255,255,0.3);
+  transition:transform 0.25s ease-in-out, color 0.2s;
+}
+.tl-card.tl-open .tl-arrow { transform:rotate(180deg); color:rgba(255,255,255,0.5); }
+.tl-card.tl-open { border-color:rgba(139,92,246,0.2); background:rgba(255,255,255,0.045); }
 .tl-docs { font-size:0.8rem; color:var(--text-secondary,rgba(255,255,255,0.6)); line-height:1.55; margin-bottom:0.5rem; }
 .tl-docs span { display:block; padding:0.1rem 0; }
 .tl-legal-block {
@@ -1377,12 +1463,66 @@ html.dark .s6-info-card { background:rgba(255,255,255,0.04); border-color:rgba(2
 /* ══════════════════════════════════════════════════════════════
    ÉCRAN FINAL — score ring + summary + reco cards
 ══════════════════════════════════════════════════════════════ */
+/* Premium diagnostic section */
+.diag-premium-section {
+  background:linear-gradient(160deg, rgba(139,92,246,0.06) 0%, rgba(99,102,241,0.03) 50%, rgba(20,184,166,0.02) 100%);
+  border:1px solid rgba(139,92,246,0.12);
+  border-radius:1.5rem; padding:2rem 1.75rem; text-align:center;
+}
+.diag-premium-header { margin-bottom:1.5rem; }
+.diag-premium-kicker {
+  font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
+  background:linear-gradient(135deg, #8b5cf6, #6366f1);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text; margin-bottom:0.5rem;
+}
+.diag-premium-title {
+  font-family:var(--font-display); font-size:1.25rem; font-weight:400;
+  color:#fff; letter-spacing:0.01em;
+}
+.diag-score-wrap { margin-bottom:1.5rem; }
+.diag-score-bar {
+  width:60%; max-width:200px; height:6px; border-radius:3px;
+  background:rgba(255,255,255,0.06); margin:0.75rem auto 0; overflow:hidden;
+}
+.diag-score-bar-fill {
+  height:100%; border-radius:3px;
+  background:linear-gradient(90deg, #8b5cf6, #6366f1, #14b8a6);
+  transition:width 1s var(--ease-out);
+}
 .score-ring { width:100px; height:100px; margin:0 auto; }
 .score-ring circle { fill:none; stroke-width:8; }
-.score-ring .ring-bg { stroke:var(--track); }
-.score-ring .ring-fill { stroke:var(--accent-strong); stroke-linecap:round; transition:stroke-dashoffset 1s var(--ease-out); }
-html.dark .score-ring .ring-fill { stroke:var(--v3-accent-strong); }
+.score-ring .ring-bg { stroke:rgba(255,255,255,0.06); }
+.score-ring .ring-fill { stroke:url(#diag-gradient); stroke-linecap:round; transition:stroke-dashoffset 1s var(--ease-out); }
+html.dark .score-ring .ring-fill { stroke:url(#diag-gradient); }
 .score-ring text { font-family:var(--font-display); font-size:1.4rem; font-weight:400; fill:var(--text); text-anchor:middle; dominant-baseline:central; }
+
+/* Diagnostic detail cards grid */
+.diag-cards-grid {
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:0.5rem;
+  text-align:left;
+}
+.diag-card {
+  display:flex; align-items:flex-start; gap:0.5rem;
+  padding:0.75rem 0.875rem; border-radius:0.875rem;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
+}
+.diag-card-icon {
+  flex-shrink:0; width:1.5rem; height:1.5rem; border-radius:0.375rem;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.75rem;
+}
+.diag-card-icon.diag-ok { background:rgba(34,197,94,0.12); color:#22c55e; }
+.diag-card-icon.diag-warn { background:rgba(245,158,11,0.12); color:#f59e0b; }
+.diag-card-icon.diag-bad { background:rgba(239,68,68,0.12); color:#ef4444; }
+.diag-card-body { flex:1; min-width:0; }
+.diag-card-label {
+  font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
+  color:rgba(255,255,255,0.4); margin-bottom:0.1rem;
+}
+.diag-card-value {
+  font-size:0.9rem; font-weight:700; color:#fff;
+}
 
 .summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.625rem; }
 .summary-item {
@@ -1432,7 +1572,7 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
   .brique-layout { padding:1rem 1rem 5rem; }
   .brick-card { padding:1.5rem 1.25rem; }
   .hero-cream { padding:2rem 1.5rem; }
-  .project-type-grid { grid-template-columns:1fr; }
+  .ptc-compact-row { grid-template-columns:1fr; }
   .epargne-grid { grid-template-columns:1fr; }
   .z1-row--primary, .z1-row--secondary { grid-template-columns:1fr; }
 }
@@ -2424,27 +2564,40 @@ html.dark .s4-result-card--mensuel {
             <h2 class="brick-title">Quel achat tu prépares&nbsp;?</h2>
             <p class="brick-subtitle">On adapte les calculs selon ton type de projet.</p>
 
-            <!-- BLOC A — 4 grandes cards de type de projet -->
+            <!-- BLOC A — 3 cards premium de type de projet -->
             <div class="project-type-grid" id="project-type-grid">
-              <div class="project-type-card" data-val="residence_principale" onclick="selectProjectCard(this)">
-                <div class="ptc-icon">🏠</div>
-                <div class="ptc-title">Résidence principale</div>
-                <div class="ptc-sub">Pour y vivre au quotidien</div>
+              <div class="project-type-card ptc-featured" data-val="residence_principale" onclick="selectProjectCard(this)">
+                <span class="ptc-reco-badge">Recommandé</span>
+                <div class="ptc-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+                <div class="ptc-text">
+                  <div class="ptc-title">Résidence principale</div>
+                  <div class="ptc-sub">Pour y vivre au quotidien — mensualité, apport et reste à vivre</div>
+                </div>
+                <div class="ptc-arrow">›</div>
               </div>
-              <div class="project-type-card" data-val="investissement_locatif" onclick="selectProjectCard(this)">
-                <div class="ptc-icon">📈</div>
-                <div class="ptc-title">Investissement locatif</div>
-                <div class="ptc-sub">Acheter pour louer</div>
-              </div>
-              <div class="project-type-card" data-val="residence_secondaire" onclick="selectProjectCard(this)">
-                <div class="ptc-icon">⛵</div>
-                <div class="ptc-title">Résidence secondaire</div>
-                <div class="ptc-sub">Un pied-à-terre ou vacances</div>
-              </div>
-              <div class="project-type-card" data-val="achat_travaux" onclick="selectProjectCard(this)">
-                <div class="ptc-icon">🛠️</div>
-                <div class="ptc-title">Achat avec travaux</div>
-                <div class="ptc-sub">Rénover pour habiter ou revendre</div>
+              <div class="ptc-compact-row">
+                <div class="project-type-card" data-val="investissement_locatif" onclick="selectProjectCard(this)">
+                  <div class="ptc-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  </div>
+                  <div class="ptc-text">
+                    <div class="ptc-title">Investissement locatif</div>
+                    <div class="ptc-sub">Acheter pour louer</div>
+                  </div>
+                  <div class="ptc-arrow">›</div>
+                </div>
+                <div class="project-type-card" data-val="residence_secondaire" onclick="selectProjectCard(this)">
+                  <div class="ptc-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                  </div>
+                  <div class="ptc-text">
+                    <div class="ptc-title">Résidence secondaire</div>
+                    <div class="ptc-sub">Pied-à-terre ou vacances</div>
+                  </div>
+                  <div class="ptc-arrow">›</div>
+                </div>
               </div>
             </div>
             <div style="text-align:center;margin-top:0.5rem;">
@@ -2486,35 +2639,27 @@ html.dark .s4-result-card--mensuel {
                   </div>
                 </div>
 
-                <!-- Statut + Type de bien en 2 colonnes -->
-                <div class="fields-2col">
-                  <div class="compact-question">
-                    <span class="compact-label">Statut</span>
-                    <div class="pills-compact" id="pills-status">
-                      <span class="pill-sm" data-val="seul">Seul</span>
-                      <span class="pill-sm" data-val="couple">Couple</span>
-                      <span class="pill-sm" data-val="co_emprunteur">Co-empr.</span>
-                      <span class="pill-sm" data-val="sci">SCI</span>
+                <!-- Section Votre profil -->
+                <div class="profil-section">
+                  <span class="profil-section-label">Votre profil</span>
+                  <div class="profil-section-fields">
+                    <div class="compact-question">
+                      <span class="compact-label">Statut</span>
+                      <div class="pills-compact" id="pills-status">
+                        <span class="pill-sm" data-val="seul">Seul</span>
+                        <span class="pill-sm" data-val="couple">Couple</span>
+                        <span class="pill-sm" data-val="co_emprunteur">Co-empr.</span>
+                        <span class="pill-sm" data-val="sci">SCI</span>
+                      </div>
                     </div>
-                  </div>
-                  <div class="compact-question">
-                    <span class="compact-label">Type de bien</span>
-                    <div class="pills-compact" id="pills-propertyType">
-                      <span class="pill-sm" data-val="ancien">Ancien</span>
-                      <span class="pill-sm" data-val="neuf">Neuf</span>
-                      <span class="pill-sm" data-val="terrain">Terrain</span>
-                      <span class="pill-sm" data-val="vefa">VEFA</span>
-                      <span class="pill-sm" data-val="ne_sait_pas">?</span>
+                    <div class="compact-question">
+                      <span class="compact-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Primo-accédant')" tabindex="0">Primo-accédant</button></span>
+                      <div class="pills-compact" id="pills-primo">
+                        <span class="pill-sm" data-val="oui">Oui</span>
+                        <span class="pill-sm" data-val="non">Non</span>
+                        <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
+                      </div>
                     </div>
-                  </div>
-                </div>
-
-                <div class="compact-question">
-                  <span class="compact-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Primo-accédant')" tabindex="0">Primo-accédant</button></span>
-                  <div class="pills-compact" id="pills-primo">
-                    <span class="pill-sm" data-val="oui">Oui</span>
-                    <span class="pill-sm" data-val="non">Non</span>
-                    <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
                   </div>
                 </div>
 
@@ -2552,6 +2697,13 @@ html.dark .s4-result-card--mensuel {
             <div class="brick-kicker">ÉTAPE 2 / 7 · CAPACITÉ MENSUELLE</div>
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
             <p class="brick-subtitle">Tes données budget, modifiables en un clic. Le diagnostic se recalcule en temps réel.</p>
+
+            <!-- Bannière rappel statut (visible si statut ≠ seul) -->
+            <div class="statut-banner" id="statut-banner" style="display:none;">
+              <span class="statut-banner-icon">💡</span>
+              <span class="statut-banner-text">Pense à renseigner les revenus et dettes cumulés de tous les acheteurs.</span>
+              <button class="statut-banner-close" onclick="this.parentElement.style.display='none'" aria-label="Fermer">×</button>
+            </div>
 
             <!-- ═══ ZONE 1 — DONNÉES (2 grandes pills fusionnées) ═══ -->
             <div class="z1-row z1-row--primary">
@@ -3154,7 +3306,7 @@ html.dark .s4-result-card--mensuel {
           <div class="brick-card">
             <div class="brick-kicker">ÉTAPE 6 / 7 · PROCESSUS</div>
             <h2 class="brick-title">Les grandes étapes avant les clés.</h2>
-            <p class="brick-subtitle">Survole ou clique sur une étape pour voir le détail.</p>
+            <p class="brick-subtitle">Clique sur une étape pour voir le détail.</p>
 
             <div class="tl-container" id="timeline">
               <!-- Populated by buildTimeline() -->
@@ -3185,37 +3337,41 @@ html.dark .s4-result-card--mensuel {
 
         <!-- ═══ SCREEN 8 — Diagnostic final ═══ -->
         <div class="screen" id="screen-8">
-          <div class="brick-card" style="text-align:center;">
-            <div class="brick-kicker">DIAGNOSTIC IMMOBILIER</div>
-            <h2 class="brick-title">Ton premier diagnostic immobilier est prêt.</h2>
+          <div class="diag-premium-section">
+            <div class="diag-premium-header">
+              <div class="diag-premium-kicker">DIAGNOSTIC IMMOBILIER</div>
+              <h2 class="diag-premium-title">Ton premier diagnostic immobilier est prêt.</h2>
+            </div>
 
-            <svg class="score-ring" viewBox="0 0 100 100">
-              <circle class="ring-bg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="0"/>
-              <circle class="ring-fill" id="score-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
-              <text id="score-ring-text" x="50" y="50">--</text>
-            </svg>
+            <div class="diag-score-wrap">
+              <svg class="score-ring" viewBox="0 0 100 100">
+                <defs>
+                  <linearGradient id="diag-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#8b5cf6"/>
+                    <stop offset="50%" stop-color="#6366f1"/>
+                    <stop offset="100%" stop-color="#14b8a6"/>
+                  </linearGradient>
+                </defs>
+                <circle class="ring-bg" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="0"/>
+                <circle class="ring-fill" id="score-ring-fill" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="264" transform="rotate(-90 50 50)"/>
+                <text id="score-ring-text" x="50" y="50">--</text>
+              </svg>
 
-            <div id="score-status" class="status-card green" style="justify-content:center;margin:0.75rem 0;">
-              <span class="status-icon" id="score-status-icon">✅</span>
-              <div class="status-text" id="score-status-text">--</div>
+              <!-- Score progress bar -->
+              <div class="diag-score-bar">
+                <div class="diag-score-bar-fill" id="diag-score-bar-fill" style="width:0%"></div>
+              </div>
+              <div id="score-status" class="status-card green" style="justify-content:center;margin:0.5rem 0;">
+                <span class="status-icon" id="score-status-icon">✅</span>
+                <div class="status-text" id="score-status-text">--</div>
+              </div>
+            </div>
+
+            <!-- Diagnostic detail cards -->
+            <div class="diag-cards-grid" id="diag-cards-grid">
+              <!-- Populated by buildDiagnosticCards() -->
             </div>
           </div>
-
-          <div class="brick-card">
-            <div class="brick-kicker">RÉSUMÉ</div>
-            <div class="summary-grid" id="summary-grid">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <div class="brick-card">
-            <div class="brick-kicker">ACTIONS PRIORITAIRES</div>
-            <div class="actions-list" id="actions-list">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <!-- Résumé final de la brique -->
           <div class="closing-summary">
             <div class="cs-kicker">● TON BILAN IMMOBILIER</div>
 
@@ -3718,6 +3874,7 @@ function goToScreen(idx) {
     var assInput = $('input-assurance-mens');
     if (assInput && !assInput.value) assInput.placeholder = '~' + S.assurance;
     updateCapacity();
+    updateStatutBanner();
   }
   if (idx === 3) updateApport();
   if (idx === 4) {
@@ -3896,9 +4053,17 @@ function initPills() {
         } else if (field === 'status') {
           $('sci-warning').style.display = 'none';
         }
+        if (field === 'status') updateStatutBanner();
       });
     });
   });
+}
+
+/* ─── STATUT BANNER (screen 2) ─────────────────────────── */
+function updateStatutBanner() {
+  var banner = $('statut-banner');
+  if (!banner) return;
+  banner.style.display = (S.status && S.status !== 'seul') ? 'flex' : 'none';
 }
 
 /* ─── HORIZON SLIDER ────────────────────────────────────── */
@@ -5008,6 +5173,20 @@ function _tlDetailHTML(key) {
   }
 }
 
+var TL_PREVIEWS = {
+  'budget': 'Capacité d\'emprunt, apport et budget total estimé.',
+  'capacite': 'Revenus, crédits et taux d\'effort pour ta mensualité max.',
+  'dossier': 'Les documents à rassembler pour la banque.',
+  'chercher': 'Trouver le bien qui correspond à ton budget.',
+  'offre': 'Formuler une offre cohérente avec ta capacité.',
+  'compromis': 'Signature, rétractation et conditions suspensives.',
+  'financement': 'Obtenir le prêt et finaliser les conditions.',
+  'acte': 'Signature chez le notaire et remise des clés.',
+  'emmenager': 'Emménager ou mettre en location.',
+  'budget_proprio': 'Copropriété, assurance, entretien — ton nouveau budget.',
+  'primo': 'Vérifier ton éligibilité au Prêt à Taux Zéro.'
+};
+
 function buildTimeline() {
   var container = $('timeline');
   if (!container) return;
@@ -5020,7 +5199,6 @@ function buildTimeline() {
 
   var lastPhaseIdx = -1;
   var firstPertinent = null;
-  var isMobile = window.matchMedia('(hover: none)').matches;
 
   for (var i = 0; i < steps.length; i++) {
     var step = steps[i];
@@ -5047,6 +5225,9 @@ function buildTimeline() {
 
     var html = '';
 
+    // Accordion arrow
+    html += '<span class="tl-arrow">▼</span>';
+
     // Glyph
     html += '<div class="tl-glyph">' + (step.glyph || '') + '</div>';
 
@@ -5066,7 +5247,11 @@ function buildTimeline() {
     html += '<span class="tl-title">' + step.title + '</span>';
     html += '</div>';
 
-    // Detail (hidden) — personalized content
+    // Kicker preview (always visible)
+    var preview = TL_PREVIEWS[step.detailKey] || '';
+    if (preview) html += '<div class="tl-kicker-preview">' + preview + '</div>';
+
+    // Detail (accordion) — personalized content
     html += '<div class="tl-detail" id="tl-detail-' + step.num + '">';
     html += _tlDetailHTML(step.detailKey || '');
 
@@ -5082,22 +5267,9 @@ function buildTimeline() {
 
     card.innerHTML = html;
 
-    // Hover (desktop) + tap (mobile) behavior
+    // Click-only accordion behavior
     if (!isGreyed) {
-      if (!isMobile) {
-        (function(c, num) {
-          c.addEventListener('mouseenter', function() {
-            clearTimeout(c._closeTimer);
-            _tlOpenCard(num);
-          });
-          c.addEventListener('mouseleave', function() {
-            c._closeTimer = setTimeout(function() {
-              _tlCloseCard(num);
-            }, 300);
-          });
-        })(card, step.num);
-      }
-      card.addEventListener('click', (function(s) { return function(e) { toggleTimelineCard(s, e); }; })(step.num));
+      card.addEventListener('click', (function(s) { return function(e) { tlAccordionToggle(s, e); }; })(step.num));
     }
     container.appendChild(card);
 
@@ -5115,7 +5287,7 @@ function buildTimeline() {
 
   // Auto-open first pertinent step
   if (firstPertinent !== null) {
-    setTimeout(function() { _tlOpenCard(firstPertinent); }, 120);
+    setTimeout(function() { tlAccordionOpen(firstPertinent); }, 120);
   }
 }
 
@@ -5126,33 +5298,49 @@ function _tlHexToRgb(hex) {
   return r + ',' + g + ',' + b;
 }
 
-function _tlOpenCard(num) {
+function tlAccordionOpen(num) {
   var detail = document.getElementById('tl-detail-' + num);
+  var card = detail ? detail.closest('.tl-card') : null;
   if (detail && !detail.classList.contains('open')) {
     detail.classList.add('open');
+    if (card) card.classList.add('tl-open');
     _tlConsulted[num] = true;
     _tlUpdateProgress();
   }
 }
 
-function _tlCloseCard(num) {
+function tlAccordionClose(num) {
   var detail = document.getElementById('tl-detail-' + num);
+  var card = detail ? detail.closest('.tl-card') : null;
   if (detail && detail.classList.contains('open')) {
     detail.classList.remove('open');
+    if (card) card.classList.remove('tl-open');
   }
 }
 
-function toggleTimelineCard(num, e) {
+function tlAccordionToggle(num, e) {
   if (e && e.target && (e.target.tagName === 'A' || e.target.closest('a') || e.target.classList.contains('tl-cta-pill') || e.target.closest('.tl-cta-pill'))) return;
   var detail = document.getElementById('tl-detail-' + num);
   if (!detail) return;
-  detail.classList.toggle('open');
-  if (detail.classList.contains('open')) {
-    _tlConsulted[num] = true;
-    _tlUpdateProgress();
+  var isOpen = detail.classList.contains('open');
+
+  // Close all open cards first
+  document.querySelectorAll('.tl-detail.open').forEach(function(d) {
+    d.classList.remove('open');
+    var parentCard = d.closest('.tl-card');
+    if (parentCard) parentCard.classList.remove('tl-open');
+  });
+
+  // If was closed, open it
+  if (!isOpen) {
+    tlAccordionOpen(num);
   }
 }
 
+// Legacy aliases
+function _tlOpenCard(num) { tlAccordionOpen(num); }
+function _tlCloseCard(num) { tlAccordionClose(num); }
+function toggleTimelineCard(num, e) { tlAccordionToggle(num, e); }
 function toggleTimelineStep(el) {
   var detail = el.nextElementSibling;
   if (detail) detail.classList.toggle('open');
@@ -5245,17 +5433,24 @@ function buildFinalScreen() {
   ];
 
   var grid = $('summary-grid');
-  grid.innerHTML = '';
-  items.forEach(function(it) {
-    grid.innerHTML += '<div class="summary-item"><div class="summary-item-val">' + it.val + '</div><div class="summary-item-label">' + it.label + '</div></div>';
-  });
+  if (grid) {
+    grid.innerHTML = '';
+    items.forEach(function(it) {
+      grid.innerHTML += '<div class="summary-item"><div class="summary-item-val">' + it.val + '</div><div class="summary-item-label">' + it.label + '</div></div>';
+    });
+  }
 
   S.actions = buildActions();
   var actionsList = $('actions-list');
-  actionsList.innerHTML = '';
-  S.actions.slice(0, 3).forEach(function(a) {
-    actionsList.innerHTML += '<div class="action-item">' + a + '</div>';
-  });
+  if (actionsList) {
+    actionsList.innerHTML = '';
+    S.actions.slice(0, 3).forEach(function(a) {
+      actionsList.innerHTML += '<div class="action-item">' + a + '</div>';
+    });
+  }
+
+  // Build diagnostic cards
+  buildDiagnosticCards(items, effort);
 
   S.nextBrick = recommendNextBrick(S);
   $('reco-next-title').textContent = S.nextBrick.label;
@@ -5291,6 +5486,40 @@ function buildFinalScreen() {
       if (statusEl) statusEl.textContent = 'Hors budget';
     }
   });
+}
+
+function buildDiagnosticCards(items, effort) {
+  var grid = $('diag-cards-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  var EFFORT_MAX_VAL = typeof EFFORT_MAX !== 'undefined' ? EFFORT_MAX : 35;
+  items.forEach(function(it) {
+    var iconClass = 'diag-ok', iconChar = '✓';
+    // Determine status icon based on item
+    if (it.label.indexOf('effort') !== -1 || it.label.indexOf('Effort') !== -1) {
+      var effortVal = effort * 100;
+      if (effortVal > EFFORT_MAX_VAL) { iconClass = 'diag-bad'; iconChar = '✗'; }
+      else if (effortVal > EFFORT_MAX_VAL - 5) { iconClass = 'diag-warn'; iconChar = '~'; }
+    } else if (it.label.indexOf('Reste') !== -1) {
+      var ravNum = parseFloat(it.val.replace(/[^0-9,-]/g, '').replace(',', '.'));
+      if (ravNum < 0) { iconClass = 'diag-bad'; iconChar = '✗'; }
+      else if (ravNum < 500) { iconClass = 'diag-warn'; iconChar = '~'; }
+    } else if (it.label.indexOf('Frais') !== -1 || it.label.indexOf('Coût') !== -1) {
+      iconClass = 'diag-warn'; iconChar = '~';
+    }
+    grid.innerHTML += '<div class="diag-card">'
+      + '<div class="diag-card-icon ' + iconClass + '">' + iconChar + '</div>'
+      + '<div class="diag-card-body">'
+      + '<div class="diag-card-label">' + it.label + '</div>'
+      + '<div class="diag-card-value">' + it.val + '</div>'
+      + '</div></div>';
+  });
+
+  // Score bar
+  var scoreBar = $('diag-score-bar-fill');
+  if (scoreBar && S.score) {
+    scoreBar.style.width = S.score + '%';
+  }
 }
 
 function buildActions() {
