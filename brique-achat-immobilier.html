@@ -2607,77 +2607,6 @@ html.dark .s4-result-card--mensuel {
 
             <div class="nav-btns" style="margin-top:1.5rem;">
               <button class="btn-hero-secondary" onclick="goToScreen(3)">← Retour</button>
-              <button class="btn-hero-primary" onclick="goToScreen(5)">
-                Continuer
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══ SCREEN 5 — Investissement locatif ═══ -->
-        <div class="screen" id="screen-5">
-          <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 5 / 7 · INVESTISSEMENT LOCATIF</div>
-            <h2 class="brick-title">Acheter pour louer&nbsp;: il faut regarder plus que le loyer.</h2>
-
-            <div class="invest-toggle-card">
-              <div class="invest-toggle-header">
-                <span class="invest-toggle-label">Tu prépares un investissement locatif&nbsp;?</span>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="toggle-invest" onchange="toggleInvestment()"/>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div id="invest-minimal" class="invest-minimal" style="display:block;">
-              Section non applicable à ton projet. Tu peux continuer.
-            </div>
-
-            <div id="invest-full" style="display:none;">
-              <div class="fields-2col" style="margin-top:0.75rem;">
-                <div class="field-group">
-                  <label class="field-label" for="input-loyer-estime">Loyer mensuel estimé</label>
-                  <div class="euro-wrap"><input type="number" id="input-loyer-estime" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-                </div>
-                <div class="field-group">
-                  <label class="field-label" for="input-vacance">Vacance locative (mois/an)</label>
-                  <input type="number" id="input-vacance" class="field-input" placeholder="ex : 1" min="0" max="12" step="0.5" inputmode="numeric"/>
-                </div>
-                <div class="field-group">
-                  <label class="field-label" for="input-charges-loc">Charges non récupérables / mois</label>
-                  <div class="euro-wrap"><input type="number" id="input-charges-loc" class="field-input" placeholder="ex : 50" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-                </div>
-                <div class="field-group">
-                  <label class="field-label" for="input-taxe-fonc-loc">Taxe foncière / an</label>
-                  <div class="euro-wrap"><input type="number" id="input-taxe-fonc-loc" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-                </div>
-                <div class="field-group">
-                  <label class="field-label" for="input-assurance-pno">Assurance PNO / mois</label>
-                  <div class="euro-wrap"><input type="number" id="input-assurance-pno" class="field-input" placeholder="ex : 20" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-                </div>
-                <div class="field-group">
-                  <label class="field-label" for="input-gestion-loc">Gestion locative / mois</label>
-                  <div class="euro-wrap"><input type="number" id="input-gestion-loc" class="field-input" placeholder="0" min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-                </div>
-              </div>
-
-              <div class="result-cards" id="results-invest" style="margin-top:1rem;">
-                <div class="result-card"><div class="result-card-value" id="rc-rdt-brut">--</div><div class="result-card-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Rendement brut')" tabindex="0">Rendement brut</button></div></div>
-                <div class="result-card"><div class="result-card-value" id="rc-rdt-net">--</div><div class="result-card-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Rendement net simplifié')" tabindex="0">Rendement net</button></div></div>
-                <div class="result-card"><div class="result-card-value" id="rc-cashflow">--</div><div class="result-card-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Cash-flow')" tabindex="0">Cash-flow mensuel</button></div></div>
-                <div class="result-card"><div class="result-card-value" id="rc-effort-loc">--</div><div class="result-card-label">Effort d'épargne</div></div>
-              </div>
-
-              <div class="warning-box" style="margin-top:0.75rem;">
-                <span>⚠️</span>
-                <span>Simulation simplifiée. La fiscalité (IR, CSG, LMNP…) peut changer le résultat.</span>
-              </div>
-            </div>
-
-            <div class="nav-btns" style="margin-top:1.5rem;">
-              <button class="btn-hero-secondary" onclick="goToScreen(4)">← Retour</button>
               <button class="btn-hero-primary" onclick="goToScreen(6)">
                 Continuer
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -2689,7 +2618,7 @@ html.dark .s4-result-card--mensuel {
         <!-- ═══ SCREEN 6 — Investissement locatif (refonte) ═══ -->
         <div class="screen" id="screen-6">
           <div class="brick-card" style="position:relative;overflow:hidden;">
-            <div class="brick-kicker">ÉTAPE 6 / 7 · INVESTISSEMENT LOCATIF</div>
+            <div class="brick-kicker">ÉTAPE 5 / 7 · INVESTISSEMENT LOCATIF</div>
             <h2 class="brick-title">Acheter pour louer&nbsp;: analyse de rentabilité.</h2>
 
             <!-- Watermark SVG parallax -->
@@ -2825,7 +2754,7 @@ html.dark .s4-result-card--mensuel {
             </div>
 
             <div class="nav-btns" style="margin-top:1.5rem;">
-              <button class="btn-hero-secondary" onclick="goToScreen(5)">← Retour</button>
+              <button class="btn-hero-secondary" onclick="goToScreen(4)">← Retour</button>
               <button class="btn-hero-primary" onclick="goToScreen(7)">
                 Continuer
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -2834,8 +2763,42 @@ html.dark .s4-result-card--mensuel {
           </div>
         </div>
 
-        <!-- ═══ SCREEN 7 — Diagnostic final ═══ -->
+        <!-- ═══ SCREEN 7 — Les étapes d'un achat ═══ -->
         <div class="screen" id="screen-7">
+          <div class="brick-card">
+            <div class="brick-kicker">ÉTAPE 6 / 7 · PROCESSUS</div>
+            <h2 class="brick-title">Les grandes étapes avant les clés.</h2>
+            <p class="brick-subtitle">Clique sur une étape pour voir le détail.</p>
+
+            <div class="tl-container" id="timeline">
+              <!-- Populated by buildTimeline() -->
+            </div>
+
+            <div class="tl-progress" id="tl-progress">0 / 12 étapes consultées</div>
+
+            <div class="pdf-pill-wrap">
+              <button class="pdf-pill" onclick="downloadPDFResume()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Télécharger mon résumé PDF
+              </button>
+            </div>
+
+            <div class="nav-btns" style="margin-top:1.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(6)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(8)">
+                Voir mon diagnostic
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SCREEN 8 — Diagnostic final ═══ -->
+        <div class="screen" id="screen-8">
           <div class="brick-card" style="text-align:center;">
             <div class="brick-kicker">DIAGNOSTIC IMMOBILIER</div>
             <h2 class="brick-title">Ton premier diagnostic immobilier est prêt.</h2>
@@ -2953,7 +2916,7 @@ html.dark .s4-result-card--mensuel {
           </div>
 
           <div class="nav-btns" style="margin-top:1rem;">
-            <button class="btn-hero-secondary" onclick="goToScreen(6)">← Retour</button>
+            <button class="btn-hero-secondary" onclick="goToScreen(7)">← Retour</button>
             <button class="btn-hero-primary" onclick="validerEtDashboard()">
               Ajouter au dashboard
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -3002,15 +2965,15 @@ html.dark .s4-result-card--mensuel {
               <div class="bpc-step-num">4</div>
               <div class="bpc-step-label">Vrai coût d'achat</div>
             </div>
-            <div class="bpc-step" data-screen="5">
+            <div class="bpc-step" data-screen="6">
               <div class="bpc-step-num">5</div>
               <div class="bpc-step-label">Locatif</div>
             </div>
-            <div class="bpc-step" data-screen="6">
-              <div class="bpc-step-num">6</div>
-              <div class="bpc-step-label">Rentabilité</div>
-            </div>
             <div class="bpc-step" data-screen="7">
+              <div class="bpc-step-num">6</div>
+              <div class="bpc-step-label">Les étapes</div>
+            </div>
+            <div class="bpc-step" data-screen="8">
               <div class="bpc-step-num">✓</div>
               <div class="bpc-step-label">C'est noté.</div>
             </div>
@@ -3087,7 +3050,7 @@ html.dark .s4-result-card--mensuel {
 <script>
 /* ─── CONSTANTS ──────────────────────────────────────────── */
 var BRICK_ID = 'achat_immobilier';
-var TOTAL_SCREENS = 8; // 0-7
+var TOTAL_SCREENS = 9; // 0-8
 var EFFORT_MAX = 0.35;
 var NOTARY_RATE_LOW = 0.10;
 var NOTARY_RATE_ANCIEN = 0.07;
@@ -3384,9 +3347,9 @@ function goToScreen(idx) {
     }
     updateCost();
   }
-  if (idx === 5) initInvestment();
   if (idx === 6) initScreen6();
-  if (idx === 7) buildFinalScreen();
+  if (idx === 7) buildTimeline();
+  if (idx === 8) buildFinalScreen();
 
   if (typeof autosaveBrickProgress === 'function') {
     autosaveBrickProgress(BRICK_ID, idx, S);
@@ -3490,8 +3453,9 @@ function updateProgressPanel(idx) {
     'Posons ta capacité mensuelle.',
     'Calculons ton apport réel.',
     'Le vrai coût de ton achat.',
-    'Et si tu achètes pour louer\u00a0?',
+    '',
     'Analyse de rentabilité locative.',
+    'Les grandes étapes avant les clés.',
     'Ton diagnostic est prêt\u00a0!'
   ];
   var titleEl = $('bpc-title');
@@ -3508,8 +3472,8 @@ function selectProjectCard(el) {
   updateModeCard();
 
   if (val === 'investissement_locatif') {
-    var toggle = $('toggle-invest');
-    if (toggle && !toggle.checked) { toggle.checked = true; }
+    var toggle = $('s6-toggle-invest');
+    if (toggle && !toggle.checked) { toggle.checked = true; s6ToggleInvestment(); }
   }
 
   var blocB = $('bloc-b');
