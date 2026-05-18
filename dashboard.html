@@ -1602,6 +1602,61 @@
       });
     }
 
+    // ── BRIQUE ACHAT IMMOBILIER ─────────────────────────────
+    const immoRaw  = loadFromStorage('fund_brick_achat_immobilier');
+    const immoData = immoRaw?.data || immoRaw || null;
+    if (immoData && immoData.financing && immoData.financing.borrowingCapacity > 0) {
+      const borrowing  = immoData.financing.borrowingCapacity || 0;
+      const mensualite = immoData.financing.targetMonthlyPayment || 0;
+      const apport     = immoData.financing.mobilizableDownPayment || 0;
+      const budgetAchat = borrowing + apport;
+      const prixM2     = immoData.project?.prixM2 || 2500;
+      const cp         = immoData.project?.location || '';
+      const dept       = cp.length >= 2 ? cp.substring(0, 2) : '';
+      const score      = immoData.scores?.realEstateReadinessScore || 0;
+      const horizon    = immoData.project?.purchaseHorizon || '';
+      const horizonLabels = { '3m':'< 3 mois', '6m':'3–6 mois', '12m':'6–12 mois', '1y+':'> 1 an', 'curiosite':'Simple curiosité' };
+      const horizonLabel = horizonLabels[horizon] || horizon || '—';
+
+      // Capacité d'achat selon zone géographique
+      const surface30 = prixM2 > 0 ? Math.round(budgetAchat / prixM2) : 0;
+      const zoneLabel = cp ? `≈ ${surface30} m² dans ta zone` : '—';
+
+      // Étape d'avancement depuis le parcours de vie
+      const profil = loadFromStorage('fund_profil') || {};
+      const briquesReco = profil.briques_recommandees || [];
+      const dashStore = loadFromStorage('fund_dashboard') || {};
+      const briquesStatuts = (dashStore.briques || []);
+      const immoStatutObj = briquesStatuts.find(b => b.id === 'achat_immobilier');
+      const nbTotal = briquesReco.length || 1;
+      const immoIdx = briquesReco.indexOf('achat_immobilier');
+      const etapeNum = immoIdx >= 0 ? immoIdx + 1 : null;
+      const etapeLabel = etapeNum ? `Étape ${etapeNum} / ${nbTotal} du parcours` : 'Brique complétée';
+
+      const scoreColor = score >= 60 ? 'green' : score >= 40 ? 'orange' : 'red';
+      const projectLabels = { residence_principale: 'Résidence principale', residence_secondaire: 'Résidence secondaire', investissement_locatif: 'Investissement locatif' };
+      const projectLabel = projectLabels[immoData.project?.projectType] || 'Achat immobilier';
+
+      cards.push({
+        title: 'Projet immobilier',
+        brique: 'achat_immobilier',
+        status: 'complet',
+        statusLabel: projectLabel,
+        value: formatEuro(budgetAchat),
+        valueLabel: 'capacité d\'achat',
+        rows: [
+          { label: 'Capacité d\'emprunt', val: formatEuro(borrowing),  color: '' },
+          { label: 'Mensualité estimée', val: formatEuro(mensualite) + '/mois', color: '' },
+          { label: 'Apport renseigné',   val: formatEuro(apport),      color: '' },
+          { label: 'Surface estimée',    val: zoneLabel,               color: '' },
+          { label: 'Horizon',            val: horizonLabel,            color: '' },
+          { label: 'Avancement parcours',val: etapeLabel,              color: '' },
+        ],
+        progress: null,
+        cta: { href: 'brique-achat-immobilier.html', label: 'Revoir mon projet' }
+      });
+    }
+
     // ── Render ──────────────────────────────────────────────
     if (cards.length === 0) {
       section.style.display = 'none';
