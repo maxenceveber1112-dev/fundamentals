@@ -262,8 +262,8 @@
     }
 
     .greeting-line {
-      font-size:0.875rem; font-weight:400;
-      color:var(--text-muted); margin-bottom:0.875rem;
+      font-size:0.8125rem; font-weight:400;
+      color:var(--text-muted); margin-bottom:0.75rem;
       letter-spacing:-0.005em;
     }
 
@@ -790,7 +790,9 @@
   ════════════════════════════════════════════════════════════ -->
   <div class="zone-hero" id="zone-hero">
     <div class="hero-cream">
-    <!-- Titre serif italic (salutation fusionnée si prénom disponible) -->
+    <!-- Salutation au-dessus du titre -->
+    <div class="greeting-line" id="greeting-line"></div>
+    <!-- Titre serif italic -->
     <h1 class="hero-title" id="hero-title">—</h1>
 
     <!-- Description -->
@@ -1041,14 +1043,14 @@
     const meta = BRIQUES_META[briqData.id];
     if (!meta) return;
 
-    /* Titre — salutation fusionnée si prénom dispo */
+    /* Salutation dans la greeting-line */
+    const greetingEl = document.getElementById('greeting-line');
+    if (greetingEl) greetingEl.textContent = firstName ? `${salut} ${firstName}.` : `${salut}.`;
+
+    /* Titre H1 */
     const titleEl = document.getElementById('hero-title');
     const actionVerb = briqData.statut === 'en_cours' ? 'Continue avec' : 'Commence avec';
-    if (firstName) {
-      titleEl.innerHTML = `${salut} ${firstName} — ${actionVerb} <em>« ${meta.nom} »</em>`;
-    } else {
-      titleEl.innerHTML = `${actionVerb} <em>« ${meta.nom} »</em>`;
-    }
+    titleEl.innerHTML = `${actionVerb} <em>« ${meta.nom} »</em>`;
 
     /* Description — tagline seul, sans le % de progression brique */
     document.getElementById('hero-desc').textContent = meta.tagline || '';
