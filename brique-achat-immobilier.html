@@ -1440,6 +1440,94 @@ html.dark .bpc-logement-surface { color:var(--v3-text); }
   margin-top:0.15rem;
 }
 html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
+
+/* ══════════════════════════════════════════════════════════════
+   CLOSING SUMMARY (écran final)
+══════════════════════════════════════════════════════════════ */
+.closing-summary {
+  background:linear-gradient(135deg, rgba(99,102,241,0.06) 0%, rgba(139,92,246,0.04) 100%);
+  border:1px solid rgba(139,92,246,0.18);
+  border-radius:1.25rem;
+  padding:1.75rem;
+  margin-top:1rem;
+}
+.cs-kicker {
+  font-size:0.65rem; font-weight:700;
+  letter-spacing:0.08em;
+  color:var(--accent-strong);
+  margin-bottom:1rem;
+  text-transform:uppercase;
+}
+html.dark .cs-kicker { color:var(--v3-accent-strong); }
+.cs-metrics {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:0.625rem; margin-bottom:1rem;
+}
+@media(max-width:520px) { .cs-metrics { grid-template-columns:1fr; } }
+.cs-metric {
+  background:var(--bg-elevated);
+  border:1px solid var(--border-subtle);
+  border-radius:0.875rem; padding:0.75rem;
+  text-align:center;
+}
+.cs-metric-label {
+  font-size:0.68rem; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.05em; color:var(--text-faint); margin-bottom:0.2rem;
+}
+.cs-metric-value {
+  font-family:var(--font-display); font-size:1.125rem;
+  font-weight:400; color:var(--text);
+}
+.cs-logements {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:0.5rem; margin-bottom:1.25rem;
+}
+@media(max-width:520px) { .cs-logements { grid-template-columns:1fr; } }
+.cs-logement {
+  background:var(--surface-2);
+  border-radius:0.75rem; padding:0.625rem 0.5rem;
+  text-align:center;
+  border:1px solid var(--border-subtle);
+  transition:all 0.3s;
+}
+.cs-logement.in-budget {
+  border-color:rgba(139,92,246,0.4);
+  background:rgba(139,92,246,0.08);
+}
+.cs-logement.out-budget { opacity:0.4; }
+.cs-logement-icon { font-size:1.3rem; margin-bottom:0.15rem; }
+.cs-logement-label { font-size:0.65rem; font-weight:600; color:var(--text-faint); }
+.cs-logement-status {
+  font-size:0.6rem; font-weight:600; margin-top:0.15rem;
+  color:var(--accent-strong);
+}
+html.dark .cs-logement-status { color:var(--v3-accent-strong); }
+.cs-actions-title {
+  font-size:0.82rem; font-weight:600; color:var(--text);
+  margin-bottom:0.625rem;
+}
+.cs-actions {
+  display:flex; flex-direction:column; gap:0.5rem;
+}
+.cs-action {
+  display:flex; align-items:center; gap:0.75rem;
+  padding:0.75rem 1rem; border-radius:0.875rem;
+  background:var(--bg-elevated); border:1px solid var(--border-subtle);
+  cursor:pointer; transition:all 0.2s ease;
+  text-align:left;
+}
+.cs-action:hover {
+  border-color:var(--accent-strong); background:var(--accent-soft);
+}
+.cs-action-icon {
+  font-size:1.1rem; width:24px; text-align:center; flex-shrink:0;
+}
+.cs-action-label {
+  font-size:0.82rem; font-weight:600; color:var(--text);
+}
+.cs-action-hint {
+  font-size:0.68rem; color:var(--text-faint); margin-left:auto; white-space:nowrap;
+}
 </style>
 </head>
 <body data-brick-name="Achat immobilier">
@@ -1502,7 +1590,7 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
         <!-- ═══ SCREEN 1 — Ton projet ═══ -->
         <div class="screen" id="screen-1">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 1 / 8 · TON PROJET</div>
+            <div class="brick-kicker">ÉTAPE 1 / 7 · TON PROJET</div>
             <h2 class="brick-title">Quel achat tu prépares&nbsp;?</h2>
             <p class="brick-subtitle">On adapte les calculs selon ton type de projet.</p>
 
@@ -1631,7 +1719,7 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
         <!-- ═══ SCREEN 2 — Carte diagnostic live ═══ -->
         <div class="screen" id="screen-2">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 2 / 8 · CAPACITÉ MENSUELLE</div>
+            <div class="brick-kicker">ÉTAPE 2 / 7 · CAPACITÉ MENSUELLE</div>
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
             <p class="brick-subtitle">Tes données budget, modifiables en un clic. Le diagnostic se recalcule en temps réel.</p>
 
@@ -1791,7 +1879,7 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
         <!-- ═══ SCREEN 3 — Ton apport réel ═══ -->
         <div class="screen" id="screen-3">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 3 / 8 · APPORT</div>
+            <div class="brick-kicker">ÉTAPE 3 / 7 · APPORT</div>
             <h2 class="brick-title">Ton <button class="glossary-term" onclick="showGlossaryPopover(this,'Apport')" tabindex="0">apport</button> ne doit pas vider ta sécurité.</h2>
             <p class="brick-subtitle">L'apport utile est celui que tu peux mobiliser sans te mettre en tension.</p>
 
@@ -1883,7 +1971,7 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
         <!-- ═══ SCREEN 4 — Le vrai coût d'achat ═══ -->
         <div class="screen" id="screen-4">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 4 / 8 · COÛT RÉEL</div>
+            <div class="brick-kicker">ÉTAPE 4 / 7 · COÛT RÉEL</div>
             <h2 class="brick-title">Le prix affiché n'est pas le coût total.</h2>
             <p class="brick-subtitle">On additionne les coûts visibles et invisibles.</p>
 
@@ -1975,67 +2063,10 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
           </div>
         </div>
 
-        <!-- ═══ SCREEN 5 — Résumé graphique (REFONTE) ═══ -->
+        <!-- ═══ SCREEN 5 — Investissement locatif ═══ -->
         <div class="screen" id="screen-5">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 5 / 8 · TON BUDGET</div>
-            <h2 class="brick-title">Voici ce que tu peux viser.</h2>
-            <p class="brick-subtitle">Résumé visuel de ta capacité d'achat.</p>
-
-            <!-- Hero card budget max -->
-            <div class="budget-hero-card">
-              <div style="font-size:0.6875rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);">BUDGET MAXIMUM ESTIMÉ</div>
-              <div class="budget-hero-amount" id="s5-budget-max">--</div>
-              <div class="budget-hero-label">budget d'achat maximum estimé</div>
-              <div class="budget-hero-m2" id="s5-m2-line"></div>
-            </div>
-
-            <!-- 3 cards comparatives -->
-            <div class="compare-cards" id="s5-compare-cards">
-              <div class="compare-card" id="s5-card-studio">
-                <div class="compare-card-icon">🏢</div>
-                <div class="compare-card-type">Studio / T1</div>
-                <div class="compare-card-surface">≈ 30 m²</div>
-                <div class="compare-card-price" id="s5-price-studio">--</div>
-                <div class="compare-card-mens" id="s5-mens-studio">--</div>
-              </div>
-              <div class="compare-card" id="s5-card-2p">
-                <div class="compare-card-icon">🏠</div>
-                <div class="compare-card-type">2 pièces</div>
-                <div class="compare-card-surface">≈ 50 m²</div>
-                <div class="compare-card-price" id="s5-price-2p">--</div>
-                <div class="compare-card-mens" id="s5-mens-2p">--</div>
-              </div>
-              <div class="compare-card" id="s5-card-3p">
-                <div class="compare-card-icon">🏡</div>
-                <div class="compare-card-type">3 pièces</div>
-                <div class="compare-card-surface">≈ 70 m²</div>
-                <div class="compare-card-price" id="s5-price-3p">--</div>
-                <div class="compare-card-mens" id="s5-mens-3p">--</div>
-              </div>
-            </div>
-
-            <!-- Quick actions -->
-            <div class="quick-actions" style="margin-top:1rem;">
-              <button class="quick-action" onclick="goToScreen(4)">Réduire le prix cible</button>
-              <button class="quick-action" onclick="goToScreen(3)">Augmenter l'apport</button>
-              <button class="quick-action" onclick="goToScreen(2)">Allonger la durée</button>
-            </div>
-
-            <div class="nav-btns" style="margin-top:1.5rem;">
-              <button class="btn-hero-secondary" onclick="goToScreen(4)">← Retour</button>
-              <button class="btn-hero-primary" onclick="goToScreen(6)">
-                Continuer
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ═══ SCREEN 6 — Investissement locatif ═══ -->
-        <div class="screen" id="screen-6">
-          <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 6 / 8 · INVESTISSEMENT LOCATIF</div>
+            <div class="brick-kicker">ÉTAPE 5 / 7 · INVESTISSEMENT LOCATIF</div>
             <h2 class="brick-title">Acheter pour louer&nbsp;: il faut regarder plus que le loyer.</h2>
 
             <div class="invest-toggle-card">
@@ -2094,8 +2125,8 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
             </div>
 
             <div class="nav-btns" style="margin-top:1.5rem;">
-              <button class="btn-hero-secondary" onclick="goToScreen(5)">← Retour</button>
-              <button class="btn-hero-primary" onclick="goToScreen(7)">
+              <button class="btn-hero-secondary" onclick="goToScreen(4)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(6)">
                 Continuer
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
@@ -2103,10 +2134,10 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
           </div>
         </div>
 
-        <!-- ═══ SCREEN 7 — Les étapes d'un achat ═══ -->
-        <div class="screen" id="screen-7">
+        <!-- ═══ SCREEN 6 — Les étapes d'un achat ═══ -->
+        <div class="screen" id="screen-6">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 7 / 8 · PROCESSUS</div>
+            <div class="brick-kicker">ÉTAPE 6 / 7 · PROCESSUS</div>
             <h2 class="brick-title">Les grandes étapes avant les clés.</h2>
             <p class="brick-subtitle">Clique sur une étape pour voir le détail.</p>
 
@@ -2115,8 +2146,8 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
             </div>
 
             <div class="nav-btns" style="margin-top:1.5rem;">
-              <button class="btn-hero-secondary" onclick="goToScreen(6)">← Retour</button>
-              <button class="btn-hero-primary" onclick="goToScreen(8)">
+              <button class="btn-hero-secondary" onclick="goToScreen(5)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(7)">
                 Voir mon diagnostic
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
@@ -2124,8 +2155,8 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
           </div>
         </div>
 
-        <!-- ═══ SCREEN 8 — Diagnostic final ═══ -->
-        <div class="screen" id="screen-8">
+        <!-- ═══ SCREEN 7 — Diagnostic final ═══ -->
+        <div class="screen" id="screen-7">
           <div class="brick-card" style="text-align:center;">
             <div class="brick-kicker">DIAGNOSTIC IMMOBILIER</div>
             <h2 class="brick-title">Ton premier diagnostic immobilier est prêt.</h2>
@@ -2156,6 +2187,66 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
             </div>
           </div>
 
+          <!-- Résumé final de la brique -->
+          <div class="closing-summary">
+            <div class="cs-kicker">● TON BILAN IMMOBILIER</div>
+
+            <!-- Chiffres clés -->
+            <div class="cs-metrics">
+              <div class="cs-metric">
+                <div class="cs-metric-label">Capacité d'emprunt</div>
+                <div class="cs-metric-value" id="cs-emprunt">—</div>
+              </div>
+              <div class="cs-metric">
+                <div class="cs-metric-label">Apport</div>
+                <div class="cs-metric-value" id="cs-apport">—</div>
+              </div>
+              <div class="cs-metric">
+                <div class="cs-metric-label">Budget total</div>
+                <div class="cs-metric-value" id="cs-budget">—</div>
+              </div>
+            </div>
+
+            <!-- Cards logement -->
+            <div class="cs-logements" id="cs-logements">
+              <div class="cs-logement" id="cs-studio">
+                <div class="cs-logement-icon">🏢</div>
+                <div class="cs-logement-label">Studio / T1</div>
+                <div class="cs-logement-status" id="cs-studio-status">—</div>
+              </div>
+              <div class="cs-logement" id="cs-2p">
+                <div class="cs-logement-icon">🏠</div>
+                <div class="cs-logement-label">2 pièces</div>
+                <div class="cs-logement-status" id="cs-2p-status">—</div>
+              </div>
+              <div class="cs-logement" id="cs-3p">
+                <div class="cs-logement-icon">🏡</div>
+                <div class="cs-logement-label">3 pièces</div>
+                <div class="cs-logement-status" id="cs-3p-status">—</div>
+              </div>
+            </div>
+
+            <!-- 3 actions -->
+            <div class="cs-actions-title">Pour aller plus loin :</div>
+            <div class="cs-actions">
+              <button class="cs-action" onclick="goToScreen(4)">
+                <span class="cs-action-icon">↓</span>
+                <span class="cs-action-label">Réduire le prix cible</span>
+                <span class="cs-action-hint">Modifier à l'étape 4</span>
+              </button>
+              <button class="cs-action" onclick="goToScreen(3)">
+                <span class="cs-action-icon">↑</span>
+                <span class="cs-action-label">Augmenter l'apport</span>
+                <span class="cs-action-hint">Modifier à l'étape 3</span>
+              </button>
+              <button class="cs-action" onclick="openHypothesesPopup()">
+                <span class="cs-action-icon">⏱</span>
+                <span class="cs-action-label">Allonger la durée</span>
+                <span class="cs-action-hint">Modifier les hypothèses</span>
+              </button>
+            </div>
+          </div>
+
           <div class="reco-cards">
             <div class="reco-card" data-glyph="🏠">
               <div class="reco-kicker">PARCOURS RECOMMANDÉ</div>
@@ -2172,7 +2263,7 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
           </div>
 
           <div class="nav-btns" style="margin-top:1rem;">
-            <button class="btn-hero-secondary" onclick="goToScreen(7)">← Retour</button>
+            <button class="btn-hero-secondary" onclick="goToScreen(6)">← Retour</button>
             <button class="btn-hero-primary" onclick="validerEtDashboard()">
               Ajouter au dashboard
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -2195,7 +2286,7 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
               <circle class="bpc-ring-fill" id="bpc-ring-fill" cx="40" cy="40" r="34"
                 stroke-dasharray="213.6"
                 stroke-dashoffset="213.6"/>
-              <text x="40" y="40" text-anchor="middle" dominant-baseline="central" class="bpc-ring-pct" id="bpc-ring-pct">0%</text>
+              <text x="40" y="40" text-anchor="middle" dominant-baseline="central" transform="rotate(90, 40, 40)" class="bpc-ring-pct" id="bpc-ring-pct">0%</text>
             </svg>
           </div>
 
@@ -2223,17 +2314,13 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
             </div>
             <div class="bpc-step" data-screen="5">
               <div class="bpc-step-num">5</div>
-              <div class="bpc-step-label">Ton budget</div>
+              <div class="bpc-step-label">Locatif</div>
             </div>
             <div class="bpc-step" data-screen="6">
               <div class="bpc-step-num">6</div>
-              <div class="bpc-step-label">Locatif</div>
-            </div>
-            <div class="bpc-step" data-screen="7">
-              <div class="bpc-step-num">7</div>
               <div class="bpc-step-label">Les étapes</div>
             </div>
-            <div class="bpc-step" data-screen="8">
+            <div class="bpc-step" data-screen="7">
               <div class="bpc-step-num">✓</div>
               <div class="bpc-step-label">C'est noté.</div>
             </div>
@@ -2309,7 +2396,7 @@ html.dark .bpc-logement-status { color:var(--v3-accent-strong); }
 <script>
 /* ─── CONSTANTS ──────────────────────────────────────────── */
 var BRICK_ID = 'achat_immobilier';
-var TOTAL_SCREENS = 9; // 0-8
+var TOTAL_SCREENS = 8; // 0-7
 var EFFORT_MAX = 0.35;
 var NOTARY_RATE_LOW = 0.10;
 var NOTARY_RATE_ANCIEN = 0.07;
@@ -2369,7 +2456,7 @@ var S = {
   _prefill_revenus: undefined, _prefill_aides: undefined, _prefill_credits: undefined, _prefill_charges: undefined,
   epargneTotale: 0, matelasActuel: 0, matelasCible: 0, aideFamille: 0,
   travauxApport: 0, epargneBloquee: 0, reserve: 0,
-  prixBien: 0, fraisNotaire: 0, fraisAgence: 0, fraisGarantie: 0, fraisDossier: 0,
+  prixBien: 0, prixModifie: false, fraisNotaire: 0, fraisAgence: 0, fraisGarantie: 0, fraisDossier: 0,
   travauxAutres: 0,
   taxeFonciere: 0, chargesCopro: 0, assuranceHab: 0, entretien: 0,
   investEnabled: false,
@@ -2427,7 +2514,7 @@ var GLOSSARY = [
 /* ─── TIMELINE DATA ──────────────────────────────────────── */
 var TIMELINE = [
   { num: 1, title: 'Clarifier le projet', who: 'Toi', docs: 'Aucun', risk: 'Acheter sans savoir ce qu\'on cherche', action: 'Utilise la brique Achat immobilier pour cadrer ton projet.' },
-  { num: 2, title: 'Estimer la capacité', who: 'Toi / courtier', docs: 'Revenus, charges, épargne', risk: 'Sous-estimer les charges ou le taux d\'effort', action: 'Simule ta capacité dans l\'écran 5 de cette brique.' },
+  { num: 2, title: 'Estimer la capacité', who: 'Toi / courtier', docs: 'Revenus, charges, épargne', risk: 'Sous-estimer les charges ou le taux d\'effort', action: 'Simule ta capacité dans l\'écran 2 de cette brique.' },
   { num: 3, title: 'Préparer le dossier banque', who: 'Toi', docs: 'Bulletins, avis d\'imposition, relevés bancaires, épargne', risk: 'Dossier incomplet = retard ou refus', action: 'Lance le parcours Achat immobilier pour préparer ton dossier.' },
   { num: 4, title: 'Chercher le bien', who: 'Toi / agent immobilier', docs: 'Annonces, visites', risk: 'Coup de cœur sans analyse du budget total', action: 'Compare le prix affiché au coût total (écran 4).' },
   { num: 5, title: 'Faire une offre', who: 'Toi', docs: 'Offre écrite', risk: 'Proposer un prix sans connaître sa limite', action: 'Vérifie ta capacité avant de faire une offre.' },
@@ -2497,8 +2584,8 @@ function calculateRealEstateScore(st) {
   else if (st.prixBien > 0) score += 10;
   else score += 5;
   var screensVisited = 0;
-  for (var i = 1; i <= 7; i++) { if (document.getElementById('screen-' + i)) screensVisited++; }
-  score += Math.min(15, Math.round(screensVisited / 7 * 15));
+  for (var i = 1; i <= 6; i++) { if (document.getElementById('screen-' + i)) screensVisited++; }
+  score += Math.min(15, Math.round(screensVisited / 6 * 15));
   score += 10;
   if (st.projectType && st.horizon && st.propertyType) score += 10;
   else if (st.projectType) score += 5;
@@ -2573,11 +2660,18 @@ function goToScreen(idx) {
     updateCapacity();
   }
   if (idx === 3) updateApport();
-  if (idx === 4) updateCost();
-  if (idx === 5) updateScreen5();
-  if (idx === 6) initInvestment();
-  if (idx === 7) buildTimeline();
-  if (idx === 8) buildFinalScreen();
+  if (idx === 4) {
+    // Pre-fill prix du bien with capitalEmpruntable if not yet modified by user
+    var prixInput = $('input-prix-bien');
+    if (prixInput && !S.prixModifie && !n(prixInput.value) && S.capitalEmpruntable > 0) {
+      prixInput.value = Math.round(S.capitalEmpruntable);
+      S.prixBien = Math.round(S.capitalEmpruntable);
+    }
+    updateCost();
+  }
+  if (idx === 5) initInvestment();
+  if (idx === 6) buildTimeline();
+  if (idx === 7) buildFinalScreen();
 
   if (typeof autosaveBrickProgress === 'function') {
     autosaveBrickProgress(BRICK_ID, idx, S);
@@ -2624,7 +2718,7 @@ function syncStateFromScreen(screenIdx) {
     S.assuranceHab = n(($('input-assurance-hab') || {}).value);
     S.entretien = n(($('input-entretien') || {}).value);
   }
-  if (screenIdx === 6) {
+  if (screenIdx === 5) {
     S.loyerEstime = n(($('input-loyer-estime') || {}).value);
     S.vacance = n(($('input-vacance') || {}).value);
     S.chargesLoc = n(($('input-charges-loc') || {}).value);
@@ -2675,7 +2769,6 @@ function updateProgressPanel(idx) {
     'Posons ta capacité mensuelle.',
     'Calculons ton apport réel.',
     'Le vrai coût de ton achat.',
-    'Ton budget d\'achat en résumé.',
     'Et si tu achètes pour louer\u00a0?',
     'Les étapes jusqu\'aux clés.',
     'Ton diagnostic est prêt\u00a0!'
@@ -3346,66 +3439,7 @@ function updateCost() {
   }
 }
 
-/* ─── ÉCRAN 5 : RÉSUMÉ GRAPHIQUE ─────────────────────────── */
-function initSimulator() {
-  updateScreen5();
-}
-
-function updateScreen5() {
-  var mensualite = getMensualiteCible();
-  var apport = getApportMobilisable();
-  var capacite = calculateBorrowingCapacity(mensualite, S.taux, S.duree * 12);
-  var budgetMax = capacite + apport;
-
-  S.capaciteEmprunt = capacite;
-  S.apport = apport;
-  updateSynthesePanel();
-
-  // Hero card
-  var heroAmount = $('s5-budget-max');
-  if (heroAmount) heroAmount.textContent = fmt(budgetMax);
-
-  // M² line
-  var prixM2 = n(S.prixM2) || 2500;
-  var surfaceMax = prixM2 > 0 ? Math.round(budgetMax / prixM2) : 0;
-  var locationLabel = S.deptName || (S.codePostal ? 'département ' + getDeptFromPostal(S.codePostal) : 'moyenne nationale');
-  var m2Line = $('s5-m2-line');
-  if (m2Line && budgetMax > 0) {
-    m2Line.textContent = 'soit ~' + surfaceMax + ' m² à ' + locationLabel + ' (' + new Intl.NumberFormat('fr-FR').format(prixM2) + ' €/m²)';
-  } else if (m2Line) {
-    m2Line.textContent = '';
-  }
-
-  // 3 comparison cards
-  var configs = [
-    { id: 'studio', surface: 30, label: 'Studio / T1' },
-    { id: '2p', surface: 50, label: '2 pièces' },
-    { id: '3p', surface: 70, label: '3 pièces' }
-  ];
-
-  configs.forEach(function(cfg) {
-    var prix = cfg.surface * prixM2;
-    var empruntNeeded = Math.max(0, prix - apport);
-    var mens = calculateMonthlyPayment(empruntNeeded, S.taux, S.duree * 12);
-    var card = $('s5-card-' + cfg.id);
-    var priceEl = $('s5-price-' + cfg.id);
-    var mensEl = $('s5-mens-' + cfg.id);
-
-    if (priceEl) priceEl.textContent = fmt(prix);
-    if (mensEl) mensEl.textContent = '~' + fmt(mens) + '/mois';
-
-    if (card) {
-      card.classList.remove('in-budget', 'out-budget');
-      if (prix <= budgetMax) {
-        card.classList.add('in-budget');
-      } else {
-        card.classList.add('out-budget');
-      }
-    }
-  });
-}
-
-/* ─── ÉCRAN 6 : INVESTMENT ───────────────────────────────── */
+/* ─── ÉCRAN 5 : INVESTMENT ───────────────────────────────── */
 function initInvestment() {
   var isLocatif = S.projectType === 'investissement_locatif';
   var toggle = $('toggle-invest');
@@ -3534,6 +3568,37 @@ function buildFinalScreen() {
   S.nextBrick = recommendNextBrick(S);
   $('reco-next-title').textContent = S.nextBrick.label;
   $('reco-next-text').textContent = S.nextBrick.reason;
+
+  // Closing summary
+  var csEmprunt = $('cs-emprunt');
+  if (csEmprunt) csEmprunt.textContent = fmt(borrowing);
+  var csApport = $('cs-apport');
+  if (csApport) csApport.textContent = fmt(mob);
+  var budgetTotal = borrowing + mob;
+  var csBudget = $('cs-budget');
+  if (csBudget) csBudget.textContent = fmt(budgetTotal);
+
+  // Logement cards in closing summary
+  var prixM2 = S.prixM2 || 2500;
+  var csConfigs = [
+    { id: 'studio', surface: 30, icon: '🏢', label: 'Studio / T1' },
+    { id: '2p', surface: 50, icon: '🏠', label: '2 pièces' },
+    { id: '3p', surface: 70, icon: '🏡', label: '3 pièces' }
+  ];
+  csConfigs.forEach(function(cfg) {
+    var prixL = cfg.surface * prixM2;
+    var card = $('cs-' + cfg.id);
+    var statusEl = $('cs-' + cfg.id + '-status');
+    if (!card) return;
+    card.classList.remove('in-budget', 'out-budget');
+    if (prixL <= budgetTotal) {
+      card.classList.add('in-budget');
+      if (statusEl) statusEl.textContent = '✓ Atteignable';
+    } else {
+      card.classList.add('out-budget');
+      if (statusEl) statusEl.textContent = 'Hors budget';
+    }
+  });
 }
 
 function buildActions() {
@@ -3563,6 +3628,12 @@ function formatProjectType(t) {
     ne_sait_pas: 'À définir'
   };
   return map[t] || t || 'Non défini';
+}
+
+/* ─── OPEN HYPOTHESES POPUP (from closing summary) ──────── */
+function openHypothesesPopup() {
+  goToScreen(2);
+  setTimeout(function() { toggleHypothesesPopup(); }, 400);
 }
 
 /* ─── DASHBOARD INTEGRATION ──────────────────────────────── */
@@ -3715,26 +3786,26 @@ function validerEtDashboard() {
     // Prefill aides
     var aidesInput = $('input-aides');
     if (aidesInput) {
-      var aides = n(bData.aides) || 0;
+      var aides = n(bData.aides) || n(bData.autres_entrees) || 0;
       S._prefill_aides = aides;
       if (aides > 0) { aidesInput.value = aides; S.autresEntrees = aides; }
     }
 
     var revInput = $('input-revenus');
     if (revInput) {
-      var rev = n(bData.revenus) || n(profil.revenusMensuels) || 0;
+      var rev = n(bData.revenus) || n(bData.revenus_nets) || n(profil.revenusMensuels) || 0;
       S._prefill_revenus = rev;
       if (rev > 0) { revInput.value = rev; S.revenus = rev; }
     }
     var chargesInput = $('input-charges');
     if (chargesInput) {
-      var ch = n(bData.chargesFixes) || 0;
+      var ch = n(bData.chargesFixes) || n(bData.charges_fixes) || 0;
       S._prefill_charges = ch;
-      if (ch > 0) { chargesInput.value = ch; S.charges = ch; }
+      if (ch > 0) { chargesInput.value = ch; S.charges = ch; S.chargesFixes = ch; }
     }
     var creditsInput = $('input-credits');
     if (creditsInput) {
-      var cr = n(bData.credits) || 0;
+      var cr = n(bData.credits) || n(bData.dette_mensuelle) || 0;
       S._prefill_credits = cr;
       if (cr > 0) { creditsInput.value = cr; S.credits = cr; }
     }
@@ -3781,6 +3852,20 @@ function validerEtDashboard() {
     if (pillCredVal && S.credits > 0) pillCredVal.textContent = fmt(S.credits) + '/mois';
     var pillChText = $('pill-charges-text');
     if (pillChText && S.charges > 0) pillChText.textContent = '+ ' + fmt(S.charges) + ' de charges fixes';
+
+    // BUG 1 FIX: compute capacity and update synthèse panel at init
+    S.assurance = getAutoAssurance();
+    if (getTotalRevenus() > 0) {
+      var mensInit = (getTotalRevenus() * 0.35) - n(S.credits) - S.assurance;
+      if (mensInit > 0) {
+        var rInit = S.taux / 12 / 100;
+        var nbInit = S.duree * 12;
+        S.capitalEmpruntable = rInit > 0 ? mensInit * ((1 - Math.pow(1 + rInit, -nbInit)) / rInit) : mensInit * nbInit;
+        S.mensualiteCible = mensInit;
+        S.mensualiteMax = mensInit;
+      }
+    }
+    updateSynthesePanel();
   })();
 })();
 
@@ -3805,6 +3890,9 @@ function attachLiveListeners() {
     var el = $(id);
     if (el) el.addEventListener('input', updateCost);
   });
+  // Mark prix as user-modified when they type in it
+  var prixBienEl = $('input-prix-bien');
+  if (prixBienEl) prixBienEl.addEventListener('input', function() { S.prixModifie = true; });
   // Screen 6 inputs
   ['input-loyer-estime', 'input-vacance', 'input-charges-loc', 'input-taxe-fonc-loc', 'input-assurance-pno', 'input-gestion-loc'].forEach(function(id) {
     var el = $(id);
