@@ -790,27 +790,17 @@
   ════════════════════════════════════════════════════════════ -->
   <div class="zone-hero" id="zone-hero">
     <div class="hero-cream">
-    <!-- Salutation discrète -->
-    <div class="greeting-line" id="greeting-line">Bonjour.</div>
-
-    <!-- Kicker contextuel -->
-    <div class="hero-kicker" id="hero-kicker">
-      <span id="hero-kicker-label">ON REPREND</span>
-      <span class="hero-kicker-sep"></span>
-      <span id="hero-kicker-sub">Module</span>
-    </div>
-
-    <!-- Titre serif italic -->
+    <!-- Titre serif italic (salutation fusionnée si prénom disponible) -->
     <h1 class="hero-title" id="hero-title">—</h1>
 
     <!-- Description -->
     <p class="hero-desc" id="hero-desc">—</p>
 
-    <!-- Progression brique -->
-    <div class="hero-progress" id="hero-progress" style="display:none;">
+    <!-- Progression parcours global -->
+    <div class="hero-progress" id="hero-progress">
       <div class="hero-progress-meta">
-        <span>Progression</span>
-        <span class="hero-progress-pct" id="hero-pct">0%</span>
+        <span id="hero-progress-label">Ton parcours</span>
+        <span class="hero-progress-pct" id="hero-pct"></span>
       </div>
       <div class="f-track" style="height:3px;">
         <div class="f-fill" id="hero-bar" style="width:0%"></div>
@@ -823,7 +813,7 @@
         Commencer
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
-      <a href="plan.html" class="btn-hero-secondary">Plus tard</a>
+
     </div>
   </div>
 
@@ -1029,14 +1019,12 @@
     const done  = (dash.briques || []).filter(b => b.statut === 'terminee').length;
     const total = (dash.briques || []).length;
 
-    /* Greeting */
+    /* Greeting — prénom extrait de l'email */
     const h = new Date().getHours();
     const salut = h < 5 ? 'Bonne nuit' : h < 12 ? 'Bonjour' : h < 18 ? 'Bon après-midi' : 'Bonsoir';
     const email = currentUser?.email || '';
     const rawName = email.split('@')[0].split(/[._-]/)[0];
-    const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-    document.getElementById('greeting-line').textContent =
-      firstName ? `${salut} ${firstName}.` : `${salut}.`;
+    const firstName = rawName && !rawName.match(/^[0-9a-f]{8,}$/i) ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : '';
 
     if (done === total && total > 0) {
       document.getElementById('completed-banner').classList.add('show');
@@ -1053,41 +1041,25 @@
     const meta = BRIQUES_META[briqData.id];
     if (!meta) return;
 
-    /* Kicker contextuel selon le kind */
-    const kickerLabelEl = document.getElementById('hero-kicker-label');
-    const kickerSubEl   = document.getElementById('hero-kicker-sub');
-
-    if (briqData.statut === 'en_cours') {
-      kickerLabelEl.textContent = 'ON REPREND';
-      kickerSubEl.textContent   = 'Module ' + meta.pack;
-    } else {
-      kickerLabelEl.textContent = 'POUR DÉMARRER';
-      kickerSubEl.textContent   = 'Module ' + meta.pack;
-    }
-
-    /* Titre */
+    /* Titre — salutation fusionnée si prénom dispo */
     const titleEl = document.getElementById('hero-title');
-    titleEl.innerHTML = briqData.statut === 'en_cours'
-      ? `Continue avec <em>« ${meta.nom} »</em>`
-      : `Commence avec <em>« ${meta.nom} »</em>`;
-
-    /* Description */
-    document.getElementById('hero-desc').textContent = meta.tagline
-      ? meta.tagline + (briqData.progression > 0 ? ` Tu y es à ${briqData.progression}%.` : '')
-      : '';
-
-    /* Progression */
-    const pct = briqData.progression || 0;
-    const progressWrap = document.getElementById('hero-progress');
-    if (pct > 0) {
-      progressWrap.style.display = '';
-      document.getElementById('hero-pct').textContent = pct + '%';
-      const bar = document.getElementById('hero-bar');
-      bar.style.width = pct + '%';
-      pct > 0 && pct < 100 ? bar.classList.add('stripe') : bar.classList.remove('stripe');
+    const actionVerb = briqData.statut === 'en_cours' ? 'Continue avec' : 'Commence avec';
+    if (firstName) {
+      titleEl.innerHTML = `${salut} ${firstName} — ${actionVerb} <em>« ${meta.nom} »</em>`;
     } else {
-      progressWrap.style.display = 'none';
+      titleEl.innerHTML = `${actionVerb} <em>« ${meta.nom} »</em>`;
     }
+
+    /* Description — tagline seul, sans le % de progression brique */
+    document.getElementById('hero-desc').textContent = meta.tagline || '';
+
+    /* Progression parcours global : X / Y briques réalisées */
+    const progressWrap = document.getElementById('hero-progress');
+    const parcoursPct = total > 0 ? Math.round((done / total) * 100) : 0;
+    document.getElementById('hero-pct').textContent = `${done} / ${total} brique${done > 1 ? 's' : ''} réalisée${done > 1 ? 's' : ''}`;
+    const bar = document.getElementById('hero-bar');
+    bar.style.width = parcoursPct + '%';
+    bar.classList.remove('stripe');
 
     /* CTA label */
     document.getElementById('btn-resume').childNodes[0].textContent =
