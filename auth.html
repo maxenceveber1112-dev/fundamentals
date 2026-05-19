@@ -151,15 +151,6 @@
       display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem;
     }
 
-    /* ── PARTICLES CANVAS ── */
-    #particles-canvas {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-
     /* ── THEME TOGGLE ── */
     .theme-toggle {
       position: absolute;
@@ -226,19 +217,6 @@
       font-size:15px; color:var(--text-secondary); max-width:38ch; line-height:1.65;
       margin-bottom:1rem;
       transition: color 0.3s ease;
-    }
-
-    /* ── PROMISE BLOCK ── */
-    .auth-promise {
-      border-left: 2px solid var(--accent);
-      padding: 0.75rem 1rem;
-      margin-bottom: 2rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      line-height: 1.65;
-      color: var(--text-secondary);
-      opacity: 0.85;
-      transition: color 0.3s ease, border-color 0.3s ease;
     }
 
     .auth-features { display:flex; flex-direction:column; gap:1.25rem; margin-top:auto; }
@@ -374,7 +352,6 @@
 
   <!-- LEFT PANEL -->
   <div class="auth-left">
-    <canvas id="particles-canvas"></canvas>
     <div class="auth-left-content" style="height:100%;min-height:600px;">
       <a href="dashboard.html" class="wordmark" aria-label="Fundamental" style="margin-bottom:3rem;">
         <span class="mark">f</span>
@@ -389,9 +366,6 @@
         <p class="auth-sub">
           Un parcours personnalisé, brique par brique — adapté à ta situation réelle.
         </p>
-        <div class="auth-promise">
-          Brique après brique, tu construis une maîtrise complète : budget, épargne, crédit, investissement, immo. Sans te perdre.
-        </div>
       </div>
 
       <div class="auth-features">
@@ -513,147 +487,6 @@
 
 </div><!-- /.auth-layout -->
 
-<!-- ── PARTICLES CANVAS ── -->
-<script>
-(function() {
-  var canvas = document.getElementById('particles-canvas');
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  var particles = [];
-  var mouse = { x: -9999, y: -9999 };
-  var PARTICLE_COUNT = 70;
-  var CONNECTION_DIST = 120;
-  var MOUSE_RADIUS = 80;
-  var MOUSE_PUSH = 0.8;
-
-  /* Dark mode colors */
-  var darkColors = ['#8b5cf6', '#6366f1', '#14b8a6', 'rgba(255,255,255,0.6)'];
-  /* Bright mode colors */
-  var brightColors = ['#6d28d9', '#4338ca', '#0d9488', 'rgba(26,26,46,0.5)'];
-
-  function getColors() {
-    return document.documentElement.classList.contains('theme-bright') ? brightColors : darkColors;
-  }
-
-  function resize() {
-    var rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-  }
-
-  function createParticle() {
-    var colors = getColors();
-    return {
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      r: 2 + Math.random() * 2,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    };
-  }
-
-  function init() {
-    resize();
-    particles = [];
-    for (var i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push(createParticle());
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    var isBright = document.documentElement.classList.contains('theme-bright');
-    var lineAlpha = isBright ? 0.1 : 0.15;
-
-    for (var i = 0; i < particles.length; i++) {
-      var p = particles[i];
-
-      /* Mouse repulsion */
-      var dx = p.x - mouse.x;
-      var dy = p.y - mouse.y;
-      var dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < MOUSE_RADIUS && dist > 0) {
-        var force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS * MOUSE_PUSH;
-        p.vx += (dx / dist) * force;
-        p.vy += (dy / dist) * force;
-      }
-
-      /* Dampen velocity */
-      p.vx *= 0.99;
-      p.vy *= 0.99;
-
-      /* Move */
-      p.x += p.vx;
-      p.y += p.vy;
-
-      /* Bounce */
-      if (p.x < 0) { p.x = 0; p.vx *= -1; }
-      if (p.x > canvas.width) { p.x = canvas.width; p.vx *= -1; }
-      if (p.y < 0) { p.y = 0; p.vy *= -1; }
-      if (p.y > canvas.height) { p.y = canvas.height; p.vy *= -1; }
-
-      /* Draw particle */
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.fill();
-
-      /* Connections */
-      for (var j = i + 1; j < particles.length; j++) {
-        var p2 = particles[j];
-        var cdx = p.x - p2.x;
-        var cdy = p.y - p2.y;
-        var cdist = Math.sqrt(cdx * cdx + cdy * cdy);
-        if (cdist < CONNECTION_DIST) {
-          var opacity = (1 - cdist / CONNECTION_DIST) * lineAlpha;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = isBright
-            ? 'rgba(99,102,241,' + opacity + ')'
-            : 'rgba(139,92,246,' + opacity + ')';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  /* Mouse tracking relative to canvas */
-  var leftPanel = canvas.parentElement;
-  leftPanel.addEventListener('mousemove', function(e) {
-    var rect = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - rect.left;
-    mouse.y = e.clientY - rect.top;
-  });
-  leftPanel.addEventListener('mouseleave', function() {
-    mouse.x = -9999;
-    mouse.y = -9999;
-  });
-
-  /* Enable pointer events on left panel for mouse tracking but keep canvas non-interactive */
-  leftPanel.style.pointerEvents = 'auto';
-
-  /* Handle resize */
-  window.addEventListener('resize', resize);
-
-  /* Recolor particles on theme change */
-  function recolorParticles() {
-    var colors = getColors();
-    for (var i = 0; i < particles.length; i++) {
-      particles[i].color = colors[Math.floor(Math.random() * colors.length)];
-    }
-  }
-  window._recolorParticles = recolorParticles;
-
-  init();
-  draw();
-})();
-</script>
-
 <!-- ── THEME TOGGLE ── -->
 <script>
 (function() {
@@ -672,10 +505,6 @@
       localStorage.setItem('fund_theme', 'bright');
     }
 
-    /* Recolor particles */
-    if (typeof window._recolorParticles === 'function') {
-      window._recolorParticles();
-    }
   });
 })();
 </script>
