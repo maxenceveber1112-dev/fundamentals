@@ -2682,13 +2682,13 @@ function buildPrioritesPersonnalisees() {
   budgetData.priorites = priorites.map(p => ({ titre: p.titre, horizon: p.horizon }));
 }
 
-function validerEngagement() {
+async function validerEngagement() {
   budgetData.engagement = budgetData.engagement || { type:'priorites', label:'3 priorit\u00E9s personnalis\u00E9es' };
 
   if (typeof commitmentCreated === 'function') commitmentCreated(BRICK_ID, budgetData.engagement);
 
   if (typeof completeBrickFull === 'function') {
-    completeBrickFull(BRICK_ID, {
+    await completeBrickFull(BRICK_ID, {
       profileFields: {
         revenus_nets_mensuel:     budgetData.revenus,
         aides_mensuelles:         budgetData.aides,

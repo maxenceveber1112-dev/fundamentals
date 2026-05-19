@@ -10,30 +10,31 @@
   const isDashboard = page === 'dashboard.html';
   const isPlan      = page === 'plan.html';
   const isBrique    = page.startsWith('brique-');
+  const isProfil    = page === 'profil.html';
 
   // Guard : sidebar uniquement sur les pages post-auth
   // index.html = onboarding pré-auth, auth.html = connexion → pas de sidebar
-  if (!isDashboard && !isPlan && !isBrique) return;
+  if (!isDashboard && !isPlan && !isBrique && !isProfil) return;
 
   // ── Breadcrumb & titre contextuels ───────────────────────────
   function getBreadcrumb() {
     if (isDashboard) return { title: 'Dashboard', crumb: '' };
     if (isPlan)      return { title: 'Mon plan', crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>Mon plan</b>' };
+    if (isProfil)    return { title: 'Profil', crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>Profil</b>' };
     if (isBrique) {
       // Priorité 1 : attribut data-brick-name sur le <body>
       const bodyName = document.body.getAttribute('data-brick-name');
-      if (bodyName) return { title: bodyName, crumb: '\u00b7\u00a0\u00a0Mon plan\u00a0/\u00a0<b>' + bodyName + '</b>' };
+      if (bodyName) return { title: bodyName, crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>' + bodyName + '</b>' };
       // Priorité 2 : premier élément avec .brick-title ou .brique-title (pas h1 générique)
       const el = document.querySelector('.brick-title, .brique-title');
       const nom = el ? el.textContent.trim().slice(0, 40) : 'Brique';
-      return { title: nom, crumb: '\u00b7\u00a0\u00a0Mon plan\u00a0/\u00a0<b>' + nom + '</b>' };
+      return { title: nom, crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>' + nom + '</b>' };
     }
     return { title: 'Fundamental', crumb: '' };
   }
 
   function getActiveNav() {
     if (isDashboard) return 'dashboard';
-    if (isPlan || isBrique) return 'plan';
     return '';
   }
 
@@ -353,14 +354,6 @@
         </span>
         <span class="f-sb-label">Dashboard</span>
       </a>
-      <a href="plan.html" class="f-sidebar-item${activeNav==='plan'?' active':''}">
-        <span class="f-sb-ico" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-          </svg>
-        </span>
-        <span class="f-sb-label">Mon plan</span>
-      </a>
       <a href="#" class="f-sidebar-item">
         <span class="f-sb-ico" aria-hidden="true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -369,15 +362,6 @@
           </svg>
         </span>
         <span class="f-sb-label">Explorer</span>
-      </a>
-      <a href="#" class="f-sidebar-item">
-        <span class="f-sb-newdot" aria-hidden="true"></span>
-        <span class="f-sb-ico" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
-          </svg>
-        </span>
-        <span class="f-sb-label">Objectifs</span>
       </a>
     </div>
     <div class="f-sidebar-bottom">
