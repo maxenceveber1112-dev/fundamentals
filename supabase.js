@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════
 
 const SUPABASE_URL = 'https://avnxkfthqgeehcjuxoej.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_KezOvtizhFonaPI1lexlJQ_xs2WhiYO';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2bnhrZnRocWdlZWhjanV4b2VqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwNjUyMTgsImV4cCI6MjA5MzY0MTIxOH0.q_Tdnum6_i88oVprOmxfIflCHnM_jz8iwCRNKV70sqE';
 
 // SDK Supabase v2 (chargé via CDN dans chaque page HTML)
 // window.supabase doit être disponible avant ce script
