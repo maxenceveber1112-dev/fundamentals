@@ -3535,7 +3535,7 @@ html.dark .s4-result-card--mensuel {
               <div class="reco-kicker">PARCOURS RECOMMANDÉ</div>
               <h3 class="reco-title">Parcours Achat immobilier</h3>
               <p class="reco-desc">On va construire ton dossier banque, comparer les scénarios et suivre les étapes jusqu'au notaire.</p>
-              <a href="parcours-achat-immobilier.html" class="btn-hero-primary" style="align-self:flex-start;">Lancer le parcours</a>
+              <span class="btn-hero-primary" style="align-self:flex-start;opacity:0.5;cursor:not-allowed;pointer-events:none;" title="Bientôt disponible">Lancer le parcours (bientôt)</span>
             </div>
             <div class="reco-card" id="reco-next-brick" data-glyph="→">
               <div class="reco-kicker">PROCHAINE BRIQUE RECOMMANDÉE</div>
@@ -5219,7 +5219,7 @@ function _tlDetailHTML(key) {
     case 'primo':
       return '<a href="https://www.service-public.fr/particuliers/vosdroits/F16162" target="_blank" rel="noopener" class="tl-cta-pill tl-cta-primary" onclick="event.stopPropagation();">Simuler mon éligibilité PTZ →</a>';
     case 'dossier':
-      return '<a href="parcours-achat-immobilier.html" class="tl-cta-pill tl-cta-primary" onclick="event.stopPropagation();">Préparer mon dossier dans le parcours de vie →</a>';
+      return '<a href="dashboard.html" class="tl-cta-pill tl-cta-primary" title="Bientôt disponible" style="opacity:0.5;pointer-events:none;cursor:not-allowed;" onclick="event.stopPropagation();">Préparer mon dossier dans le parcours de vie (bientôt)</a>';
     case 'chercher':
       return '<div class="tl-partner-placeholder">'
         + '<button class="tl-cta-pill tl-cta-secondary" disabled style="opacity:0.5;cursor:not-allowed" onclick="event.stopPropagation();">Voir les annonces → (bientôt disponible)</button>'
@@ -5230,11 +5230,11 @@ function _tlDetailHTML(key) {
         + '<div class="tl-data-row"><span>Budget maximum</span><span id="tl5-budget">—</span></div>'
         + '</div>'
         + '<div id="tl5-alerte" style="display:none" class="tl-alerte-text">⚠ Le prix saisi dépasse ta capacité calculée.</div>'
-        + '<a href="parcours-achat-immobilier.html" class="tl-cta-pill tl-cta-primary" onclick="event.stopPropagation();">Accéder au modèle d\'offre dans le parcours de vie →</a>'
+        + '<a href="dashboard.html" class="tl-cta-pill tl-cta-primary" title="Bientôt disponible" style="opacity:0.5;pointer-events:none;cursor:not-allowed;" onclick="event.stopPropagation();">Accéder au modèle d\'offre dans le parcours de vie (bientôt)</a>'
         + '<p class="tl-note-text">Le parcours de vie inclut un modèle d\'offre d\'achat automatique personnalisé.</p>';
     case 'compromis':
       return '<p class="tl-body-text">Le compromis de vente engage vendeur et acheteur. Tu disposes d\'un délai légal de rétractation de 10 jours.</p>'
-        + '<a href="parcours-achat-immobilier.html" class="tl-cta-pill tl-cta-primary" onclick="event.stopPropagation();">Comprendre le compromis dans le parcours de vie →</a>'
+        + '<a href="dashboard.html" class="tl-cta-pill tl-cta-primary" title="Bientôt disponible" style="opacity:0.5;pointer-events:none;cursor:not-allowed;" onclick="event.stopPropagation();">Comprendre le compromis dans le parcours de vie (bientôt)</a>'
         + '<p class="tl-note-text">Le parcours de vie détaille ce que tu dois vérifier avant de signer.</p>'
         + '<p class="tl-note-text">Les conditions suspensives (financement, diagnostics) sont précisées dans le compromis.</p>';
     case 'financement':

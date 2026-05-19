@@ -1323,7 +1323,7 @@ function setupExitScreen(eng) {
   const btnNext = document.getElementById('btn-exit-next');
   if (nextBrick) {
     document.getElementById('btn-exit-next-label').textContent = `Continuer vers ${nextBrick.nom || nextBrick.name || 'brique suivante'}`;
-    btnNext.addEventListener('click', () => { window.location.href = nextBrick.file; });
+    btnNext.addEventListener('click', () => { window.location.href = nextBrick.file || 'dashboard.html'; });
   } else {
     document.getElementById('btn-exit-next-label').textContent = 'Retour au dashboard';
     btnNext.addEventListener('click', () => { window.location.href = 'dashboard.html'; });

@@ -1027,7 +1027,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
       btnNext.style.display = 'flex';
       btnNext.addEventListener('click', () => {
         // .file is set by getNextBrick() for priority bricks
-        window.location.href = nextBrick.file || (nextBrick.id.replace(/_/g, '-') + '.html');
+        window.location.href = nextBrick.file || 'dashboard.html';
       });
     } else {
       // Default recommendation

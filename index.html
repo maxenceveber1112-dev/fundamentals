@@ -1384,6 +1384,15 @@ async function submitQuiz() {
       montant_assurance_vie: em.montant_assurance_vie || null,
       epargne_liquide_total: em.epargne_liquide_total || null
     };
+    // Ne pas effacer si l'user a déjà des briques complétées
+    var existingDash = loadFromStorage('fund_dashboard');
+    var hasBriques = existingDash && existingDash.briques && existingDash.briques.some(function(b) { return b.statut === 'terminee' || b.statut === 'en_cours'; });
+    if (hasBriques) {
+      // Mettre à jour le profil seulement, sans toucher aux briques
+      saveToStorage('fund_profil', profileOut);
+      window.location.href = 'dashboard.html';
+      return;
+    }
     // Reset complet des données user avant de sauvegarder le nouveau profil
     if (typeof resetUserData === 'function') {
       try { await resetUserData(); } catch(e) { console.warn('[onboarding] resetUserData failed:', e); }

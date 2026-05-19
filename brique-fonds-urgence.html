@@ -1629,13 +1629,15 @@ function buildScreen2() {
       if (bigSurplus) {
         document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
         document.getElementById('atteint-sub').innerHTML = 'Tu as ' + formatEuro(surplus) + ' au-delà de ton objectif.<br>C\'est le bon moment de passer à la suite.';
-        document.getElementById('atteint-actions').innerHTML =
-          '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
+        document.getElementById('atteint-actions').innerHTML = nextBriqueSolide.bientot
+          ? '<span class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;opacity:0.5;cursor:not-allowed;pointer-events:none;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + '</span><span style="display:block;margin-top:0.4rem;font-size:12px;color:#999;">Bientôt disponible</span>'
+          : '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
       } else {
         document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
         document.getElementById('atteint-sub').innerHTML = 'Ton épargne de sécurité est en place.<br>Tu peux passer à la suite.';
-        document.getElementById('atteint-actions').innerHTML =
-          '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
+        document.getElementById('atteint-actions').innerHTML = nextBriqueSolide.bientot
+          ? '<span class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;opacity:0.5;cursor:not-allowed;pointer-events:none;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + '</span><span style="display:block;margin-top:0.4rem;font-size:12px;color:#999;">Bientôt disponible</span>'
+          : '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
       }
     }
     if (resultCard) resultCard.style.display = 'none';
@@ -2019,14 +2021,14 @@ function getNextBrique() {
 
   // Priorité 2 : dettes importantes
   var totalDettes = budget.total_dettes || 0;
-  if (totalDettes > 500) return { url: 'brique-desendettement.html', label: 'Plan de désendettement' };
+  if (totalDettes > 500) return { url: 'dashboard.html', label: 'Gérer mes dettes', bientot: true };
 
   // Priorité 3 : paiements fractionnés
   var hasFractionne = budget.has_paiements_fractionnes || false;
-  if (hasFractionne) return { url: 'brique-paiements-fractionnes.html', label: 'Maîtriser les paiements fractionnés' };
+  if (hasFractionne) return { url: 'dashboard.html', label: 'Maîtriser les paiements fractionnés', bientot: true };
 
-  // Par défaut : investissement long terme
-  return { url: 'brique-investissement.html', label: 'Commencer à investir' };
+  // Par défaut
+  return { url: 'dashboard.html', label: 'Retour au dashboard' };
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -2056,19 +2058,23 @@ function lancerMatelas() {
     var nextBriqueHtml = '';
     var nextBrique = getNextBrique();
 
+    var bientotCta = nextBrique.bientot
+      ? '<span class="btn-hero-primary modal-next-cta" style="opacity:0.5;cursor:not-allowed;pointer-events:none;">Prochaine étape : ' + escapeHtml(nextBrique.label) + '</span><span style="display:block;margin-top:0.4rem;font-size:12px;color:#999;">Bientôt disponible</span>'
+      : '<a href="' + escapeHtml(nextBrique.url) + '" class="btn-hero-primary modal-next-cta">Prochaine étape : ' + escapeHtml(nextBrique.label) + ' →</a>';
+
     if (resteModal <= 0 && epargne >= solideAmt) {
       nextBriqueHtml =
         '<div class="modal-next-invest">' +
           '<div class="modal-next-kicker">Et maintenant ?</div>' +
           '<p class="modal-next-msg">Ton matelas est en place. C\'est le bon moment de passer à la suite.</p>' +
-          '<a href="' + escapeHtml(nextBrique.url) + '" class="btn-hero-primary modal-next-cta">Prochaine étape : ' + escapeHtml(nextBrique.label) + ' →</a>' +
+          bientotCta +
         '</div>';
     } else if (resteModal <= 0) {
       nextBriqueHtml =
         '<div class="modal-next-invest">' +
           '<div class="modal-next-kicker">Prochaine étape</div>' +
           '<p class="modal-next-msg">Ton palier est atteint. Tu peux passer à la suite.</p>' +
-          '<a href="' + escapeHtml(nextBrique.url) + '" class="btn-hero-primary modal-next-cta">Prochaine étape : ' + escapeHtml(nextBrique.label) + ' →</a>' +
+          bientotCta +
         '</div>';
     } else if (resteModal > 0) {
       var palierLabel = selectedPalier === 'coussin' ? 'premier coussin'
@@ -2078,7 +2084,7 @@ function lancerMatelas() {
         '<div class="modal-next-invest">' +
           '<div class="modal-next-kicker">En route</div>' +
           '<p class="modal-next-msg">Ton engagement est actif. Une fois ton ' + escapeHtml(palierLabel) + ' atteint, tu pourras passer à la suite.</p>' +
-          '<a href="' + escapeHtml(nextBrique.url) + '" class="btn-hero-primary modal-next-cta" style="margin-top:0.5rem;">Prochaine étape : ' + escapeHtml(nextBrique.label) + ' →</a>' +
+          bientotCta +
         '</div>';
     }
     summaryEl.innerHTML += nextBriqueHtml;

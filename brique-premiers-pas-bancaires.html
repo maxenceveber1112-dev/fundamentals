@@ -1546,7 +1546,7 @@ function getNextBriqueLocale() {
 
   var matelasDone = !matIncomplet && (mData.objectif_matelas || 0) > 0;
   var surplus = (mData.capacite_epargne || 0) > 0;
-  if (matelasDone && surplus) return {url:'brique-investissement.html',label:'Commencer a investir',msg:'Ton matelas est en place. Tu peux passer a l\'etape suivante.'};
+  if (matelasDone && surplus) return {url:'dashboard.html',label:'Commencer a investir',msg:'Ton matelas est en place. Tu peux passer a l\'etape suivante.'};
 
   return {url:'dashboard.html',label:'Retour au dashboard',msg:'On a fait le tour. Continue a ton rythme.'};
 }
