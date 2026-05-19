@@ -992,7 +992,7 @@
   <!-- ════════════════════════════════════════════════════════════
        ZONE 4 — EXPLORER
   ════════════════════════════════════════════════════════════ -->
-  <div class="section-wrap">
+  <div class="section-wrap" id="explorer-section">
     <div class="section-head">
       <h2 class="section-title">Explorer</h2>
       <span class="section-action" style="font-size:0.75rem;color:var(--text-faint);">Briques, simulateurs et parcours</span>
@@ -2026,5 +2026,14 @@
 </script>
 <script src="nav-avatar.js"></script>
 <script src="feedback-widget.js"></script>
+<script>
+  // Smooth scroll vers #explorer-section si hash présent
+  if (window.location.hash === '#explorer-section') {
+    requestAnimationFrame(function() {
+      var el = document.getElementById('explorer-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+</script>
 </body>
 </html>

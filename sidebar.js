@@ -354,7 +354,7 @@
         </span>
         <span class="f-sb-label">Dashboard</span>
       </a>
-      <a href="#" class="f-sidebar-item">
+      <a href="dashboard.html#explorer-section" class="f-sidebar-item" id="f-sidebar-explorer">
         <span class="f-sb-ico" aria-hidden="true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
@@ -403,6 +403,20 @@
 
   // Marquer le body
   document.body.classList.add('f-has-sidebar');
+
+  // ── Explorer smooth scroll (si déjà sur dashboard) ────────────
+  if (isDashboard) {
+    const explorerLink = document.getElementById('f-sidebar-explorer');
+    if (explorerLink) {
+      explorerLink.addEventListener('click', function(e) {
+        var target = document.getElementById('explorer-section');
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
+  }
 
   // ── Theme toggle ──────────────────────────────────────────────
   const toggleBtn = document.getElementById('f-theme-toggle');
