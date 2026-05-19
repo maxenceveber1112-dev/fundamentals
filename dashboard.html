@@ -576,101 +576,236 @@
     .insight-link:hover { opacity:0.7; }
 
     /* ══════════════════════════════════════════════════════════════
-       ZONE 4 — EXPLORER (3 colonnes intelligentes)
+       ZONE 4 — EXPLORER (refonte simulateurs + parcours)
     ══════════════════════════════════════════════════════════════ */
-    .explorer-cols {
-      display:grid;
-      grid-template-columns:repeat(3, 1fr);
-      gap:1rem;
+    /* ── Explorer refonte ── */
+    .explorer-simulateurs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    @media (max-width: 640px) { .explorer-simulateurs { grid-template-columns: 1fr; } }
+
+    .explorer-parcours {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 640px) { .explorer-parcours { grid-template-columns: 1fr; } }
+
+    .explorer-section-divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1.5rem 0 1rem;
+    }
+    .explorer-section-label {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .explorer-section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
-    .explorer-col {
-      border-radius:1.125rem;
-      border:1px solid var(--border-subtle);
-      background:var(--bg-elevated);
-      box-shadow:var(--shadow-card);
-      padding:1.25rem;
-      display:flex; flex-direction:column; gap:0.5rem;
-      transition: background 0.3s ease, border-color 0.3s ease;
+    /* Card simulateur */
+    .sim-card {
+      background: var(--surface-1, var(--bg-elevated));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem 1.375rem;
+      cursor: pointer;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      position: relative;
+      overflow: hidden;
     }
-    html.dark .explorer-col {
-      background:var(--surface);
-      backdrop-filter:blur(12px);
+    .sim-card:hover { box-shadow: 0 4px 16px rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); }
+    .sim-card.open { border-color: rgba(139,92,246,0.4); }
+    html.dark .sim-card { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); }
+    html.dark .sim-card:hover { border-color: rgba(139,92,246,0.4); }
+
+    .sim-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .sim-card-left { flex: 1; min-width: 0; }
+    .sim-card-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 0.625rem;
+      flex-shrink: 0;
+    }
+    .sim-card-icon.violet { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+    .sim-card-icon.teal   { background: rgba(20,184,166,0.12);  color: #14b8a6; }
+    .sim-card-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary, var(--text));
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+    }
+    .sim-card-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .sim-card-value {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #8b5cf6;
+      margin-top: 0.75rem;
+      line-height: 1.1;
+    }
+    html.dark .sim-card-value { color: #a78bfa; }
+    .sim-card-value-label {
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      margin-top: 0.125rem;
+    }
+    .sim-card-chevron {
+      color: var(--text-muted);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+      margin-top: 0.25rem;
+    }
+    .sim-card.open .sim-card-chevron { transform: rotate(180deg); }
+
+    /* Expanded panel simulateur */
+    .sim-card-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+    .sim-card.open .sim-card-body { max-height: 400px; }
+    .sim-card-body-inner {
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      margin-top: 1rem;
+    }
+    .sim-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      font-size: 0.8125rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sim-row:last-child { border-bottom: none; }
+    .sim-row-label { color: var(--text-muted); }
+    .sim-row-val { font-weight: 600; color: var(--text-primary, var(--text)); }
+    .sim-cta {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #8b5cf6;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .sim-cta:hover { text-decoration: underline; }
+    .sim-cta-disabled {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      opacity: 0.5;
+      cursor: not-allowed;
     }
 
-    .explorer-col-title {
-      font-size:0.6875rem; font-weight:600;
-      letter-spacing:0.1em; text-transform:uppercase;
-      color:var(--text-faint); margin-bottom:0.375rem;
+    /* Card parcours de vie */
+    .pv-card {
+      background: var(--surface-1, var(--bg-elevated));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.375rem;
+      transition: box-shadow 0.15s;
     }
-
-    .explorer-item {
-      display:flex; align-items:center; gap:0.625rem;
-      padding:0.5rem 0.5rem;
-      border-radius:0.625rem;
-      cursor:pointer; text-decoration:none;
-      transition:background var(--t);
-      position:relative;
+    .pv-card:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.08); }
+    html.dark .pv-card { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); }
+    .pv-card-name {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary, var(--text));
+      margin-bottom: 0.25rem;
     }
-    .explorer-item:hover { background:var(--surface-2); }
-    html.dark .explorer-item:hover { background:rgba(255,255,255,0.05); }
-
-    .explorer-item-icon { font-size:1rem; flex-shrink:0; }
-    .explorer-item-info { flex:1; min-width:0; }
-    .explorer-item-name {
-      font-size:0.8125rem; font-weight:500; color:var(--text);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    .pv-card-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      line-height: 1.4;
     }
-    .explorer-item-sub {
-      font-size:0.6875rem; color:var(--text-faint);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      margin-top:0.1rem;
+    .pv-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
     }
-    .explorer-item .chev {
-      color:var(--text-faint); opacity:0;
-      transform:translateX(-3px);
-      transition:opacity 0.2s, transform 0.2s;
-      flex-shrink:0;
+    .pv-step {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
     }
-    .explorer-item:hover .chev { opacity:1; transform:translateX(0); }
-
-    /* Badge "Suggéré" — 1 seul par colonne max */
-    .explorer-suggested-badge {
-      display:inline-flex; align-items:center; gap:0.25rem;
-      font-size:0.6rem; font-weight:600;
-      letter-spacing:0.06em; text-transform:uppercase;
-      color:var(--accent-strong); background:var(--accent-soft);
-      padding:0.15rem 0.4rem; border-radius:9999px;
-      position:absolute; top:0.4rem; right:0.5rem;
+    .pv-step-num {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: rgba(99,102,241,0.1);
+      color: #6366f1;
+      font-size: 0.6rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
-    html.dark .explorer-suggested-badge { color:#A78BFA; background:rgba(167,139,250,0.14); }
-
-    /* Icône + pour ajouter au plan (hover only) */
-    .explorer-item-add {
-      width:20px; height:20px;
-      display:flex; align-items:center; justify-content:center;
-      border-radius:9999px;
-      border:1px solid var(--border-mid);
-      font-size:0.75rem; color:var(--text-faint);
-      opacity:0; flex-shrink:0;
-      transition:opacity var(--t), background var(--t), color var(--t), border-color var(--t);
+    html.dark .pv-step-num { background: rgba(99,102,241,0.2); }
+    .pv-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #6366f1;
+      text-decoration: none;
+      cursor: pointer;
     }
-    .explorer-item:hover .explorer-item-add { opacity:1; }
-    .explorer-item-add:hover { background:var(--accent-soft); color:var(--accent-strong); border-color:var(--accent-strong); }
-    .explorer-item-add.added { opacity:1; color:var(--green); border-color:rgba(34,197,94,0.3); background:rgba(34,197,94,0.08); }
-
-    .explorer-col-footer {
-      margin-top:auto; padding-top:0.625rem;
-      border-top:1px solid var(--border-subtle);
+    .pv-cta:hover { text-decoration: underline; }
+    .pv-cta-disabled {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      opacity: 0.45;
+      cursor: not-allowed;
     }
-    .explorer-col-link {
-      font-size:0.75rem; font-weight:500; color:var(--text-faint);
-      display:flex; align-items:center; gap:0.25rem;
-      transition:color var(--t);
+    .pv-badge-bientot {
+      display: inline-block;
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      margin-left: 0.5rem;
+      vertical-align: middle;
     }
-    .explorer-col-link:hover { color:var(--text-muted); }
-
-    .explorer-item.locked { opacity:0.35; pointer-events:none; filter:grayscale(0.3); }
 
     /* ── ADD ENGAGEMENT MODAL ── */
     .modal-overlay {
@@ -691,9 +826,7 @@
     .modal-overlay.open .modal { transform:translateY(0); }
 
     /* ── RESPONSIVE ── */
-    @media(max-width:900px) {
-      .explorer-cols { grid-template-columns:1fr; }
-    }
+    /* responsive explorer handled by individual grid sections above */
     @media(max-width:768px) {
       nav { padding:0 1.25rem; }
       main { padding:0 1.25rem 5rem; }
@@ -865,7 +998,11 @@
       <span class="section-action" style="font-size:0.75rem;color:var(--text-faint);">Briques, simulateurs et parcours</span>
     </div>
     <div class="section-divider"></div>
-    <div class="explorer-cols" id="explorer-cols"></div>
+    <div class="explorer-simulateurs" id="explorer-simulateurs"></div>
+    <div class="explorer-section-divider">
+      <span class="explorer-section-label">Parcours de vie</span>
+    </div>
+    <div class="explorer-parcours" id="explorer-parcours"></div>
   </div>
 
 
@@ -1292,131 +1429,227 @@
     }
   }
 
-  /* ─── ZONE 4 — EXPLORER 3 COLONNES ──────────────────── */
-  const SIMULATEURS = [
-    { id:'sim_budget',       icon:'🧮', name:'Budget mensuel',        sub:'Reste à vivre & postes à optimiser', locked:false, suggested:true },
-    { id:'sim_fonds_urgence',icon:'🛡️', name:'Fonds d\'urgence',      sub:'Montant idéal selon ta situation',    locked:false, suggested:false },
-    { id:'sim_emprunt',      icon:'🏠', name:'Capacité d\'emprunt',   sub:'Mensualités & montant maximal',       locked:true  },
-    { id:'sim_retraite',     icon:'🌅', name:'Retraite',              sub:'Revenus projetés selon scénarios',    locked:true  },
-  ];
-
-  const PARCOURS_VIE = [
-    { id:'pv_rp',       icon:'🏡', name:'Devenir propriétaire', sub:'Apport, crédit, toutes les étapes', locked:false, suggested:true },
-    { id:'pv_enfant',   icon:'👶', name:'Arrivée d\'un enfant',  sub:'Dépenses, aides, adaptation budget',  locked:true  },
-    { id:'pv_creation', icon:'🚀', name:'Créer son activité',   sub:'Juridique, tréso, protection sociale', locked:true  },
-    { id:'pv_retraite', icon:'🌅', name:'Préparer sa retraite', sub:'Droits, enveloppes, cotisations',      locked:true  },
-  ];
+  /* ─── ZONE 4 — EXPLORER REFONTE ──────────────────── */
 
   function renderExplorer() {
-    const cols = document.getElementById('explorer-cols');
-    if (!cols) return;
-    cols.innerHTML = '';
-
-    const planIds = new Set(dash.briques.map(b => b.id));
-    const doneIds = new Set(dash.briques.filter(b => b.statut === 'terminee').map(b => b.id));
-
-    /* ── Colonne Briques ── */
-    const briquesAvail = Object.values(BRIQUES_META).filter(b => !planIds.has(b.id));
-    const briquesInPlan = Object.values(BRIQUES_META).filter(b => planIds.has(b.id) && !doneIds.has(b.id));
-    /* Si toutes dans le plan, montrer briques en cours */
-    const briquesItems = briquesAvail.length > 0 ? briquesAvail : briquesInPlan;
-
-    const colBriques = makeExplorerCol(
-      'BRIQUES',
-      briquesItems.slice(0, 3),
-      (item) => ({
-        icon: item.icon,
-        name: item.nom,
-        sub:  item.pack,
-        locked: false,
-        suggested: false,
-        onAdd: !planIds.has(item.id) ? (btn) => addToPlan(item.id, btn) : null,
-        href: BRICK_FILES[item.id] || null
-      }),
-      `Tout voir (${briquesItems.length > 3 ? briquesItems.length : '…'}) →`,
-      null
-    );
-    cols.appendChild(colBriques);
-
-    /* ── Colonne Simulateurs ── */
-    const colSims = makeExplorerCol(
-      'SIMULATEURS',
-      SIMULATEURS.slice(0, 3),
-      (s) => ({
-        icon: s.icon, name: s.name, sub: s.sub,
-        locked: s.locked && !doneIds.has(s.unlockAfter),
-        suggested: s.suggested,
-        href: s.locked ? null : '#'
-      }),
-      'Tout voir (6) →',
-      null
-    );
-    cols.appendChild(colSims);
-
-    /* ── Colonne Parcours de vie ── */
-    const colParcours = makeExplorerCol(
-      'PARCOURS DE VIE',
-      PARCOURS_VIE.slice(0, 3),
-      (pv) => ({
-        icon: pv.icon, name: pv.name, sub: pv.sub,
-        locked: pv.locked,
-        suggested: pv.suggested,
-        href: pv.locked ? null : '#'
-      }),
-      'Tout voir (5) →',
-      null
-    );
-    cols.appendChild(colParcours);
+    renderSimulateurs();
+    renderParcoursVie();
   }
 
-  function makeExplorerCol(title, items, itemMapper, footerLabel, footerHref) {
-    const col = document.createElement('div');
-    col.className = 'explorer-col';
+  /* ── SIMULATEURS ── */
+  function renderSimulateurs() {
+    const container = document.getElementById('explorer-simulateurs');
+    if (!container) return;
+    container.innerHTML = '';
 
-    const titleEl = document.createElement('div');
-    titleEl.className = 'explorer-col-title';
-    titleEl.textContent = title;
-    col.appendChild(titleEl);
+    // Lire les données disponibles
+    const immoRaw = loadFromStorage('fund_brick_achat_immobilier');
+    const immoData = immoRaw?.data || immoRaw || null;
+    const budgetRaw = loadFromStorage('fund_brick_budget_base');
+    const budgetData = budgetRaw?.data || budgetRaw || null;
+    const fondsRaw = loadFromStorage('fund_brick_fonds_urgence');
+    const fondsData = fondsRaw?.data || fondsRaw || null;
 
-    let suggestedAdded = false;
+    // 1. Capacité d'emprunt
+    const borrowing = immoData?.financing?.borrowingCapacity || null;
+    const mensualite = immoData?.financing?.targetMonthlyPayment || null;
+    const apport = immoData?.financing?.mobilizableDownPayment || null;
+    const simEmprunt = makeSimCard({
+      id: 'sim_emprunt',
+      icon: iconSVG('home'),
+      colorClass: 'violet',
+      name: 'Capacité d\'emprunt',
+      sub: 'Montant empruntable selon tes revenus',
+      value: borrowing ? formatEuro(borrowing) : null,
+      valueLabel: borrowing ? 'capacité estimée' : null,
+      rows: borrowing ? [
+        { label: 'Mensualité max', val: formatEuro(mensualite) + '/mois' },
+        { label: 'Apport disponible', val: formatEuro(apport) },
+        { label: 'Budget total', val: formatEuro((borrowing||0) + (apport||0)) },
+      ] : [],
+      ctaLabel: borrowing ? 'Voir mon projet immobilier →' : 'Calculer ma capacité →',
+      ctaHref: 'brique-achat-immobilier.html',
+      ctaDisabled: false,
+    });
+    container.appendChild(simEmprunt);
 
-    items.forEach(rawItem => {
-      const item = itemMapper(rawItem);
-      const el = document.createElement(item.href && !item.locked ? 'a' : 'div');
-      el.className = 'explorer-item' + (item.locked ? ' locked' : '');
-      if (item.href && !item.locked) el.href = item.href;
+    // 2. Visualiser mes dettes
+    const credits = budgetData?.credits || budgetData?.total_credits || null;
+    const nbDettes = budgetData?.nb_credits || null;
+    const simDettes = makeSimCard({
+      id: 'sim_dettes',
+      icon: iconSVG('chart'),
+      colorClass: 'teal',
+      name: 'Visualiser mes dettes',
+      sub: 'Crédits en cours et impact mensuel',
+      value: credits ? formatEuro(credits) + '/mois' : null,
+      valueLabel: credits ? 'en remboursements' : null,
+      rows: credits ? [
+        { label: 'Crédits en cours', val: (nbDettes || '—') + '' },
+        { label: 'Mensualités totales', val: formatEuro(credits) },
+      ] : [],
+      ctaLabel: credits ? 'Voir le détail →' : 'Renseigner mes crédits →',
+      ctaHref: 'brique-budget-base.html',
+      ctaDisabled: false,
+    });
+    container.appendChild(simDettes);
 
-      let suggestBadge = '';
-      if (item.suggested && !suggestedAdded && !item.locked) {
-        suggestBadge = '<span class="explorer-suggested-badge">✦ Suggéré</span>';
-        suggestedAdded = true;
-      }
+    // 3. Coût réel d'un crédit
+    const tauxHypo = immoData?.financing?.rate || null;
+    const duree = immoData?.financing?.duration || null;
+    const simCredit = makeSimCard({
+      id: 'sim_credit',
+      icon: iconSVG('percent'),
+      colorClass: 'violet',
+      name: 'Coût réel d\'un crédit',
+      sub: 'Intérêts totaux sur la durée',
+      value: (borrowing && tauxHypo && duree) ? formatEuro(Math.round(mensualite * duree * 12 - borrowing)) : null,
+      valueLabel: (borrowing && tauxHypo && duree) ? 'intérêts sur ' + duree + ' ans' : null,
+      rows: (borrowing && tauxHypo && duree) ? [
+        { label: 'Taux simulé', val: (tauxHypo * 100).toFixed(2) + ' %' },
+        { label: 'Durée', val: duree + ' ans' },
+        { label: 'Capital emprunté', val: formatEuro(borrowing) },
+      ] : [],
+      ctaLabel: 'Simuler un crédit →',
+      ctaHref: 'brique-achat-immobilier.html',
+      ctaDisabled: false,
+    });
+    container.appendChild(simCredit);
 
-      let addBtn = '';
-      if (item.onAdd) {
-        addBtn = `<button class="explorer-item-add" title="Ajouter à mon plan" onclick="event.preventDefault();this.classList.add('added');this.innerHTML='✓';(${item.onAdd.toString()})(this)">+</button>`;
-      } else if (!item.locked && item.href) {
-        addBtn = `<svg class="chev" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
-      }
+    // 4. Coût du découvert
+    const simDecouvert = makeSimCard({
+      id: 'sim_decouvert',
+      icon: iconSVG('warning'),
+      colorClass: 'teal',
+      name: 'Coût du découvert',
+      sub: 'Ce que tes agios te coûtent vraiment',
+      value: null,
+      valueLabel: null,
+      rows: [],
+      ctaLabel: 'Calculer →',
+      ctaHref: 'brique-gestion-decouvert.html',
+      ctaDisabled: false,
+    });
+    container.appendChild(simDecouvert);
+  }
 
-      el.innerHTML = `
-        ${suggestBadge}
-        <span class="explorer-item-icon" aria-hidden="true">${item.icon}</span>
-        <div class="explorer-item-info">
-          <div class="explorer-item-name">${item.name}</div>
-          <div class="explorer-item-sub">${item.sub}</div>
+  function makeSimCard(cfg) {
+    const card = document.createElement('div');
+    card.className = 'sim-card';
+    card.id = cfg.id;
+
+    const chevronSVG = `<svg class="sim-card-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+    card.innerHTML = `
+      <div class="sim-card-header">
+        <div class="sim-card-left">
+          <div class="sim-card-icon ${cfg.colorClass}">${cfg.icon}</div>
+          <div class="sim-card-name">${cfg.name}</div>
+          <div class="sim-card-sub">${cfg.sub}</div>
+          ${cfg.value ? `<div class="sim-card-value">${cfg.value}</div><div class="sim-card-value-label">${cfg.valueLabel}</div>` : ''}
         </div>
-        ${addBtn}`;
-      col.appendChild(el);
+        ${chevronSVG}
+      </div>
+      <div class="sim-card-body">
+        <div class="sim-card-body-inner">
+          ${cfg.rows.map(r => `<div class="sim-row"><span class="sim-row-label">${r.label}</span><span class="sim-row-val">${r.val}</span></div>`).join('')}
+          ${cfg.rows.length === 0 ? '<p style="font-size:0.8125rem;color:var(--text-muted);margin:0 0 0.75rem;">Complète tes briques pour voir un résultat pré-calculé.</p>' : ''}
+          ${cfg.ctaDisabled
+            ? `<span class="sim-cta-disabled">${cfg.ctaLabel}</span>`
+            : `<a class="sim-cta" href="${cfg.ctaHref}">${cfg.ctaLabel}</a>`
+          }
+        </div>
+      </div>
+    `;
+
+    // Toggle accordion
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('a')) return; // ne pas fermer si clic sur lien
+      const isOpen = card.classList.contains('open');
+      // Fermer tous les autres
+      document.querySelectorAll('.sim-card.open').forEach(c => c.classList.remove('open'));
+      if (!isOpen) card.classList.add('open');
     });
 
-    /* Footer lien "Tout voir" */
-    const footer = document.createElement('div');
-    footer.className = 'explorer-col-footer';
-    footer.innerHTML = `<span class="explorer-col-link">${footerLabel}</span>`;
-    col.appendChild(footer);
+    return card;
+  }
 
-    return col;
+  /* ── PARCOURS DE VIE ── */
+  function renderParcoursVie() {
+    const container = document.getElementById('explorer-parcours');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const immoRaw = loadFromStorage('fund_brick_achat_immobilier');
+    const hasImmo = !!(immoRaw?.data || immoRaw);
+
+    // 1. Préparer un achat immobilier
+    const pvImmo = makePvCard({
+      name: 'Préparer un achat immobilier',
+      sub: 'De la capacité d\'emprunt aux clés en main.',
+      steps: [
+        'Évaluer sa capacité d\'emprunt',
+        'Constituer son apport',
+        'Chercher & financer',
+        'Signer et emménager',
+      ],
+      ctaLabel: hasImmo ? 'Reprendre mon projet →' : 'Commencer →',
+      ctaHref: 'brique-achat-immobilier.html',
+      ctaDisabled: false,
+    });
+    container.appendChild(pvImmo);
+
+    // 2. Préparer sa retraite
+    const pvRetraite = makePvCard({
+      name: 'Préparer sa retraite',
+      sub: 'Droits, enveloppes fiscales, automatisation.',
+      steps: [
+        'Estimer ses droits acquis',
+        'Choisir ses enveloppes (PER, AV)',
+        'Automatiser l\'épargne long terme',
+        'Diversifier ses placements',
+      ],
+      ctaLabel: 'Bientôt disponible',
+      ctaHref: null,
+      ctaDisabled: true,
+    });
+    container.appendChild(pvRetraite);
+  }
+
+  function makePvCard(cfg) {
+    const card = document.createElement('div');
+    card.className = 'pv-card';
+
+    const stepsHTML = cfg.steps.map((s, i) => `
+      <div class="pv-step">
+        <div class="pv-step-num">${i + 1}</div>
+        <span>${s}</span>
+      </div>
+    `).join('');
+
+    const ctaHTML = cfg.ctaDisabled
+      ? `<span class="pv-cta-disabled">${cfg.ctaLabel}</span>`
+      : `<a class="pv-cta" href="${cfg.ctaHref}">${cfg.ctaLabel} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>`;
+
+    card.innerHTML = `
+      <div class="pv-card-name">${cfg.name}</div>
+      <div class="pv-card-sub">${cfg.sub}</div>
+      <div class="pv-steps">${stepsHTML}</div>
+      ${ctaHTML}
+    `;
+
+    return card;
+  }
+
+  /* ── SVG icons helper ── */
+  function iconSVG(type) {
+    const icons = {
+      home:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+      chart:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`,
+      percent: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>`,
+      warning: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+    };
+    return icons[type] || icons.home;
   }
 
   function addToPlan(id, btn) {
@@ -1789,7 +2022,7 @@
 
   /* ─── Compat (anciens alias) ─────────────────────────── */
   /* renderGreeting() supprimé — logique intégrée dans renderHero() */
-  /* setExplorerCat() supprimé — Explorer est maintenant 3 colonnes fixes */
+  /* setExplorerCat() supprimé — Explorer refonte simulateurs + parcours */
 </script>
 <script src="nav-avatar.js"></script>
 <script src="feedback-widget.js"></script>
