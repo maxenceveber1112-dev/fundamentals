@@ -893,6 +893,162 @@
     #print-bilan .pb-footer { margin-top:2rem; font-size:0.72rem; color:#A8A29E; text-align:center; }
   }
 
+  /* Détail charges vitales — toggle expand */
+  .charges-detail-toggle {
+    margin-top: 6px;
+  }
+  .charges-detail-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: Inter, sans-serif;
+    font-size: 0.75rem;
+    color: var(--accent, #8b5cf6);
+    font-weight: 500;
+    transition: opacity 0.15s;
+  }
+  .charges-detail-btn:hover { opacity: 0.75; }
+  .charges-chevron {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+  .charges-detail-toggle.open .charges-chevron {
+    transform: rotate(180deg);
+  }
+  .charges-detail-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.2s ease;
+    opacity: 0;
+  }
+  .charges-detail-toggle.open .charges-detail-body {
+    max-height: 300px;
+    opacity: 1;
+  }
+  .charges-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    background: rgba(139,92,246,0.06);
+    border: 1px solid rgba(139,92,246,0.15);
+    border-radius: 8px;
+  }
+  .charges-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: Inter, sans-serif;
+    font-size: 0.78rem;
+    color: var(--text-muted, rgba(255,255,255,0.6));
+  }
+  .charges-detail-row.total-row {
+    border-top: 1px solid rgba(139,92,246,0.15);
+    margin-top: 4px;
+    padding-top: 5px;
+    font-weight: 600;
+    color: var(--text, #fff);
+    font-size: 0.8rem;
+  }
+  .charges-detail-label { }
+  .charges-detail-val { font-variant-numeric: tabular-nums; color: var(--text, rgba(255,255,255,0.9)); }
+  html:not(.dark) .charges-detail-list {
+    background: rgba(139,92,246,0.05);
+    border-color: rgba(139,92,246,0.2);
+  }
+  html:not(.dark) .charges-detail-row {
+    color: rgba(26,26,46,0.6);
+  }
+  html:not(.dark) .charges-detail-row.total-row {
+    color: #1a1a2e;
+  }
+  html:not(.dark) .charges-detail-val {
+    color: rgba(26,26,46,0.9);
+  }
+
+  /* Card budget manquant */
+  .budget-missing-card {
+    margin-top: 10px;
+    padding: 14px;
+    background: rgba(99,102,241,0.08);
+    border: 1px solid rgba(99,102,241,0.25);
+    border-radius: 10px;
+  }
+  .bmc-content {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .bmc-icon {
+    color: #6366f1;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .bmc-title {
+    font-family: Inter, sans-serif;
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: var(--text, #fff);
+    margin-bottom: 3px;
+  }
+  .bmc-sub {
+    font-family: Inter, sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-muted, rgba(255,255,255,0.55));
+    line-height: 1.4;
+  }
+  .bmc-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .bmc-btn-primary {
+    flex: 1;
+    text-align: center;
+    padding: 8px 14px;
+    background: #6366f1;
+    color: #fff;
+    border-radius: 8px;
+    font-family: Inter, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .bmc-btn-primary:hover { opacity: 0.85; }
+  .bmc-btn-secondary {
+    flex: 1;
+    text-align: center;
+    padding: 8px 14px;
+    background: transparent;
+    color: var(--text-muted, rgba(255,255,255,0.55));
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    font-family: Inter, sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .bmc-btn-secondary:hover { opacity: 0.75; }
+  html:not(.dark) .budget-missing-card {
+    background: rgba(99,102,241,0.06);
+    border-color: rgba(99,102,241,0.2);
+  }
+  html:not(.dark) .bmc-title { color: #1a1a2e; }
+  html:not(.dark) .bmc-sub { color: rgba(26,26,46,0.6); }
+  html:not(.dark) .bmc-btn-secondary {
+    color: rgba(26,26,46,0.6);
+    border-color: rgba(26,26,46,0.2);
+  }
+
   </style>
 </head>
 <body data-brick-name="Épargne de précaution">
@@ -967,7 +1123,34 @@
                 <input type="number" id="input-charges-vitales" class="field-input" placeholder="ex : 900" min="0" inputmode="numeric" aria-label="Charges vitales mensuelles"/>
                 <span class="euro-suffix">€</span>
               </div>
-              <div class="field-help">Loyer, courses, transport, santé — le strict nécessaire</div>
+              <div class="charges-detail-toggle" id="charges-detail-toggle">
+                <button class="charges-detail-btn" id="charges-detail-btn" type="button">
+                  <span class="charges-detail-summary">Depuis ton budget · <span id="charges-detail-nbr">4 postes</span></span>
+                  <svg class="charges-chevron" id="charges-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="charges-detail-body" id="charges-detail-body">
+                  <!-- lignes injectées par JS -->
+                </div>
+              </div>
+              <div class="budget-missing-card" id="budget-missing-card" style="display:none;">
+                <div class="bmc-content">
+                  <div class="bmc-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20">
+                      <rect x="2" y="7" width="20" height="14" rx="2"/>
+                      <path d="M16 14h.01"/>
+                      <path d="M2 11h20"/>
+                    </svg>
+                  </div>
+                  <div class="bmc-text">
+                    <div class="bmc-title">Fais d'abord la brique Budget</div>
+                    <div class="bmc-sub">Tes charges seront pré-remplies automatiquement et tu auras un résultat plus précis.</div>
+                  </div>
+                </div>
+                <div class="bmc-actions">
+                  <a href="brique-budget-base.html" class="bmc-btn-primary">Commencer le Budget →</a>
+                  <button class="bmc-btn-secondary" id="bmc-dismiss" type="button">Saisir manuellement</button>
+                </div>
+              </div>
             </div>
 
             <!-- Épargne mensuelle (optional) -->
@@ -1527,6 +1710,54 @@ function buildScreen1() {
     inputCharges.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') inputEpargneMensuelle && inputEpargneMensuelle.focus();
     });
+  }
+
+  // Détail charges vitales (FIX 1 + FIX 2)
+  var detailToggle = document.getElementById('charges-detail-toggle');
+  var detailBtn = document.getElementById('charges-detail-btn');
+  var detailBody = document.getElementById('charges-detail-body');
+  var detailNbr  = document.getElementById('charges-detail-nbr');
+
+  if (detailToggle && budgetBrick.total_besoins > 0) {
+    var lignes = [
+      { label: 'Loyer / logement',  val: budgetBrick.loyer || 0 },
+      { label: 'Courses',           val: budgetBrick.courses || 0 },
+      { label: 'Transport',         val: budgetBrick.transport || 0 },
+      { label: 'Santé',             val: budgetBrick.sante || 0 },
+      { label: 'Dépenses pro',      val: budgetBrick.depenses_pro || 0 },
+      { label: 'Mensualités dettes',val: budgetBrick.total_dettes_mensuel || 0 },
+    ].filter(function(l) { return l.val > 0; });
+
+    if (detailNbr) detailNbr.textContent = lignes.length + ' poste' + (lignes.length > 1 ? 's' : '');
+
+    var listHtml = '<div class="charges-detail-list">';
+    lignes.forEach(function(l) {
+      listHtml += '<div class="charges-detail-row"><span class="charges-detail-label">' + l.label + '</span><span class="charges-detail-val">' + formatEuro(l.val) + '</span></div>';
+    });
+    listHtml += '<div class="charges-detail-row total-row"><span class="charges-detail-label">Total estimé</span><span class="charges-detail-val">' + formatEuro(budgetBrick.total_besoins) + '</span></div>';
+    listHtml += '</div>';
+    if (detailBody) detailBody.innerHTML = listHtml;
+
+    if (detailBtn) {
+      detailBtn.addEventListener('click', function() {
+        detailToggle.classList.toggle('open');
+      });
+    }
+  }
+
+  var budgetMissingCard = document.getElementById('budget-missing-card');
+  var bmcDismiss = document.getElementById('bmc-dismiss');
+
+  if (budgetMissingCard) {
+    if (!budgetBrick.total_besoins || budgetBrick.total_besoins === 0) {
+      budgetMissingCard.style.display = 'block';
+      if (detailToggle) detailToggle.style.display = 'none';
+    }
+    if (bmcDismiss) {
+      bmcDismiss.addEventListener('click', function() {
+        budgetMissingCard.style.display = 'none';
+      });
+    }
   }
 
   if (inputEpargneMensuelle) {
