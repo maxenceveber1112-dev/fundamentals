@@ -916,6 +916,72 @@
   @keyframes wmFadeIn  { from { opacity:0; } to { opacity:1; } }
   @keyframes wmFadeOut { from { opacity:1; } to { opacity:0; } }
   @keyframes wmSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── Parcours modal cards ──────────────────────── */
+  .parcours-modal-label {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    margin: 0 0 8px;
+  }
+  .parcours-modal-carousel {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  .parcours-modal-card {
+    flex: 0 0 148px;
+    min-height: 100px;
+    background: #1a1a2e;
+    border: 1px solid rgba(139,92,246,0.25);
+    border-radius: 12px;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .parcours-modal-card--peek {
+    filter: blur(2px);
+    opacity: 0.45;
+    pointer-events: none;
+  }
+  .parcours-kicker {
+    font-family: Inter, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .parcours-kicker--violet { color: #8b5cf6; }
+  .parcours-kicker--teal   { color: #14b8a6; }
+  .parcours-kicker--amber  { color: #f59e0b; }
+  .parcours-card-title {
+    font-family: Fraunces, serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .parcours-card-sub {
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+  }
+  .parcours-watermark {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 38px;
+    height: 38px;
+    opacity: 0.09;
+    color: #fff;
+    pointer-events: none;
+  }
   </style>
 </head>
 <body>
@@ -1990,12 +2056,25 @@
       + '<div><p style="margin:0;font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">Profil cr\u00e9\u00e9</p>'
       + '<h2 style="margin:0;font-size:1.1rem;font-weight:700;color:var(--text);">Ton parcours est pr\u00eat !</h2></div>'
       + '</div>'
-      + '<div style="margin-bottom:1.5rem;">'
-      + '<p style="margin:0 0 0.625rem;font-size:0.75rem;color:var(--text-muted);opacity:0.6;font-family:Inter,sans-serif;">Ton parcours personnalis\u00e9</p>'
-      + '<div style="display:flex;flex-wrap:wrap;gap:8px;">'
-      + '<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#fff;font-size:13px;font-family:Inter,sans-serif;">Budget de base</span>'
-      + '<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#fff;font-size:13px;font-family:Inter,sans-serif;">\u00c9pargne de pr\u00e9caution</span>'
-      + '<span style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;background:rgba(20,184,166,0.15);border:1px solid rgba(20,184,166,0.3);color:#fff;font-size:13px;font-family:Inter,sans-serif;">+ 1 brique personnalis\u00e9e</span>'
+      + '<p class="parcours-modal-label">Ton parcours personnalis\u00e9</p>'
+      + '<div class="parcours-modal-carousel">'
+      + '<div class="parcours-modal-card">'
+      + '<div class="parcours-kicker parcours-kicker--violet">\u25cf FINANCES</div>'
+      + '<div class="parcours-card-title">Stabilise ton mois</div>'
+      + '<div class="parcours-card-sub">Ma\u00eetrise tes flux</div>'
+      + '<svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M16 14h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M2 11h20" stroke="currentColor" stroke-width="1.5"/></svg>'
+      + '</div>'
+      + '<div class="parcours-modal-card">'
+      + '<div class="parcours-kicker parcours-kicker--teal">\u25cf \u00c9PARGNE</div>'
+      + '<div class="parcours-card-title">Ton matelas de s\u00e9curit\u00e9</div>'
+      + '<div class="parcours-card-sub">Le fonds qui change tout</div>'
+      + '<svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l7 4v6c0 4.4-3.1 8.1-7 9.9C8.1 20.1 5 16.4 5 12V6l7-4z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>'
+      + '</div>'
+      + '<div class="parcours-modal-card parcours-modal-card--peek">'
+      + '<div class="parcours-kicker parcours-kicker--amber">\u25cf PERSONNALIS\u00c9</div>'
+      + '<div class="parcours-card-title">Ta brique suivante</div>'
+      + '<div class="parcours-card-sub">Calcul\u00e9e pour toi</div>'
+      + '<svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
       + '</div>'
       + '</div>'
       + '<a href="' + urlBrique + '" style="display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:0.875rem 1.25rem;background:var(--accent-strong);color:#fff;border-radius:999px;font-weight:600;font-size:0.875rem;text-decoration:none;">'
