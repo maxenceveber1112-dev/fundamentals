@@ -1726,14 +1726,15 @@ function buildScreen1() {
   var detailBody = document.getElementById('charges-detail-body');
   var detailNbr  = document.getElementById('charges-detail-nbr');
 
-  if (detailToggle && budgetBrick.total_besoins > 0) {
+  var _bb = getBudgetBrick();
+  if (detailToggle && _bb.total_besoins > 0) {
     var lignes = [
-      { label: 'Loyer / logement',  val: budgetBrick.loyer || 0 },
-      { label: 'Courses',           val: budgetBrick.courses || 0 },
-      { label: 'Transport',         val: budgetBrick.transport || 0 },
-      { label: 'Santé',             val: budgetBrick.sante || 0 },
-      { label: 'Dépenses pro',      val: budgetBrick.depenses_pro || 0 },
-      { label: 'Mensualités dettes',val: budgetBrick.total_dettes_mensuel || 0 },
+      { label: 'Loyer / logement',  val: _bb.loyer || 0 },
+      { label: 'Courses',           val: _bb.courses || 0 },
+      { label: 'Transport',         val: _bb.transport || 0 },
+      { label: 'Santé',             val: _bb.sante || 0 },
+      { label: 'Dépenses pro',      val: _bb.depenses_pro || 0 },
+      { label: 'Mensualités dettes',val: _bb.total_dettes_mensuel || 0 },
     ].filter(function(l) { return l.val > 0; });
 
     if (detailNbr) detailNbr.textContent = lignes.length + ' poste' + (lignes.length > 1 ? 's' : '');
@@ -1742,7 +1743,7 @@ function buildScreen1() {
     lignes.forEach(function(l) {
       listHtml += '<div class="charges-detail-row"><span class="charges-detail-label">' + l.label + '</span><span class="charges-detail-val">' + formatEuro(l.val) + '</span></div>';
     });
-    listHtml += '<div class="charges-detail-row total-row"><span class="charges-detail-label">Total estimé</span><span class="charges-detail-val">' + formatEuro(budgetBrick.total_besoins) + '</span></div>';
+    listHtml += '<div class="charges-detail-row total-row"><span class="charges-detail-label">Total estimé</span><span class="charges-detail-val">' + formatEuro(_bb.total_besoins) + '</span></div>';
     listHtml += '</div>';
     if (detailBody) detailBody.innerHTML = listHtml;
 
@@ -1757,7 +1758,7 @@ function buildScreen1() {
   var bmcDismiss = document.getElementById('bmc-dismiss');
 
   if (budgetMissingCard) {
-    if (!budgetBrick.total_besoins || budgetBrick.total_besoins === 0) {
+    if (!_bb.total_besoins || _bb.total_besoins === 0) {
       budgetMissingCard.style.display = 'block';
       if (detailToggle) detailToggle.style.display = 'none';
     }
@@ -1813,7 +1814,7 @@ function updateCTAState() {
   var inputChargesVal = inputChargesEl ? (parseFloat(inputChargesEl.value) || 0) : 0;
   var charges = inputChargesVal || mData.charges_vitales_saisies || mData.total_besoins || 0;
   var revenus = (mData.revenus || 0) + (mData.aides || 0);
-  var hasData = charges > 0 || revenus > 0 || (getBudgetBrick().total_besoins > 0);
+  var hasData = charges > 0 || revenus > 0 || (mData.total_besoins > 0);
   btn.disabled = !hasData;
   btn.style.opacity = hasData ? '1' : '0.45';
   btn.style.cursor = hasData ? 'pointer' : 'not-allowed';
