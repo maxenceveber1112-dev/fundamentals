@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Fundamental — Matelas de sécurité</title>
+  <title>Fundamental — Épargne de précaution</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 
@@ -895,7 +895,7 @@
 
   </style>
 </head>
-<body data-brick-name="Matelas de sécurité">
+<body data-brick-name="Épargne de précaution">
 
 <!-- SIDEBAR injected by sidebar.js -->
 <div class="f-sidebar-shell">
@@ -1099,12 +1099,12 @@
         <div class="brick-card">
           <div class="brick-kicker">ÉTAPE 4 / 4 · OÙ LE GARDER</div>
           <h2 class="brick-title">Disponible. Séparé. Sans prise de risque.</h2>
-          <p class="brick-subtitle" id="s4-subtitle">L'endroit où ton matelas sera le plus utile.</p>
+          <p class="brick-subtitle" id="s4-subtitle">L'endroit où ton épargne de précaution sera la plus utile.</p>
 
           <!-- Livret detected -->
           <div class="placement-detected" id="placement-detected" style="display:none">
             <span class="badge-source">Tu as un livret déclaré</span>
-            <p>C'est l'endroit cohérent pour ce matelas.</p>
+            <p>C'est l'endroit cohérent pour cette épargne de précaution.</p>
             <div style="display:flex;flex-direction:column;gap:0.5rem;">
               <button class="btn-hero-primary" style="width:100%;justify-content:center;" onclick="selectPlacement('livret');lancerMatelas();" aria-label="Confirmer le livret">Confirmer →</button>
               <button class="btn-hero-secondary" onclick="showAllPlacements()" aria-label="Choisir autrement">Choisir autrement</button>
@@ -1116,7 +1116,7 @@
             <div class="placement-card selected" data-placement="livret" onclick="selectPlacement('livret')" role="button" aria-label="Livret disponible">
               <div class="placement-card-info">
                 <div class="placement-card-title">Livret disponible</div>
-                <div class="placement-card-desc">Accessible. Séparé du quotidien. Adapté au matelas.</div>
+                <div class="placement-card-desc">Accessible. Séparé du quotidien. Adapté à l'épargne de précaution.</div>
               </div>
               <span class="placement-card-badge">recommandé</span>
             </div>
@@ -1136,8 +1136,8 @@
 
           <div class="nav-btns" id="nav-btns-s4">
             <button class="btn-back" onclick="goToScreen(3)" aria-label="Retour">← Retour</button>
-            <button class="btn-hero-primary" id="btn-lancer" aria-label="Lancer mon matelas" onclick="lancerMatelas()">
-              Lancer mon matelas →
+            <button class="btn-hero-primary" id="btn-lancer" aria-label="Lancer mon épargne de précaution" onclick="lancerMatelas()">
+              Lancer mon épargne de précaution →
             </button>
           </div>
         </div>
@@ -1210,7 +1210,7 @@
   <div class="modal-fin-card">
     <div class="modal-fin-header">
       <div class="modal-fin-check" aria-hidden="true">✓</div>
-      <h2 class="modal-fin-title">Matelas lancé.</h2>
+      <h2 class="modal-fin-title">Épargne de précaution lancée.</h2>
       <p class="modal-fin-sub" id="modal-fin-sub">Ton plan est en place.</p>
     </div>
 
@@ -1246,7 +1246,7 @@
 
 <script>
 /* ══════════════════════════════════════════════════════════════
-   BRIQUE FONDS D'URGENCE — Matelas de sécurité V2
+   BRIQUE FONDS D'URGENCE — Épargne de précaution V2
    ══════════════════════════════════════════════════════════════ */
 
 const BRICK_ID = 'fonds_urgence';
@@ -1264,7 +1264,7 @@ const STEP_TITLES = {
   1: 'On reprend ton profil…',
   2: 'Ton prochain palier',
   3: 'Ton rythme d\'épargne',
-  4: 'Où garder ton matelas'
+  4: 'Où garder ton épargne de précaution'
 };
 
 /* ══════════════════════════════════════════════════════════════
@@ -1358,7 +1358,7 @@ function calculateMatelasSecurity(d) {
   raisonsPersonnalisation.push('Stabilité : ' + stabLabels[stabilite]);
   if (chargesBase > 0) raisonsPersonnalisation.push('Charges vitales : ' + formatEuro(chargesBase) + '/mois');
   if (epargneDisponible > 0) raisonsPersonnalisation.push('Déjà disponible : ' + formatEuro(epargneDisponible));
-  if (hasDecouvert) raisonsPersonnalisation.push('Découvert récurrent — mini-matelas anti-rechute prioritaire');
+  if (hasDecouvert) raisonsPersonnalisation.push('Découvert récurrent — mini-épargne de précaution anti-rechute prioritaire');
 
   return {
     epargneDisponible: epargneDisponible,
@@ -1627,14 +1627,14 @@ function buildScreen2() {
     if (atteintBlock) {
       atteintBlock.style.display = 'block';
       if (bigSurplus) {
-        document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
+        document.getElementById('atteint-title').textContent = 'Épargne de précaution solide atteinte.';
         document.getElementById('atteint-sub').innerHTML = 'Tu as ' + formatEuro(surplus) + ' au-delà de ton objectif.<br>C\'est le bon moment de passer à la suite.';
         document.getElementById('atteint-actions').innerHTML = nextBriqueSolide.bientot
           ? '<span class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;opacity:0.5;cursor:not-allowed;pointer-events:none;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + '</span><span style="display:block;margin-top:0.4rem;font-size:12px;color:#999;">Bientôt disponible</span>'
           : '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
       } else {
-        document.getElementById('atteint-title').textContent = 'Matelas solide atteint.';
-        document.getElementById('atteint-sub').innerHTML = 'Ton épargne de sécurité est en place.<br>Tu peux passer à la suite.';
+        document.getElementById('atteint-title').textContent = 'Épargne de précaution solide atteinte.';
+        document.getElementById('atteint-sub').innerHTML = 'Ton épargne de précaution est en place.<br>Tu peux passer à la suite.';
         document.getElementById('atteint-actions').innerHTML = nextBriqueSolide.bientot
           ? '<span class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;opacity:0.5;cursor:not-allowed;pointer-events:none;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + '</span><span style="display:block;margin-top:0.4rem;font-size:12px;color:#999;">Bientôt disponible</span>'
           : '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
@@ -2066,7 +2066,7 @@ function lancerMatelas() {
       nextBriqueHtml =
         '<div class="modal-next-invest">' +
           '<div class="modal-next-kicker">Et maintenant ?</div>' +
-          '<p class="modal-next-msg">Ton matelas est en place. C\'est le bon moment de passer à la suite.</p>' +
+          '<p class="modal-next-msg">Ton épargne de précaution est en place. C\'est le bon moment de passer à la suite.</p>' +
           bientotCta +
         '</div>';
     } else if (resteModal <= 0) {
@@ -2093,7 +2093,7 @@ function lancerMatelas() {
   var subEl = document.getElementById('modal-fin-sub');
   if (subEl) {
     if (resteModal <= 0) {
-      subEl.textContent = 'Ton matelas est déjà en place.';
+      subEl.textContent = 'Ton épargne de précaution est déjà en place.';
     } else {
       subEl.textContent = formatEuro(rythme) + '/mois vers ' + dateEstimee + '.';
     }
@@ -2163,7 +2163,7 @@ async function validerEngagement() {
   var eng = {
     id:              'eng_fonds_urgence',
     type:            'fonds_urgence',
-    label:           'Matelas de sécurité',
+    label:           'Épargne de précaution',
     detail:          'Objectif ' + formatEuro(palierAmt) + ' · ' + formatEuro(rythme) + '/mois · vers ' + dateEstimee,
     montant_actuel:  calcResult.epargneDisponible,
     montant_cible:   palierAmt,
@@ -2241,7 +2241,7 @@ function buildPrintBilan(palierAmt, rythme, dateEstimee) {
   var placementLabels = { livret:'Livret', compte_separe:'Compte séparé', compte_courant:'Compte courant' };
 
   el.innerHTML =
-    '<h1>Matelas de sécurité — Bilan</h1>' +
+    '<h1>Épargne de précaution — Bilan</h1>' +
     '<div class="pb-date">' + now + '</div>' +
 
     '<div class="pb-section">' +
@@ -2267,7 +2267,7 @@ function buildPrintBilan(palierAmt, rythme, dateEstimee) {
       '<div class="pb-row"><span class="pb-row-label">Sécurité solide</span><span class="pb-row-val">' + formatEuro(calcResult.palierSecuriteSolide) + '</span></div>' +
     '</div>' +
 
-    '<div class="pb-footer">Fundamental — matelas de sécurité · ' + now + '</div>';
+    '<div class="pb-footer">Fundamental — épargne de précaution · ' + now + '</div>';
 }
 
 

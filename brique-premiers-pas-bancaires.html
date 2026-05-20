@@ -578,7 +578,7 @@
           <h2 class="brick-title">Ton plan d’épargne automatique.</h2>
           <p class="brick-subtitle">On a calculé un plan à partir de tes données. Ajuste le curseur.</p>
           <div class="data-cards-grid" style="margin-bottom:1.25rem">
-            <div class="data-card"><div class="data-card-value" id="s5-objectif-val">—</div><div class="data-card-label">Objectif matelas</div></div>
+            <div class="data-card"><div class="data-card-value" id="s5-objectif-val">—</div><div class="data-card-label">Objectif épargne de précaution</div></div>
             <div class="data-card"><div class="data-card-value" id="s5-duree-val">—</div><div class="data-card-label">Durée estimée</div></div>
           </div>
           <div style="margin:1.5rem 0">
@@ -754,13 +754,13 @@ var STEP_TITLES = {
 
 /* ── SAVINGS PRODUCTS CONFIG ── */
 var SAVINGS_PRODUCTS_CONFIG = [
-  {id:'livret_a',nom:'Livret A',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere d\'impots et prelevements sociaux',plafond:'22 950 \u20ac',taux:'2,4 %',conditions:'Ouvert a tous. 1 seul par personne.',usage_recommande:'Matelas de securite, epargne disponible, projets courts',erreur:'Y laisser tout son argent sans distinguer les objectifs',priorite:1,badge:'Adapte au matelas',source_update:'Banque de France'},
-  {id:'ldds',nom:'LDDS',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere d\'impots et prelevements sociaux',plafond:'12 000 \u20ac',taux:'2,4 %',conditions:'Contribuable domicilie en France. 1 seul par personne.',usage_recommande:'Complement du Livret A, epargne disponible',erreur:'Le voir comme totalement different du Livret A \u2014 usage tres proche',priorite:2,badge:'Adapte au matelas',source_update:'Banque de France'},
-  {id:'lep',nom:'LEP',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere d\'impots et prelevements sociaux',plafond:'10 000 \u20ac',taux:'3,5 %',conditions:'Sous conditions de revenus (revenu fiscal de reference). 1 seul par personne.',usage_recommande:'Matelas de securite si eligible \u2014 a verifier en priorite',erreur:'Ne pas verifier son eligibilite',priorite:0,badge:'A verifier en priorite',source_update:'Banque de France'},
+  {id:'livret_a',nom:'Livret A',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere d\'impots et prelevements sociaux',plafond:'22 950 \u20ac',taux:'2,4 %',conditions:'Ouvert a tous. 1 seul par personne.',usage_recommande:'Epargne de precaution, epargne disponible, projets courts',erreur:'Y laisser tout son argent sans distinguer les objectifs',priorite:1,badge:'Adapte a l\'epargne de precaution',source_update:'Banque de France'},
+  {id:'ldds',nom:'LDDS',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere d\'impots et prelevements sociaux',plafond:'12 000 \u20ac',taux:'2,4 %',conditions:'Contribuable domicilie en France. 1 seul par personne.',usage_recommande:'Complement du Livret A, epargne disponible',erreur:'Le voir comme totalement different du Livret A \u2014 usage tres proche',priorite:2,badge:'Adapte a l\'epargne de precaution',source_update:'Banque de France'},
+  {id:'lep',nom:'LEP',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere d\'impots et prelevements sociaux',plafond:'10 000 \u20ac',taux:'3,5 %',conditions:'Sous conditions de revenus (revenu fiscal de reference). 1 seul par personne.',usage_recommande:'Epargne de precaution si eligible \u2014 a verifier en priorite',erreur:'Ne pas verifier son eligibilite',priorite:0,badge:'A verifier en priorite',source_update:'Banque de France'},
   {id:'livret_jeune',nom:'Livret Jeune',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere',plafond:'1 600 \u20ac',taux:'Variable selon banque (min. Livret A)',conditions:'12 a 25 ans. 1 seul par personne.',usage_recommande:'Premiers reflexes d\'epargne pour jeunes eligibles',erreur:'Ignorer le plafond \u2014 tres vite atteint',priorite:3,badge:'Pour moins de 25 ans',source_update:'Banque de France'},
   {id:'cel',nom:'CEL',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Interets soumis a PFU depuis 2018',plafond:'15 300 \u20ac',taux:'2 %',conditions:'Ouvert a tous. Lie a un projet logement potentiel.',usage_recommande:'Epargne logement ou epargne disponible specifique',erreur:'Le choisir sans comprendre ses conditions de pret',priorite:5,badge:'Projet logement',source_update:'Banque de France'},
-  {id:'pel',nom:'PEL',categorie:'reglemente',disponible:false,risque:'aucun',fiscalite:'Interets soumis a PFU',plafond:'61 200 \u20ac',taux:'1,75 %',conditions:'Versements reguliers obligatoires. Duree min. 4 ans.',usage_recommande:'Projet logement sur horizon long',erreur:'L\'utiliser comme matelas immediat \u2014 argent bloque',priorite:6,badge:'Argent bloque',source_update:'Banque de France'},
-  {id:'compte_terme',nom:'Compte a terme',categorie:'bancaire',disponible:false,risque:'aucun',fiscalite:'Soumis a PFU',plafond:'Aucun plafond',taux:'Variable selon duree et banque',conditions:'Duree definie a l\'ouverture. Sortie anticipee possible avec penalites.',usage_recommande:'Argent dont on n\'a pas besoin pendant une duree definie',erreur:'Y mettre son matelas \u2014 pas adapte a une disponibilite rapide',priorite:7,badge:'Argent bloque',source_update:'Banque'},
+  {id:'pel',nom:'PEL',categorie:'reglemente',disponible:false,risque:'aucun',fiscalite:'Interets soumis a PFU',plafond:'61 200 \u20ac',taux:'1,75 %',conditions:'Versements reguliers obligatoires. Duree min. 4 ans.',usage_recommande:'Projet logement sur horizon long',erreur:'L\'utiliser comme epargne de precaution immediate \u2014 argent bloque',priorite:6,badge:'Argent bloque',source_update:'Banque de France'},
+  {id:'compte_terme',nom:'Compte a terme',categorie:'bancaire',disponible:false,risque:'aucun',fiscalite:'Soumis a PFU',plafond:'Aucun plafond',taux:'Variable selon duree et banque',conditions:'Duree definie a l\'ouverture. Sortie anticipee possible avec penalites.',usage_recommande:'Argent dont on n\'a pas besoin pendant une duree definie',erreur:'Y mettre son epargne de precaution \u2014 pas adapte a une disponibilite rapide',priorite:7,badge:'Argent bloque',source_update:'Banque'},
   {id:'livret_bancaire',nom:'Livret bancaire fiscalise',categorie:'bancaire',disponible:true,risque:'aucun',fiscalite:'Soumis a PFU (30 %)',plafond:'Selon banque',taux:'Taux brut \u2014 regarder le taux net',conditions:'Propose par les banques commerciales.',usage_recommande:'Complement eventuel apres avoir epuise les livrets reglementes',erreur:'Regarder le taux brut sans regarder le taux net apres PFU',priorite:8,badge:'Apres les reglementes',source_update:'Banque'},
   {id:'compte_courant',nom:'Compte courant',categorie:'courant',disponible:true,risque:'aucun',fiscalite:'Non remunere (en general)',plafond:'Aucun',taux:'0 %',conditions:'Ouvert a tous.',usage_recommande:'Depenses du mois uniquement',erreur:'Y stocker toute son epargne \u2014 l\'argent ne travaille pas',priorite:9,badge:'Depenses du mois',source_update:''},
   {id:'compte_separe',nom:'Compte separe',categorie:'courant',disponible:true,risque:'aucun',fiscalite:'Non remunere (en general)',plafond:'Aucun',taux:'0 %',conditions:'Compte courant dedie a un usage.',usage_recommande:'Separer visuellement les objectifs (voyages, projets, etc.)',erreur:'Croire qu\'il remplace un livret si l\'objectif est aussi de remunerer',priorite:10,badge:'Organisation',source_update:''}
@@ -835,7 +835,7 @@ var CHECKLIST_SECTIONS = [
 /* ── PLACEMENT VISUAL DATA ── */
 var PLACEMENT_VISUAL = [
   {icon:'\uD83D\uDCB3',title:'Argent du mois',support:'Compte courant',note:'Paie tes charges et d\u00e9penses courantes \u2014 rien de plus.',badge:'D\u00e9penses'},
-  {icon:'\uD83D\uDEE1\uFE0F',title:'Matelas de s\u00e9curit\u00e9',support:'Livret A, LDDS, LEP si \u00e9ligible',note:'Ta r\u00e9serve pour absorber les impr\u00e9vus sans stress.',badge:'S\u00e9curit\u00e9'},
+  {icon:'\uD83D\uDEE1\uFE0F',title:'\u00c9pargne de pr\u00e9caution',support:'Livret A, LDDS, LEP si \u00e9ligible',note:'Ta r\u00e9serve pour absorber les impr\u00e9vus sans stress.',badge:'S\u00e9curit\u00e9'},
   {icon:'\uD83C\uDFAF',title:'Projet court terme',support:'Livret disponible',note:'Mets de c\u00f4t\u00e9 pour un objectif pr\u00e9cis : vacances, permis, achat.',badge:'Projet'},
   {icon:'\uD83C\uDF31',title:'Investissement long terme',support:'PEA, assurance-vie\u2026',note:'Fais travailler ton argent sur le long terme.',badge:'Croissance'},
   {icon:'\uD83D\uDD12',title:'Argent \u00e0 ne pas toucher',support:'Compte s\u00e9par\u00e9',note:'Isole ce qui ne doit pas \u00eatre d\u00e9pens\u00e9 par r\u00e9flexe.',badge:'S\u00e9curit\u00e9',fw:true}
@@ -1016,7 +1016,7 @@ function buildScreen1() {
     var ep = mData.epargne_liquide_total || 0;
     if (ep > 0) grid.innerHTML += buildDataCard(formatEuro(ep), 'Epargne disponible', 'profil');
     var mat = mData.objectif_matelas || 0;
-    if (mat > 0) grid.innerHTML += buildDataCard(formatEuro(mat), 'Objectif matelas', 'fonds urgence');
+    if (mat > 0) grid.innerHTML += buildDataCard(formatEuro(mat), 'Objectif épargne de précaution', 'fonds urgence');
   }
 
   /* Bind inputs */
@@ -1224,7 +1224,7 @@ function renderLivretsFull(container) {
   container.innerHTML = '';
   var products = SAVINGS_PRODUCTS_CONFIG.slice().sort(function(a,b){return a.priorite-b.priorite;});
   products.forEach(function(p) {
-    var bc = p.badge==='Adapte au matelas'?'background:var(--green-soft);color:var(--green);border:1px solid var(--green-border)':p.badge==='A verifier en priorite'?'background:var(--orange-soft);color:var(--orange)':p.badge==='Argent bloque'?'background:var(--red-soft);color:var(--red)':'background:var(--accent-soft);color:var(--accent-strong)';
+    var bc = p.badge==='Adapte a l\'epargne de precaution'?'background:var(--green-soft);color:var(--green);border:1px solid var(--green-border)':p.badge==='A verifier en priorite'?'background:var(--orange-soft);color:var(--orange)':p.badge==='Argent bloque'?'background:var(--red-soft);color:var(--red)':'background:var(--accent-soft);color:var(--accent-strong)';
     container.innerHTML += '<div class="livret-card"><div class="livret-card-header"><span class="livret-card-name">'+escapeHtml(p.nom)+'</span><span class="livret-card-badge" style="'+bc+'">'+escapeHtml(p.badge)+'</span></div><div class="livret-card-row"><span>Taux</span><span>'+escapeHtml(p.taux)+'</span></div><div class="livret-card-row"><span>Plafond</span><span>'+escapeHtml(p.plafond)+'</span></div><div class="livret-card-usage">'+escapeHtml(p.usage_recommande)+'</div></div>';
   });
 }
@@ -1537,7 +1537,7 @@ function getNextBriqueLocale() {
   if (decouvertFrequent) return {url:'brique-gestion-decouvert.html',label:'Gerer mon decouvert',msg:'Tu utilises le decouvert regulierement. On va voir comment en sortir.'};
 
   var matIncomplet = (mData.matelas_actuel || 0) < (mData.objectif_matelas || 1);
-  if (matIncomplet && mData.objectif_matelas > 0) return {url:'brique-fonds-urgence.html',label:'Construire mon matelas',msg:'Ton matelas n\'est pas encore complet. C\'est la priorite.'};
+  if (matIncomplet && mData.objectif_matelas > 0) return {url:'brique-fonds-urgence.html',label:'Construire mon epargne de precaution',msg:'Ton epargne de precaution n\'est pas encore complete. C\'est la priorite.'};
 
   var budgetDone = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_budget_base') : null);
   if (!budgetDone || !budgetDone.data) return {url:'brique-budget-base.html',label:'Stabiliser mon budget',msg:'On commence par poser un budget clair.'};
@@ -1546,7 +1546,7 @@ function getNextBriqueLocale() {
 
   var matelasDone = !matIncomplet && (mData.objectif_matelas || 0) > 0;
   var surplus = (mData.capacite_epargne || 0) > 0;
-  if (matelasDone && surplus) return {url:'dashboard.html',label:'Commencer a investir',msg:'Ton matelas est en place. Tu peux passer a l\'etape suivante.'};
+  if (matelasDone && surplus) return {url:'dashboard.html',label:'Commencer a investir',msg:'Ton epargne de precaution est en place. Tu peux passer a l\'etape suivante.'};
 
   return {url:'dashboard.html',label:'Retour au dashboard',msg:'On a fait le tour. Continue a ton rythme.'};
 }

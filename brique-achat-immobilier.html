@@ -3896,12 +3896,12 @@ function recommendNextBrick(st) {
   var matelasData = loadFromStorage('fund_brick_fonds_urgence');
   if (!budgetData) return { slug: 'budget_base', label: 'Stabilise ton mois', reason: 'Avant d\'acheter, connais ton vrai reste à vivre.' };
   if (!matelasData || n(st.matelasActuel) < n(st.matelasCible) * 0.5)
-    return { slug: 'fonds_urgence', label: 'Ton matelas de sécurité', reason: 'Acheter sans réserve rend le projet fragile.' };
+    return { slug: 'fonds_urgence', label: 'Ton épargne de précaution', reason: 'Acheter sans réserve rend le projet fragile.' };
   var effort = calculateDebtRatio(st.credits, 0, getTotalRevenus());
   if (effort > 0.25) return { slug: 'gestion_decouvert', label: 'Sortir du rouge', reason: 'Tes crédits existants réduisent ta capacité d\'achat.' };
   var apportMob = getApportMobilisable();
   if (apportMob > 0 && st.prixBien > 0) return { slug: 'plan_multi_objectifs', label: 'Tes objectifs en parallèle', reason: 'Ton socle est prêt pour planifier plusieurs projets.' };
-  return { slug: 'fonds_urgence', label: 'Ton matelas de sécurité', reason: 'Consolider ton épargne renforcera ton projet.' };
+  return { slug: 'fonds_urgence', label: 'Ton épargne de précaution', reason: 'Consolider ton épargne renforcera ton projet.' };
 }
 
 /* ─── HELPERS ────────────────────────────────────────────── */
@@ -4656,7 +4656,7 @@ function updateApport() {
     $('warning-apport-text').textContent = 'Ton épargne est entièrement protégée. Le projet peut être difficile à financer.';
   } else if (mob > 0 && mAct < mCib * 0.5) {
     warnEl.style.display = 'flex';
-    $('warning-apport-text').textContent = 'Apport disponible, mais sécurité fragile. Consolide ton matelas avant d\'acheter.';
+    $('warning-apport-text').textContent = 'Apport disponible, mais sécurité fragile. Consolide ton épargne de précaution avant d\'acheter.';
   } else {
     warnEl.style.display = 'none';
   }
@@ -5600,7 +5600,7 @@ function buildActions() {
   var actions = [];
   var budgetData = loadFromStorage('fund_brick_budget_base');
   if (!budgetData) actions.push('Finaliser la brique Budget pour connaître ton vrai reste à vivre.');
-  if (S.matelasActuel < S.matelasCible * 0.5) actions.push('Consolider ton matelas de sécurité avant d\'acheter.');
+  if (S.matelasActuel < S.matelasCible * 0.5) actions.push('Consolider ton épargne de précaution avant d\'acheter.');
   var effort = calculateDebtRatio(S.credits, getMensualiteCible() + n(S.assurance), getTotalRevenus());
   if (effort > EFFORT_MAX) actions.push('Réduire tes charges ou crédits pour baisser le taux d\'effort.');
   var mob = getApportMobilisable();

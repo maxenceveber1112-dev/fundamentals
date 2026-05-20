@@ -2227,15 +2227,30 @@ function buildLeviers() {
 
   const totalRev = budgetData.revenus + budgetData.aides;
   const reste = budgetData.reste_a_vivre;
-  const ratio = totalRev > 0 ? reste / totalRev : 0;
+  const epargneDeclaree = budgetData.epargne || 0;
+  const margeReelle = reste + epargneDeclaree;
+  const ratio = totalRev > 0 ? margeReelle / totalRev : 0;
 
-  // Déterminer la situation
+  // Déterminer la situation (intègre l'épargne choisie)
+  const niveaux = ['deficit','tendu','equilibre','aise','confortable'];
   let situation;
-  if (reste < 0)        situation = 'deficit';
-  else if (ratio < 0.1) situation = 'tendu';
-  else if (ratio < 0.2) situation = 'equilibre';
+  if (reste < 0)         situation = 'deficit';
+  else if (ratio < 0.1)  situation = 'tendu';
+  else if (ratio < 0.2)  situation = 'equilibre';
   else if (ratio < 0.35) situation = 'aise';
-  else                  situation = 'confortable';
+  else                   situation = 'confortable';
+
+  // Bonus épargne : si l'user épargne beaucoup, la sévérité baisse
+  if (totalRev > 0 && reste >= 0) {
+    const ratioEpargne = epargneDeclaree / totalRev;
+    let bonus = 0;
+    if (ratioEpargne > 0.25) bonus = 2;
+    else if (ratioEpargne > 0.15) bonus = 1;
+    if (bonus > 0) {
+      const idx = niveaux.indexOf(situation);
+      situation = niveaux[Math.min(idx + bonus, niveaux.length - 1)];
+    }
+  }
 
   // Leviers selon situation
   const leviersConfig = {
@@ -2246,16 +2261,16 @@ function buildLeviers() {
     ],
     tendu: [
       { icon:'\u{1F50D}', title:'Optimiser les abonnements', sub: budgetData.abonnements_total > 0 ? `${formatEuro(budgetData.abonnements_total)}/mois d'abonnements — y a-t-il des doublons ou inutilisés ?` : 'Passe en revue tes abonnements récurrents.', color:'#F97316' },
-      { icon:'\u{1F3AF}', title:'Viser un fonds de sécurité de 1 mois', sub:`Avec ${formatEuro(reste)}/mois de marge, commence par mettre de côté l'équivalent d'un mois de charges.`, color:'#EAB308', cta:'brique-fonds-urgence.html', ctaLabel:'Commencer le fonds' },
+      { icon:'\u{1F3AF}', title:'Viser une épargne de précaution de 1 mois', sub:`Avec ${formatEuro(reste)}/mois de marge, commence par mettre de côté l'équivalent d'un mois de charges.`, color:'#EAB308', cta:'brique-fonds-urgence.html', ctaLabel:'Commencer l\'épargne de précaution' },
       { icon:'\u{1F4CA}', title:'Réduire les dépenses variables de 10%', sub:`Un gain de ${formatEuro(Math.round(budgetData.total_envies * 0.1))}/mois est réaliste sans impacter ton confort.`, color:'#8B5CF6' },
     ],
     equilibre: [
-      { icon:'\u{1F3E6}', title:'Automatiser une épargne de précaution', sub: budgetData.epargne === 0 ? `Tu as ${formatEuro(reste)}/mois de marge — mets-en au moins la moitié en épargne automatique dès le 1er.` : `Tu éparges déjà ${formatEuro(budgetData.epargne)}/mois. Peux-tu augmenter ?`, color:'#22C55E', cta:'brique-fonds-urgence.html', ctaLabel:'Brique fonds d\'urgence' },
+      { icon:'\u{1F3E6}', title:'Automatiser une épargne de précaution', sub: budgetData.epargne === 0 ? `Tu as ${formatEuro(reste)}/mois de marge — mets-en au moins la moitié en épargne automatique dès le 1er.` : `Tu éparges déjà ${formatEuro(budgetData.epargne)}/mois. Peux-tu augmenter ?`, color:'#22C55E', cta:'brique-fonds-urgence.html', ctaLabel:'Brique Épargne de précaution' },
       { icon:'\u{1F4C9}', title:'Réduire 1 poste de dépenses variables', sub:`Choisir un seul poste à réduire de 15% libère ${formatEuro(Math.round(budgetData.total_envies * 0.15))}/mois.`, color:'#8B5CF6' },
       { icon:'\u{1F4A1}', title:'Vérifier tes frais bancaires', sub:'Carte, découvert autorisé, assurances redondantes — souvent 15 à 30€/mois invisibles.', color:'#6366F1', cta:null, ctaLabel:'Optimiser mes frais', bientot:true },
     ],
     aise: [
-      { icon:'\u{1F4B0}', title:'Automatiser l\'épargne dès le 1er du mois', sub: budgetData.epargne === 0 ? `Tu as ${formatEuro(reste)}/mois disponibles — l'épargne automatique est la meilleure décision que tu puisses prendre.` : `Tu éparges ${formatEuro(budgetData.epargne)}/mois. Peux-tu viser ${formatEuro(Math.round(reste * 0.5))}/mois ?`, color:'#22C55E', cta:'brique-fonds-urgence.html', ctaLabel:'Brique épargne' },
+      { icon:'\u{1F4B0}', title:'Automatiser l\'épargne dès le 1er du mois', sub: budgetData.epargne === 0 ? `Tu as ${formatEuro(reste)}/mois disponibles — l'épargne automatique est la meilleure décision que tu puisses prendre.` : `Tu éparges ${formatEuro(budgetData.epargne)}/mois. Peux-tu viser ${formatEuro(Math.round(reste * 0.5))}/mois ?`, color:'#22C55E', cta:'brique-fonds-urgence.html', ctaLabel:'Brique Épargne de précaution' },
       { icon:'\u{1F4C8}', title:'Commencer à investir', sub:`Avec ${formatEuro(reste)}/mois de marge, même 50€/mois investi régulièrement crée un effet boule de neige.`, color:'#6366F1' },
       { icon:'\u{1F3E0}', title:'Anticiper un projet moyen terme', sub:'Immobilier, véhicule, voyage — planifier maintenant optimise le financement.', color:'#8B5CF6' },
     ],
@@ -2389,15 +2404,16 @@ function _renderSankeyHTML(budgetData) {
   }
 
   // ── Bézier col2 → col3 ────────────────────────────────────
+  // Épargne et Reste partent de col2 empilés sous les charges :
+  //   source Épargne = [y2_bottom, y2_bottom + h3S]
+  //   source Reste   = [y2_bottom + h3S, y2_bottom + h3S + h3R]
   const lx2 = x2 + barW, rx3 = x3, mx2 = (lx2+rx3)/2;
   if (h3S > 2) {
-    const stTop = dy+y2_bottom-h3S, stBot = dy+y2_bottom;
-    if (stTop >= dy) {
-      html += `<path d="M${r(lx2)},${r(stTop)} C${r(mx2)},${r(stTop)} ${r(mx2)},${r(dy+y3S)} ${r(rx3)},${r(dy+y3S)} L${r(rx3)},${r(dy+y3S+h3S)} C${r(mx2)},${r(dy+y3S+h3S)} ${r(mx2)},${r(stBot)} ${r(lx2)},${r(stBot)} Z" fill="${cS}" opacity="0.20"/>`;
-    }
+    const stTop = dy+y2_bottom, stBot = dy+y2_bottom+h3S;
+    html += `<path d="M${r(lx2)},${r(stTop)} C${r(mx2)},${r(stTop)} ${r(mx2)},${r(dy+y3S)} ${r(rx3)},${r(dy+y3S)} L${r(rx3)},${r(dy+y3S+h3S)} C${r(mx2)},${r(dy+y3S+h3S)} ${r(mx2)},${r(stBot)} ${r(lx2)},${r(stBot)} Z" fill="${cS}" opacity="0.20"/>`;
   }
   if (h3R > 4) {
-    const rtTop = dy+y2_bottom, rtBot = dy+y2_bottom+h3R;
+    const rtTop = dy+y2_bottom+h3S, rtBot = dy+y2_bottom+h3S+h3R;
     html += `<path d="M${r(lx2)},${r(rtTop)} C${r(mx2)},${r(rtTop)} ${r(mx2)},${r(dy+y3R_pos)} ${r(rx3)},${r(dy+y3R_pos)} L${r(rx3)},${r(dy+y3R_pos+h3R)} C${r(mx2)},${r(dy+y3R_pos+h3R)} ${r(mx2)},${r(rtBot)} ${r(lx2)},${r(rtBot)} Z" fill="${cR}" opacity="0.14"/>`;
   }
 
@@ -2592,7 +2608,7 @@ function buildReco() {
 
   const dotClass = meta.pack === 'Survie & stabilité' ? 'dot-survie' : meta.pack === 'Construction & projets' ? 'dot-construction' : 'dot-invest';
   const ctaBtn = file
-    ? `<a href="${file}" class="btn-hero-primary" style="display:inline-flex;">Commencer ${meta.nom} →</a>`
+    ? `<button class="btn-hero-primary" style="display:inline-flex;" onclick="saveThenRedirect('${file}')">Commencer ${meta.nom} →</button>`
     : `<span class="btn-hero-primary" style="display:inline-flex;opacity:0.4;cursor:not-allowed;pointer-events:none;">${meta.nom} (bientôt disponible)</span>`;
   wrap.innerHTML = `
     <div class="reco-card" data-glyph="${meta.icon || '📋'}">
@@ -2618,16 +2634,31 @@ function buildPrioritesPersonnalisees() {
 
   const totalRev  = budgetData.revenus + budgetData.aides;
   const reste     = budgetData.reste_a_vivre;
-  const ratio     = totalRev > 0 ? reste / totalRev : 0;
+  const epargneDeclaree = budgetData.epargne || 0;
+  const margeReelle = reste + epargneDeclaree;
+  const ratio     = totalRev > 0 ? margeReelle / totalRev : 0;
   const totalDettes = budgetData.dettes.reduce((s,d) => s + (d.montant_mensuel||0), 0);
   const hasDetteRouge = budgetData.dettes.some(d => ['decouvert_regulier','credit_renouvelable','credit_conso'].includes(d.type));
 
+  const niveaux = ['deficit','tendu','equilibre','aise','confortable'];
   let situation;
   if (reste < 0)         situation = 'deficit';
   else if (ratio < 0.10) situation = 'tendu';
   else if (ratio < 0.20) situation = 'equilibre';
   else if (ratio < 0.35) situation = 'aise';
   else                   situation = 'confortable';
+
+  // Bonus épargne : si l'user épargne beaucoup, la sévérité baisse
+  if (totalRev > 0 && reste >= 0) {
+    const ratioEpargne = epargneDeclaree / totalRev;
+    let bonus = 0;
+    if (ratioEpargne > 0.25) bonus = 2;
+    else if (ratioEpargne > 0.15) bonus = 1;
+    if (bonus > 0) {
+      const idx = niveaux.indexOf(situation);
+      situation = niveaux[Math.min(idx + bonus, niveaux.length - 1)];
+    }
+  }
 
   if (kicker) {
     const labels = { deficit:'\u26A0\uFE0F Budget en d\u00E9ficit', tendu:'Budget serr\u00E9', equilibre:'Budget \u00E0 l\u2019\u00E9quilibre', aise:'Budget sain', confortable:'Budget confortable' };
@@ -2644,17 +2675,17 @@ function buildPrioritesPersonnalisees() {
       { num:'3', titre:'Parle \u00E0 ta banque avant que \u00E7a empire', sub:'Un d\u00E9couvert non g\u00E9r\u00E9 co\u00FBte tr\u00E8s cher. Un simple appel peut \u00E9viter les frais d\u2019incident. La brique d\u00E9di\u00E9e t\u2019aide \u00E0 pr\u00E9parer ce RDV.', horizon:'Dans les 2 semaines', cta:{ href:null, label:'G\u00E9rer mon d\u00E9couvert', bientot:true } },
     ],
     tendu: [
-      { num:'1', titre:`Mets ${formatEuro(epargCible)} de c\u00F4t\u00E9 d\u00E8s la prochaine paie`, sub:'M\u00EAme un petit montant automatis\u00E9 cr\u00E9e une habitude. Vire-le d\u00E8s le 1er, avant de d\u00E9penser.', horizon:'D\u00E8s ce mois', cta:{ href:'brique-fonds-urgence.html', label:'Brique Fonds d\u2019urgence' } },
+      { num:'1', titre:`Mets ${formatEuro(epargCible)} de c\u00F4t\u00E9 d\u00E8s la prochaine paie`, sub:'M\u00EAme un petit montant automatis\u00E9 cr\u00E9e une habitude. Vire-le d\u00E8s le 1er, avant de d\u00E9penser.', horizon:'D\u00E8s ce mois', cta:{ href:'brique-fonds-urgence.html', label:'Brique \u00c9pargne de pr\u00e9caution' } },
       { num:'2', titre:'Audite tes abonnements', sub: aboTotal > 0 ? `${formatEuro(aboTotal)}/mois d\u2019abonnements \u2014 certains sont s\u00FBrement inutilis\u00E9s ou doublonn\u00E9s. 15 min peuvent lib\u00E9rer 20-30\u20AC/mois.` : 'Liste tous tes pr\u00E9l\u00E8vements automatiques et identifie les inutilis\u00E9s.', horizon:'Ce week-end' },
       { num:'3', titre:'V\u00E9rifie tes frais bancaires', sub:'Carte, assurances redondantes, d\u00E9couvert autoris\u00E9 \u2014 souvent 15 \u00E0 25\u20AC/mois invisibles r\u00E9cup\u00E9rables en changeant d\u2019offre.', horizon:'Ce mois', cta:{ href:null, label:'Optimiser mes frais', bientot:true } },
     ],
     equilibre: [
-      { num:'1', titre:`Automatise ${formatEuro(epargCible)}/mois d\u00E8s maintenant`, sub:'Tu as de la marge \u2014 ne la laisse pas "fondre" en d\u00E9penses invisibles. Un virement automatique le jour de la paie est la meilleure d\u00E9cision que tu puisses prendre.', horizon:'D\u00E8s ce mois', cta:{ href:'brique-fonds-urgence.html', label:'Commencer le fonds' } },
+      { num:'1', titre:`Automatise ${formatEuro(epargCible)}/mois d\u00E8s maintenant`, sub:'Tu as de la marge \u2014 ne la laisse pas "fondre" en d\u00E9penses invisibles. Un virement automatique le jour de la paie est la meilleure d\u00E9cision que tu puisses prendre.', horizon:'D\u00E8s ce mois', cta:{ href:'brique-fonds-urgence.html', label:'Commencer l\u2019\u00e9pargne de pr\u00e9caution' } },
       { num:'2', titre:'Identifie ton prochain objectif \u00E0 6 mois', sub:'Voyage, v\u00E9hicule, projet perso \u2014 nommer l\u2019objectif le rend concret et oriente les d\u00E9cisions du quotidien.', horizon:'Cette semaine' },
       { num:'3', titre:'Optimise tes frais fixes', sub:`${formatEuro(budgetData.total_besoins)} de charges fixes chaque mois. Certains sont n\u00E9gociables (assurances, forfaits). 30 min de comparaison peuvent d\u00E9gager 20-40\u20AC/mois.`, horizon:'Ce mois', cta:{ href:null, label:'Voir Premiers pas bancaires', bientot:true } },
     ],
     aise: [
-      { num:'1', titre:'Lance une \u00E9pargne automatique mensuelle', sub: budgetData.epargne > 0 ? `Tu \u00E9pargnes d\u00E9j\u00E0 ${formatEuro(budgetData.epargne)}/mois. Peux-tu viser ${formatEuro(Math.round(budgetData.epargne * 1.5 / 5) * 5)}/mois ? L\u2019automatiser sur un compte s\u00E9par\u00E9 est la cl\u00E9.` : `Tu as ${formatEuro(reste)}/mois disponibles. L\u2019\u00E9pargne automatique le jour de la paie est ton levier #1.`, horizon:'D\u00E8s ce mois', cta:{ href:'brique-fonds-urgence.html', label:'Brique Fonds d\u2019urgence' } },
+      { num:'1', titre:'Lance une \u00E9pargne automatique mensuelle', sub: budgetData.epargne > 0 ? `Tu \u00E9pargnes d\u00E9j\u00E0 ${formatEuro(budgetData.epargne)}/mois. Peux-tu viser ${formatEuro(Math.round(budgetData.epargne * 1.5 / 5) * 5)}/mois ? L\u2019automatiser sur un compte s\u00E9par\u00E9 est la cl\u00E9.` : `Tu as ${formatEuro(reste)}/mois disponibles. L\u2019\u00E9pargne automatique le jour de la paie est ton levier #1.`, horizon:'D\u00E8s ce mois', cta:{ href:'brique-fonds-urgence.html', label:'Brique \u00c9pargne de pr\u00e9caution' } },
       { num:'2', titre:'Commence \u00E0 investir, m\u00EAme petit', sub:'50 \u00E0 100\u20AC/mois sur un PEA ou une assurance-vie cr\u00E9e un effet boule de neige puissant sur 10 ans. Le bon moment, c\u2019est maintenant.', horizon:'Dans 1 mois' },
       { num:'3', titre:'Anticipe un projet \u00E0 1-3 ans', sub:'Immobilier, reconversion, projet pro \u2014 mod\u00E9liser le financement maintenant donne une direction claire \u00E0 chaque euro \u00E9pargn\u00E9.', horizon:'Dans 3 mois' },
     ],
@@ -2680,6 +2711,29 @@ function buildPrioritesPersonnalisees() {
   `).join('');
 
   budgetData.priorites = priorites.map(p => ({ titre: p.titre, horizon: p.horizon }));
+}
+
+async function saveThenRedirect(href) {
+  if (typeof completeBrickFull === 'function') {
+    await completeBrickFull(BRICK_ID, {
+      profileFields: {
+        revenus_nets_mensuel:     budgetData.revenus,
+        aides_mensuelles:         budgetData.aides,
+        loyer:                    budgetData.loyer,
+        charges_fixes_total:      budgetData.total_besoins,
+        depenses_variables_total: budgetData.total_envies,
+        epargne_mensuelle:        budgetData.epargne,
+        reste_a_vivre:            budgetData.reste_a_vivre,
+        abonnements_economies:    budgetData.abonnements_economies,
+        engagement_budget:        budgetData.engagement,
+        dettes:                   budgetData.dettes,
+      },
+      rawData: budgetData,
+      engagements: budgetData.engagement ? [{ id:'eng_budget_' + Date.now(), type: budgetData.engagement.type, label: budgetData.engagement.label, brique_id: BRICK_ID }] : [],
+      insights: typeof buildInsights === 'function' ? buildInsights(BRICK_ID, profil, budgetData) : []
+    });
+  }
+  window.location.href = href;
 }
 
 async function validerEngagement() {
@@ -2748,13 +2802,13 @@ function openModalFin() {
     const target = budgetData.brique_recommandee;
     const file   = target && typeof BRICK_FILES !== 'undefined' ? BRICK_FILES[target] : null;
     const whyMessages = {
-      'fonds_urgence':         'Tu as de la marge — c\'est le moment idéal pour construire un filet de sécurité.',
+      'fonds_urgence':         'Tu as de la marge — c\'est le moment idéal pour construire ton épargne de précaution.',
       'gestion_decouvert':     'Tes crédits pèsent sur ton budget. Cette brique t\'aide à reprendre le contrôle.',
       'paiements_fractionnes': 'Les paiements fractionnés s\'accumulent silencieusement. Cette brique fait le point.',
       'premiers_pas_bancaires':'Optimiser tes frais bancaires libère 15–30€/mois sans effort.',
     };
     const briquesNoms = {
-      'fonds_urgence':         'Fonds d\'urgence',
+      'fonds_urgence':         'Épargne de précaution',
       'gestion_decouvert':     'Gestion du découvert',
       'paiements_fractionnes': 'Paiements fractionnés',
       'premiers_pas_bancaires':'Premiers pas bancaires',
@@ -2763,7 +2817,7 @@ function openModalFin() {
     const why  = whyMessages[target]  || 'La prochaine étape logique de ton parcours.';
     const href = file || 'dashboard.html';
     const cta  = file ? 'Commencer ' + nom + ' →' : 'Voir mon tableau de bord →';
-    nextEl.innerHTML = '<div class="modal-fin-section-label" style="margin-bottom:0.625rem;">Prochaine étape</div><div class="modal-fin-next-card"><div class="modal-fin-next-kicker">Recommandé pour toi</div><div class="modal-fin-next-name">' + nom + '</div><div class="modal-fin-next-why">' + why + '</div><a href="' + href + '" class="modal-fin-next-cta">' + cta + '</a></div>';
+    nextEl.innerHTML = '<div class="modal-fin-section-label" style="margin-bottom:0.625rem;">Prochaine étape</div><div class="modal-fin-next-card"><div class="modal-fin-next-kicker">Recommandé pour toi</div><div class="modal-fin-next-name">' + nom + '</div><div class="modal-fin-next-why">' + why + '</div><button onclick="saveThenRedirect(\'' + href + '\')" class="modal-fin-next-cta" style="border:none;cursor:pointer;">' + cta + '</button></div>';
   }
   overlay.style.display = 'flex';
   requestAnimationFrame(function(){ requestAnimationFrame(function(){ overlay.classList.add('visible'); }); });

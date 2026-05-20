@@ -1095,7 +1095,7 @@
       <div>
         <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Type</label>
         <select id="eng-type" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;">
-          <option value="fonds_urgence">Mini fonds d'urgence</option>
+          <option value="fonds_urgence">Mini épargne de précaution</option>
           <option value="decouvert">Plafond de découvert</option>
           <option value="remboursement">Remboursement mensuel</option>
           <option value="epargne">Épargne mensuelle</option>
@@ -1809,7 +1809,7 @@
       const pct      = objectif > 0 ? Math.min(100, Math.round(actuel / objectif * 100)) : 0;
 
       cards.push({
-        title: 'Matelas de sécurité',
+        title: 'Épargne de précaution',
         brique: 'fonds_urgence',
         status: atteint ? 'atteint' : 'en-cours',
         statusLabel: atteint ? 'Atteint' : 'En cours',
@@ -1822,7 +1822,7 @@
         ],
         progress: { pct, green: atteint },
         progressLabels: { left: formatEuro(actuel), right: formatEuro(objectif) },
-        cta: { href: 'brique-fonds-urgence.html', label: atteint ? 'Voir le matelas' : 'Reprendre' }
+        cta: { href: 'brique-fonds-urgence.html', label: atteint ? 'Voir l\'épargne de précaution' : 'Reprendre' }
       });
     }
 
@@ -2066,7 +2066,7 @@
       + '</div>'
       + '<div class="parcours-modal-card">'
       + '<div class="parcours-kicker parcours-kicker--teal">\u25cf \u00c9PARGNE</div>'
-      + '<div class="parcours-card-title">Ton matelas de s\u00e9curit\u00e9</div>'
+      + '<div class="parcours-card-title">Ton \u00e9pargne de pr\u00e9caution</div>'
       + '<div class="parcours-card-sub">Le fonds qui change tout</div>'
       + '<svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l7 4v6c0 4.4-3.1 8.1-7 9.9C8.1 20.1 5 16.4 5 12V6l7-4z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>'
       + '</div>'

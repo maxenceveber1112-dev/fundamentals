@@ -608,7 +608,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
         </div>
         <div class="exit-item">
           <span class="exit-item-icon">➡️</span>
-          <span class="exit-item-text" id="exit-next-brick-text">Prochaine brique recommandée : Fonds d'urgence</span>
+          <span class="exit-item-text" id="exit-next-brick-text">Prochaine brique recommandée : Épargne de précaution</span>
         </div>
       </div>
 
@@ -617,7 +617,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
           <span style="font-size:1.25rem;">→</span>
           <span class="exit-next-text">
             <span class="exit-next-label">Prochaine étape</span>
-            <span class="exit-next-name" id="next-brick-name">Fonds d'urgence</span>
+            <span class="exit-next-name" id="next-brick-name">Épargne de précaution</span>
           </span>
         </button>
         <button class="btn-primary" onclick="window.location.href='dashboard.html'">
@@ -1025,7 +1025,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
     try { nextBrick = getNextBrick(BRICK_ID); } catch(e) {}
 
     if (nextBrick) {
-      const nextName = nextBrick.nom || nextBrick.name || 'Fonds d\'urgence';
+      const nextName = nextBrick.nom || nextBrick.name || 'Épargne de précaution';
       document.getElementById('exit-next-brick-text').textContent = 'Prochaine brique recommandée : ' + nextName;
       document.getElementById('next-brick-name').textContent = nextName;
       const btnNext = document.getElementById('btn-next-brick');
@@ -1036,7 +1036,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
       });
     } else {
       // Default recommendation
-      document.getElementById('exit-next-brick-text').textContent = 'Prochaine brique recommandée : Fonds d\'urgence';
+      document.getElementById('exit-next-brick-text').textContent = 'Prochaine brique recommandée : Épargne de précaution';
     }
 
     // Complete brick
