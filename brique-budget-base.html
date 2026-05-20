@@ -2195,9 +2195,12 @@ function getBudgetSituation(bd) {
   const margeReelle = reste + epargneDeclaree;
   const ratio = totalRev > 0 ? margeReelle / totalRev : 0;
 
-  const niveaux = ['deficit','tendu','equilibre','aise','confortable'];
+  const niveaux = ['deficit','deficit_couvert','tendu','equilibre','aise','confortable'];
   let situation;
-  if (reste < 0)         situation = 'deficit';
+  if (reste < 0) {
+    if (margeReelle >= 0) situation = 'deficit_couvert';
+    else                  situation = 'deficit';
+  }
   else if (ratio < 0.10) situation = 'tendu';
   else if (ratio < 0.20) situation = 'equilibre';
   else if (ratio < 0.35) situation = 'aise';
@@ -2227,8 +2230,9 @@ function buildMsgCards() {
   const { situation } = getBudgetSituation(budgetData);
 
   const msgMap = {
-    deficit:     { border:'var(--red)',              kicker:'⚠️ DÉFICIT',        text:"Tu dépenses plus que tu gagnes. Avant tout le reste, il faut retrouver l'équilibre." },
-    tendu:       { border:'var(--dot-construction)', kicker:'BUDGET TENDU',      text:"Ton budget est peu flexible. La priorité : retrouver de l'air, pas encore investir." },
+    deficit:         { border:'var(--red)',              kicker:'⚠️ DÉFICIT',        text:"Tu dépenses plus que tu gagnes. Avant tout le reste, il faut retrouver l'équilibre." },
+    deficit_couvert: { border:'rgba(245,158,11,0.4)',    kicker:'⚠️ ATTENTION',      text:"Tes charges dépassent tes revenus hors épargne. C'est ton épargne qui équilibre — ce n'est pas tenable sur le long terme." },
+    tendu:           { border:'var(--dot-construction)', kicker:'BUDGET TENDU',      text:"Ton budget est peu flexible. La priorité : retrouver de l'air, pas encore investir." },
     equilibre:   { border:'var(--dot-construction)', kicker:'BUDGET ÉQUILIBRÉ',  text:"Ton budget tient — l'objectif maintenant : consolider ton épargne." },
     aise:        { border:'var(--green)',            kicker:'✅ BONNE POSITION',  text:"Tu gères bien. Prochaine étape : faire travailler ton argent." },
     confortable: { border:'var(--green)',            kicker:'✅ BONNE POSITION',  text:"Tu es en bonne position. L'étape suivante : optimiser et faire travailler ton épargne." },
@@ -2278,6 +2282,11 @@ function buildLeviers() {
       { icon:'\u{1F4F5}', title:'Suspendre les abonnements non essentiels', sub: budgetData.abonnements_total > 0 ? `Tes abonnements (${formatEuro(budgetData.abonnements_total)}/mois) sont le levier le plus rapide.` : 'Les abonnements sont souvent le levier le plus rapide \u00e0 activer.', color:'#F97316' },
       { icon:'\u{1F4B3}', title:'Prioriser le remboursement des dettes co\u00fbteuses', sub:'D\u00e9couvert, cr\u00e9dit renouvelable \u2014 ce sont eux qui creusent le trou. Voir la brique d\u00e9di\u00e9e.', color:'#EF4444', cta:null, ctaLabel:'Voir la brique dettes', bientot:true },
     ],
+    deficit_couvert: [
+      { icon:'\u2696\uFE0F', title:'Identifier les charges qui d\u00e9passent tes revenus', sub:`Hors \u00e9pargne, tu es \u00e0 ${formatEuro(Math.abs(reste))}/mois de d\u00e9ficit. Liste les charges fixes r\u00e9ductibles \u2014 loyer, abonnements, cr\u00e9dits.`, color:'#F97316', cta:null },
+      { icon:'\u{1F50D}', title:'Optimiser les abonnements', sub: budgetData.abonnements_total > 0 ? `${formatEuro(budgetData.abonnements_total)}/mois d'abonnements \u2014 y a-t-il des doublons ou inutilis\u00e9s ?` : 'Les abonnements sont souvent le levier le plus rapide \u00e0 activer.', color:'#EAB308', cta:null },
+      { icon:'\u{1F3AF}', title:'Prot\u00e9ger ton \u00e9pargne de pr\u00e9caution', sub: margeReelle > 0 ? `Tu as ${formatEuro(margeReelle)}/mois de marge nette. Commence par s\u00e9curiser l'\u00e9quivalent de 1 mois de charges.` : `Ta marge nette est nulle \u2014 priorit\u00e9 absolue : ne pas puiser dans ton \u00e9pargne existante.`, color:'#14b8a6', cta:'brique-fonds-urgence.html', ctaLabel:'Commencer l\'\u00e9pargne de pr\u00e9caution' },
+    ],
     tendu: [
       { icon:'\u{1F50D}', title:'Optimiser les abonnements', sub: budgetData.abonnements_total > 0 ? `${formatEuro(budgetData.abonnements_total)}/mois d'abonnements \u2014 y a-t-il des doublons ou inutilis\u00e9s ?` : 'Passe en revue tes abonnements r\u00e9currents.', color:'#F97316' },
       { icon:'\u{1F3AF}', title:'Viser une \u00e9pargne de pr\u00e9caution de 1 mois', sub:`Avec ${formatEuro(margeReelle)}/mois de marge r\u00e9elle, commence par mettre de c\u00f4t\u00e9 l'\u00e9quivalent d'un mois de charges.`, color:'#EAB308', cta:'brique-fonds-urgence.html', ctaLabel:'Commencer l\'\u00e9pargne de pr\u00e9caution' },
@@ -2301,12 +2310,12 @@ function buildLeviers() {
   };
 
   const leviers = leviersConfig[situation] || leviersConfig.equilibre;
-  const situationLabels = { deficit:'Budget en déficit', tendu:'Budget tendu', equilibre:'Budget à l\'équilibre', aise:'Budget à l\'aise', confortable:'Budget confortable' };
+  const situationLabels = { deficit:'Budget en déficit', deficit_couvert:'Déficit couvert par l\'épargne', tendu:'Budget tendu', equilibre:'Budget à l\'équilibre', aise:'Budget à l\'aise', confortable:'Budget confortable' };
 
   // Ajouter un kicker situationnel
   const kicker = document.getElementById('leviers-kicker');
   if (kicker) {
-    const colors = { deficit:'#EF4444', tendu:'#F97316', equilibre:'#EAB308', aise:'#22C55E', confortable:'#6366F1' };
+    const colors = { deficit:'#EF4444', deficit_couvert:'#F97316', tendu:'#F97316', equilibre:'#EAB308', aise:'#22C55E', confortable:'#6366F1' };
     kicker.textContent = situationLabels[situation];
     kicker.style.color = colors[situation];
     kicker.style.display = 'block';
@@ -2656,7 +2665,7 @@ function buildPrioritesPersonnalisees() {
   const hasDetteRouge = budgetData.dettes.some(d => ['decouvert_regulier','credit_renouvelable','credit_conso'].includes(d.type));
 
   if (kicker) {
-    const labels = { deficit:'\u26A0\uFE0F Budget en d\u00E9ficit', tendu:'Budget serr\u00E9', equilibre:'Budget \u00E0 l\u2019\u00E9quilibre', aise:'Budget sain', confortable:'Budget confortable' };
+    const labels = { deficit:'\u26A0\uFE0F Budget en d\u00E9ficit', deficit_couvert:'D\u00E9ficit couvert par l\u2019\u00E9pargne', tendu:'Budget serr\u00E9', equilibre:'Budget \u00E0 l\u2019\u00E9quilibre', aise:'Budget sain', confortable:'Budget confortable' };
     kicker.textContent = labels[situation];
   }
 
@@ -2696,6 +2705,11 @@ function buildPrioritesPersonnalisees() {
       { num:'1', titre:'Stoppe l\u2019h\u00E9morragie cette semaine', sub:`Ton budget est en d\u00E9ficit de ${formatEuro(Math.abs(reste))}/mois. Liste tes 3 d\u00E9penses les plus r\u00E9ductibles et coupe-en au moins une d\u00E8s aujourd\u2019hui.`, horizon:'Cette semaine', cta: hasDetteRouge ? { href:null, label:'Voir Gestion du d\u00E9couvert', bientot:true } : null },
       { num:'2', titre:'Ren\u00E9gocie ou coupe 1 abonnement', sub: aboTotal > 0 ? `Tes ${formatEuro(aboTotal)}/mois d\u2019abonnements sont ton levier le plus rapide. Appelle, n\u00E9gocie ou r\u00E9silie-en un.` : 'Passe en revue tous tes abonnements r\u00E9currents. Un seul supprim\u00E9 = de l\u2019air imm\u00E9diat.', horizon:'Ce mois' },
       { num:'3', titre:'Parle \u00E0 ta banque avant que \u00E7a empire', sub:'Un d\u00E9couvert non g\u00E9r\u00E9 co\u00FBte tr\u00E8s cher. Un simple appel peut \u00E9viter les frais d\u2019incident. La brique d\u00E9di\u00E9e t\u2019aide \u00E0 pr\u00E9parer ce RDV.', horizon:'Dans les 2 semaines', cta:{ href:null, label:'G\u00E9rer mon d\u00E9couvert', bientot:true } },
+    ],
+    deficit_couvert: [
+      { num:'1', titre:'R\u00e9\u00e9quilibrer charges et revenus', sub:`Sans ton \u00e9pargne, tu serais \u00e0 ${formatEuro(Math.abs(reste))}/mois de d\u00e9ficit. Identifie les 2-3 charges les plus r\u00e9ductibles cette semaine.`, horizon:'Cette semaine', cta:null },
+      { num:'2', titre:'Auditer tes abonnements et charges fixes', sub:'Chaque euro de charge fixe supprim\u00e9e = de la marge r\u00e9cup\u00e9r\u00e9e durablement.', horizon:'Ce mois', cta:null },
+      { num:'3', titre:'Construire ton \u00e9pargne de pr\u00e9caution', sub: margeReelle > 0 ? `Avec ${formatEuro(margeReelle)}/mois de marge nette, commence \u00e0 s\u00e9curiser un matelas de 1 mois de charges.` : 'D\u00e8s que tu auras r\u00e9\u00e9quilibr\u00e9, constitution d\u2019un matelas = priorit\u00e9 #1.', horizon:'Dans 1-3 mois', cta: margeReelle > 0 ? { href:'brique-fonds-urgence.html', label:'Brique \u00c9pargne de pr\u00e9caution' } : null },
     ],
     tendu: [
       { num:'1', titre: buildEpargnePrioriteTitre(), sub: buildEpargnePrioriteSub(), horizon:'D\u00E8s ce mois', cta: epargnePrioriteCta },
@@ -2811,9 +2825,12 @@ function openModalFin() {
   if (!overlay) return;
   const totalRev = budgetData.revenus + budgetData.aides;
   const reste    = budgetData.reste_a_vivre;
+  const { situation } = getBudgetSituation(budgetData);
   const subEl    = document.getElementById('modal-fin-sub');
   if (subEl) {
-    if (reste < 0)
+    if (situation === 'deficit_couvert')
+      subEl.textContent = 'Ton épargne équilibre ton budget pour l\'instant. Objectif : rééquilibrer tes charges.';
+    else if (reste < 0)
       subEl.textContent = 'Déficit de ' + formatEuro(Math.abs(reste)) + '/mois identifié — la prochaine brique t\'aide à le résorber.';
     else if (reste < totalRev * 0.10)
       subEl.textContent = 'Budget serré mais cartographié. ' + formatEuro(reste) + '/mois de marge — on va l\'optimiser.';
