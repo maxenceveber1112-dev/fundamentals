@@ -2257,7 +2257,7 @@ function buildScreen3() {
     customInput.oninput = function() {
       customRythme = parseNum(this.value);
       selectedRythme = 'custom';
-      drawProjectionChart(customRythme);
+      drawProjectionChart('custom');
     };
     customInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
@@ -2280,7 +2280,7 @@ function buildScreen3() {
   }
 
   // Initial projection chart
-  drawProjectionChart(getRythmeValue());
+  drawProjectionChart(selectedRythme);
 }
 
 function selectRythme(key) {
@@ -2298,7 +2298,7 @@ function selectRythme(key) {
   if (customWrap) customWrap.classList.remove('visible');
 
   // Update projection chart
-  drawProjectionChart(getRythmeValue());
+  drawProjectionChart(key);
 }
 
 function deselectRythmeCards() {
@@ -2311,7 +2311,7 @@ function deselectRythmeCards() {
 /* ══════════════════════════════════════════════════════════════
    drawProjectionChart — Courbe SVG temps réel
    ══════════════════════════════════════════════════════════════ */
-function drawProjectionChart(rythme) {
+function drawProjectionChart(activeKey) {
   var svg = document.getElementById('projection-svg');
   var footerEl = document.getElementById('projection-footer');
   var cibleEl = document.getElementById('projection-cible');
@@ -2328,6 +2328,17 @@ function drawProjectionChart(rythme) {
     return;
   }
 
+  // Resolve string key to numeric monthly amount
+  var rythme;
+  if (activeKey === 'custom') {
+    rythme = customRythme || calcResult.rythmeRecommande;
+  } else if (activeKey === 'prudent') {
+    rythme = calcResult.rythmePrudent;
+  } else if (activeKey === 'rapide') {
+    rythme = calcResult.rythmeRapide;
+  } else {
+    rythme = calcResult.rythmeRecommande;
+  }
   rythme = Math.max(1, rythme || 1);
   var moisTotal = Math.ceil(cible / rythme);
   moisTotal = Math.min(moisTotal, 60); // max 5 ans affiché
