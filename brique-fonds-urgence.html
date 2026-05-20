@@ -1442,6 +1442,14 @@ let selectedRythme = 'recommande'; // 'prudent' | 'recommande' | 'rapide' | 'cus
 let customRythme = 0;
 let selectedPlacement = 'livret';
 let currentScreen = 1;
+var _budgetBrickCache = null;
+function getBudgetBrick() {
+  if (_budgetBrickCache === null) {
+    var store = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_budget_base') : null) || {};
+    _budgetBrickCache = store.data || {};
+  }
+  return _budgetBrickCache;
+}
 
 const STEP_TITLES = {
   1: 'On reprend ton profil…',
@@ -1739,9 +1747,9 @@ function buildScreen1() {
     if (detailBody) detailBody.innerHTML = listHtml;
 
     if (detailBtn) {
-      detailBtn.addEventListener('click', function() {
+      detailBtn.onclick = function() {
         detailToggle.classList.toggle('open');
-      });
+      };
     }
   }
 
@@ -1754,9 +1762,9 @@ function buildScreen1() {
       if (detailToggle) detailToggle.style.display = 'none';
     }
     if (bmcDismiss) {
-      bmcDismiss.addEventListener('click', function() {
+      bmcDismiss.onclick = function() {
         budgetMissingCard.style.display = 'none';
-      });
+      };
     }
   }
 
@@ -1801,10 +1809,14 @@ function recalculate() {
 function updateCTAState() {
   var btn = document.getElementById('btn-calculer');
   if (!btn) return;
-  var charges = mData.charges_vitales_saisies || mData.total_besoins || 0;
+  var inputChargesEl = document.getElementById('input-charges-vitales');
+  var inputChargesVal = inputChargesEl ? (parseFloat(inputChargesEl.value) || 0) : 0;
+  var charges = inputChargesVal || mData.charges_vitales_saisies || mData.total_besoins || 0;
   var revenus = (mData.revenus || 0) + (mData.aides || 0);
-  var hasData = charges > 0 || revenus > 0;
+  var hasData = charges > 0 || revenus > 0 || (getBudgetBrick().total_besoins > 0);
   btn.disabled = !hasData;
+  btn.style.opacity = hasData ? '1' : '0.45';
+  btn.style.cursor = hasData ? 'pointer' : 'not-allowed';
 }
 
 
