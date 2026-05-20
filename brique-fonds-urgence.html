@@ -1049,6 +1049,48 @@
     border-color: rgba(26,26,46,0.2);
   }
 
+  /* ── Projection chart ── */
+  .projection-wrap {
+    margin: 1rem 0;
+    padding: 14px 16px;
+    background: var(--surface-2, rgba(139,92,246,0.06));
+    border: 1px solid var(--border, rgba(139,92,246,0.15));
+    border-radius: 12px;
+  }
+  .projection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .projection-title {
+    font-family: Inter, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted, rgba(255,255,255,0.6));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .projection-cible {
+    font-family: Inter, sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent, #8b5cf6);
+  }
+  .projection-svg {
+    width: 100%;
+    height: 110px;
+    display: block;
+    overflow: visible;
+  }
+  .projection-footer {
+    margin-top: 8px;
+    font-family: Inter, sans-serif;
+    font-size: 0.75rem;
+    color: var(--text-muted, rgba(255,255,255,0.5));
+    text-align: center;
+  }
+
   </style>
 </head>
 <body data-brick-name="Épargne de précaution">
@@ -1260,6 +1302,16 @@
                 <span class="euro-suffix">€</span>
               </div>
             </div>
+          </div>
+
+          <!-- Projection chart -->
+          <div class="projection-wrap" id="projection-wrap">
+            <div class="projection-header">
+              <span class="projection-title">Projection vers ton objectif</span>
+              <span class="projection-cible" id="projection-cible"></span>
+            </div>
+            <svg id="projection-svg" class="projection-svg" viewBox="0 0 300 120" preserveAspectRatio="none"></svg>
+            <div class="projection-footer" id="projection-footer"></div>
           </div>
 
           <!-- Budget serré warning -->
@@ -1514,18 +1566,36 @@ function calculateMatelasSecurity(d) {
 
   // Rythmes
   var margeMensuelle = Math.max(0, resteAVivre);
+  var epargneMensuelle = Math.max(0, d.epargne_mensuelle || 0);
+  // Marge nette = reste brut + épargne déclarée (charge choisie)
+  var margeNette = resteAVivre + epargneMensuelle;
+
   var rythmePrudent, rythmeRecommande, rythmeRapide;
 
-  if (margeMensuelle <= 50) {
-    rythmePrudent = 5; rythmeRecommande = 10; rythmeRapide = 20;
-  } else if (margeMensuelle <= 150) {
-    rythmePrudent = 10; rythmeRecommande = 25; rythmeRapide = 50;
-  } else if (margeMensuelle <= 300) {
-    rythmePrudent = 20; rythmeRecommande = 50; rythmeRapide = 100;
-  } else if (margeMensuelle <= 600) {
-    rythmePrudent = 50; rythmeRecommande = 100; rythmeRapide = 150;
+  if (epargneMensuelle > 0) {
+    // L'user épargne déjà : les rythmes = parts de l'épargne existante
+    rythmePrudent    = Math.max(10, Math.round(epargneMensuelle * 0.5 / 5) * 5);
+    rythmeRecommande = Math.max(20, Math.round(epargneMensuelle / 5) * 5);
+    // Rapide = 100% épargne + effort supplémentaire si marge nette le permet
+    var effortSupp = margeNette > epargneMensuelle
+      ? Math.round((margeNette - epargneMensuelle) * 0.5 / 5) * 5
+      : 0;
+    rythmeRapide = rythmeRecommande + effortSupp;
+    rythmeRapide = Math.max(rythmeRecommande + 10, rythmeRapide);
   } else {
-    rythmePrudent = 100; rythmeRecommande = 150; rythmeRapide = 250;
+    // Fallback logique actuelle : basé sur marge nette
+    var margeEffective = Math.max(0, margeNette > 0 ? margeNette : margeMensuelle);
+    if (margeEffective <= 50) {
+      rythmePrudent = 5; rythmeRecommande = 10; rythmeRapide = 20;
+    } else if (margeEffective <= 150) {
+      rythmePrudent = 10; rythmeRecommande = 25; rythmeRapide = 50;
+    } else if (margeEffective <= 300) {
+      rythmePrudent = 20; rythmeRecommande = 50; rythmeRapide = 100;
+    } else if (margeEffective <= 600) {
+      rythmePrudent = 50; rythmeRecommande = 100; rythmeRapide = 150;
+    } else {
+      rythmePrudent = 100; rythmeRecommande = 150; rythmeRapide = 250;
+    }
   }
 
   function moisEstimes(rythme, reste) {
@@ -1573,7 +1643,9 @@ function calculateMatelasSecurity(d) {
     revenus: revenus,
     resteAVivre: margeMensuelle,
     hasDecouvert: hasDecouvert,
-    hasDette: hasDette
+    hasDette: hasDette,
+    epargneMensuelle: epargneMensuelle,
+    margeNette: margeNette
   };
 }
 
@@ -2100,6 +2172,23 @@ function buildScreen3() {
   var container = document.getElementById('rythme-cards');
   if (!container) return;
 
+  // Labels adaptés selon épargne existante
+  var descPrudent, descRecommande, descRapide;
+  if (calcResult.epargneMensuelle > 0) {
+    descPrudent = '50% de ton épargne mensuelle redirigés';
+    descRecommande = '100% de ton épargne mensuelle dédiée au fonds';
+    var effortSuppLocal = calcResult.margeNette > calcResult.epargneMensuelle
+      ? Math.round((calcResult.margeNette - calcResult.epargneMensuelle) * 0.5 / 5) * 5
+      : 0;
+    descRapide = effortSuppLocal > 0
+      ? 'Toute ton épargne + ' + formatEuro(effortSuppLocal) + '/mois d\u2019effort supplémentaire'
+      : 'Toute ton épargne mensuelle dédiée au fonds';
+  } else {
+    descPrudent = 'Rythme léger.';
+    descRecommande = 'Bon équilibre.';
+    descRapide = 'Si ton budget le permet.';
+  }
+
   var rythmes = [
     {
       key: 'prudent',
@@ -2107,7 +2196,7 @@ function buildScreen3() {
       amount: calcResult.rythmePrudent,
       mois: moisP,
       date: dateLabelLocal(moisP),
-      desc: 'Rythme léger.'
+      desc: descPrudent
     },
     {
       key: 'recommande',
@@ -2115,7 +2204,7 @@ function buildScreen3() {
       amount: calcResult.rythmeRecommande,
       mois: moisR,
       date: dateLabelLocal(moisR),
-      desc: 'Bon équilibre.',
+      desc: descRecommande,
       badge: true
     },
     {
@@ -2124,7 +2213,7 @@ function buildScreen3() {
       amount: calcResult.rythmeRapide,
       mois: moisRapide,
       date: dateLabelLocal(moisRapide),
-      desc: 'Si ton budget le permet.'
+      desc: descRapide
     }
   ];
 
@@ -2168,6 +2257,7 @@ function buildScreen3() {
     customInput.oninput = function() {
       customRythme = parseNum(this.value);
       selectedRythme = 'custom';
+      drawProjectionChart(customRythme);
     };
     customInput.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
@@ -2188,6 +2278,9 @@ function buildScreen3() {
   if (btnValider) {
     btnValider.onclick = function() { goToScreen(4); };
   }
+
+  // Initial projection chart
+  drawProjectionChart(getRythmeValue());
 }
 
 function selectRythme(key) {
@@ -2203,12 +2296,112 @@ function selectRythme(key) {
   var customWrap = document.getElementById('custom-rythme-wrap');
   if (chipCustom) chipCustom.classList.remove('active');
   if (customWrap) customWrap.classList.remove('visible');
+
+  // Update projection chart
+  drawProjectionChart(getRythmeValue());
 }
 
 function deselectRythmeCards() {
   document.querySelectorAll('.rythme-card').forEach(function(c) {
     c.classList.remove('selected');
   });
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   drawProjectionChart — Courbe SVG temps réel
+   ══════════════════════════════════════════════════════════════ */
+function drawProjectionChart(rythme) {
+  var svg = document.getElementById('projection-svg');
+  var footerEl = document.getElementById('projection-footer');
+  var cibleEl = document.getElementById('projection-cible');
+  if (!svg || !calcResult) return;
+
+  var cible = getSelectedPalierReste();
+  var depart = calcResult.epargneDisponible || 0;
+  var objectifTotal = getSelectedPalierAmount();
+
+  if (cible <= 0) {
+    svg.innerHTML = '<text x="150" y="60" text-anchor="middle" fill="var(--green,#22c55e)" font-family="Inter" font-size="13">Objectif déjà atteint \u2713</text>';
+    if (footerEl) footerEl.textContent = '';
+    if (cibleEl) cibleEl.textContent = formatEuro(objectifTotal);
+    return;
+  }
+
+  rythme = Math.max(1, rythme || 1);
+  var moisTotal = Math.ceil(cible / rythme);
+  moisTotal = Math.min(moisTotal, 60); // max 5 ans affiché
+
+  // Points de la courbe
+  var W = 300, H = 100, padLeft = 8, padRight = 8, padTop = 10, padBottom = 10;
+  var plotW = W - padLeft - padRight;
+  var plotH = H - padTop - padBottom;
+
+  var pts = [];
+  for (var m = 0; m <= moisTotal; m++) {
+    var cumul = Math.min(depart + m * rythme, objectifTotal);
+    var x = padLeft + (m / moisTotal) * plotW;
+    var y = padTop + plotH - (cumul / objectifTotal) * plotH;
+    pts.push({ x: x, y: y, cumul: cumul, mois: m });
+  }
+
+  // Construire le path de la courbe
+  var pathD = 'M ' + pts[0].x + ' ' + pts[0].y;
+  for (var i = 1; i < pts.length; i++) {
+    var prev = pts[i - 1];
+    var curr = pts[i];
+    var cx1 = prev.x + (curr.x - prev.x) * 0.5;
+    var cy1 = prev.y;
+    var cx2 = prev.x + (curr.x - prev.x) * 0.5;
+    var cy2 = curr.y;
+    pathD += ' C ' + cx1 + ' ' + cy1 + ' ' + cx2 + ' ' + cy2 + ' ' + curr.x + ' ' + curr.y;
+  }
+
+  // Zone remplie sous la courbe
+  var fillD = pathD + ' L ' + pts[pts.length-1].x + ' ' + (padTop + plotH) + ' L ' + padLeft + ' ' + (padTop + plotH) + ' Z';
+
+  // Ligne cible horizontale
+  var cibleY = padTop;
+
+  // Marqueur point d'arrivée
+  var lastPt = pts[pts.length - 1];
+
+  // Point de départ si épargne existante
+  var departY = padTop + plotH - (depart / objectifTotal) * plotH;
+
+  var svgContent = '';
+
+  // Ligne cible (tiretée)
+  svgContent += '<line x1="' + padLeft + '" y1="' + cibleY + '" x2="' + (W - padRight) + '" y2="' + cibleY + '" stroke="rgba(139,92,246,0.3)" stroke-width="1" stroke-dasharray="4,3"/>';
+
+  // Gradient fill
+  svgContent += '<defs><linearGradient id="proj-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.25"/><stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.03"/></linearGradient></defs>';
+  svgContent += '<path d="' + fillD + '" fill="url(#proj-grad)"/>';
+
+  // Courbe principale
+  svgContent += '<path d="' + pathD + '" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+
+  // Point de départ (si epargne existante)
+  if (depart > 0) {
+    svgContent += '<circle cx="' + padLeft + '" cy="' + departY + '" r="3" fill="#14b8a6"/>';
+  }
+
+  // Point d'arrivée
+  svgContent += '<circle cx="' + lastPt.x + '" cy="' + lastPt.y + '" r="4" fill="#8b5cf6"/>';
+
+  // Label cible
+  svgContent += '<text x="' + (W - padRight - 2) + '" y="' + (cibleY - 4) + '" text-anchor="end" fill="rgba(139,92,246,0.7)" font-family="Inter,sans-serif" font-size="9">Objectif</text>';
+
+  svg.innerHTML = svgContent;
+
+  // Footer
+  if (footerEl) {
+    var dateArr = new Date();
+    dateArr.setMonth(dateArr.getMonth() + moisTotal);
+    var dateLabel = dateArr.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    footerEl.textContent = 'Atteint en ~' + moisTotal + ' mois \u00b7 ' + dateLabel;
+  }
+  if (cibleEl) cibleEl.textContent = formatEuro(objectifTotal);
 }
 
 
