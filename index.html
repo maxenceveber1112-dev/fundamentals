@@ -501,6 +501,12 @@
       text-align: left;
       width: 100%;
     }
+    .parcours-modal-label {
+      font-family: Inter, sans-serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin: 0 0 8px;
+    }
     .parcours-popup-cta {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
       width: 100%;
@@ -518,13 +524,14 @@
     /* Cards carousel inside modal */
     .parcours-modal-carousel {
       display: flex;
+      flex-direction: row;
       gap: 10px;
       overflow: hidden;
       width: 100%;
-      margin: 12px 0 16px;
+      margin-bottom: 16px;
     }
     .parcours-modal-card {
-      flex: 0 0 150px;
+      flex: 0 0 148px;
       min-height: 100px;
       background: #1a1a2e;
       border: 1px solid rgba(139,92,246,0.25);
@@ -532,14 +539,15 @@
       padding: 12px;
       position: relative;
       overflow: hidden;
+      box-sizing: border-box;
     }
     .parcours-modal-card--peek {
       filter: blur(2px);
-      opacity: 0.5;
+      opacity: 0.45;
       pointer-events: none;
     }
     .parcours-kicker {
-      font-family: 'Inter', sans-serif;
+      font-family: Inter, sans-serif;
       font-size: 9px;
       font-weight: 700;
       letter-spacing: 0.08em;
@@ -549,16 +557,16 @@
     .parcours-kicker--violet { color: #8b5cf6; }
     .parcours-kicker--teal { color: #14b8a6; }
     .parcours-kicker--amber { color: #f59e0b; }
-    .parcours-title {
-      font-family: 'Fraunces', serif;
+    .parcours-card-title {
+      font-family: Fraunces, serif;
       font-style: italic;
       font-size: 14px;
       color: #fff;
       line-height: 1.3;
       margin-bottom: 4px;
     }
-    .parcours-subtitle {
-      font-family: 'Inter', sans-serif;
+    .parcours-card-sub {
+      font-family: Inter, sans-serif;
       font-size: 11px;
       color: rgba(255,255,255,0.55);
     }
@@ -566,13 +574,11 @@
       position: absolute;
       bottom: 8px;
       right: 8px;
-      width: 40px;
-      height: 40px;
-      opacity: 0.08;
-      stroke: currentColor;
-      fill: none;
-      stroke-width: 1.5;
+      width: 38px;
+      height: 38px;
+      opacity: 0.09;
       color: #fff;
+      pointer-events: none;
     }
 
     /* ─── BRIGHT MODE overrides for popup ──────────────────────────── */
@@ -594,17 +600,30 @@
       background: var(--accent-strong);
       box-shadow: 0 4px 20px rgba(91,33,182,0.25);
     }
-    :root:not(.dark) .parcours-modal-card {
-      background: #f0eeff;
+    :root:not(.dark) .parcours-modal-card,
+    body.theme-bright .parcours-modal-card,
+    .theme-bright .parcours-modal-card {
+      background: #ede9fe;
       border-color: rgba(139,92,246,0.2);
     }
-    :root:not(.dark) .parcours-title {
+    :root:not(.dark) .parcours-card-title,
+    body.theme-bright .parcours-card-title,
+    .theme-bright .parcours-card-title {
       color: #1a1a2e;
     }
-    :root:not(.dark) .parcours-subtitle {
+    :root:not(.dark) .parcours-card-sub,
+    body.theme-bright .parcours-card-sub,
+    .theme-bright .parcours-card-sub {
       color: rgba(26,26,46,0.6);
     }
-    :root:not(.dark) .parcours-watermark {
+    :root:not(.dark) .parcours-modal-label,
+    body.theme-bright .parcours-modal-label,
+    .theme-bright .parcours-modal-label {
+      color: rgba(26,26,46,0.5);
+    }
+    :root:not(.dark) .parcours-watermark,
+    body.theme-bright .parcours-watermark,
+    .theme-bright .parcours-watermark {
       color: #1a1a2e;
     }
 
@@ -1106,28 +1125,33 @@
     <p class="parcours-popup-kicker">PROFIL CR&#201;&#201;</p>
     <h3 class="parcours-popup-title">Ton parcours est pr&#234;t&nbsp;!</h3>
 
-    <p class="parcours-popup-label">Ton parcours personnalis&#233;</p>
+    <p class="parcours-modal-label">Ton parcours personnalis&#233;</p>
     <div class="parcours-modal-carousel">
-      <!-- Card 1 -->
       <div class="parcours-modal-card">
         <div class="parcours-kicker parcours-kicker--violet">&#9679; FINANCES</div>
-        <div class="parcours-title">Stabilise ton mois</div>
-        <div class="parcours-subtitle">Ma&#238;trise tes flux</div>
-        <svg class="parcours-watermark" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path d="M16 13h.01"/></svg>
+        <div class="parcours-card-title">Stabilise ton mois</div>
+        <div class="parcours-card-sub">Ma&#238;trise tes flux</div>
+        <svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M16 14h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M2 11h20" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
       </div>
-      <!-- Card 2 -->
       <div class="parcours-modal-card">
         <div class="parcours-kicker parcours-kicker--teal">&#9679; &#201;PARGNE</div>
-        <div class="parcours-title">Ton matelas de s&#233;curit&#233;</div>
-        <div class="parcours-subtitle">Le fonds qui change tout</div>
-        <svg class="parcours-watermark" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l7 4v6c0 4-3.5 7.4-7 8.9C8.5 19.4 5 16 5 12V6l7-4z"/></svg>
+        <div class="parcours-card-title">Ton matelas de s&#233;curit&#233;</div>
+        <div class="parcours-card-sub">Le fonds qui change tout</div>
+        <svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l7 4v6c0 4.4-3.1 8.1-7 9.9C8.1 20.1 5 16.4 5 12V6l7-4z" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        </svg>
       </div>
-      <!-- Card 3 (peek, floutée) -->
       <div class="parcours-modal-card parcours-modal-card--peek">
         <div class="parcours-kicker parcours-kicker--amber">&#9679; PERSONNALIS&#201;</div>
-        <div class="parcours-title">Ta brique suivante</div>
-        <div class="parcours-subtitle">Calcul&#233;e pour toi</div>
-        <svg class="parcours-watermark" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        <div class="parcours-card-title">Ta brique suivante</div>
+        <div class="parcours-card-sub">Calcul&#233;e pour toi</div>
+        <svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
       </div>
     </div>
 
