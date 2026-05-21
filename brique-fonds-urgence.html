@@ -2045,8 +2045,11 @@ function calculateMatelasSecurity(d) {
 
   // Fix #3 : un profil STABLE peut absorber un objectif plus large sans risque,
   //          un profil MOINS STABLE doit garder une cible plus accessible.
-  //          On inverse donc la logique précédente qui donnait la plus grosse cible aux profils précaires.
-  var coeffMap = { tres_stable:[1.5,4], stable:[1.5,3], moins_stable:[1,2] };
+  // Fix #4 : entre-deux HCSF/INSEE :
+  //   - moins_stable [1.2, 2.5] → P2≈36j, P3≈75j (mieux que 30/60, reste accessible)
+  //   - stable       [1.5, 3]   → P2≈45j, P3≈90j (cœur HCSF)
+  //   - tres_stable  [2, 3.5]   → P2≈60j, P3≈105j (au lieu de 4× qui paralysait à 11k€ pour gros revenus)
+  var coeffMap = { tres_stable:[2,3.5], stable:[1.5,3], moins_stable:[1.2,2.5] };
   var coefs = coeffMap[stabilite];
   var coefMin = coefs[0], coefMax = coefs[1];
 
