@@ -457,12 +457,16 @@
      CTX NARRATIVE (screen 1 — option C)
   ══════════════════════════════════════════════════════════════ */
   .ctx-narrative {
+    margin-bottom: 20px;
+  }
+
+  .ctx-narrative-line {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-bottom: 20px;
-    position: relative;
+    flex-wrap: nowrap;        /* JAMAIS wrap */
+    gap: 0;
+    white-space: nowrap;
+    overflow: hidden;
   }
   .ctx-item { display: inline-flex; align-items: center; }
   .ctx-lbl {
@@ -513,12 +517,11 @@
     border: 1px solid #fde68a;
   }
   .ctx-source {
-    width: 100%;
     font-family: Inter, sans-serif;
     font-size: 11px;
     font-style: italic;
     color: #94a3b8;
-    margin-top: 3px;
+    margin-top: 4px;
   }
 
   /* ── Dark mode ctx-narrative ── */
@@ -1910,8 +1913,8 @@ function buildScreen1() {
   var allFilled = epargne > 0 && totalRevenus > 0;
 
   var sourceLine = '<div class="ctx-narrative">';
-  sourceLine += '<span class="ctx-item">';
-  sourceLine += '<span class="ctx-lbl">Épargne :&nbsp;</span>';
+  sourceLine += '<div class="ctx-narrative-line">';
+  sourceLine += '<span class="ctx-item"><span class="ctx-lbl">Épargne\u00a0: </span>';
   if (epargneLabel) {
     sourceLine += '<span class="ctx-val">' + epargneLabel + '</span>';
   } else {
@@ -1919,8 +1922,7 @@ function buildScreen1() {
   }
   sourceLine += '</span>';
   sourceLine += '<span class="ctx-dot">·</span>';
-  sourceLine += '<span class="ctx-item">';
-  sourceLine += '<span class="ctx-lbl">Revenus :&nbsp;</span>';
+  sourceLine += '<span class="ctx-item"><span class="ctx-lbl">Revenus\u00a0: </span>';
   sourceLine += '<span class="ctx-val">' + revenusLabel + '</span>';
   sourceLine += '</span>';
   if (allFilled) {
@@ -1928,6 +1930,7 @@ function buildScreen1() {
   } else {
     sourceLine += '<span class="ctx-badge ctx-badge-completer">↩ profil</span>';
   }
+  sourceLine += '</div>';
   sourceLine += '<div class="ctx-source">↩ repris de ton profil</div>';
   sourceLine += '</div>';
 
