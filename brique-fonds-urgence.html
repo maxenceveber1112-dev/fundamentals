@@ -673,43 +673,79 @@
   /* ══════════════════════════════════════════════════════════════
      RYTHME CARDS (screen 3)
   ══════════════════════════════════════════════════════════════ */
-  .rythme-cards { display:flex; flex-direction:column; gap:0.75rem; margin:1.25rem 0; }
-  .rythme-card {
+  /* ── Rythme chips (refonte v2) ──
+     Pill compacte 3 segments. Gardent l'API DOM existante (.rythme-card[.selected])
+     pour rester compatibles avec selectRythme() et l'attribut data-rythme. */
+  .rythme-cards {
+    display:flex; gap:0.4rem;
+    margin:1.25rem 0 1rem;
+    padding:0.35rem;
     background:var(--surface-2);
-    border:1.5px solid var(--border);
-    border-radius:var(--r-lg);
-    padding:1rem 1.125rem;
+    border:1px solid var(--border-subtle);
+    border-radius:9999px;
+  }
+  .rythme-card {
+    flex:1; min-width:0;
+    padding:0.65rem 0.5rem;
+    border:1px solid transparent;
+    background:transparent;
+    border-radius:9999px;
     cursor:pointer;
     transition:all var(--t);
-    display:flex; align-items:center; gap:1rem;
+    position:relative;
+    display:flex; flex-direction:column; align-items:center; gap:0.1rem;
   }
-  .rythme-card:hover { border-color:var(--border-hover); background:var(--surface-3); }
+  .rythme-card:hover { background:rgba(0,0,0,0.025); }
+  html.dark .rythme-card:hover { background:rgba(255,255,255,0.04); }
   .rythme-card.selected {
-    background:var(--accent-soft);
+    background:var(--bg-elevated);
     border-color:var(--accent-strong);
+    box-shadow:0 2px 8px rgba(91,33,182,0.12);
   }
-  html.dark .rythme-card.selected { border-color:rgba(167,139,250,0.5); }
-  .rythme-card-info { flex:1; min-width:0; }
-  .rythme-card-amount {
-    font-size:1.1rem; font-weight:700; color:var(--text);
-    margin-bottom:0.1rem;
-  }
-  .rythme-card-amount small { font-size:0.75rem; font-weight:500; color:var(--text-muted); }
+  html.dark .rythme-card.selected { box-shadow:0 2px 8px rgba(167,139,250,0.22); }
+  .rythme-card-info { display:contents; }
   .rythme-card-label {
-    font-size:0.82rem; font-weight:600; color:var(--text-secondary);
-    margin-bottom:0.1rem;
+    font-size:0.72rem; font-weight:500; color:var(--text-muted);
+    letter-spacing:0.02em; line-height:1.2;
   }
-  .rythme-card-desc {
-    font-size:0.75rem; color:var(--text-muted); line-height:1.4;
+  .rythme-card.selected .rythme-card-label { color:var(--accent-strong); font-weight:600; }
+  .rythme-card-amount {
+    font-size:0.88rem; font-weight:600; color:var(--text);
+    white-space:nowrap; line-height:1.25;
   }
+  .rythme-card.selected .rythme-card-amount { color:var(--accent-strong); }
+  .rythme-card-amount small { font-size:0.7rem; font-weight:500; color:var(--text-muted); }
+  .rythme-card.selected .rythme-card-amount small { color:var(--accent-strong); opacity:0.75; }
+  /* Date+desc cachés dans la chip (transférés dans la synthèse / narrative) */
+  .rythme-card-desc { display:none; }
   .rythme-card-badge {
-    flex-shrink:0;
-    font-size:0.65rem; font-weight:700;
-    padding:0.2rem 0.5rem; border-radius:9999px;
+    position:absolute; top:-7px; right:8px;
+    background:var(--accent-strong); color:#fff;
+    font-size:0.58rem; font-weight:700; letter-spacing:0.05em;
+    padding:0.1rem 0.4rem; border-radius:9999px;
+    text-transform:uppercase; white-space:nowrap;
+  }
+  html.dark .rythme-card-badge { color:#0B0B1A; }
+
+  /* Synthèse rapide sous le graph (texte + pill mois) */
+  .rythme-synthesis {
+    display:flex; justify-content:space-between; align-items:center; gap:1rem;
+    padding:0.7rem 0;
+    border-top:1px solid var(--border-subtle);
+    margin:0.5rem 0 1rem;
+    font-size:0.85rem;
+  }
+  .rythme-synthesis-text { color:var(--text-secondary); }
+  .rythme-synthesis-text strong { color:var(--text); font-weight:600; }
+  .rythme-synthesis-pill {
     background:var(--accent-soft); color:var(--accent-strong);
+    padding:0.2rem 0.65rem; border-radius:9999px;
+    font-size:0.75rem; font-weight:600;
     white-space:nowrap;
   }
-  html.dark .rythme-card-badge { color:#C4B5FD; }
+  @media(max-width:640px){
+    .rythme-synthesis { flex-direction:column; align-items:flex-start; gap:0.3rem; }
+  }
 
   .custom-rythme-wrap {
     margin-top:0.75rem;
@@ -1148,97 +1184,79 @@
   }
   .bmc-manual:hover { color: var(--text); }
 
-  /* ── Projection chart (premium dark card) ── */
+  /* ── Projection chart (refonte minimaliste v2) ──
+     Fond transparent qui hérite de la card. Adapté light + dark via tokens.
+     Tokens dédiés --graph-* définis ci-dessous. */
   .projection-wrap {
-    margin: 1rem 0;
-    padding: 16px;
-    background: #1a1a2e;
-    border: 1px solid #2a2a4a;
-    border-radius: 12px;
+    margin: 1rem 0 0.25rem;
+    padding: 0.25rem 0 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
   }
-  .projection-watermark {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    width: 80px;
-    height: 80px;
-    opacity: 0.07;
-    pointer-events: none;
-  }
-  .projection-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    position: relative;
-    z-index: 1;
-  }
-  .projection-title {
-    font-family: Inter, sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: rgba(255,255,255,0.6);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .projection-cible {
-    font-family: Inter, sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #8b5cf6;
-  }
+  .projection-watermark { display:none; }
+  .projection-header { display:none; } /* L'objectif est affiché sur la target-line elle-même */
   .projection-svg {
     width: 100%;
     height: auto;
     display: block;
     overflow: visible;
-    position: relative;
-    z-index: 1;
+    font-family: 'Inter', sans-serif;
   }
-  .projection-legend {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 10px;
-    position: relative;
-    z-index: 1;
+  .projection-legend { display:none; } /* Remplacé par les chips au-dessus du graph */
+  .projection-footer { display:none; } /* Remplacé par .rythme-synthesis sous le graph */
+
+  /* Tokens graph (light) */
+  :root {
+    --graph-grid:         rgba(28,25,23,0.06);
+    --graph-axis:         rgba(28,25,23,0.30);
+    --graph-curve-active: var(--accent-strong);
+    --graph-curve-ghost:  rgba(28,25,23,0.14);
+    --graph-target:       rgba(28,25,23,0.45);
+    --graph-marker:       var(--accent-strong);
+    --graph-marker-ring:  #FFFFFF;
+    --graph-intersect:    #1C1917;
+    --graph-today:        rgba(28,25,23,0.18);
   }
-  .projection-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-family: Inter, sans-serif;
-    font-size: 0.7rem;
-    color: rgba(255,255,255,0.5);
-    transition: color 0.3s, font-weight 0.3s;
-    cursor: pointer;
+  html.dark {
+    --graph-grid:         rgba(255,255,255,0.05);
+    --graph-axis:         rgba(255,255,255,0.30);
+    --graph-curve-active: #C4B5FD;
+    --graph-curve-ghost:  rgba(255,255,255,0.16);
+    --graph-target:       rgba(255,255,255,0.45);
+    --graph-marker:       #C4B5FD;
+    --graph-marker-ring:  #161824;
+    --graph-intersect:    #F5F5F4;
+    --graph-today:        rgba(255,255,255,0.18);
   }
-  .projection-legend-item.active {
-    color: rgba(255,255,255,0.9);
-    font-weight: 700;
+
+  /* SVG styling via classes (override par couleurs du JS) */
+  .projection-svg .grid-line   { stroke: var(--graph-grid); stroke-width:1; }
+  .projection-svg .axis-label  { fill: var(--graph-axis); font-size:9px; font-weight:500; letter-spacing:0.02em; }
+  .projection-svg .axis-base   { stroke: var(--graph-axis); stroke-width:1; opacity:0.4; }
+  .projection-svg .target-line { stroke: var(--graph-target); stroke-width:1; stroke-dasharray:3 4; }
+  .projection-svg .target-label{ fill: var(--graph-target); font-size:9px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; }
+  .projection-svg .today-line  { stroke: var(--graph-today); stroke-width:1; stroke-dasharray:1.5 3; }
+  .projection-svg .today-label { fill: var(--graph-axis); font-size:8px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; }
+  .projection-svg .curve-ghost {
+    fill:none; stroke: var(--graph-curve-ghost);
+    stroke-width:1.5; stroke-linecap:round;
+    transition: all 500ms cubic-bezier(0.16,1,0.3,1);
   }
-  .projection-legend-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
+  .projection-svg .curve-active {
+    fill:none; stroke: var(--graph-curve-active);
+    stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;
+    transition: all 500ms cubic-bezier(0.16,1,0.3,1);
   }
-  .projection-footer {
-    margin-top: 8px;
-    font-family: Inter, sans-serif;
-    font-size: 0.75rem;
-    color: rgba(255,255,255,0.5);
-    text-align: center;
-    position: relative;
-    z-index: 1;
+  .projection-svg .curve-area  { transition: all 500ms cubic-bezier(0.16,1,0.3,1); }
+  .projection-svg .intersect-dot {
+    fill: var(--graph-marker); stroke: var(--graph-marker-ring); stroke-width:2;
   }
-  /* Multi-curve transitions */
-  .proj-curve-path, .proj-curve-fill {
-    transition: opacity 0.4s ease, stroke-width 0.4s ease;
-  }
+  .projection-svg .intersect-label    { fill: var(--graph-intersect); font-size:10px; font-weight:600; letter-spacing:-0.01em; }
+  .projection-svg .intersect-sublabel { fill: var(--text-muted); font-size:9px; font-weight:500; }
+  .projection-svg .marker { fill: var(--graph-marker); stroke: var(--graph-marker-ring); stroke-width:2; }
 
   /* ═════════════════════════════════════════════════════════════════
      SHIELDSTACK — header brique permanent (4 écrans)
@@ -1794,23 +1812,15 @@
             </div>
           </div>
 
-          <!-- Projection chart -->
+          <!-- Projection chart (refonte minimaliste v2) -->
           <div class="projection-wrap" id="projection-wrap">
-            <!-- Watermark -->
-            <svg class="projection-watermark" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="8" y="40" width="12" height="32" rx="3" fill="#8b5cf6"/>
-              <rect x="26" y="24" width="12" height="48" rx="3" fill="#8b5cf6"/>
-              <rect x="44" y="32" width="12" height="40" rx="3" fill="#8b5cf6"/>
-              <rect x="62" y="12" width="12" height="60" rx="3" fill="#8b5cf6"/>
-              <path d="M14 38L32 22L50 30L68 10" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <div class="projection-header">
-              <span class="projection-title">Projection vers ton objectif</span>
-              <span class="projection-cible" id="projection-cible"></span>
-            </div>
-            <svg id="projection-svg" class="projection-svg" viewBox="0 0 340 160"></svg>
-            <div class="projection-legend" id="projection-legend"></div>
-            <div class="projection-footer" id="projection-footer"></div>
+            <svg id="projection-svg" class="projection-svg" viewBox="0 0 360 180" preserveAspectRatio="none"></svg>
+          </div>
+
+          <!-- Synthèse rapide sous le graph -->
+          <div class="rythme-synthesis" id="rythme-synthesis">
+            <span class="rythme-synthesis-text" id="rythme-synthesis-text">—</span>
+            <span class="rythme-synthesis-pill" id="rythme-synthesis-pill">—</span>
           </div>
 
           <!-- Budget serré warning -->
@@ -2878,14 +2888,12 @@ function buildScreen3() {
   container.innerHTML = rythmes.map(function(r) {
     var isSelected = r.key === selectedRythme;
     var cls = 'rythme-card' + (isSelected ? ' selected' : '');
-    var dateText = r.mois > 0 ? 'Atteint ' + r.date : 'Déjà atteint';
     var badge = r.badge ? '<span class="rythme-card-badge">recommandé</span>' : '';
 
     return '<div class="' + cls + '" data-rythme="' + r.key + '" onclick="selectRythme(\'' + r.key + '\')" role="button" aria-label="Rythme ' + escapeHtml(r.label) + '">' +
       '<div class="rythme-card-info">' +
         '<div class="rythme-card-label">' + escapeHtml(r.label) + '</div>' +
-        '<div class="rythme-card-amount">' + formatEuro(r.amount) + ' <small>/mois</small></div>' +
-        '<div class="rythme-card-desc">' + escapeHtml(dateText) + ' · ' + escapeHtml(r.desc) + '</div>' +
+        '<div class="rythme-card-amount">' + formatEuro(r.amount) + '<small>/mois</small></div>' +
       '</div>' +
       badge +
     '</div>';
@@ -2967,198 +2975,169 @@ function deselectRythmeCards() {
 
 
 /* ══════════════════════════════════════════════════════════════
-   drawProjectionChart — 3 courbes simultanées + sélection
+   drawProjectionChart (refonte minimaliste v2)
+   1 courbe active + 2 ghosts. Target line fine. Intersect dot+sublabel.
+   Fond transparent, couleurs via tokens --graph-* (compatible light+dark).
    ══════════════════════════════════════════════════════════════ */
 function drawProjectionChart(activeKey) {
   var svg = document.getElementById('projection-svg');
-  var footerEl = document.getElementById('projection-footer');
-  var cibleEl = document.getElementById('projection-cible');
-  var legendEl = document.getElementById('projection-legend');
   if (!svg || !calcResult) return;
+
+  var synthText = document.getElementById('rythme-synthesis-text');
+  var synthPill = document.getElementById('rythme-synthesis-pill');
 
   var cible = getSelectedPalierReste();
   var depart = calcResult.epargneDisponible || 0;
   var objectifTotal = getSelectedPalierAmount();
 
   if (cible <= 0) {
-    svg.innerHTML = '<text x="170" y="80" text-anchor="middle" fill="#22c55e" font-family="Inter" font-size="13">Objectif déjà atteint \u2713</text>';
-    if (footerEl) footerEl.textContent = '';
-    if (cibleEl) cibleEl.textContent = formatEuro(objectifTotal);
-    if (legendEl) legendEl.innerHTML = '';
+    svg.innerHTML = '<text x="180" y="90" text-anchor="middle" fill="var(--green)" font-family="Inter" font-size="13" font-weight="600">Objectif d\u00e9j\u00e0 atteint \u2713</text>';
+    if (synthText) synthText.innerHTML = 'Tu as d\u00e9j\u00e0 ce qu\u2019il faut pour ce palier.';
+    if (synthPill) synthPill.textContent = 'OK';
     return;
   }
 
-  // Curve definitions
-  var curves = [
-    { key: 'prudent',    label: 'Prudent',    color: '#6366f1', amount: Math.max(1, calcResult.rythmePrudent || 1) },
-    { key: 'recommande', label: 'Recommandé', color: '#8b5cf6', amount: Math.max(1, calcResult.rythmeRecommande || 1) },
-    { key: 'rapide',     label: 'Rapide',     color: '#14b8a6', amount: Math.max(1, calcResult.rythmeRapide || 1) }
+  // ── Définition des 3 courbes (mêmes clés que selectedRythme) + custom
+  var standards = [
+    { key:'prudent',    label:'Prudent',    amount: Math.max(1, calcResult.rythmePrudent    || 1) },
+    { key:'recommande', label:'Recommand\u00e9', amount: Math.max(1, calcResult.rythmeRecommande || 1) },
+    { key:'rapide',     label:'Rapide',     amount: Math.max(1, calcResult.rythmeRapide     || 1) }
   ];
+  var effectiveActive = activeKey || selectedRythme || 'recommande';
+  if (effectiveActive === 'custom' && customRythme > 0) {
+    // En custom on traite la courbe perso comme "active" et les 3 standards comme ghosts
+    standards.push({ key:'custom', label:'Personnalis\u00e9', amount: customRythme });
+  }
 
-  // Add custom curve if active and different from standards
-  if (activeKey === 'custom' && customRythme > 0) {
-    var customAmt = customRythme;
-    var isDuplicate = curves.some(function(c) { return c.amount === customAmt; });
-    if (!isDuplicate) {
-      curves.push({ key: 'custom', label: 'Personnalisé', color: '#f59e0b', amount: customAmt });
+  // ── Géométrie SVG (synchronisée avec le mockup v2)
+  var W = 360, H = 180;
+  var PAD_L = 32, PAD_R = 12, PAD_T = 28, PAD_B = 26;
+  var innerW = W - PAD_L - PAD_R;
+  var innerH = H - PAD_T - PAD_B;
+  var yMaxCap = objectifTotal * 1.15;
+  var x = function(m){ return PAD_L + (m / MAX_MONTHS_VIEW) * innerW; };
+  var y = function(v){ return PAD_T + innerH - (Math.min(v, yMaxCap) / yMaxCap) * innerH; };
+
+  // Path linéaire (sobre, pas de bézier)
+  function makePath(rate){
+    var d = '';
+    for (var m = 0; m <= MAX_MONTHS_VIEW; m++){
+      var v = Math.min(depart + rate * m, yMaxCap);
+      var px = x(m), py = y(v);
+      d += (m === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + py.toFixed(1) + ' ';
     }
+    return d.trim();
   }
 
-  // Compute months for each curve
-  curves.forEach(function(c) {
-    c.mois = Math.min(Math.ceil(cible / c.amount), 60);
-  });
+  var activeStd = standards.filter(function(s){ return s.key === effectiveActive; })[0];
+  if (!activeStd) {
+    activeStd = standards[1]; // fallback recommande
+    effectiveActive = activeStd.key;
+  }
+  var activeRate = activeStd.amount;
+  var ghosts = standards.filter(function(s){ return s.key !== effectiveActive; });
 
-  // Global max months (X axis range)
-  var maxMois = Math.max.apply(null, curves.map(function(c) { return c.mois; }));
-  if (maxMois <= 0) maxMois = 1;
+  // Mois pour atteindre la cible avec le rythme actif
+  var monthsTo = Math.ceil(cible / activeRate);
+  var monthsToVisible = Math.min(monthsTo, MAX_MONTHS_VIEW);
 
-  // SVG dimensions
-  var W = 340, H = 160;
-  var padLeft = 32, padRight = 12, padTop = 14, padBottom = 28;
-  var plotW = W - padLeft - padRight;
-  var plotH = H - padTop - padBottom;
-  var baseY = padTop + plotH;
+  // ── Construction SVG en string (perf, et gére bien le dark/light via classes CSS)
+  var s = '';
+  s += '<defs><linearGradient id="proj-area-grad" x1="0" y1="0" x2="0" y2="1">' +
+         '<stop offset="0%" stop-color="var(--graph-curve-active)" stop-opacity="0.18"/>' +
+         '<stop offset="100%" stop-color="var(--graph-curve-active)" stop-opacity="0"/>' +
+       '</linearGradient></defs>';
 
-  // Helper: build bezier path for a curve
-  function buildCurveData(curveObj) {
-    var pts = [];
-    for (var m = 0; m <= curveObj.mois; m++) {
-      var cumul = Math.min(depart + m * curveObj.amount, objectifTotal);
-      var x = padLeft + (m / maxMois) * plotW;
-      var y = padTop + plotH - (cumul / objectifTotal) * plotH;
-      pts.push({ x: x, y: y, cumul: cumul, mois: m });
+  // Grid — 3 lignes discrètes (0, objectif/2, objectif)
+  var mid = Math.round(objectifTotal / 2);
+  [0, mid, objectifTotal].forEach(function(v){
+    var yy = y(v);
+    s += '<line class="grid-line" x1="' + PAD_L + '" y1="' + yy.toFixed(1) + '" x2="' + (W-PAD_R) + '" y2="' + yy.toFixed(1) + '"/>';
+    if (v > 0) {
+      s += '<text class="axis-label" x="' + (PAD_L - 6) + '" y="' + (yy + 3).toFixed(1) + '" text-anchor="end">' + formatEuro(v) + '</text>';
     }
-    var pathD = 'M ' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1);
-    for (var i = 1; i < pts.length; i++) {
-      var prev = pts[i - 1], curr = pts[i];
-      var cx1 = prev.x + (curr.x - prev.x) * 0.5;
-      pathD += ' C ' + cx1.toFixed(1) + ' ' + prev.y.toFixed(1) + ' ' + cx1.toFixed(1) + ' ' + curr.y.toFixed(1) + ' ' + curr.x.toFixed(1) + ' ' + curr.y.toFixed(1);
+  });
+
+  // Baseline x-axis
+  s += '<line class="axis-base" x1="' + PAD_L + '" y1="' + y(0).toFixed(1) + '" x2="' + (W-PAD_R) + '" y2="' + y(0).toFixed(1) + '"/>';
+
+  // Today line + label
+  s += '<line class="today-line" x1="' + PAD_L + '" y1="' + (PAD_T - 4) + '" x2="' + PAD_L + '" y2="' + y(0).toFixed(1) + '"/>';
+  s += '<text class="today-label" x="' + PAD_L + '" y="' + (PAD_T - 10) + '" text-anchor="start">aujourd\u2019hui</text>';
+
+  // Target line + label (en haut-droite)
+  var yTarget = y(objectifTotal);
+  s += '<line class="target-line" x1="' + PAD_L + '" y1="' + yTarget.toFixed(1) + '" x2="' + (W-PAD_R) + '" y2="' + yTarget.toFixed(1) + '"/>';
+  s += '<text class="target-label" x="' + (W-PAD_R) + '" y="' + (yTarget - 5).toFixed(1) + '" text-anchor="end">objectif ' + formatEuro(objectifTotal) + '</text>';
+
+  // Aire sous courbe active
+  var activePath = makePath(activeRate);
+  var lastX = x(MAX_MONTHS_VIEW), baselineY = y(0);
+  var areaPath = activePath + ' L' + lastX.toFixed(1) + ',' + baselineY.toFixed(1) + ' L' + PAD_L + ',' + baselineY.toFixed(1) + ' Z';
+  s += '<path class="curve-area" d="' + areaPath + '" fill="url(#proj-area-grad)"/>';
+
+  // Ghosts (1.5px, opacité via couleur token)
+  ghosts.forEach(function(g){
+    s += '<path class="curve-ghost" d="' + makePath(g.amount) + '"/>';
+  });
+
+  // Courbe active
+  s += '<path class="curve-active" d="' + activePath + '"/>';
+
+  // Intersection dot + labels (date + mois)
+  if (monthsTo <= MAX_MONTHS_VIEW){
+    var reachX = x(monthsToVisible);
+    var reachY = y(objectifTotal);
+    var labelOffsetX = (reachX > W - PAD_R - 50) ? -8 : 8;
+    var labelAnchor  = (reachX > W - PAD_R - 50) ? 'end' : 'start';
+    var reachDate = new Date();
+    reachDate.setMonth(reachDate.getMonth() + monthsTo);
+    var reachLabel = reachDate.toLocaleDateString('fr-FR', { month:'short', year:'numeric' });
+    s += '<circle class="intersect-dot" cx="' + reachX.toFixed(1) + '" cy="' + reachY.toFixed(1) + '" r="5"/>';
+    s += '<text class="intersect-label" x="' + (reachX + labelOffsetX).toFixed(1) + '" y="' + (reachY - 12).toFixed(1) + '" text-anchor="' + labelAnchor + '">' + reachLabel + '</text>';
+    s += '<text class="intersect-sublabel" x="' + (reachX + labelOffsetX).toFixed(1) + '" y="' + (reachY - 22).toFixed(1) + '" text-anchor="' + labelAnchor + '">' + monthsTo + ' mois</text>';
+  }
+
+  // X-axis labels (tous les 12 mois)
+  for (var m = 0; m <= MAX_MONTHS_VIEW; m += 12){
+    var px = x(m);
+    var dx = new Date();
+    dx.setMonth(dx.getMonth() + m);
+    var lab = dx.toLocaleDateString('fr-FR', { month:'short', year:'2-digit' });
+    s += '<text class="axis-label" x="' + px.toFixed(1) + '" y="' + (H - PAD_B + 14) + '" text-anchor="middle">' + lab + '</text>';
+  }
+
+  // Marker (point de départ actuel, animé vers l'intersection)
+  var startY = depart > 0 ? y(depart) : y(0);
+  s += '<circle class="marker" id="proj-marker" cx="' + PAD_L + '" cy="' + startY.toFixed(1) + '" r="5"/>';
+
+  svg.innerHTML = s;
+
+  // ── Animation marker (parcourt la courbe active)
+  try {
+    var markerEl = document.getElementById('proj-marker');
+    if (markerEl && monthsTo <= MAX_MONTHS_VIEW){
+      var targetX = x(monthsToVisible);
+      var targetY = y(objectifTotal);
+      markerEl.animate(
+        [{ cx: PAD_L, cy: startY }, { cx: targetX, cy: targetY }],
+        { duration: 900, easing: 'cubic-bezier(0.16,1,0.3,1)', fill: 'forwards' }
+      );
     }
-    var last = pts[pts.length - 1];
-    var fillD = pathD + ' L ' + last.x.toFixed(1) + ' ' + baseY + ' L ' + padLeft + ' ' + baseY + ' Z';
-    return { pts: pts, pathD: pathD, fillD: fillD, last: last };
-  }
+  } catch(e) { /* Web Animations API non supportée — fallback statique */ }
 
-  // Compute all curve data
-  curves.forEach(function(c) { c.data = buildCurveData(c); });
-
-  // Format short month labels
-  function shortDateLabel(mois) {
-    var d = new Date();
-    d.setMonth(d.getMonth() + mois);
-    var months = ['Jan','F\u00e9v','Mar','Avr','Mai','Juin','Juil','Ao\u00fbt','Sep','Oct','Nov','D\u00e9c'];
-    return months[d.getMonth()] + ' ' + String(d.getFullYear()).slice(2);
-  }
-
-  // Build SVG content
-  var svgContent = '';
-
-  // Defs: gradients per curve
-  svgContent += '<defs>';
-  curves.forEach(function(c) {
-    svgContent += '<linearGradient id="proj-grad-' + c.key + '" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0%" stop-color="' + c.color + '" stop-opacity="0.22"/>' +
-      '<stop offset="100%" stop-color="' + c.color + '" stop-opacity="0.02"/>' +
-    '</linearGradient>';
-  });
-  svgContent += '</defs>';
-
-  // Background grid lines (4 horizontal)
-  for (var g = 1; g <= 4; g++) {
-    var gy = padTop + (plotH / 5) * g;
-    svgContent += '<line x1="' + padLeft + '" y1="' + gy.toFixed(1) + '" x2="' + (W - padRight) + '" y2="' + gy.toFixed(1) + '" stroke="#2a2a4a" stroke-opacity="0.5" stroke-width="0.5"/>';
-  }
-
-  // Y-axis labels
-  svgContent += '<text x="' + (padLeft - 4) + '" y="' + (baseY + 1) + '" text-anchor="end" fill="#6b7280" font-family="Inter,sans-serif" font-size="8">0\u20ac</text>';
-  svgContent += '<text x="' + (padLeft - 4) + '" y="' + (padTop + 3) + '" text-anchor="end" fill="#6b7280" font-family="Inter,sans-serif" font-size="8">' + formatEuro(objectifTotal) + '</text>';
-
-  // Objective horizontal dashed line + label
-  var cibleY = padTop;
-  svgContent += '<line x1="' + padLeft + '" y1="' + cibleY + '" x2="' + (W - padRight) + '" y2="' + cibleY + '" stroke="rgba(139,92,246,0.35)" stroke-width="1" stroke-dasharray="4,3"/>';
-  svgContent += '<text x="' + (W - padRight - 2) + '" y="' + (cibleY - 4) + '" text-anchor="end" fill="rgba(139,92,246,0.7)" font-family="Inter,sans-serif" font-size="8.5">Objectif \u00b7 ' + formatEuro(objectifTotal) + '</text>';
-
-  // X-axis: ~5 evenly-spaced month tick labels
-  var tickCount = Math.min(5, maxMois);
-  var tickStep = maxMois / tickCount;
-  for (var t = 0; t <= tickCount; t++) {
-    var tm = Math.round(t * tickStep);
-    if (tm > maxMois) tm = maxMois;
-    var tx = padLeft + (tm / maxMois) * plotW;
-    svgContent += '<text x="' + tx.toFixed(1) + '" y="' + (H - 4) + '" text-anchor="middle" fill="#6b7280" font-family="Inter,sans-serif" font-size="8">' + shortDateLabel(tm) + '</text>';
-  }
-
-  // Determine active curve key
-  var effectiveActive = activeKey || 'recommande';
-
-  // Draw curves: inactive first (behind), active on top
-  var sortedCurves = curves.slice().sort(function(a, b) {
-    if (a.key === effectiveActive) return 1;
-    if (b.key === effectiveActive) return -1;
-    return 0;
-  });
-
-  sortedCurves.forEach(function(c) {
-    var isActive = (c.key === effectiveActive);
-    var strokeW = isActive ? 2.5 : 1;
-    var opacity = isActive ? 1 : 0.25;
-    var fillOpacity = isActive ? 1 : 0;
-
-    // Fill area (only for active curve)
-    svgContent += '<path class="proj-curve-fill" data-curve="' + c.key + '" d="' + c.data.fillD + '" fill="url(#proj-grad-' + c.key + ')" opacity="' + fillOpacity + '"/>';
-
-    // Curve stroke
-    svgContent += '<path class="proj-curve-path" data-curve="' + c.key + '" d="' + c.data.pathD + '" fill="none" stroke="' + c.color + '" stroke-width="' + strokeW + '" stroke-linecap="round" stroke-linejoin="round" opacity="' + opacity + '"/>';
-
-    // Endpoint circle
-    var ep = c.data.last;
-    svgContent += '<circle data-curve="' + c.key + '" cx="' + ep.x.toFixed(1) + '" cy="' + ep.y.toFixed(1) + '" r="' + (isActive ? 4 : 2.5) + '" fill="' + c.color + '" opacity="' + (isActive ? 1 : 0.35) + '"/>';
-
-    // Vertical dashed line at arrival point
-    svgContent += '<line data-curve="' + c.key + '" x1="' + ep.x.toFixed(1) + '" y1="' + ep.y.toFixed(1) + '" x2="' + ep.x.toFixed(1) + '" y2="' + baseY + '" stroke="' + c.color + '" stroke-width="0.7" stroke-dasharray="3,2" opacity="' + (isActive ? 0.5 : 0.15) + '"/>';
-
-    // Floating arrival label
-    var arrivalLabel = c.label + ' \u00b7 ' + shortDateLabel(c.mois);
-    var labelY = ep.y - 6;
-    var labelAnchor = 'middle';
-    var labelX = ep.x;
-    if (labelX < padLeft + 40) { labelAnchor = 'start'; labelX = ep.x + 4; }
-    else if (labelX > W - padRight - 40) { labelAnchor = 'end'; labelX = ep.x - 4; }
-    svgContent += '<text data-curve="' + c.key + '" x="' + labelX.toFixed(1) + '" y="' + labelY.toFixed(1) + '" text-anchor="' + labelAnchor + '" fill="' + c.color + '" font-family="Inter,sans-serif" font-size="7.5" font-weight="' + (isActive ? '600' : '400') + '" opacity="' + (isActive ? 0.9 : 0.35) + '">' + arrivalLabel + '</text>';
-  });
-
-  // Start point (if existing savings)
-  if (depart > 0) {
-    var departY = padTop + plotH - (depart / objectifTotal) * plotH;
-    svgContent += '<circle cx="' + padLeft + '" cy="' + departY.toFixed(1) + '" r="3" fill="#14b8a6" opacity="0.8"/>';
-    svgContent += '<text x="' + (padLeft + 6) + '" y="' + (departY - 5).toFixed(1) + '" fill="#14b8a6" font-family="Inter,sans-serif" font-size="7.5" opacity="0.7">' + formatEuro(depart) + '</text>';
-  }
-
-  svg.innerHTML = svgContent;
-
-  // Legend
-  if (legendEl) {
-    legendEl.innerHTML = curves.map(function(c) {
-      var cls = 'projection-legend-item' + (c.key === effectiveActive ? ' active' : '');
-      return '<span class="' + cls + '" data-legend="' + c.key + '" onclick="selectRythme(\'' + c.key + '\')">' +
-        '<span class="projection-legend-dot" style="background:' + c.color + '"></span>' +
-        c.label +
-      '</span>';
-    }).join('');
-  }
-
-  // Footer: info about active curve
-  if (footerEl) {
-    var activeCurve = curves.filter(function(c) { return c.key === effectiveActive; })[0];
-    if (!activeCurve) activeCurve = curves[1];
+  // ── Synthèse sous le graph
+  if (synthText && synthPill){
     var dateArr = new Date();
-    dateArr.setMonth(dateArr.getMonth() + activeCurve.mois);
-    var dateLabel = dateArr.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-    footerEl.textContent = activeCurve.label + ' \u00b7 ' + formatEuro(activeCurve.amount) + '/mois \u00b7 atteint en ~' + activeCurve.mois + ' mois (' + dateLabel + ')';
+    dateArr.setMonth(dateArr.getMonth() + monthsTo);
+    var dateLabel = dateArr.toLocaleDateString('fr-FR', { month:'long', year:'numeric' });
+    synthText.innerHTML = '\u00c0 <strong>' + formatEuro(activeRate) + '/mois</strong>, ton bouclier se d\u00e9bloque en <strong>' + dateLabel + '</strong>.';
+    synthPill.textContent = '\u2248 ' + monthsTo + ' mois';
   }
-  if (cibleEl) cibleEl.textContent = formatEuro(objectifTotal);
 }
+
+// Plage X du graph (en mois)
+var MAX_MONTHS_VIEW = 60;
 
 
 
