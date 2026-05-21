@@ -975,13 +975,13 @@
 
   /* Card budget manquant — premium */
   .budget-missing-card {
-    margin-top: 10px;
-    padding: 20px;
-    background: #1a1a2e;
-    border: 1px solid #2a2a4a;
+    background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 100%);
+    border: 1px solid #4c1d95;
     border-radius: 14px;
+    padding: 20px;
     position: relative;
     overflow: hidden;
+    margin-bottom: 1rem;
   }
   .bmc-kicker {
     display: inline-flex;
@@ -1042,29 +1042,14 @@
     transition: filter 0.15s;
   }
   .bmc-btn-primary:hover { filter: brightness(1.1); }
-  .bmc-btn-secondary {
-    text-align: center;
-    padding: 10px 18px;
-    background: transparent;
-    color: #94a3b8;
-    border: 1px solid #2a2a4a;
-    border-radius: 8px;
-    font-family: Inter, sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
-  }
-  .bmc-btn-secondary:hover { border-color: #8b5cf6; color: #c4b5fd; }
+  #bmc-dismiss:hover { color: #a78bfa; }
   html:not(.dark) .budget-missing-card {
-    background: #1a1a2e;
-    border-color: #2a2a4a;
+    background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 100%);
+    border-color: #4c1d95;
   }
   html:not(.dark) .bmc-title { color: #f1f5f9; }
   html:not(.dark) .bmc-sub { color: #94a3b8; }
-  html:not(.dark) .bmc-btn-secondary {
-    color: #94a3b8;
-    border-color: #2a2a4a;
-  }
+  html:not(.dark) #bmc-dismiss { color: #7c3aed; }
 
   /* ── Projection chart (premium dark card) ── */
   .projection-wrap {
@@ -1191,6 +1176,28 @@
           <h2 class="brick-title">On reprend ton profil.</h2>
           <p class="brick-subtitle">Tu peux corriger. Le calcul s'ajuste.</p>
 
+          <!-- Budget missing card (shown when no budget data) -->
+          <div class="budget-missing-card" id="budget-missing-card" style="display:none;">
+            <!-- Watermark coin SVG -->
+            <svg width="72" height="72" viewBox="0 0 24 24" fill="none" style="position:absolute;top:12px;right:14px;opacity:0.07;" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="#8b5cf6" stroke-width="1.5"/>
+              <path d="M12 6v1m0 10v1M9 8.5C9 7.67 10.34 7 12 7s3 .67 3 1.5-1.34 1.5-3 1.5S9 10.33 9 9.5M9 14.5c0 .83 1.34 1.5 3 1.5s3-.67 3-1.5-1.34-1.5-3-1.5-3 .67-3 1.5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M9 9.5v5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M15 9.5v5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <!-- Kicker pill -->
+            <div class="bmc-kicker">
+              <span class="bmc-kicker-dot"></span>
+              <span class="bmc-kicker-label">ÉTAPE PRÉALABLE</span>
+            </div>
+            <div class="bmc-title">Un budget précis, des résultats fiables.</div>
+            <div class="bmc-sub">Complète la brique Budget pour que tes charges vitales soient calculées automatiquement — ou saisis un montant manuellement.</div>
+            <div class="bmc-actions">
+              <a href="brique-budget-base.html" class="bmc-btn-primary">Commencer le Budget →</a>
+              <span id="bmc-dismiss" style="font-size:13px;color:#7c3aed;text-decoration:underline;cursor:pointer;margin-left:12px;">Saisir manuellement</span>
+            </div>
+          </div>
+
           <!-- Resume card (hidden by default, shown if saved session exists) -->
           <div class="resume-card" id="resume-card">
             <div class="resume-kicker">Reprendre où tu t'es arrêté·e</div>
@@ -1239,26 +1246,6 @@
                 </button>
                 <div class="charges-detail-body" id="charges-detail-body">
                   <!-- lignes injectées par JS -->
-                </div>
-              </div>
-              <div class="budget-missing-card" id="budget-missing-card" style="display:none;">
-                <!-- Watermark coin SVG -->
-                <svg width="72" height="72" viewBox="0 0 24 24" fill="none" style="position:absolute;top:12px;right:14px;opacity:0.07;" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="10" stroke="#8b5cf6" stroke-width="1.5"/>
-                  <path d="M12 6v1m0 10v1M9 8.5C9 7.67 10.34 7 12 7s3 .67 3 1.5-1.34 1.5-3 1.5S9 10.33 9 9.5M9 14.5c0 .83 1.34 1.5 3 1.5s3-.67 3-1.5-1.34-1.5-3-1.5-3 .67-3 1.5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
-                  <path d="M9 9.5v5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
-                  <path d="M15 9.5v5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-                <!-- Kicker pill -->
-                <div class="bmc-kicker">
-                  <span class="bmc-kicker-dot"></span>
-                  <span class="bmc-kicker-label">ÉTAPE PRÉALABLE</span>
-                </div>
-                <div class="bmc-title">Un budget précis, des résultats fiables.</div>
-                <div class="bmc-sub">Complète la brique Budget pour que tes charges vitales soient calculées automatiquement — ou saisis un montant manuellement.</div>
-                <div class="bmc-actions">
-                  <a href="brique-budget-base.html" class="bmc-btn-primary">Commencer le Budget →</a>
-                  <button class="bmc-btn-secondary" id="bmc-dismiss" type="button">Saisir manuellement</button>
                 </div>
               </div>
             </div>
@@ -1823,15 +1810,10 @@ function buildScreen1() {
   var epargneSource = epargne > 0 ? 'repris du profil' : 'À compléter';
   grid.innerHTML += buildDataCard(formatEuro(epargne), 'Épargne disponible', epargneSource);
 
-  // Stabilité card
-  var stabLabel = getStabiliteLabel(mData.status_pro);
-  grid.innerHTML += buildDataCard(stabLabel, 'Stabilité', 'profil');
-
-  // Logement card
-  if (mData.logement_situation) {
-    var logLabel = getLogementLabel(mData.logement_situation);
-    grid.innerHTML += buildDataCard(logLabel, 'Logement', 'profil');
-  }
+  // Revenus card
+  var totalRevenus = (mData.revenus || 0) + (mData.aides || 0);
+  var revenusLabel = totalRevenus > 0 ? formatEuro(totalRevenus) + '/mois' : 'Non renseigné';
+  grid.innerHTML += buildDataCard(revenusLabel, 'Revenus', 'profil');
 
   // Prefill inputs
   var inputEpargne = document.getElementById('input-epargne');
