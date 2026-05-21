@@ -77,6 +77,16 @@
     --v3-accent-soft:  rgba(196,181,253,.22);
     --v3-track:        #E7E5E4;
     --v3-shadow-card:  0 1px 2px rgba(20,20,30,.04),0 4px 16px rgba(20,20,30,.04);
+
+    /* ── ShieldStack — couleurs sémantiques boucliers ── */
+    --shield-1:        #F59E0B;          /* palier 1 — orange/ambre = premier coussin */
+    --shield-1-glow:   rgba(245,158,11,0.40);
+    --shield-2:        #8B5CF6;          /* palier 2 — violet accent = sécurité utile (reco) */
+    --shield-2-glow:   rgba(139,92,246,0.40);
+    --shield-3:        #10B981;          /* palier 3 — émeraude = sécurité solide */
+    --shield-3-glow:   rgba(16,185,129,0.40);
+    --shield-locked:   #D6D3D1;
+    --shield-target:   rgba(139,92,246,0.18);
   }
 
   html.dark {
@@ -129,6 +139,16 @@
     --v3-accent-soft:  rgba(167,139,250,.14);
     --v3-track:        rgba(255,255,255,.08);
     --v3-shadow-card:  0 1px 2px rgba(0,0,0,.4),0 4px 24px rgba(0,0,0,.20);
+
+    /* ── ShieldStack dark ── */
+    --shield-1:        #FBBF24;
+    --shield-1-glow:   rgba(251,191,36,0.45);
+    --shield-2:        #A78BFA;
+    --shield-2-glow:   rgba(167,139,250,0.50);
+    --shield-3:        #34D399;
+    --shield-3-glow:   rgba(52,211,153,0.45);
+    --shield-locked:   rgba(255,255,255,0.12);
+    --shield-target:   rgba(167,139,250,0.22);
   }
 
   /* ── Reset ── */
@@ -1220,6 +1240,292 @@
     transition: opacity 0.4s ease, stroke-width 0.4s ease;
   }
 
+  /* ═════════════════════════════════════════════════════════════════
+     SHIELDSTACK — header brique permanent (4 écrans)
+  ════════════════════════════════════════════════════════════════ */
+  .shield-header {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    animation: fadeSlideUp 0.6s var(--ease-out) both;
+  }
+  html.dark .shield-header { backdrop-filter: blur(12px); }
+  .shield-header-body { flex: 1; min-width: 0; }
+  .shield-header-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.25rem;
+  }
+  .shield-header-sub {
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    margin-bottom: 0.875rem;
+  }
+  .shield-header-progress {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--track);
+    overflow: hidden;
+    position: relative;
+  }
+  .shield-header-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8B5CF6 0%, #6366F1 50%, #3B82F6 100%);
+    border-radius: 999px;
+    transition: width 0.8s cubic-bezier(.16,1,.3,1);
+    width: 0%;
+  }
+  .shield-header-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+  .shield-header-meta strong { color: var(--text); font-weight: 600; }
+  .shield-header.preview-mode .shield-header-progress,
+  .shield-header.preview-mode .shield-header-meta { display: none; }
+  .shield-header.preview-mode .shield-header-sub { margin-bottom: 0; }
+
+  /* ── Shield Stack (éventail 3 boucliers) ── */
+  .shield-stack {
+    position: relative;
+    width: 160px;
+    height: 110px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .shield-slot {
+    position: absolute;
+    top: 50%;
+    width: 64px;
+    height: 78px;
+    cursor: pointer;
+    transition: transform .25s cubic-bezier(.16,1,.3,1), filter .25s;
+  }
+  .shield-slot[data-slot="3"] { left: 0px;  transform: translateY(-50%) rotate(-12deg); z-index: 1; }
+  .shield-slot[data-slot="2"] { left: 48px; transform: translateY(-50%) rotate(0deg);   z-index: 2; }
+  .shield-slot[data-slot="1"] { left: 96px; transform: translateY(-50%) rotate(12deg);  z-index: 3; }
+  .shield-slot:hover {
+    transform: translateY(calc(-50% - 6px)) rotate(0deg) scale(1.06);
+    z-index: 10;
+    filter: drop-shadow(0 8px 14px rgba(0,0,0,.25));
+  }
+  .shield-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .shield-bg {
+    fill: var(--shield-locked);
+    transition: fill .4s ease, stroke .4s ease;
+  }
+  .shield-fg {
+    transition: opacity .5s ease, transform .5s cubic-bezier(.34,1.56,.64,1);
+    transform-origin: center;
+  }
+  .shield-amount {
+    fill: white;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 9.5px;
+    text-anchor: middle;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .3s ease;
+    paint-order: stroke;
+    stroke: rgba(0,0,0,0.35);
+    stroke-width: 0.6;
+  }
+  /* États */
+  .shield-slot.locked .shield-fg { opacity: 0.18; transform: scale(0.85); }
+  .shield-slot.locked .shield-amount { opacity: 0.55; fill: var(--text-muted); stroke: none; }
+  .shield-slot.target .shield-bg { fill: var(--shield-target); stroke: var(--accent-strong); stroke-width: 1.5; stroke-dasharray: 3 3; }
+  .shield-slot.target .shield-fg { opacity: 0; transform: scale(0.6); }
+  .shield-slot.target .shield-amount { fill: var(--accent-strong); opacity: 1; stroke: none; }
+  .shield-slot.reached .shield-fg { opacity: 1; transform: scale(1); }
+  .shield-slot.reached .shield-amount { opacity: 1; fill: white; }
+
+  /* Rotations en variable CSS (utilisées par keyframes) */
+  .shield-slot[data-slot="1"] { --rot: 12deg; }
+  .shield-slot[data-slot="2"] { --rot: 0deg; }
+  .shield-slot[data-slot="3"] { --rot: -12deg; }
+  .shield-slot[data-slot="1"].reached { --glow: var(--shield-1-glow); }
+  .shield-slot[data-slot="2"].reached { --glow: var(--shield-2-glow); }
+  .shield-slot[data-slot="3"].reached { --glow: var(--shield-3-glow); }
+
+  /* Ka-ching */
+  @keyframes shield-pulse {
+    0%   { transform: translateY(-50%) rotate(var(--rot, 0deg)) scale(1);    filter: drop-shadow(0 0 0 transparent); }
+    25%  { transform: translateY(-50%) rotate(var(--rot, 0deg)) scale(1.18); filter: drop-shadow(0 0 22px var(--glow, transparent)); }
+    60%  { transform: translateY(-50%) rotate(var(--rot, 0deg)) scale(0.95); }
+    100% { transform: translateY(-50%) rotate(var(--rot, 0deg)) scale(1);    filter: drop-shadow(0 0 0 transparent); }
+  }
+  .shield-slot.kaching { animation: shield-pulse .8s cubic-bezier(.34,1.56,.64,1); }
+
+  /* Tooltip */
+  .shield-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--text);
+    color: var(--bg);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s, transform .15s;
+    z-index: 50;
+  }
+  .shield-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: var(--text);
+  }
+  .shield-slot:hover .shield-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ═════════════════════════════════════════════════════════════════
+     SCREEN 2 — SÉLECTEUR BOUCLIERS (remplace palier-cards)
+  ════════════════════════════════════════════════════════════════ */
+  .shield-selector {
+    display: flex;
+    gap: 0.875rem;
+    justify-content: center;
+    margin: 1.5rem 0 1.25rem;
+    padding: 1.25rem 0.5rem;
+    background: linear-gradient(135deg, var(--accent-soft) 0%, transparent 80%);
+    border-radius: var(--r-lg);
+    position: relative;
+  }
+  .shield-pick {
+    flex: 1;
+    max-width: 150px;
+    text-align: center;
+    cursor: pointer;
+    padding: 0.75rem 0.375rem;
+    border-radius: var(--r-md);
+    border: 2px solid transparent;
+    transition: all .25s;
+    position: relative;
+    background: transparent;
+  }
+  .shield-pick:hover { background: var(--bg); }
+  .shield-pick.picked {
+    border-color: var(--accent-strong);
+    background: var(--bg);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .shield-pick-svg {
+    width: 70px;
+    height: 86px;
+    margin: 0 auto 0.625rem;
+    display: block;
+    overflow: visible;
+  }
+  .shield-pick-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    line-height: 1.3;
+  }
+  .shield-pick-label .reco-pill {
+    background: linear-gradient(135deg, #8B5CF6, #6366F1);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+  }
+  .shield-pick-amount {
+    font-family: 'Fraunces', serif;
+    font-size: 1.125rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  .shield-pick-desc {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+    line-height: 1.35;
+  }
+  .shield-pick.reached::after {
+    content: '✓';
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--green);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  @media (max-width: 600px) {
+    .shield-selector { flex-direction: column; align-items: center; }
+    .shield-pick { max-width: 100%; width: 100%; }
+    .shield-header { flex-direction: column; align-items: stretch; }
+    .shield-stack { margin: 0 auto; }
+  }
+
+  /* ═════════════════════════════════════════════════════════════════
+     CTX NARRATIVE — phrase dynamique sous le sélecteur (écrans 2/3/4)
+  ════════════════════════════════════════════════════════════════ */
+  .ctx-narrative {
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: var(--r-md);
+    padding: 0.75rem 0.875rem;
+    margin: 0 0 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    display: flex;
+    gap: 0.625rem;
+    color: var(--text);
+  }
+  .ctx-narrative-icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    background: var(--accent-strong);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  html.dark .ctx-narrative-icon { color: #0B0B1A; }
+  .ctx-narrative strong { font-weight: 600; }
+
   </style>
 </head>
 <body data-brick-name="Épargne de précaution">
@@ -1244,6 +1550,47 @@
           </a>
           <div class="nav-right" id="nav-right-slot"></div>
         </nav>
+      </div>
+
+      <!-- ═══ SHIELDSTACK HEADER — permanent sur les 4 écrans ═══ -->
+      <div class="shield-header preview-mode" id="shield-header">
+        <div class="shield-header-body">
+          <div class="shield-header-title" id="shield-header-title">Ton matelas de sécurité</div>
+          <div class="shield-header-sub" id="shield-header-sub">Tes boucliers se révèleront à l'étape suivante.</div>
+          <div class="shield-header-progress">
+            <div class="shield-header-progress-fill" id="shield-header-progress"></div>
+          </div>
+          <div class="shield-header-meta">
+            <span><strong id="shield-header-current">0 €</strong> sur <strong id="shield-header-target">—</strong></span>
+            <span id="shield-header-pct">0 %</span>
+          </div>
+        </div>
+        <div class="shield-stack" id="shield-stack-header">
+          <div class="shield-slot locked" data-slot="3" data-palier-key="solide" role="button" tabindex="0" aria-label="Palier 3 — sécurité solide">
+            <div class="shield-tooltip" data-tooltip-for="3">Palier 3 verrouillé</div>
+            <svg class="shield-svg" viewBox="0 0 64 78" aria-hidden="true">
+              <path class="shield-bg" d="M32 2 L60 12 L60 38 Q60 62 32 76 Q4 62 4 38 L4 12 Z"/>
+              <path class="shield-fg" fill="var(--shield-3)" d="M32 5 L57 14 L57 38 Q57 60 32 73 Q7 60 7 38 L7 14 Z"/>
+              <text class="shield-amount" x="32" y="48" data-amount-slot="3">—</text>
+            </svg>
+          </div>
+          <div class="shield-slot locked" data-slot="2" data-palier-key="utile" role="button" tabindex="0" aria-label="Palier 2 — sécurité utile (recommandé)">
+            <div class="shield-tooltip" data-tooltip-for="2">Palier 2 verrouillé</div>
+            <svg class="shield-svg" viewBox="0 0 64 78" aria-hidden="true">
+              <path class="shield-bg" d="M32 2 L60 12 L60 38 Q60 62 32 76 Q4 62 4 38 L4 12 Z"/>
+              <path class="shield-fg" fill="var(--shield-2)" d="M32 5 L57 14 L57 38 Q57 60 32 73 Q7 60 7 38 L7 14 Z"/>
+              <text class="shield-amount" x="32" y="48" data-amount-slot="2">—</text>
+            </svg>
+          </div>
+          <div class="shield-slot locked" data-slot="1" data-palier-key="coussin" role="button" tabindex="0" aria-label="Palier 1 — premier coussin">
+            <div class="shield-tooltip" data-tooltip-for="1">Palier 1 verrouillé</div>
+            <svg class="shield-svg" viewBox="0 0 64 78" aria-hidden="true">
+              <path class="shield-bg" d="M32 2 L60 12 L60 38 Q60 62 32 76 Q4 62 4 38 L4 12 Z"/>
+              <path class="shield-fg" fill="var(--shield-1)" d="M32 5 L57 14 L57 38 Q57 60 32 73 Q7 60 7 38 L7 14 Z"/>
+              <text class="shield-amount" x="32" y="48" data-amount-slot="1">—</text>
+            </svg>
+          </div>
+        </div>
       </div>
 
       <!-- ═══ SCREEN 1 — Ce qu'on sait déjà ═══ -->
@@ -1346,38 +1693,51 @@
       <div id="screen-2" class="screen" style="display:none">
         <div class="brick-card">
           <div class="brick-kicker">ÉTAPE 2 / 4 · TON PROCHAIN PALIER</div>
-          <h2 class="brick-title">Pas besoin de tout construire d'un coup.</h2>
-          <p class="brick-subtitle">On vise le montant utile maintenant.</p>
+          <h2 class="brick-title">Choisis ton niveau cible.</h2>
+          <p class="brick-subtitle">Trois paliers de protection. Tu peux changer d'avis à tout moment.</p>
 
-          <!-- Central result card -->
-          <div class="palier-result-card" id="palier-result-card">
-            <div class="palier-result-amount counter-animate" id="palier-result-amount">0 €</div>
-            <div class="palier-result-label" id="palier-result-label">à construire</div>
-            <div class="palier-result-sub" id="palier-result-sub"></div>
+          <!-- Narrative dynamique -->
+          <div class="ctx-narrative" id="ctx-narrative-s2">
+            <div class="ctx-narrative-icon">i</div>
+            <div id="ctx-narrative-s2-text">…</div>
           </div>
 
-          <!-- Atteint block (hidden unless already reached) -->
+          <!-- Sélecteur boucliers (3 piliers cliquables) -->
+          <div class="shield-selector" id="shield-selector">
+            <div class="shield-pick" data-pick="coussin" data-slot="1" role="button" tabindex="0" aria-label="Premier coussin">
+              <svg class="shield-pick-svg" viewBox="0 0 64 78" aria-hidden="true">
+                <path d="M32 2 L60 12 L60 38 Q60 62 32 76 Q4 62 4 38 L4 12 Z" fill="var(--shield-1)" opacity="0.92"/>
+                <text x="32" y="46" text-anchor="middle" fill="white" font-family="Inter" font-weight="700" font-size="13" data-pick-amount="coussin">—</text>
+              </svg>
+              <div class="shield-pick-label"><span>Premier coussin</span></div>
+              <div class="shield-pick-desc" data-pick-desc="coussin">Premier filet anti-imprévu</div>
+            </div>
+            <div class="shield-pick" data-pick="utile" data-slot="2" role="button" tabindex="0" aria-label="Sécurité utile (recommandé)">
+              <svg class="shield-pick-svg" viewBox="0 0 64 78" aria-hidden="true">
+                <path d="M32 2 L60 12 L60 38 Q60 62 32 76 Q4 62 4 38 L4 12 Z" fill="var(--shield-2)" opacity="0.95"/>
+                <text x="32" y="46" text-anchor="middle" fill="white" font-family="Inter" font-weight="700" font-size="13" data-pick-amount="utile">—</text>
+              </svg>
+              <div class="shield-pick-label">
+                <span class="reco-pill" data-reco-pill>★ Recommandé</span>
+                <span>Sécurité utile</span>
+              </div>
+              <div class="shield-pick-desc" data-pick-desc="utile">≈ 1 mois de charges vitales</div>
+            </div>
+            <div class="shield-pick" data-pick="solide" data-slot="3" role="button" tabindex="0" aria-label="Sécurité solide">
+              <svg class="shield-pick-svg" viewBox="0 0 64 78" aria-hidden="true">
+                <path d="M32 2 L60 12 L60 38 Q60 62 32 76 Q4 62 4 38 L4 12 Z" fill="var(--shield-3)" opacity="0.92"/>
+                <text x="32" y="46" text-anchor="middle" fill="white" font-family="Inter" font-weight="700" font-size="13" data-pick-amount="solide">—</text>
+              </svg>
+              <div class="shield-pick-label"><span>Sécurité solide</span></div>
+              <div class="shield-pick-desc" data-pick-desc="solide">3 à 6 mois de charges</div>
+            </div>
+          </div>
+
+          <!-- Atteint block (palier déjà atteint — propose la suite) -->
           <div class="atteint-block" id="atteint-block" style="display:none">
             <div class="atteint-block-title" id="atteint-title"></div>
             <div class="atteint-block-sub" id="atteint-sub"></div>
             <div id="atteint-actions"></div>
-          </div>
-
-          <!-- Progress gauge -->
-          <div class="jauge-wrap" id="jauge-wrap">
-            <div class="jauge-bar">
-              <div class="jauge-fill" id="jauge-fill" style="width:0%"></div>
-            </div>
-            <div class="jauge-labels">
-              <span>0 €</span>
-              <span id="jauge-actuel-label">Actuel : 0 €</span>
-              <span id="jauge-cible-label">Cible : 0 €</span>
-            </div>
-          </div>
-
-          <!-- 3 palier cards -->
-          <div class="palier-cards" id="palier-cards">
-            <!-- Populated by buildScreen2() -->
           </div>
 
           <!-- Raisons block -->
@@ -1403,6 +1763,12 @@
           <div class="brick-kicker">ÉTAPE 3 / 4 · TON RYTHME</div>
           <h2 class="brick-title">Choisis un montant tenable.</h2>
           <p class="brick-subtitle">Le bon rythme, c'est celui que tu gardes.</p>
+
+          <!-- Narrative dynamique -->
+          <div class="ctx-narrative" id="ctx-narrative-s3">
+            <div class="ctx-narrative-icon">i</div>
+            <div id="ctx-narrative-s3-text">…</div>
+          </div>
 
           <!-- Header summary -->
           <div class="header-summary" id="header-summary-s3">
@@ -1468,6 +1834,12 @@
           <div class="brick-kicker">ÉTAPE 4 / 4 · OÙ LE GARDER</div>
           <h2 class="brick-title">Disponible. Séparé. Sans prise de risque.</h2>
           <p class="brick-subtitle" id="s4-subtitle">L'endroit où ton épargne de précaution sera la plus utile.</p>
+
+          <!-- Narrative dynamique -->
+          <div class="ctx-narrative" id="ctx-narrative-s4">
+            <div class="ctx-narrative-icon">i</div>
+            <div id="ctx-narrative-s4-text">…</div>
+          </div>
 
           <!-- Livret detected -->
           <div class="placement-detected" id="placement-detected" style="display:none">
@@ -1671,15 +2043,19 @@ function calculateMatelasSecurity(d) {
   else if (['cadre_prof_lib','retraite'].includes(status) && !hasDecouvert) stabilite = 'tres_stable';
   if (hasDecouvert || resteAVivre < 0) stabilite = 'moins_stable';
 
-  var coeffMap = { tres_stable:[1,2], stable:[1.5,3], moins_stable:[2,5] };
+  // Fix #3 : un profil STABLE peut absorber un objectif plus large sans risque,
+  //          un profil MOINS STABLE doit garder une cible plus accessible.
+  //          On inverse donc la logique précédente qui donnait la plus grosse cible aux profils précaires.
+  var coeffMap = { tres_stable:[1.5,4], stable:[1.5,3], moins_stable:[1,2] };
   var coefs = coeffMap[stabilite];
   var coefMin = coefs[0], coefMax = coefs[1];
 
   // Palier premier coussin
+  // Fix #2 : plancher absolu (150 € min) sans plafond bas qui castrait les profils à grosses charges.
   var palierPremierCoussin;
   if (chargesBase > 0) palierPremierCoussin = Math.round(chargesBase * 0.5 / 50) * 50;
   else palierPremierCoussin = 300;
-  palierPremierCoussin = Math.max(150, Math.min(palierPremierCoussin, 500));
+  palierPremierCoussin = Math.max(150, palierPremierCoussin);
 
   // Sécurité utile (~1 mois charges)
   var palierSecuriteUtile = chargesBase > 0
@@ -1867,6 +2243,29 @@ function animateCounter(el, target, duration) {
 
   buildScreen1();
   updateProgressPanel(1);
+  renderShieldStackHeader({ preview: true });
+
+  // Listeners ShieldStack — picks Screen 2 + slots header
+  document.querySelectorAll('.shield-pick').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var k = el.getAttribute('data-pick');
+      if (k) selectPalier(k);
+    });
+    el.addEventListener('keydown', function(ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        var k = el.getAttribute('data-pick');
+        if (k) selectPalier(k);
+      }
+    });
+  });
+  document.querySelectorAll('#shield-stack-header .shield-slot').forEach(function(el) {
+    el.addEventListener('click', function() {
+      var slot = parseInt(el.getAttribute('data-slot'), 10);
+      var k = PALIER_KEY_BY_SLOT[slot];
+      if (k) selectPalier(k);
+    });
+  });
 })();
 
 
@@ -2085,11 +2484,220 @@ function goToScreen(n) {
   if (n === 2) buildScreen2();
   if (n === 3) buildScreen3();
   if (n === 4) buildScreen4();
+
+  // ShieldStack header permanent — preview sur Screen 1, normal sinon
+  renderShieldStackHeader({ preview: n === 1 });
+  if (n >= 2) updateCtxNarrative(n);
 }
 
 
 /* ══════════════════════════════════════════════════════════════
-   buildScreen2 — Ton prochain palier
+   SHIELDSTACK — header permanent + sélecteur Screen 2 + narrative
+   ══════════════════════════════════════════════════════════════ */
+
+// Mapping bouclier ⇔ clé palier
+var PALIER_KEY_BY_SLOT = { 1: 'coussin', 2: 'utile', 3: 'solide' };
+var SLOT_BY_PALIER_KEY = { coussin: 1, utile: 2, solide: 3 };
+
+// Snapshot des paliers atteints (pour ka-ching au franchissement)
+var _shieldPrevReached = { 1: false, 2: false, 3: false };
+
+function getPaliersArray() {
+  if (!calcResult) return null;
+  return {
+    1: calcResult.palierPremierCoussin,
+    2: calcResult.palierSecuriteUtile,
+    3: calcResult.palierSecuriteSolide
+  };
+}
+
+// Déclenche l'animation ka-ching sur un bouclier du header
+function triggerKaching(slot) {
+  var el = document.querySelector('#shield-stack-header .shield-slot[data-slot="' + slot + '"]');
+  if (!el) return;
+  el.classList.remove('kaching');
+  void el.offsetWidth;
+  el.classList.add('kaching');
+}
+
+// Met à jour le ShieldStack header (montants + états + barre + tooltips + ka-ching)
+function renderShieldStackHeader(opts) {
+  opts = opts || {};
+  var headerEl = document.getElementById('shield-header');
+  if (!headerEl) return;
+
+  // Mode preview Screen 1 (pas de calcResult ou demande explicite)
+  if (opts.preview || !calcResult) {
+    headerEl.classList.add('preview-mode');
+    [1,2,3].forEach(function(slot) {
+      var amtEl = document.querySelector('[data-amount-slot="' + slot + '"]');
+      if (amtEl) amtEl.textContent = '—';
+      var slotEl = document.querySelector('#shield-stack-header .shield-slot[data-slot="' + slot + '"]');
+      slotEl.classList.remove('target','reached');
+      slotEl.classList.add('locked');
+      var tip = slotEl.querySelector('.shield-tooltip');
+      tip.textContent = 'Palier ' + slot + ' — à révéler';
+    });
+    var subEl0 = document.getElementById('shield-header-sub');
+    if (subEl0) subEl0.textContent = 'Tes boucliers se révèleront à l\'étape suivante.';
+    return;
+  }
+
+  headerEl.classList.remove('preview-mode');
+  var paliers = getPaliersArray();
+  var epargne = calcResult.epargneDisponible;
+  var targetSlot = SLOT_BY_PALIER_KEY[selectedPalier] || 2;
+
+  // Montants
+  [1,2,3].forEach(function(slot) {
+    var amtEl = document.querySelector('[data-amount-slot="' + slot + '"]');
+    if (amtEl) amtEl.textContent = formatEuro(paliers[slot]);
+  });
+
+  // États
+  [1,2,3].forEach(function(slot) {
+    var slotEl = document.querySelector('#shield-stack-header .shield-slot[data-slot="' + slot + '"]');
+    var tip    = slotEl.querySelector('.shield-tooltip');
+    slotEl.classList.remove('locked','target','reached');
+
+    var palierAmt = paliers[slot];
+    var reached = epargne >= palierAmt;
+    var isTarget = (slot === targetSlot);
+
+    if (reached) {
+      slotEl.classList.add('reached');
+      tip.innerHTML = isTarget
+        ? '<strong>✓ Cible atteinte</strong> · ' + formatEuro(palierAmt)
+        : '<strong>Palier ' + slot + ' atteint</strong> · ' + formatEuro(palierAmt);
+    } else if (isTarget) {
+      slotEl.classList.add('target');
+      var pct0 = palierAmt > 0 ? Math.round(epargne / palierAmt * 100) : 0;
+      tip.innerHTML = '<strong>Ta cible</strong> · ' + formatEuro(palierAmt) + ' (' + pct0 + '%)';
+    } else {
+      slotEl.classList.add('locked');
+      var dist = palierAmt - epargne;
+      tip.innerHTML = 'Palier ' + slot + ' · ' + formatEuro(palierAmt) + ' <span style="opacity:.7">(−' + formatEuro(dist) + ')</span>';
+    }
+  });
+
+  // Barre de progression sur cible courante
+  var targetAmt = paliers[targetSlot];
+  var headerPct = targetAmt > 0 ? Math.min(100, Math.round(epargne / targetAmt * 100)) : 0;
+  var fillEl = document.getElementById('shield-header-progress');
+  if (fillEl) fillEl.style.width = headerPct + '%';
+  var pctEl  = document.getElementById('shield-header-pct');
+  if (pctEl) pctEl.textContent = headerPct + ' %';
+  var curEl  = document.getElementById('shield-header-current');
+  if (curEl) curEl.textContent = formatEuro(epargne);
+  var tgtEl  = document.getElementById('shield-header-target');
+  if (tgtEl) tgtEl.textContent = formatEuro(targetAmt);
+
+  // Sub line contextuelle
+  var subEl = document.getElementById('shield-header-sub');
+  if (subEl) {
+    if (currentScreen === 2) {
+      subEl.textContent = 'Choisis ton niveau cible parmi 3 paliers de protection.';
+    } else if (currentScreen === 3) {
+      var ml = (calcResult.moisRecommande > 0) ? ' · ~' + calcResult.moisRecommande + ' mois au rythme reco' : '';
+      subEl.textContent = 'Choisis un rythme tenable' + ml + '.';
+    } else if (currentScreen === 4) {
+      subEl.textContent = 'Choisis où garder ton épargne de précaution.';
+    } else {
+      subEl.textContent = 'Construis le fonds d\'urgence qui change tout.';
+    }
+  }
+
+  // Ka-ching au franchissement
+  [1,2,3].forEach(function(slot) {
+    var reached = epargne >= paliers[slot];
+    if (reached && !_shieldPrevReached[slot]) {
+      setTimeout(function() { triggerKaching(slot); }, 200);
+    }
+    _shieldPrevReached[slot] = reached;
+  });
+}
+
+// Met à jour le sélecteur Screen 2 (3 boucliers cliquables)
+function renderShieldSelector() {
+  if (!calcResult) return;
+  var paliers = getPaliersArray();
+  var epargne = calcResult.epargneDisponible;
+
+  // Montants + descriptions
+  ['coussin','utile','solide'].forEach(function(key) {
+    var slot = SLOT_BY_PALIER_KEY[key];
+    var amtT = document.querySelector('[data-pick-amount="' + key + '"]');
+    if (amtT) amtT.textContent = formatEuro(paliers[slot]);
+    var descT = document.querySelector('[data-pick-desc="' + key + '"]');
+    if (descT) descT.textContent = getPalierDescription(key, calcResult);
+  });
+
+  // Repositionne la reco-pill sur le palier réellement recommandé
+  var recoKey = calcResult.hasDecouvert ? 'coussin' : 'utile';
+  document.querySelectorAll('[data-reco-pill]').forEach(function(p) { p.remove(); });
+  var hostLabel = document.querySelector('.shield-pick[data-pick="' + recoKey + '"] .shield-pick-label');
+  if (hostLabel) {
+    var pill = document.createElement('span');
+    pill.className = 'reco-pill';
+    pill.setAttribute('data-reco-pill', '');
+    pill.textContent = '★ Recommandé';
+    hostLabel.insertBefore(pill, hostLabel.firstChild);
+  }
+
+  // États picked / reached
+  document.querySelectorAll('.shield-pick').forEach(function(el) {
+    var key  = el.getAttribute('data-pick');
+    var slot = parseInt(el.getAttribute('data-slot'), 10);
+    el.classList.toggle('picked',  key === selectedPalier);
+    el.classList.toggle('reached', epargne >= paliers[slot]);
+  });
+}
+
+// Phrase contextuelle dynamique (écrans 2/3/4)
+function updateCtxNarrative(screen) {
+  if (!calcResult) return;
+  var palierAmt = getSelectedPalierAmount();
+  var reste = getSelectedPalierReste();
+  var ep = calcResult.epargneDisponible;
+  var ch = calcResult.chargesVitalesMensuelles;
+  var stabLabel = {
+    tres_stable: 'revenus stables',
+    stable:      'revenus réguliers',
+    moins_stable:'revenus variables'
+  }[calcResult.stabiliteProfil] || '';
+
+  if (screen === 2) {
+    var el = document.getElementById('ctx-narrative-s2-text');
+    if (!el) return;
+    if (ep === 0) {
+      el.innerHTML = 'Tu pars de zéro. Avec <strong>' + formatEuro(ch) + '/mois</strong> de charges (' + stabLabel + '), choisis le palier qui te parle.';
+    } else if (ep >= calcResult.palierSecuriteSolide) {
+      el.innerHTML = '<strong>Tous les boucliers débloqués.</strong> Ton épargne de précaution est en place.';
+    } else if (selectedPalier === 'coussin') {
+      el.innerHTML = 'Avec <strong>' + formatEuro(palierAmt) + '</strong>, tu encaisses un imprévu basique sans toucher au compte courant.';
+    } else if (selectedPalier === 'utile') {
+      el.innerHTML = 'Avec <strong>' + formatEuro(palierAmt) + '</strong> (≈ 1 mois de charges), tu tiens un coup dur sans paniquer.';
+    } else {
+      el.innerHTML = 'Avec <strong>' + formatEuro(palierAmt) + '</strong>, tu encaisses une perte de revenus de plusieurs mois.';
+    }
+  } else if (screen === 3) {
+    var el3 = document.getElementById('ctx-narrative-s3-text');
+    if (!el3) return;
+    if (reste <= 0) {
+      el3.innerHTML = '<strong>Palier déjà atteint.</strong> Choisis un rythme pour viser le prochain palier.';
+    } else {
+      el3.innerHTML = 'Le bon rythme, c\'est celui que tu gardes. Au rythme recommandé (' + formatEuro(calcResult.rythmeRecommande) + '/mois), ton bouclier se débloque en ' + calcResult.dateEstimeeRecommande + '.';
+    }
+  } else if (screen === 4) {
+    var el4 = document.getElementById('ctx-narrative-s4-text');
+    if (!el4) return;
+    el4.innerHTML = 'Tu vises <strong>' + formatEuro(palierAmt) + '</strong>. L\'objectif : que cette épargne reste séparée et accessible quand tu en as besoin.';
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   buildScreen2 — Ton prochain palier (refonte ShieldStack)
    ══════════════════════════════════════════════════════════════ */
 function buildScreen2() {
   calcResult = calculateMatelasSecurity(mData);
@@ -2099,96 +2707,50 @@ function buildScreen2() {
   var atteintUtile   = epargne >= calcResult.palierSecuriteUtile;
   var atteintSolide  = epargne >= calcResult.palierSecuriteSolide;
 
-  // Atteint block
-  var atteintBlock = document.getElementById('atteint-block');
-  var resultCard = document.getElementById('palier-result-card');
-  var jaugeWrap = document.getElementById('jauge-wrap');
+  // Fix #6 — reset déterministe de selectedPalier selon l'état réel
+  if (atteintSolide) selectedPalier = 'solide';
+  else if (atteintUtile) selectedPalier = 'solide';
+  else if (atteintCoussin) selectedPalier = 'utile';
+  else if (calcResult.hasDecouvert) selectedPalier = 'coussin';
+  else selectedPalier = 'utile';
 
-  if (atteintSolide) {
-    // All targets reached — route to next brick
+  // Rendu sélecteur 3 boucliers + header permanent + narrative
+  renderShieldSelector();
+  renderShieldStackHeader();
+  updateCtxNarrative(2);
+  renderRaisons();
+
+  // Atteint-block (état de victoire ou jalons franchis)
+  var atteintBlock = document.getElementById('atteint-block');
+  if (!atteintBlock) {
+    // Pas de block — CTA only
+  } else if (atteintSolide) {
     var bigSurplus = epargne > calcResult.palierSecuriteSolide * 1.5;
     var surplus = epargne - calcResult.palierSecuriteSolide;
     var nextBriqueSolide = getNextBrique();
-    if (atteintBlock) {
-      atteintBlock.style.display = 'block';
-      if (bigSurplus) {
-        document.getElementById('atteint-title').textContent = 'Épargne de précaution solide atteinte.';
-        document.getElementById('atteint-sub').innerHTML = 'Tu as ' + formatEuro(surplus) + ' au-delà de ton objectif.<br>C\'est le bon moment de passer à la suite.';
-        document.getElementById('atteint-actions').innerHTML = nextBriqueSolide.bientot
-          ? '<span class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;opacity:0.5;cursor:not-allowed;pointer-events:none;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + '</span><span style="display:block;margin-top:0.4rem;font-size:12px;color:#999;">Bientôt disponible</span>'
-          : '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
-      } else {
-        document.getElementById('atteint-title').textContent = 'Épargne de précaution solide atteinte.';
-        document.getElementById('atteint-sub').innerHTML = 'Ton épargne de précaution est en place.<br>Tu peux passer à la suite.';
-        document.getElementById('atteint-actions').innerHTML = nextBriqueSolide.bientot
-          ? '<span class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;opacity:0.5;cursor:not-allowed;pointer-events:none;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + '</span><span style="display:block;margin-top:0.4rem;font-size:12px;color:#999;">Bientôt disponible</span>'
-          : '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
-      }
-    }
-    if (resultCard) resultCard.style.display = 'none';
-    if (jaugeWrap) jaugeWrap.style.display = 'none';
-    selectedPalier = 'solide';
+    atteintBlock.style.display = 'block';
+    document.getElementById('atteint-title').textContent = 'Épargne de précaution solide atteinte.';
+    document.getElementById('atteint-sub').innerHTML = bigSurplus
+      ? 'Tu as ' + formatEuro(surplus) + ' au-delà de ton objectif.<br>C\'est le bon moment de passer à la suite.'
+      : 'Ton épargne de précaution est en place.<br>Tu peux passer à la suite.';
+    document.getElementById('atteint-actions').innerHTML = nextBriqueSolide.bientot
+      ? '<span class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;opacity:0.5;cursor:not-allowed;pointer-events:none;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + '</span><span style="display:block;margin-top:0.4rem;font-size:12px;color:#999;">Bientôt disponible</span>'
+      : '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
   } else if (atteintUtile) {
-    // Utile reached, show option for solide
-    selectedPalier = 'solide';
-    if (atteintBlock) {
-      atteintBlock.style.display = 'block';
-      document.getElementById('atteint-title').textContent = 'Palier utile atteint.';
-      document.getElementById('atteint-sub').textContent = 'Tu peux viser le palier solide (' + formatEuro(calcResult.palierSecuriteSolide) + ').';
-      document.getElementById('atteint-actions').innerHTML =
-        '<button class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;" ' +
-        'onclick="selectPalier(\'solide\'); goToScreen(3);">' +
-        'Viser le palier solide →</button>';
-    }
-    var palierAmt = getSelectedPalierAmount();
-    var resteS = getSelectedPalierReste();
-    if (resultCard) resultCard.style.display = 'block';
-    if (jaugeWrap) jaugeWrap.style.display = 'block';
-    renderResultCard(resteS, epargne, palierAmt);
+    atteintBlock.style.display = 'block';
+    document.getElementById('atteint-title').textContent = 'Palier utile atteint.';
+    document.getElementById('atteint-sub').textContent = 'Vise maintenant le palier solide (' + formatEuro(calcResult.palierSecuriteSolide) + ').';
+    document.getElementById('atteint-actions').innerHTML = '';
   } else if (atteintCoussin) {
-    selectedPalier = 'utile';
-    if (atteintBlock) {
-      atteintBlock.style.display = 'block';
-      document.getElementById('atteint-title').textContent = 'Premier coussin atteint.';
-      document.getElementById('atteint-sub').textContent = 'Prochaine cible : sécurité utile (' + formatEuro(calcResult.palierSecuriteUtile) + ').';
-      document.getElementById('atteint-actions').innerHTML =
-        '<button class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;" ' +
-        'onclick="selectPalier(\'utile\'); goToScreen(3);">' +
-        'Viser la sécurité utile →</button>';
-    }
-    var palierAmtC = getSelectedPalierAmount();
-    var resteC = getSelectedPalierReste();
-    if (resultCard) resultCard.style.display = 'block';
-    if (jaugeWrap) jaugeWrap.style.display = 'block';
-    renderResultCard(resteC, epargne, palierAmtC);
+    atteintBlock.style.display = 'block';
+    document.getElementById('atteint-title').textContent = 'Premier coussin atteint.';
+    document.getElementById('atteint-sub').textContent = 'Prochaine cible : sécurité utile (' + formatEuro(calcResult.palierSecuriteUtile) + ').';
+    document.getElementById('atteint-actions').innerHTML = '';
   } else {
-    if (atteintBlock) atteintBlock.style.display = 'none';
-    if (calcResult.hasDecouvert) selectedPalier = 'coussin';
-    else selectedPalier = 'utile';
-    if (resultCard) resultCard.style.display = 'block';
-    if (jaugeWrap) jaugeWrap.style.display = 'block';
-
-    var palierAmtD = getSelectedPalierAmount();
-    var resteD = getSelectedPalierReste();
-    if (epargne === 0) {
-      renderResultCard(palierAmtD, 0, palierAmtD);
-      var subEl = document.getElementById('palier-result-sub');
-      if (subEl) subEl.textContent = 'Tu pars de zéro. Aucun problème — on y va pas à pas.';
-    } else {
-      renderResultCard(resteD, epargne, palierAmtD);
-    }
+    atteintBlock.style.display = 'none';
   }
 
-  // Gauge — use selected palier
-  updateGauge();
-
-  // Palier cards
-  renderPalierCards();
-
-  // Raisons
-  renderRaisons();
-
-  // CTA — allow advancing unless all paliers reached
+  // CTA — désactivé seulement si tous les paliers sont franchis
   var btnRythme = document.getElementById('btn-choisir-rythme');
   if (btnRythme) {
     btnRythme.onclick = function() { goToScreen(3); };
@@ -2196,96 +2758,20 @@ function buildScreen2() {
   }
 }
 
-function updateGauge() {
-  if (!calcResult) return;
-  var palierAmt = getSelectedPalierAmount();
-  var fillPct = palierAmt > 0 ? Math.min(100, Math.round(calcResult.epargneDisponible / palierAmt * 100)) : 0;
-  var fillEl = document.getElementById('jauge-fill');
-  if (fillEl) fillEl.style.width = fillPct + '%';
-  var actuelLabel = document.getElementById('jauge-actuel-label');
-  if (actuelLabel) actuelLabel.textContent = 'Actuel : ' + formatEuro(calcResult.epargneDisponible);
-  var cibleLabel = document.getElementById('jauge-cible-label');
-  if (cibleLabel) cibleLabel.textContent = 'Cible : ' + formatEuro(palierAmt);
-}
-
-function refreshScreen2() {
-  buildScreen2();
-}
-
-function renderResultCard(reste, epargne, cible) {
-  var amountEl = document.getElementById('palier-result-amount');
-  var labelEl = document.getElementById('palier-result-label');
-  var subEl = document.getElementById('palier-result-sub');
-
-  if (amountEl) animateCounter(amountEl, reste);
-  if (labelEl) labelEl.textContent = 'à construire';
-  if (subEl && epargne > 0) {
-    subEl.textContent = 'Tu as déjà ' + formatEuro(epargne) + '. Cible : ' + formatEuro(cible) + '.';
-  } else if (subEl) {
-    subEl.textContent = 'Cible : ' + formatEuro(cible) + '.';
-  }
-}
-
-function renderPalierCards() {
-  var container = document.getElementById('palier-cards');
-  if (!container) return;
-
-  var epargne = calcResult.epargneDisponible;
-  var paliers = [
-    { key: 'coussin', title: 'Premier coussin', amount: calcResult.palierPremierCoussin, desc: getPalierDescription('coussin', calcResult) },
-    { key: 'utile', title: 'Sécurité utile', amount: calcResult.palierSecuriteUtile, desc: getPalierDescription('utile', calcResult) },
-    { key: 'solide', title: 'Sécurité solide', amount: calcResult.palierSecuriteSolide, desc: getPalierDescription('solide', calcResult) }
-  ];
-
-  // Determine default selection
-  if (epargne >= calcResult.palierSecuriteUtile) selectedPalier = 'solide';
-  else if (calcResult.hasDecouvert) selectedPalier = 'coussin';
-  else selectedPalier = 'utile';
-
-  container.innerHTML = paliers.map(function(p) {
-    var isAtteint = epargne >= p.amount;
-    var isSelected = p.key === selectedPalier;
-    var isRecommande = p.key === selectedPalier && !isAtteint;
-    var cls = 'palier-card';
-    if (isAtteint) cls += ' atteint';
-    else if (isSelected) cls += ' active';
-
-    var badge = '';
-    if (isAtteint) badge = '<span class="palier-card-badge atteint-badge">✓ Atteint</span>';
-    else if (isRecommande) badge = '<span class="palier-card-badge recommande-badge">recommandé</span>';
-
-    return '<div class="' + cls + '" data-palier="' + p.key + '" onclick="selectPalier(\'' + p.key + '\')" role="button" aria-label="' + escapeHtml(p.title) + '">' +
-      '<div class="palier-card-info">' +
-        '<div class="palier-card-title">' + escapeHtml(p.title) + '</div>' +
-        '<div class="palier-card-amount">' + formatEuro(p.amount) + '</div>' +
-        '<div class="palier-card-desc">' + escapeHtml(p.desc) + '</div>' +
-      '</div>' +
-      badge +
-    '</div>';
-  }).join('');
-}
-
+// Sélection d'un palier depuis le sélecteur Screen 2 ou un slot du header
 function selectPalier(key) {
+  if (!key || (key !== 'coussin' && key !== 'utile' && key !== 'solide')) return;
   selectedPalier = key;
+  renderShieldSelector();
+  renderShieldStackHeader();
+  updateCtxNarrative(currentScreen);
 
-  // Re-render result card
-  var palierAmt = getSelectedPalierAmount();
-  var reste = getSelectedPalierReste();
-  renderResultCard(reste, calcResult.epargneDisponible, palierAmt);
-
-  // Update gauge
-  updateGauge();
-
-  // Update cards highlight
-  document.querySelectorAll('.palier-card').forEach(function(c) {
-    var k = c.getAttribute('data-palier');
-    c.classList.remove('active');
-    if (k === key && !c.classList.contains('atteint')) c.classList.add('active');
-  });
-
-  // Update CTA — enable if there's something left to build
-  var btn = document.getElementById('btn-choisir-rythme');
-  if (btn) btn.disabled = reste <= 0;
+  // CTA Screen 2 — désactivé si plus rien à construire pour ce palier
+  if (currentScreen === 2) {
+    var reste = getSelectedPalierReste();
+    var btn = document.getElementById('btn-choisir-rythme');
+    if (btn) btn.disabled = reste <= 0;
+  }
 }
 
 function renderRaisons() {
