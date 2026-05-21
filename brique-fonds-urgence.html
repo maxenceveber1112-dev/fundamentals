@@ -454,90 +454,93 @@
   .data-card.full-width { grid-column:1 / -1; }
 
   /* ══════════════════════════════════════════════════════════════
-     PROFILE PILLS (screen 1 — option B)
+     CTX NARRATIVE (screen 1 — option C)
   ══════════════════════════════════════════════════════════════ */
-  .profile-pills-row {
+  .ctx-narrative {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
     margin-bottom: 20px;
+    position: relative;
   }
-  .profile-pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid #2a2a4a;
-    background: #1a1a2e;
-    width: 100%;
-    box-sizing: border-box;
-    transition: border-color 0.2s;
-    cursor: default;
-  }
-  .profile-pill:hover { border-color: #8b5cf6; }
-  .pill-teal { border-left: 2px solid #14b8a6; }
-  .pill-teal .pill-icon { color: #14b8a6; }
-  .pill-violet { border-left: 2px solid #8b5cf6; }
-  .pill-violet .pill-icon { color: #8b5cf6; }
-  .pill-icon { width: 16px; height: 16px; flex-shrink: 0; }
-  .pill-content {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    flex: 1;
-    min-width: 0;
-  }
-  .pill-value {
-    font-family: Inter, sans-serif;
-    font-size: 14px; font-weight: 700;
-    color: #f1f5f9;
-    white-space: nowrap;
-  }
-  .pill-separator {
-    color: #4b5563;
-    font-size: 14px;
-  }
-  .pill-label {
+  .ctx-item { display: inline-flex; align-items: center; }
+  .ctx-lbl {
     font-family: Inter, sans-serif;
     font-size: 13px;
-    color: #6b7280;
-    white-space: nowrap;
+    font-weight: 400;
+    color: #94a3b8;
   }
-  .pill-badge {
+  .ctx-val {
     font-family: Inter, sans-serif;
-    font-size: 10px; font-weight: 600;
-    padding: 2px 7px; border-radius: 4px;
-    white-space: nowrap; flex-shrink: 0;
-    margin-left: auto;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
   }
-  .badge-repris  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-  .badge-completer { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-  .badge-profil  { background: #ede9fe; color: #7c3aed; border: 1px solid #c4b5fd; }
+  .ctx-val-missing {
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #d97706;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 4px;
+    padding: 1px 7px;
+  }
+  .ctx-dot {
+    font-size: 13px;
+    color: #cbd5e1;
+    padding: 0 6px;
+  }
+  .ctx-badge {
+    font-family: Inter, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    letter-spacing: 0.04em;
+    vertical-align: middle;
+  }
+  .ctx-badge-repris {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+  .ctx-badge-completer {
+    background: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fde68a;
+  }
+  .ctx-source {
+    width: 100%;
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-style: italic;
+    color: #94a3b8;
+    margin-top: 3px;
+  }
 
-  /* ── Dark mode pills ── */
-  html.dark .profile-pill { background: #1a1a2e; border-color: #2a2a4a; }
-  html.dark .profile-pill:hover { border-color: #8b5cf6; }
-  html.dark .pill-value { color: #f1f5f9; }
-  html.dark .pill-label { color: #6b7280; }
-  html.dark .badge-repris  { background: #052e16; color: #34d399; border-color: #065f46; }
-  html.dark .badge-completer { background: #1c1917; color: #f59e0b; border-color: #92400e; }
-  html.dark .badge-profil  { background: #1e1b4b; color: #a78bfa; border-color: #3730a3; }
-
-  /* ── Light mode pills ── */
-  html.light .profile-pill,
-  [data-theme="light"] .profile-pill { background: #f8fafc; border-color: #e2e8f0; }
-  html.light .pill-value,
-  [data-theme="light"] .pill-value { color: #0f172a; }
-  html.light .pill-label,
-  [data-theme="light"] .pill-label { color: #64748b; }
-  html.light .badge-profil,
-  [data-theme="light"] .badge-profil { background: #ede9fe; color: #7c3aed; border-color: #c4b5fd; }
-  html.light .badge-repris,
-  [data-theme="light"] .badge-repris { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
-  html.light .badge-completer,
-  [data-theme="light"] .badge-completer { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+  /* ── Dark mode ctx-narrative ── */
+  html.dark .ctx-val { color: #f1f5f9; }
+  html.dark .ctx-lbl { color: #6b7280; }
+  html.dark .ctx-dot { color: #374151; }
+  html.dark .ctx-source { color: #4b5563; }
+  html.dark .ctx-val-missing {
+    color: #f59e0b;
+    background: #1c1917;
+    border-color: #92400e;
+  }
+  html.dark .ctx-badge-repris {
+    background: #052e16;
+    color: #34d399;
+    border-color: #065f46;
+  }
+  html.dark .ctx-badge-completer {
+    background: #1c1917;
+    color: #f59e0b;
+    border-color: #92400e;
+  }
 
   /* ══════════════════════════════════════════════════════════════
      JAUGE (progress gauge)
@@ -1902,34 +1905,33 @@ function buildScreen1() {
   var totalRevenus = (mData.revenus || 0) + (mData.aides || 0);
   var revenusLabel = totalRevenus > 0 ? formatEuro(totalRevenus) + '/mois' : 'Non renseigné';
 
-  // Profile pills (option B)
-  grid.innerHTML = '<div class="profile-pills-row">' +
-    '<div class="profile-pill pill-teal">' +
-      '<svg class="pill-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-        '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>' +
-        '<path d="M12 7v1m0 8v1M9.5 10c0-.83.9-1.5 2.5-1.5s2.5.67 2.5 1.5-.9 1.5-2.5 1.5S9.5 10.83 9.5 10M9.5 14c0 .83.9 1.5 2.5 1.5s2.5-.67 2.5-1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' +
-      '</svg>' +
-      '<div class="pill-content">' +
-        '<span class="pill-value">' + formatEuro(epargne) + '</span>' +
-        '<span class="pill-separator">\u00b7</span>' +
-        '<span class="pill-label">Épargne disponible</span>' +
-      '</div>' +
-      '<span class="pill-badge ' + (epargne > 0 ? 'badge-repris' : 'badge-completer') + '">' + (epargne > 0 ? 'repris' : 'À compléter') + '</span>' +
-    '</div>' +
-    '<div class="profile-pill pill-violet">' +
-      '<svg class="pill-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-        '<rect x="3" y="12" width="4" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/>' +
-        '<rect x="10" y="8" width="4" height="13" rx="1" stroke="currentColor" stroke-width="1.5"/>' +
-        '<rect x="17" y="4" width="4" height="17" rx="1" stroke="currentColor" stroke-width="1.5"/>' +
-      '</svg>' +
-      '<div class="pill-content">' +
-        '<span class="pill-value">' + revenusLabel + '</span>' +
-        '<span class="pill-separator">\u00b7</span>' +
-        '<span class="pill-label">Revenus</span>' +
-      '</div>' +
-      '<span class="pill-badge badge-profil">profil</span>' +
-    '</div>' +
-  '</div>';
+  // Context narrative (option C)
+  var epargneLabel = epargne > 0 ? formatEuro(epargne) : null;
+  var allFilled = epargne > 0 && totalRevenus > 0;
+
+  var sourceLine = '<div class="ctx-narrative">';
+  sourceLine += '<span class="ctx-item">';
+  sourceLine += '<span class="ctx-lbl">Épargne :&nbsp;</span>';
+  if (epargneLabel) {
+    sourceLine += '<span class="ctx-val">' + epargneLabel + '</span>';
+  } else {
+    sourceLine += '<span class="ctx-val-missing">À compléter</span>';
+  }
+  sourceLine += '</span>';
+  sourceLine += '<span class="ctx-dot">·</span>';
+  sourceLine += '<span class="ctx-item">';
+  sourceLine += '<span class="ctx-lbl">Revenus :&nbsp;</span>';
+  sourceLine += '<span class="ctx-val">' + revenusLabel + '</span>';
+  sourceLine += '</span>';
+  if (allFilled) {
+    sourceLine += '<span class="ctx-badge ctx-badge-repris">↩ profil</span>';
+  } else {
+    sourceLine += '<span class="ctx-badge ctx-badge-completer">↩ profil</span>';
+  }
+  sourceLine += '<div class="ctx-source">↩ repris de ton profil</div>';
+  sourceLine += '</div>';
+
+  grid.innerHTML = sourceLine;
 
   // Prefill inputs
   var inputEpargne = document.getElementById('input-epargne');
