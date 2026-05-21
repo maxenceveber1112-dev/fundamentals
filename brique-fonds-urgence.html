@@ -822,6 +822,85 @@
   .placement-detected .badge-source { margin-bottom:0.25rem; }
 
   /* ══════════════════════════════════════════════════════════════
+     PLACEMENT CHIPS V2 (screen 4 — grille 3 icon-chips + criteria 3-checks)
+  ══════════════════════════════════════════════════════════════ */
+  .placement-chips {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem;
+    margin:1.25rem 0;
+  }
+  .placement-chip {
+    background:var(--surface-2);
+    border:1.5px solid transparent;
+    border-radius:var(--r-lg);
+    padding:1.25rem 0.75rem 0.9rem;
+    cursor:pointer;
+    text-align:center;
+    transition:all var(--t);
+    position:relative;
+    color:var(--text);
+    font-family:inherit;
+    appearance:none;
+  }
+  .placement-chip:hover { border-color:var(--border-hover); transform:translateY(-2px); }
+  .placement-chip.selected {
+    background:var(--bg-elevated);
+    border-color:var(--accent-strong);
+    box-shadow:0 4px 16px rgba(91,33,182,0.15);
+  }
+  html.dark .placement-chip.selected { box-shadow:0 4px 16px rgba(167,139,250,0.20); }
+  .placement-chip-icon {
+    width:42px; height:42px; margin:0 auto 0.55rem;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%; background:var(--accent-soft);
+    color:var(--accent-strong);
+    transition:all var(--t);
+  }
+  .placement-chip.selected .placement-chip-icon {
+    background:var(--accent-strong); color:#fff;
+  }
+  html.dark .placement-chip.selected .placement-chip-icon { color:#0B0B1A; }
+  .placement-chip-name { font-size:0.84rem; font-weight:600; margin-bottom:0.2rem; color:var(--text); }
+  .placement-chip-desc { font-size:0.72rem; color:var(--text-muted); line-height:1.35; }
+  .placement-chip-badge {
+    position:absolute; top:-8px; left:50%; transform:translateX(-50%);
+    background:var(--accent-strong); color:#fff;
+    font-size:9px; font-weight:700; letter-spacing:0.05em;
+    padding:2px 8px; border-radius:9999px;
+    text-transform:uppercase; white-space:nowrap;
+  }
+  html.dark .placement-chip-badge { color:#0B0B1A; }
+
+  .criteria-card {
+    background:var(--surface-2); border-radius:var(--r-lg);
+    padding:1rem; margin:1rem 0 1.25rem;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:0.75rem;
+  }
+  .criteria-item {
+    display:flex; flex-direction:column; align-items:center; gap:0.4rem;
+    text-align:center;
+  }
+  .criteria-check {
+    width:30px; height:30px; border-radius:50%;
+    background:var(--track); color:var(--text-muted);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; font-weight:700;
+    transition:all 400ms ease-out;
+  }
+  .criteria-item.ok .criteria-check {
+    background:var(--green); color:#fff;
+    box-shadow:0 0 0 4px var(--green-soft);
+  }
+  html.dark .criteria-item.ok .criteria-check { color:#0B0B1A; }
+  .criteria-label { font-size:0.72rem; color:var(--text-secondary); font-weight:500; }
+  .criteria-item.ok .criteria-label { color:var(--text); font-weight:600; }
+
+  @media (max-width:640px) {
+    .placement-chips { grid-template-columns:1fr; gap:0.6rem; }
+    .criteria-card { grid-template-columns:1fr; gap:0.5rem; padding:0.875rem; }
+    .criteria-item { flex-direction:row; justify-content:flex-start; text-align:left; gap:0.7rem; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
      HEADER SUMMARY (screen 3)
   ══════════════════════════════════════════════════════════════ */
   .header-summary {
@@ -1861,27 +1940,46 @@
             </div>
           </div>
 
-          <!-- All placement cards -->
-          <div class="placement-cards" id="placement-cards" style="display:none">
-            <div class="placement-card selected" data-placement="livret" onclick="selectPlacement('livret')" role="button" aria-label="Livret disponible">
-              <div class="placement-card-info">
-                <div class="placement-card-title">Livret disponible</div>
-                <div class="placement-card-desc">Accessible. Séparé du quotidien. Adapté à l'épargne de précaution.</div>
-              </div>
-              <span class="placement-card-badge">recommandé</span>
+          <!-- Critères 3-checks (Disponible · Séparé · Sans risque) -->
+          <div class="criteria-card" id="criteria-card">
+            <div class="criteria-item ok" data-crit="dispo">
+              <div class="criteria-check" aria-hidden="true">✓</div>
+              <div class="criteria-label">Disponible</div>
             </div>
-            <div class="placement-card" data-placement="compte_separe" onclick="selectPlacement('compte_separe')" role="button" aria-label="Compte séparé">
-              <div class="placement-card-info">
-                <div class="placement-card-title">Compte séparé</div>
-                <div class="placement-card-desc">Utile si tu veux éviter d'y toucher.</div>
-              </div>
+            <div class="criteria-item ok" data-crit="separe">
+              <div class="criteria-check" aria-hidden="true">✓</div>
+              <div class="criteria-label">Séparé du quotidien</div>
             </div>
-            <div class="placement-card" data-placement="compte_courant" onclick="selectPlacement('compte_courant')" role="button" aria-label="Compte courant temporaire">
-              <div class="placement-card-info">
-                <div class="placement-card-title">Compte courant temporaire</div>
-                <div class="placement-card-desc">Possible au début. Moins idéal si tu dépenses vite.</div>
-              </div>
+            <div class="criteria-item ok" data-crit="risque">
+              <div class="criteria-check" aria-hidden="true">✓</div>
+              <div class="criteria-label">Sans prise de risque</div>
             </div>
+          </div>
+
+          <!-- Chips de placement (livret / compte séparé / compte courant) -->
+          <div class="placement-chips" id="placement-cards" style="display:none">
+            <button type="button" class="placement-chip selected" data-placement="livret" onclick="selectPlacement('livret')" aria-label="Livret disponible">
+              <span class="placement-chip-badge">recommandé</span>
+              <div class="placement-chip-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+              </div>
+              <div class="placement-chip-name">Livret</div>
+              <div class="placement-chip-desc">Accessible. Séparé. Adapté.</div>
+            </button>
+            <button type="button" class="placement-chip" data-placement="compte_separe" onclick="selectPlacement('compte_separe')" aria-label="Compte séparé">
+              <div class="placement-chip-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+              </div>
+              <div class="placement-chip-name">Compte séparé</div>
+              <div class="placement-chip-desc">Si tu veux éviter d’y toucher.</div>
+            </button>
+            <button type="button" class="placement-chip" data-placement="compte_courant" onclick="selectPlacement('compte_courant')" aria-label="Compte courant temporaire">
+              <div class="placement-chip-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </div>
+              <div class="placement-chip-name">Compte courant</div>
+              <div class="placement-chip-desc">Possible au début, moins idéal.</div>
+            </button>
           </div>
 
           <div class="nav-btns" id="nav-btns-s4">
@@ -2079,6 +2177,33 @@ function calculateMatelasSecurity(d) {
   var palierSecuriteSolide = chargesBase > 0
     ? Math.round(chargesBase * coefMax / 100) * 100
     : Math.round(palierPremierCoussin * 6 / 100) * 100;
+
+  // Fix #5 : paliers adaptatifs à la capacité d'épargne réelle.
+  // Si l'user épargne déjà assez pour atteindre palierSecuriteUtile en <6 mois,
+  // on remonte le palier intermediaire vers 6×charges (cap HCSF max), et on réaligne
+  // palierSecuriteSolide pour rester cohérent (évolution monotone P1 < P2 ≤ P3).
+  // Ne s'applique que si chargesBase > 0 (sinon on garderait le fallback proportionnel).
+  var epargneMensuelleEst = Math.max(0, d.epargne_mensuelle || 0);
+  if (chargesBase > 0 && epargneMensuelleEst > 0 && palierSecuriteUtile > 0) {
+    var resteUtile = Math.max(0, palierSecuriteUtile - epargneDisponible);
+    var moisVersUtile = resteUtile > 0 ? Math.ceil(resteUtile / epargneMensuelleEst) : 0;
+    if (moisVersUtile > 0 && moisVersUtile < 6) {
+      // On peut viser plus ambitieux : porter le palier intermédiaire à 6 mois de charges (cap HCSF).
+      var palierUtileAdapte = Math.round(chargesBase * 6 / 50) * 50;
+      if (palierUtileAdapte > palierSecuriteUtile) {
+        palierSecuriteUtile = palierUtileAdapte;
+        // Réaligner solide : au moins +1 mois au-dessus, jamais en-dessous de l'utile.
+        var palierSolideAdapte = Math.round(chargesBase * 7 / 100) * 100;
+        if (palierSolideAdapte > palierSecuriteSolide) {
+          palierSecuriteSolide = palierSolideAdapte;
+        }
+        // Garantir monotonie stricte.
+        if (palierSecuriteSolide < palierSecuriteUtile + 100) {
+          palierSecuriteSolide = palierSecuriteUtile + 100;
+        }
+      }
+    }
+  }
 
   // Cible recommandée
   var cibleRecommandee;
@@ -3015,6 +3140,18 @@ function drawProjectionChart(activeKey) {
   var innerW = W - PAD_L - PAD_R;
   var innerH = H - PAD_T - PAD_B;
   var yMaxCap = objectifTotal * 1.15;
+
+  // Axe X adaptatif : horizon = durée du rythme le plus lent × 1.05, cap 36 mois, plancher 6 mois.
+  // Recalculé à chaque draw selon les rythmes actuels pour que l'objectif soit toujours
+  // atteint avant ~95% de la largeur du graph (et pas à 5% comme avec un MAX fixe à 60 mois).
+  var slowestRate = standards.reduce(function(acc, s){
+    return Math.min(acc, s.amount);
+  }, Infinity);
+  var horizonNeeded = (slowestRate > 0 && slowestRate !== Infinity)
+    ? Math.ceil(cible / slowestRate)
+    : 36;
+  var MAX_MONTHS_VIEW = Math.max(6, Math.min(36, Math.ceil(horizonNeeded * 1.05)));
+
   var x = function(m){ return PAD_L + (m / MAX_MONTHS_VIEW) * innerW; };
   var y = function(v){ return PAD_T + innerH - (Math.min(v, yMaxCap) / yMaxCap) * innerH; };
 
@@ -3098,8 +3235,14 @@ function drawProjectionChart(activeKey) {
     s += '<text class="intersect-sublabel" x="' + (reachX + labelOffsetX).toFixed(1) + '" y="' + (reachY - 22).toFixed(1) + '" text-anchor="' + labelAnchor + '">' + monthsTo + ' mois</text>';
   }
 
-  // X-axis labels (tous les 12 mois)
-  for (var m = 0; m <= MAX_MONTHS_VIEW; m += 12){
+  // X-axis labels : densité adaptative selon l'horizon (≤6m → tous les mois,
+  // ≤12m → tous les 2 mois, ≤24m → tous les 6 mois, sinon tous les 12 mois)
+  var labelStep;
+  if (MAX_MONTHS_VIEW <= 6) labelStep = 1;
+  else if (MAX_MONTHS_VIEW <= 12) labelStep = 2;
+  else if (MAX_MONTHS_VIEW <= 24) labelStep = 6;
+  else labelStep = 12;
+  for (var m = 0; m <= MAX_MONTHS_VIEW; m += labelStep){
     var px = x(m);
     var dx = new Date();
     dx.setMonth(dx.getMonth() + m);
@@ -3136,8 +3279,9 @@ function drawProjectionChart(activeKey) {
   }
 }
 
-// Plage X du graph (en mois)
-var MAX_MONTHS_VIEW = 60;
+// Plage X du graph (en mois) — valeur de fallback ; le calcul réel se fait dans drawProjectionChart
+// (adaptatif selon les rythmes actuels). Conservée ici pour compaté.
+var MAX_MONTHS_VIEW = 36;
 
 
 
@@ -3154,7 +3298,7 @@ function buildScreen4() {
     if (cardsEl) cardsEl.style.display = 'none';
   } else {
     if (detectedEl) detectedEl.style.display = 'none';
-    if (cardsEl) cardsEl.style.display = 'flex';
+    if (cardsEl) cardsEl.style.display = 'grid';
     updatePlacementCards();
   }
 }
@@ -3163,7 +3307,7 @@ function showAllPlacements() {
   var detectedEl = document.getElementById('placement-detected');
   var cardsEl = document.getElementById('placement-cards');
   if (detectedEl) detectedEl.style.display = 'none';
-  if (cardsEl) cardsEl.style.display = 'flex';
+  if (cardsEl) cardsEl.style.display = 'grid';
   updatePlacementCards();
 }
 
@@ -3173,7 +3317,8 @@ function selectPlacement(key) {
 }
 
 function updatePlacementCards() {
-  document.querySelectorAll('.placement-card').forEach(function(c) {
+  // Couvre l'ancienne API (.placement-card) et la nouvelle (.placement-chip)
+  document.querySelectorAll('.placement-card, .placement-chip').forEach(function(c) {
     c.classList.toggle('selected', c.getAttribute('data-placement') === selectedPlacement);
   });
 }
