@@ -1059,84 +1059,95 @@
     color: rgba(26,26,46,0.9);
   }
 
-  /* Card budget manquant — premium */
+  /* Card budget manquant — style DA hero-cream */
   .budget-missing-card {
-    background: #1a1a2e;
-    border: 1px solid #2a2a4a;
-    border-radius: 14px;
-    padding: 24px;
+    background: var(--cream-grad);
+    border: 1px solid var(--cream-border);
+    border-radius: 1.375rem;
+    padding: 2.75rem 3rem 2.5rem;
     position: relative;
     overflow: hidden;
     margin-bottom: 20px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+  html.dark .budget-missing-card {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .bmc-watermark {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    width: 80px;
+    height: 80px;
+    opacity: 0.07;
+    pointer-events: none;
   }
   .bmc-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 16px;
-  }
-  .bmc-kicker-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #ef4444;
-    display: inline-block;
-    flex-shrink: 0;
-  }
-  .bmc-kicker-label {
-    font-family: Inter, sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    color: #94a3b8;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1.125rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
+  html.dark .bmc-kicker { color: #A5B4FC; }
   .bmc-title {
-    font-family: Fraunces, serif;
+    font-family: 'Fraunces', 'Instrument Serif', Georgia, serif;
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-weight: 400;
     font-style: italic;
-    font-size: 22px;
-    color: #f1f5f9;
-    margin-bottom: 8px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 0.875rem;
   }
   .bmc-sub {
-    font-family: Inter, sans-serif;
-    font-size: 13px;
-    color: #94a3b8;
-    line-height: 1.5;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    max-width: 480px;
+    line-height: 1.6;
+    margin-bottom: 2rem;
   }
   .bmc-actions {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-top: 18px;
+    gap: 1.25rem;
+    flex-wrap: wrap;
   }
   .bmc-btn-primary {
-    text-align: center;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #8b5cf6, #6366f1);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-family: Inter, sans-serif;
-    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.375rem;
+    border-radius: 9999px;
+    background: var(--accent);
+    color: var(--accent-pill-text);
+    font-size: 0.875rem;
     font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: filter 0.2s ease, transform 0.12s ease;
+  }
+  html.dark .bmc-btn-primary {
+    box-shadow: 0 8px 28px -10px rgba(99,102,241,0.55), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
+  .bmc-btn-primary:hover { filter: brightness(0.95); }
+  html.dark .bmc-btn-primary:hover { filter: brightness(1.08); }
+  .bmc-btn-primary:active { transform: scale(0.98); }
+  .bmc-manual {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-muted);
     text-decoration: none;
     cursor: pointer;
-    transition: filter 0.15s;
+    transition: color var(--t);
   }
-  .bmc-btn-primary:hover { filter: brightness(1.1); }
-  #bmc-dismiss:hover { color: #a78bfa; }
-  html.light .budget-missing-card,
-  [data-theme="light"] .budget-missing-card {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-  }
-  html.light .bmc-title,
-  [data-theme="light"] .bmc-title { color: #1e293b; }
-  html.light .bmc-sub,
-  [data-theme="light"] .bmc-sub { color: #64748b; }
-  html.light .bmc-manual,
-  [data-theme="light"] .bmc-manual { color: #7c3aed; }
+  .bmc-manual:hover { color: var(--text); }
 
   /* ── Projection chart (premium dark card) ── */
   .projection-wrap {
@@ -1265,18 +1276,15 @@
 
           <!-- Budget missing card (shown when no budget data) -->
           <div class="budget-missing-card" id="budget-missing-card" style="display:none;">
-            <!-- Watermark emoji -->
-            <span style="position:absolute;top:16px;right:18px;font-size:56px;opacity:0.06;pointer-events:none;line-height:1;user-select:none;filter:grayscale(0.3);">💰</span>
-            <!-- Kicker pill -->
-            <div class="bmc-kicker">
-              <span class="bmc-kicker-dot"></span>
-              <span class="bmc-kicker-label">ÉTAPE PRÉALABLE</span>
-            </div>
+            <!-- Watermark bouclier SVG -->
+            <svg class="bmc-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l7 4v6c0 4.4-3.1 8.1-7 9.9C8.1 20.1 5 16.4 5 12V6l7-4z" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            <!-- Kicker texte nu -->
+            <div class="bmc-kicker">• ÉTAPE PRÉALABLE</div>
             <div class="bmc-title">Un budget précis, des résultats fiables.</div>
             <div class="bmc-sub">Complète la brique Budget pour que tes charges vitales soient calculées automatiquement — ou saisis un montant manuellement.</div>
             <div class="bmc-actions">
               <a href="brique-budget-base.html" class="bmc-btn-primary">Commencer le Budget →</a>
-              <span id="bmc-dismiss" class="bmc-manual" style="font-size:13px;color:#6b7280;text-decoration:underline;cursor:pointer;">Saisir manuellement</span>
+              <span id="bmc-dismiss" class="bmc-manual">Saisir manuellement</span>
             </div>
           </div>
 
