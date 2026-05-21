@@ -454,6 +454,60 @@
   .data-card.full-width { grid-column:1 / -1; }
 
   /* ══════════════════════════════════════════════════════════════
+     PROFILE PILLS (screen 1 — option B)
+  ══════════════════════════════════════════════════════════════ */
+  .profile-pills-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .profile-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #f1f5f9;
+    flex: 1;
+    min-width: 0;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: default;
+  }
+  .profile-pill:hover { border-color: #8b5cf6; }
+  .pill-teal { border-left: 3px solid #14b8a6; }
+  .pill-teal .pill-icon { color: #14b8a6; width: 18px; height: 18px; flex-shrink: 0; }
+  .pill-violet { border-left: 3px solid #8b5cf6; }
+  .pill-violet .pill-icon { color: #8b5cf6; width: 18px; height: 18px; flex-shrink: 0; }
+  .pill-content { display: flex; flex-direction: column; flex: 1; min-width: 0; gap: 2px; }
+  .pill-value {
+    font-family: Inter, sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .pill-label { font-family: Inter, sans-serif; font-size: 11px; color: #64748b; }
+  .pill-badge {
+    font-family: Inter, sans-serif;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 7px; border-radius: 4px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-repris  { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+  .badge-completer { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+  .badge-profil  { background: #ede9fe; color: #7c3aed; border: 1px solid #c4b5fd; }
+
+  /* ── Dark mode pills ── */
+  html.dark .profile-pill { background: #1a1a2e; border-color: #2a2a4a; }
+  html.dark .profile-pill:hover { border-color: #8b5cf6; }
+  html.dark .pill-value { color: #f1f5f9; }
+  html.dark .pill-label { color: #6b7280; }
+  html.dark .badge-repris  { background: #052e16; color: #34d399; border-color: #065f46; }
+  html.dark .badge-completer { background: #1c1917; color: #f59e0b; border-color: #92400e; }
+  html.dark .badge-profil  { background: #1e1b4b; color: #a78bfa; border-color: #3730a3; }
+
+  /* ══════════════════════════════════════════════════════════════
      JAUGE (progress gauge)
   ══════════════════════════════════════════════════════════════ */
   .jauge-wrap { margin:1.5rem 0; }
@@ -863,6 +917,7 @@
   @media(max-width:640px) {
     .brick-card { padding:1.5rem 1.25rem; }
     .data-cards-grid { grid-template-columns:1fr; }
+    .profile-pills-row { flex-direction:column; }
     .palier-result-card { padding:1.5rem; }
     .nav-btns { flex-wrap:wrap; }
     .nav-btns .btn-hero-primary { width:100%; justify-content:center; order:-1; }
@@ -1044,12 +1099,14 @@
   .bmc-btn-primary:hover { filter: brightness(1.1); }
   #bmc-dismiss:hover { color: #a78bfa; }
   html:not(.dark) .budget-missing-card {
-    background: linear-gradient(135deg, #1e1b4b 0%, #2e1065 100%);
-    border-color: #4c1d95;
+    background: linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%);
+    border-color: #c4b5fd;
   }
-  html:not(.dark) .bmc-title { color: #f1f5f9; }
-  html:not(.dark) .bmc-sub { color: #94a3b8; }
-  html:not(.dark) #bmc-dismiss { color: #7c3aed; }
+  html:not(.dark) .bmc-title { color: #3b0764; }
+  html:not(.dark) .bmc-sub { color: #6d28d9; }
+  html:not(.dark) .bmc-manual { color: #7c3aed; }
+  html:not(.dark) .bmc-kicker { background: #ede9fe; border-color: #c4b5fd; }
+  html:not(.dark) .bmc-kicker-label { color: #7c3aed; }
 
   /* ── Projection chart (premium dark card) ── */
   .projection-wrap {
@@ -1178,13 +1235,8 @@
 
           <!-- Budget missing card (shown when no budget data) -->
           <div class="budget-missing-card" id="budget-missing-card" style="display:none;">
-            <!-- Watermark coin SVG -->
-            <svg width="72" height="72" viewBox="0 0 24 24" fill="none" style="position:absolute;top:12px;right:14px;opacity:0.07;" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="#8b5cf6" stroke-width="1.5"/>
-              <path d="M12 6v1m0 10v1M9 8.5C9 7.67 10.34 7 12 7s3 .67 3 1.5-1.34 1.5-3 1.5S9 10.33 9 9.5M9 14.5c0 .83 1.34 1.5 3 1.5s3-.67 3-1.5-1.34-1.5-3-1.5-3 .67-3 1.5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M9 9.5v5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
-              <path d="M15 9.5v5" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
+            <!-- Watermark emoji -->
+            <span style="position:absolute;top:10px;right:14px;font-size:64px;opacity:0.07;pointer-events:none;line-height:1;user-select:none;">💰</span>
             <!-- Kicker pill -->
             <div class="bmc-kicker">
               <span class="bmc-kicker-dot"></span>
@@ -1194,7 +1246,7 @@
             <div class="bmc-sub">Complète la brique Budget pour que tes charges vitales soient calculées automatiquement — ou saisis un montant manuellement.</div>
             <div class="bmc-actions">
               <a href="brique-budget-base.html" class="bmc-btn-primary">Commencer le Budget →</a>
-              <span id="bmc-dismiss" style="font-size:13px;color:#7c3aed;text-decoration:underline;cursor:pointer;margin-left:12px;">Saisir manuellement</span>
+              <span id="bmc-dismiss" class="bmc-manual" style="font-size:13px;color:#7c3aed;text-decoration:underline;cursor:pointer;margin-left:12px;">Saisir manuellement</span>
             </div>
           </div>
 
@@ -1805,15 +1857,39 @@ function buildScreen1() {
   if (!grid) return;
   grid.innerHTML = '';
 
-  // Épargne disponible card
+  // Épargne disponible
   var epargne = mData.epargne_liquide_total || 0;
-  var epargneSource = epargne > 0 ? 'repris du profil' : 'À compléter';
-  grid.innerHTML += buildDataCard(formatEuro(epargne), 'Épargne disponible', epargneSource);
 
-  // Revenus card
+  // Revenus
   var totalRevenus = (mData.revenus || 0) + (mData.aides || 0);
   var revenusLabel = totalRevenus > 0 ? formatEuro(totalRevenus) + '/mois' : 'Non renseigné';
-  grid.innerHTML += buildDataCard(revenusLabel, 'Revenus', 'profil');
+
+  // Profile pills (option B)
+  grid.innerHTML = '<div class="profile-pills-row">' +
+    '<div class="profile-pill pill-teal">' +
+      '<svg class="pill-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/>' +
+        '<path d="M12 7v1m0 8v1M9.5 10c0-.83.9-1.5 2.5-1.5s2.5.67 2.5 1.5-.9 1.5-2.5 1.5S9.5 10.83 9.5 10M9.5 14c0 .83.9 1.5 2.5 1.5s2.5-.67 2.5-1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>' +
+      '</svg>' +
+      '<div class="pill-content">' +
+        '<span class="pill-value">' + formatEuro(epargne) + '</span>' +
+        '<span class="pill-label">Épargne disponible</span>' +
+      '</div>' +
+      '<span class="pill-badge ' + (epargne > 0 ? 'badge-repris' : 'badge-completer') + '">' + (epargne > 0 ? 'repris' : 'À compléter') + '</span>' +
+    '</div>' +
+    '<div class="profile-pill pill-violet">' +
+      '<svg class="pill-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<rect x="3" y="12" width="4" height="9" rx="1" stroke="currentColor" stroke-width="1.5"/>' +
+        '<rect x="10" y="8" width="4" height="13" rx="1" stroke="currentColor" stroke-width="1.5"/>' +
+        '<rect x="17" y="4" width="4" height="17" rx="1" stroke="currentColor" stroke-width="1.5"/>' +
+      '</svg>' +
+      '<div class="pill-content">' +
+        '<span class="pill-value">' + revenusLabel + '</span>' +
+        '<span class="pill-label">Revenus</span>' +
+      '</div>' +
+      '<span class="pill-badge badge-profil">profil</span>' +
+    '</div>' +
+  '</div>';
 
   // Prefill inputs
   var inputEpargne = document.getElementById('input-epargne');
