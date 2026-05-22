@@ -2982,9 +2982,8 @@ html.dark .s4-result-card--mensuel {
                 </div>
               </div>
             </div>
-            <div style="text-align:center;margin-top:0.5rem;">
-              <span class="pill-sm" data-val="ne_sait_pas" onclick="selectProjectCard(this)" style="font-size:0.78rem;color:var(--text-faint);">Je ne sais pas encore</span>
-            </div>
+            <!-- (Commit 3) Bouton «Je ne sais pas encore» supprimé — le parcours exige une sélection.
+                 selectProjectCard() conserve ses gardes défensives sur 'ne_sait_pas' (idempotent). -->
 
             <!-- Mode kicker pill — replaces the old grey mode-card -->
             <div class="mode-card" id="mode-card" style="display:none">
@@ -2995,6 +2994,31 @@ html.dark .s4-result-card--mensuel {
             <!-- BLOC B — questions compactes (visible après sélection) -->
             <div id="bloc-b" style="display:none;">
               <div style="display:flex;flex-direction:column;gap:0.875rem;margin-top:1.25rem;">
+
+                <!-- (Commit 3) Reorder option B : Profil AVANT Horizon — statut/primo conditionnent le calcul -->
+                <!-- Section Votre profil -->
+                <div class="profil-section">
+                  <span class="profil-section-label">Votre profil</span>
+                  <div class="profil-section-fields">
+                    <div class="compact-question">
+                      <span class="compact-label">Statut</span>
+                      <div class="pills-compact" id="pills-status">
+                        <span class="pill-sm" data-val="seul">Seul</span>
+                        <span class="pill-sm" data-val="couple">Couple</span>
+                        <span class="pill-sm" data-val="co_emprunteur">Co-empr.</span>
+                        <span class="pill-sm" data-val="sci">SCI</span>
+                      </div>
+                    </div>
+                    <div class="compact-question">
+                      <span class="compact-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Primo-accédant')" tabindex="0">Primo-accédant</button></span>
+                      <div class="pills-compact" id="pills-primo">
+                        <span class="pill-sm" data-val="oui">Oui</span>
+                        <span class="pill-sm" data-val="non">Non</span>
+                        <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <!-- Horizon slider timeline -->
                 <div class="compact-question">
@@ -3017,30 +3041,6 @@ html.dark .s4-result-card--mensuel {
                       <span>6–12 mois</span>
                       <span>> 1 an</span>
                       <span style="color:var(--text-faint);">Curiosité</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Section Votre profil -->
-                <div class="profil-section">
-                  <span class="profil-section-label">Votre profil</span>
-                  <div class="profil-section-fields">
-                    <div class="compact-question">
-                      <span class="compact-label">Statut</span>
-                      <div class="pills-compact" id="pills-status">
-                        <span class="pill-sm" data-val="seul">Seul</span>
-                        <span class="pill-sm" data-val="couple">Couple</span>
-                        <span class="pill-sm" data-val="co_emprunteur">Co-empr.</span>
-                        <span class="pill-sm" data-val="sci">SCI</span>
-                      </div>
-                    </div>
-                    <div class="compact-question">
-                      <span class="compact-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Primo-accédant')" tabindex="0">Primo-accédant</button></span>
-                      <div class="pills-compact" id="pills-primo">
-                        <span class="pill-sm" data-val="oui">Oui</span>
-                        <span class="pill-sm" data-val="non">Non</span>
-                        <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -3207,8 +3207,13 @@ html.dark .s4-result-card--mensuel {
                 </div>
               </div>
 
-              <!-- 2E: Note pédagogique -->
-              <div class="z2-note">Ce montant est calculé sans apport. L'écran suivant te permettra d'ajouter ton apport et d'obtenir ton budget total. Les banques demandent généralement ~10% minimum.</div>
+              <!-- 2E: Note pédagogique (Commit 3 — bandeau intégré au lieu d'italique flottant) -->
+              <div class="cb-banner cb-banner--neutral" role="note" style="margin-top:0.875rem;margin-bottom:0;">
+                <span class="cb-banner-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </span>
+                <div class="cb-banner-text"><strong>Montant calculé sans apport.</strong> L'écran suivant ajoute ton apport pour obtenir ton budget total — les banques demandent ~10% minimum.</div>
+              </div>
             </div>
             </div><!-- /z2-dashboard-card -->
 
@@ -3223,7 +3228,7 @@ html.dark .s4-result-card--mensuel {
               <div class="hypotheses-pill" id="hypotheses-pill">
                 <span class="pill-star">✦</span>
                 <span id="hypotheses-summary">25 ans · 3,0% fixe · assurance 22 €/mois</span>
-                <button class="modifier-btn" onclick="toggleHypothesesPopup()">Modifier ›</button>
+                <button class="modifier-btn" onclick="toggleHypothesesPopup()">Ajuster durée &amp; taux ›</button>
               </div>
               <div class="hypotheses-popup" id="hypotheses-popup">
                 <div class="hypotheses-popup-title">Modifier les hypothèses</div>
