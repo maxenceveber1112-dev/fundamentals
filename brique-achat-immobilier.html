@@ -509,6 +509,85 @@ html.dark .sb2-node.done .sb2-node-bullet { color:#0B0B1A; }
 }
 
 /* ══════════════════════════════════════════════════════════════
+   COMMIT 2 — Bandeaux cross-brique (S0 statut épargne, S2 import)
+══════════════════════════════════════════════════════════════ */
+
+/* Bandeau base : commun S0 et S2 */
+.cb-banner {
+  display:flex; align-items:center; gap:0.875rem;
+  padding:0.875rem 1.125rem;
+  border-radius:0.75rem;
+  font-size:0.8125rem; line-height:1.45;
+  color:var(--v3-text);
+  margin-bottom:1rem;
+  transition:background 0.3s ease, border-color 0.3s ease, opacity 0.25s ease, transform 0.25s ease;
+  position:relative;
+}
+.cb-banner[hidden] { display:none !important; }
+.cb-banner-icon {
+  width:32px; height:32px;
+  border-radius:0.5rem;
+  display:grid; place-items:center;
+  flex-shrink:0;
+  color:#fff;
+}
+.cb-banner-icon svg { width:16px; height:16px; }
+.cb-banner-text { flex:1; min-width:0; }
+.cb-banner-text strong { font-weight:600; }
+.cb-banner-cta {
+  display:inline-flex; align-items:center; gap:0.25rem;
+  color:inherit;
+  text-decoration:none;
+  border-bottom:1px dotted currentColor;
+  font-weight:500;
+  margin-left:0.25rem;
+  transition:opacity 0.15s ease;
+}
+.cb-banner-cta:hover { opacity:0.75; }
+.cb-banner-close {
+  background:none; border:none; cursor:pointer;
+  width:28px; height:28px;
+  border-radius:0.375rem;
+  display:grid; place-items:center;
+  color:var(--v3-text-faint);
+  flex-shrink:0;
+  transition:background 0.15s ease, color 0.15s ease;
+}
+.cb-banner-close:hover { background:var(--surface-2); color:var(--v3-text); }
+.cb-banner-close svg { width:14px; height:14px; }
+
+/* Variante neutre (import S2) */
+.cb-banner--neutral {
+  background:color-mix(in srgb, var(--v3-accent-strong) 7%, transparent);
+  border:1px solid color-mix(in srgb, var(--v3-accent-strong) 22%, transparent);
+}
+.cb-banner--neutral .cb-banner-icon { background:var(--v3-accent-strong); }
+.cb-banner--neutral .cb-banner-text strong { color:var(--v3-accent-strong); }
+html.dark .cb-banner--neutral { background:color-mix(in srgb, #A78BFA 14%, transparent); border-color:color-mix(in srgb, #A78BFA 28%, transparent); }
+html.dark .cb-banner--neutral .cb-banner-icon { background:#A78BFA; }
+html.dark .cb-banner--neutral .cb-banner-text strong { color:#A78BFA; }
+
+/* Variante warning (S0 épargne incomplète) */
+.cb-banner--warning {
+  background:rgba(245,158,11,0.08);
+  border:1px solid rgba(245,158,11,0.28);
+}
+.cb-banner--warning .cb-banner-icon { background:#f59e0b; }
+.cb-banner--warning .cb-banner-text strong { color:#b45309; }
+html.dark .cb-banner--warning { background:rgba(251,191,36,0.10); border-color:rgba(251,191,36,0.32); }
+html.dark .cb-banner--warning .cb-banner-text strong { color:#fcd34d; }
+
+/* Variante success (S0 épargne OK) */
+.cb-banner--success {
+  background:rgba(34,197,94,0.07);
+  border:1px solid rgba(34,197,94,0.24);
+}
+.cb-banner--success .cb-banner-icon { background:#16a34a; }
+.cb-banner--success .cb-banner-text strong { color:#15803d; }
+html.dark .cb-banner--success { background:rgba(74,222,128,0.10); border-color:rgba(74,222,128,0.28); }
+html.dark .cb-banner--success .cb-banner-text strong { color:#86efac; }
+
+/* ══════════════════════════════════════════════════════════════
    PROGRESS BAR TOP (dots + barre)
 ══════════════════════════════════════════════════════════════ */
 .brick-progress-bar {
@@ -2799,6 +2878,11 @@ html.dark .s4-result-card--mensuel {
 
         <!-- ═══ SCREEN 0 — Introduction ═══ -->
         <div class="screen active" id="screen-0">
+          <!-- Bandeau statut épargne de précaution (rempli dynamiquement) -->
+          <div class="cb-banner" id="cb-banner-epargne" hidden role="status" aria-live="polite">
+            <div class="cb-banner-icon" id="cb-banner-epargne-icon"></div>
+            <div class="cb-banner-text" id="cb-banner-epargne-text"></div>
+          </div>
           <div class="hero-cream">
             <div class="hero-kicker">
               <span class="dot-cat"></span>
@@ -2995,6 +3079,19 @@ html.dark .s4-result-card--mensuel {
             <div class="brick-kicker">ÉTAPE 2 / 7 · CAPACITÉ MENSUELLE</div>
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
             <p class="brick-subtitle">Tes données budget, modifiables en un clic. Le diagnostic se recalcule en temps réel.</p>
+
+            <!-- Bandeau import cross-brique (hydratation budget) -->
+            <div class="cb-banner cb-banner--neutral" id="cb-banner-import" hidden role="status" aria-live="polite">
+              <div class="cb-banner-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="cb-banner-text">
+                Données importées de ta <strong>brique budget</strong>. Modifie-les ici sans impacter ton budget global.
+              </div>
+              <button class="cb-banner-close" id="cb-banner-import-close" aria-label="Fermer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
 
             <!-- Bannière rappel statut (visible si statut ≠ seul) -->
             <div class="statut-banner" id="statut-banner" style="display:none;">
@@ -4711,14 +4808,20 @@ function updateSynthesePanel() {
   var rowCap    = document.getElementById('row-capacite');
   var rowApport = document.getElementById('row-apport');
 
+  // Wording adaptatif selon écran courant (fix commit 2 : cohérence wording locked)
+  var currentIdx = (typeof S.currentScreen === 'number') ? S.currentScreen : 0;
+  function txtCap()    { return currentIdx >= 2 ? 'En attente de tes revenus' : '\u00e0 l\'\u00e9tape 2'; }
+  function txtApport() { return currentIdx >= 3 ? 'En attente de ton apport'   : '\u00e0 l\'\u00e9tape 3'; }
+  function txtSub()    { return currentIdx >= 2 ? 'Renseigne tes revenus pour voir ta capacit\u00e9' : 'Calcul \u00e0 partir de l\'\u00e9tape 2'; }
+
   // État verrouillé tant qu'on n'a pas la capacité (avant écran 2)
   if (!S.capitalEmpruntable || S.capitalEmpruntable <= 0) {
     synth.classList.add('locked');
     if (prixEl)   prixEl.textContent = '\u2014';
     if (unitEl)   unitEl.style.display = 'none';
-    if (subEl)    subEl.textContent = 'Calcul \u00e0 partir de l\'\u00e9tape 2';
-    if (capEl)    capEl.textContent = '\u00e0 l\'\u00e9tape 2';
-    if (apportEl) apportEl.textContent = '\u00e0 l\'\u00e9tape 3';
+    if (subEl)    subEl.textContent = txtSub();
+    if (capEl)    capEl.textContent = txtCap();
+    if (apportEl) apportEl.textContent = txtApport();
     if (rowCap)    rowCap.classList.add('pending');
     if (rowApport) rowApport.classList.add('pending');
     return;
@@ -4749,7 +4852,7 @@ function updateSynthesePanel() {
       capEl.textContent = fmt(Math.round(S.mensualiteCible)) + ' \u20ac/mois';
       if (rowCap) rowCap.classList.remove('pending');
     } else {
-      capEl.textContent = '\u00e0 l\'\u00e9tape 2';
+      capEl.textContent = txtCap();
       if (rowCap) rowCap.classList.add('pending');
     }
   }
@@ -6039,8 +6142,89 @@ function validerEtDashboard() {
       }
     }
     updateSynthesePanel();
+
+    // ─── COMMIT 2 — Bandeaux cross-brique ───
+    initBannerImport(bData);
+    initBannerEpargne(mData, bData);
   })();
 })();
+
+// ══════════════════════════════════════════════════════════════
+// COMMIT 2 — Bandeaux cross-brique
+// ══════════════════════════════════════════════════════════════
+function initBannerImport(bData) {
+  // Affiche bandeau S2 si au moins un champ a été hydraté depuis la brique budget
+  // ET si l'user ne l'a pas déjà fermé (localStorage flag)
+  var banner = document.getElementById('cb-banner-import');
+  if (!banner) return;
+  var dismissed = false;
+  try { dismissed = localStorage.getItem('immo_banner_import_dismissed') === '1'; } catch (e) {}
+  if (dismissed) return;
+
+  var hydrated = false;
+  if (bData) {
+    if (n(bData.revenus) > 0 || n(bData.revenus_nets) > 0) hydrated = true;
+    else if (n(bData.charges_fixes) > 0 || n(bData.chargesFixes) > 0) hydrated = true;
+    else if (n(bData.credits) > 0 || n(bData.dette_mensuelle) > 0) hydrated = true;
+  }
+  if (!hydrated) return;
+
+  banner.hidden = false;
+  var btn = document.getElementById('cb-banner-import-close');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      banner.hidden = true;
+      try { localStorage.setItem('immo_banner_import_dismissed', '1'); } catch (e) {}
+    });
+  }
+}
+
+function initBannerEpargne(mData, bData) {
+  // Bandeau S0 : 3 cas (aucune brique épargne / en cours / OK)
+  // Seuil de validation = palier UTILE (~2× charges vitales)
+  var banner = document.getElementById('cb-banner-epargne');
+  var iconEl = document.getElementById('cb-banner-epargne-icon');
+  var textEl = document.getElementById('cb-banner-epargne-text');
+  if (!banner || !iconEl || !textEl) return;
+
+  var hasFonds = !!(mData && (mData.fonds_urgence_actuel != null || mData.matelas_palier_utile != null || mData.epargneDisponible != null || mData.matelasActuel != null));
+  var actuel  = n(mData && (mData.fonds_urgence_actuel || mData.epargneDisponible || mData.matelasActuel));
+  var utile   = n(mData && (mData.matelas_palier_utile || mData.matelasTarget || mData.fonds_urgence_objectif));
+  var solide  = n(mData && mData.matelas_palier_solide);
+  var premier = n(mData && mData.matelas_palier_premier);
+  var charges = n(mData && (mData.charges_vitales_total || mData.chargesVitalesMensuelles));
+
+  // SVG icons
+  var ICON_WARN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+  var ICON_OK   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+
+  // Cas A : aucune brique épargne faite
+  if (!hasFonds || (actuel === 0 && utile === 0 && premier === 0)) {
+    banner.className = 'cb-banner cb-banner--warning';
+    iconEl.innerHTML = ICON_WARN;
+    textEl.innerHTML = '<strong>Avant d\'acheter, sécurise ton fonds d\'urgence.</strong> Tu n\'as pas encore fait ta brique épargne de précaution — c\'est un prérequis recommandé. <a class="cb-banner-cta" href="brique-fonds-urgence.html">Faire ma brique épargne</a>';
+    banner.hidden = false;
+    return;
+  }
+
+  // Cas C : épargne au palier UTILE ✅
+  if (utile > 0 && actuel >= utile) {
+    banner.className = 'cb-banner cb-banner--success';
+    iconEl.innerHTML = ICON_OK;
+    textEl.innerHTML = '<strong>Fonds d\'urgence atteint — ' + fmt(actuel) + ' / ' + fmt(utile) + '.</strong> Tu peux envisager un achat sereinement.';
+    banner.hidden = false;
+    return;
+  }
+
+  // Cas B : épargne en cours (entre 0 et palier utile)
+  banner.className = 'cb-banner cb-banner--warning';
+  iconEl.innerHTML = ICON_WARN;
+  var resteText = (utile > 0)
+    ? 'Tu as ' + fmt(actuel) + ' sur ' + fmt(utile) + ' visés. On te conseille d\'atteindre ce palier avant d\'acheter.'
+    : 'Tu as ' + fmt(actuel) + ' d\'épargne mais le palier utile n\'est pas encore défini.';
+  textEl.innerHTML = '<strong>Fonds d\'urgence incomplet.</strong> ' + resteText + ' <a class="cb-banner-cta" href="brique-fonds-urgence.html">Voir ma brique épargne</a>';
+  banner.hidden = false;
+}
 
 function attachLiveListeners() {
   // Screen 2 inputs — both input AND change for live recalculation
