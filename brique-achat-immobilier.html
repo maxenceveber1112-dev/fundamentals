@@ -285,6 +285,230 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
 .bpc-nav-link svg { opacity:0.5; flex-shrink:0; }
 
 /* ══════════════════════════════════════════════════════════════
+   SIDEBAR V2 — Arbre décision + Mini-dashboard live (Commit 1)
+   Pilotée par updateProgressPanel() + updateSynthesePanel()
+══════════════════════════════════════════════════════════════ */
+.brique-sidebar-v2 {
+  position:sticky; top:1.5rem;
+  background:var(--v3-bg-elevated);
+  border:1px solid var(--v3-border-subtle);
+  border-radius:1.5rem;
+  padding:1.5rem;
+  box-shadow:var(--v3-shadow-card);
+  display:flex; flex-direction:column; gap:1.25rem;
+  max-height:calc(100vh - 3rem);
+  overflow-y:auto;
+}
+html.dark .brique-sidebar-v2 { backdrop-filter:blur(12px); }
+
+/* Header kicker + ring compact */
+.sb2-header {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:1rem;
+}
+.sb2-kicker-block { flex:1; min-width:0; }
+.sb2-kicker {
+  font-size:0.625rem; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--v3-text-muted); font-weight:600;
+  margin-bottom:0.375rem;
+}
+.sb2-title {
+  font-family:var(--font-display);
+  font-size:1rem; font-weight:500;
+  line-height:1.2; letter-spacing:-0.01em;
+  color:var(--v3-text);
+}
+.sb2-ring { width:56px; height:56px; flex-shrink:0; }
+.sb2-ring-bg { fill:none; stroke:var(--v3-track); stroke-width:4; }
+.sb2-ring-fill {
+  fill:none; stroke:var(--v3-accent-strong); stroke-width:4;
+  stroke-linecap:round;
+  transform:rotate(-90deg); transform-origin:center;
+  transition:stroke-dashoffset 0.8s var(--ease-out);
+}
+.sb2-ring-pct {
+  font-family:'Inter',sans-serif;
+  font-size:13px; font-weight:700;
+  fill:var(--v3-text);
+  text-anchor:middle; dominant-baseline:central;
+}
+.sb2-divider { height:1px; background:var(--v3-border-subtle); margin:0; }
+
+/* Tree */
+.sb2-tree-label, .sb2-dashboard-label {
+  font-size:0.625rem; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--v3-text-faint); font-weight:600;
+  margin-bottom:0.75rem;
+}
+.sb2-tree { position:relative; display:flex; flex-direction:column; gap:0; }
+.sb2-node {
+  position:relative;
+  display:flex; align-items:center; gap:0.75rem;
+  padding:0.5rem 0;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+.sb2-node::before {
+  content:''; position:absolute;
+  left:11px; top:26px; bottom:-10px;
+  width:2px;
+  background:var(--v3-border-subtle);
+  transition:background 0.3s ease;
+  z-index:0;
+}
+.sb2-node:last-child::before { display:none; }
+.sb2-node.done::before { background:var(--v3-accent-strong); }
+.sb2-node.active::before {
+  background:linear-gradient(180deg, var(--v3-accent-strong) 0%, var(--v3-border-subtle) 100%);
+}
+.sb2-node-bullet {
+  position:relative; z-index:1;
+  width:24px; height:24px; border-radius:50%;
+  background:var(--v3-bg-elevated);
+  border:2px solid var(--v3-border-subtle);
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.6875rem; font-weight:700;
+  color:var(--v3-text-faint);
+  flex-shrink:0;
+  transition:all 0.3s var(--ease-out);
+}
+.sb2-node.done .sb2-node-bullet {
+  background:var(--v3-accent-strong);
+  border-color:var(--v3-accent-strong);
+  color:#fff;
+}
+.sb2-node.active .sb2-node-bullet {
+  background:var(--v3-bg-elevated);
+  border-color:var(--v3-accent-strong);
+  color:var(--v3-accent-strong);
+  box-shadow:0 0 0 4px var(--v3-accent-soft);
+}
+html.dark .sb2-node.done .sb2-node-bullet { color:#0B0B1A; }
+.sb2-node-content { flex:1; min-width:0; }
+.sb2-node-label {
+  font-size:0.8125rem; font-weight:500;
+  color:var(--v3-text-muted);
+  line-height:1.25;
+  transition:color 0.2s ease;
+}
+.sb2-node.done .sb2-node-label { color:var(--v3-text); }
+.sb2-node.active .sb2-node-label { color:var(--v3-text); font-weight:600; }
+.sb2-node-sub {
+  font-size:0.6875rem;
+  color:var(--v3-text-faint);
+  margin-top:0.125rem;
+}
+.sb2-node.active .sb2-node-sub { color:var(--v3-accent-strong); }
+.sb2-node-check { font-size:0.75rem; line-height:1; }
+
+/* Synthèse unique */
+.sb2-synth {
+  background:linear-gradient(180deg, var(--v3-accent-soft) 0%, var(--surface-2) 100%);
+  border:1px solid var(--v3-border-subtle);
+  border-radius:1rem;
+  padding:1rem 1.125rem 1.125rem;
+  position:relative;
+  overflow:hidden;
+  transition:all 0.3s var(--ease-out);
+}
+.sb2-synth.locked {
+  background:var(--surface-2);
+  opacity:0.7;
+}
+.sb2-synth.locked .sb2-synth-hero { color:var(--v3-text-faint); }
+.sb2-synth::after {
+  content:''; position:absolute;
+  top:0.625rem; right:0.75rem;
+  width:6px; height:6px; border-radius:50%;
+  background:var(--v3-accent-strong);
+  box-shadow:0 0 0 0 rgba(139,92,246,0.6);
+  animation:sb2-pulse 2s ease-in-out infinite;
+}
+.sb2-synth.locked::after { display:none; }
+@keyframes sb2-pulse {
+  0%,100% { box-shadow:0 0 0 0 rgba(139,92,246,0.5); }
+  50%     { box-shadow:0 0 0 5px rgba(139,92,246,0); }
+}
+.sb2-synth-head {
+  display:flex; align-items:center; gap:0.4375rem;
+  margin-bottom:0.5rem;
+}
+.sb2-synth-icon {
+  width:16px; height:16px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--v3-accent-strong);
+}
+.sb2-synth.locked .sb2-synth-icon { color:var(--v3-text-faint); }
+.sb2-synth-label {
+  font-size:0.625rem;
+  color:var(--v3-text-muted); font-weight:600;
+  letter-spacing:0.08em; text-transform:uppercase;
+}
+.sb2-synth-hero {
+  font-family:var(--font-display);
+  font-size:1.875rem; font-weight:500;
+  color:var(--v3-text);
+  letter-spacing:-0.025em; line-height:1;
+  margin-bottom:0.25rem;
+}
+.sb2-synth-hero-unit {
+  font-size:1rem; color:var(--v3-text-muted);
+  font-weight:400; letter-spacing:-0.01em;
+  margin-left:0.125rem;
+}
+.sb2-synth-sub {
+  font-size:0.6875rem;
+  color:var(--v3-text-faint);
+  font-style:italic;
+  margin-bottom:0.875rem;
+}
+.sb2-synth-meta {
+  display:flex; flex-direction:column; gap:0.4375rem;
+  padding-top:0.75rem;
+  border-top:1px dashed var(--v3-border-subtle);
+}
+.sb2-synth-row {
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-size:0.75rem; gap:0.5rem;
+}
+.sb2-synth-row-label {
+  color:var(--v3-text-muted); font-weight:500;
+  display:flex; align-items:center; gap:0.375rem;
+}
+.sb2-synth-row-dot {
+  width:4px; height:4px; border-radius:50%;
+  background:var(--v3-accent-strong); flex-shrink:0;
+}
+.sb2-synth.locked .sb2-synth-row-dot { background:var(--v3-text-faint); }
+.sb2-synth-row-value {
+  font-family:var(--font-display); font-weight:500;
+  color:var(--v3-text);
+  font-size:0.8125rem;
+}
+.sb2-synth-row.pending .sb2-synth-row-value {
+  color:var(--v3-text-faint);
+  font-family:'Inter',sans-serif;
+  font-style:italic;
+  font-size:0.6875rem;
+  font-weight:400;
+}
+
+/* Footer */
+.sb2-footer { padding-top:0.25rem; }
+.sb2-back {
+  display:flex; align-items:center; gap:0.4375rem;
+  font-size:0.75rem; color:var(--v3-text-muted);
+  text-decoration:none;
+  transition:color 0.2s ease;
+}
+.sb2-back:hover { color:var(--v3-accent-strong); }
+
+/* Responsive : sidebar passe en bas en mobile */
+@media (max-width: 980px) {
+  .brique-sidebar-v2 { position:static; max-height:none; }
+}
+
+/* ══════════════════════════════════════════════════════════════
    PROGRESS BAR TOP (dots + barre)
 ══════════════════════════════════════════════════════════════ */
 .brick-progress-bar {
@@ -550,52 +774,39 @@ html.dark .brick-kicker { color:#A5B4FC; }
 .project-type-card:hover .ptc-illustration { transform:scale(1.08); }
 .project-type-card.selected .ptc-illustration { transform:scale(1.05); }
 .project-type-card .ptc-text { display:flex; flex-direction:column; gap:0.2rem; }
-.project-type-card .ptc-title { font-size:1rem; font-weight:700; color:#f5f5f4; transition:color 0.2s; letter-spacing:-0.01em; }
-.project-type-card .ptc-sub { font-size:0.78rem; color:rgba(255,255,255,0.5); line-height:1.4; }
-/* Selected title color per variant */
-.project-type-card[data-val="residence_principale"].selected .ptc-title { color:#c4b5fd; }
-.project-type-card[data-val="residence_secondaire"].selected .ptc-title { color:#5eead4; }
-.project-type-card[data-val="investissement_locatif"].selected .ptc-title { color:#fcd34d; }
-/* Selected sub color per variant */
-.project-type-card[data-val="residence_principale"].selected .ptc-sub { color:rgba(196,181,253,0.7); }
-.project-type-card[data-val="residence_secondaire"].selected .ptc-sub { color:rgba(94,234,212,0.65); }
-.project-type-card[data-val="investissement_locatif"].selected .ptc-sub { color:rgba(252,211,77,0.65); }
+.project-type-card .ptc-title { font-size:1rem; font-weight:700; color:var(--text); transition:color 0.2s; letter-spacing:-0.01em; }
+.project-type-card .ptc-sub { font-size:0.78rem; color:var(--text-muted); line-height:1.4; }
+/* Selected state — unifié sur l'accent violet (3 familles couleurs) */
+.project-type-card.selected .ptc-title { color:var(--accent-strong); }
+.project-type-card.selected .ptc-sub { color:var(--text-secondary); }
 /* Badge "Le plus courant" */
 .ptc-reco-badge {
   position:absolute; top:0.625rem; right:0.625rem;
   font-size:0.575rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
   padding:0.2rem 0.55rem; border-radius:9999px;
-  background:rgba(139,92,246,0.2); color:#c4b5fd; border:1px solid rgba(139,92,246,0.3);
+  background:var(--accent-soft); color:var(--accent-strong); border:1px solid var(--accent-soft);
 }
-/* Mode kicker pill */
+/* Mode kicker pill — toutes les variantes utilisent l'accent unifié */
 .mode-kicker-pill {
   display:inline-flex; align-items:center; gap:0.4rem;
   padding:0.5rem 1rem; border-radius:9999px;
   font-size:0.8rem; font-weight:500; line-height:1.4;
+  background:var(--accent-soft); border:1px solid var(--accent-soft); color:var(--accent-strong);
   transition:all 0.35s cubic-bezier(0.16,1,0.3,1);
   animation:popIn 0.3s ease both;
 }
-.mode-kicker-pill[data-mode="residence_principale"] {
-  background:rgba(139,92,246,0.12); border:1px solid rgba(139,92,246,0.25); color:#c4b5fd;
-}
-.mode-kicker-pill[data-mode="residence_secondaire"] {
-  background:rgba(20,184,166,0.12); border:1px solid rgba(20,184,166,0.25); color:#5eead4;
-}
-.mode-kicker-pill[data-mode="investissement_locatif"] {
-  background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.25); color:#fcd34d;
-}
 .mode-kicker-pill[data-mode="ne_sait_pas"] {
-  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.5);
+  background:var(--surface-2); border:1px solid var(--border-mid); color:var(--text-muted);
 }
 
 /* Profil section card */
 .profil-section {
-  background:#1a1a2e; border:1px solid #2a2a4a;
+  background:var(--bg-elevated); border:1px solid var(--border-mid);
   border-radius:1rem; padding:1rem 1.125rem; display:flex; flex-direction:column; gap:0.75rem;
 }
 .profil-section-label {
   font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em;
-  color:rgba(255,255,255,0.35);
+  color:var(--text-faint);
 }
 .profil-section-fields { display:flex; flex-direction:column; gap:0.75rem; }
 
@@ -1616,73 +1827,21 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
 }
 
 /* ══════════════════════════════════════════════════════════════
-   BRIGHT MODE FIX — Force dark premium inside brique
-   The brique is designed dark-only. When the dashboard toggles
-   light mode (html without .dark), we override all CSS vars
-   on .brique-layout so the brique stays dark and readable.
+   LIGHT MODE — La brique respecte désormais les tokens light
+   définis dans :root. Plus de force-dark override.
+   Quelques ajustements spécifiques au light mode ci-dessous.
 ══════════════════════════════════════════════════════════════ */
-html:not(.dark) .brique-layout {
-  --bg:              #0B0B1A;
-  --bg-elevated:     #161824;
-  --bg-glass:        rgba(255,255,255,0.04);
-  --cream-grad:      linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-  --cream-border:    rgba(255,255,255,0.08);
-  --border-subtle:   rgba(255,255,255,0.06);
-  --border-mid:      rgba(255,255,255,0.10);
-  --border-hover:    rgba(255,255,255,0.16);
-  --text:            #F5F5F4;
-  --text-secondary:  #D4D4D8;
-  --text-muted:      #A1A1AA;
-  --text-faint:      #71717A;
-  --accent:          linear-gradient(90deg, #8B5CF6 0%, #6366F1 60%, #3B82F6 100%);
-  --accent-strong:   #A78BFA;
-  --accent-fill:     linear-gradient(90deg, #A78BFA, #60A5FA);
-  --accent-soft:     rgba(167,139,250,0.14);
-  --accent-pill-text:#FFFFFF;
-  --track:           rgba(255,255,255,0.08);
-  --dot-invest:      #4ADE80;
-  --shadow-card:     0 1px 2px rgba(0,0,0,0.4), 0 4px 24px rgba(0,0,0,0.20);
-  --shadow-hover:    0 4px 28px rgba(0,0,0,0.45);
-  --green:           #4ade80;
-  --surface:         rgba(255,255,255,0.04);
-  --surface-2:       rgba(255,255,255,0.06);
-  --surface-3:       rgba(255,255,255,0.09);
-  --border:          rgba(255,255,255,0.06);
-  --indigo:          #818CF8;
-  --violet:          #A78BFA;
-  --indigo-dim:      rgba(99,102,241,0.14);
-  --indigo-glow:     rgba(99,102,241,0.22);
-  --v3-bg-elevated:  #161824;
-  --v3-border-subtle:rgba(255,255,255,.08);
-  --v3-text:         #F5F5F4;
-  --v3-text-secondary:#D4D4D8;
-  --v3-text-muted:   #A1A1AA;
-  --v3-text-faint:   #71717A;
-  --v3-accent-strong:#A78BFA;
-  --v3-accent-soft:  rgba(167,139,250,.14);
-  --v3-track:        rgba(255,255,255,.08);
-  --v3-dot-invest:   #4ADE80;
-  --v3-shadow-card:  0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
-  --green-soft:      rgba(74,222,128,.12);
-  --orange-soft:     rgba(251,191,36,.12);
-  --red-soft:        rgba(248,113,113,.12);
-
-  color: #F5F5F4;
-}
 html:not(.dark) .brique-layout .brick-card {
-  background:#161824;
-  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-card);
 }
 html:not(.dark) .brique-layout .brique-progress-card {
-  background:#161824;
-  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-card);
 }
 html:not(.dark) .f-content {
-  background: radial-gradient(1100px 600px at 70% -5%, #1E1B4B 0%, transparent 55%),
-              linear-gradient(180deg, #0B0B1A 0%, #050507 100%);
+  background: var(--bg);
 }
-/* Ensure pill-sm stays dark in light mode inside brique */
-html:not(.dark) .brique-layout .pill-sm.selected { color:#A78BFA; }
 
 /* ══════════════════════════════════════════════════════════════
    SCREEN 2 v3 — ARCHITECTURE UNIFIÉE (3 zones)
@@ -3556,118 +3715,116 @@ html.dark .s4-result-card--mensuel {
 
       </div><!-- /brique-main -->
 
-      <!-- ════════════════════════════ COLONNE DROITE — Panel progression ════════════════════════════ -->
+      <!-- ════════════════════════════ COLONNE DROITE — Sidebar v2 (Commit 1) ════════════════════════════ -->
       <div class="brique-progress-col">
-        <div class="brique-progress-card">
-          <div class="bpc-kicker">TA PROGRESSION</div>
-          <div class="bpc-title" id="bpc-title">Prépare ton projet immobilier.</div>
+        <aside class="brique-sidebar-v2" id="sidebar-v2">
 
-          <!-- Ring progression -->
-          <div class="bpc-ring-wrap">
-            <svg class="bpc-ring" width="80" height="80" viewBox="0 0 80 80" aria-hidden="true">
-              <circle class="bpc-ring-bg" cx="40" cy="40" r="34"/>
-              <circle class="bpc-ring-fill" id="bpc-ring-fill" cx="40" cy="40" r="34"
-                stroke-dasharray="213.6"
-                stroke-dashoffset="213.6"/>
-              <text x="40" y="40" text-anchor="middle" dominant-baseline="central" transform="rotate(90, 40, 40)" class="bpc-ring-pct" id="bpc-ring-pct">0%</text>
+          <!-- Header : kicker + titre dynamique + ring 56px -->
+          <div class="sb2-header">
+            <div class="sb2-kicker-block">
+              <div class="sb2-kicker">Ta progression</div>
+              <div class="sb2-title" id="sb2-title">Prépare ton projet immobilier.</div>
+            </div>
+            <svg class="sb2-ring" viewBox="0 0 56 56" aria-hidden="true">
+              <circle class="sb2-ring-bg" cx="28" cy="28" r="24"/>
+              <circle class="sb2-ring-fill" id="sb2-ring-fill" cx="28" cy="28" r="24"
+                stroke-dasharray="150.8"
+                stroke-dashoffset="150.8"/>
+              <text x="28" y="28" class="sb2-ring-pct" id="sb2-ring-pct">0%</text>
             </svg>
           </div>
 
-          <!-- Steps list (compact) -->
-          <div class="bpc-steps compact" id="bpc-steps">
-            <div class="bpc-step active" data-screen="0">
-              <div class="bpc-step-num">0</div>
-              <div class="bpc-step-label">Introduction</div>
-            </div>
-            <div class="bpc-step" data-screen="1">
-              <div class="bpc-step-num">1</div>
-              <div class="bpc-step-label">Ton projet</div>
-            </div>
-            <div class="bpc-step" data-screen="2">
-              <div class="bpc-step-num">2</div>
-              <div class="bpc-step-label">Capacité mensuelle</div>
-            </div>
-            <div class="bpc-step" data-screen="3">
-              <div class="bpc-step-num">3</div>
-              <div class="bpc-step-label">Ton apport</div>
-            </div>
-            <div class="bpc-step" data-screen="4">
-              <div class="bpc-step-num">4</div>
-              <div class="bpc-step-label">Vrai coût d'achat</div>
-            </div>
-            <div class="bpc-step" data-screen="6">
-              <div class="bpc-step-num">5</div>
-              <div class="bpc-step-label">Locatif</div>
-            </div>
-            <div class="bpc-step" data-screen="7">
-              <div class="bpc-step-num">6</div>
-              <div class="bpc-step-label">Les étapes</div>
-            </div>
-            <div class="bpc-step" data-screen="8">
-              <div class="bpc-step-num">✓</div>
-              <div class="bpc-step-label">C'est noté.</div>
-            </div>
-          </div>
+          <div class="sb2-divider"></div>
 
-          <!-- Module synthèse live -->
-          <div class="bpc-synthese" style="display:none;">
-            <div class="bpc-synthese-title">● TON PROJET EN CHIFFRES</div>
-
-            <div class="bpc-synthese-line" id="syn-emprunt">
-              <div class="bpc-synthese-icon">🏦</div>
-              <div class="bpc-synthese-content">
-                <div class="bpc-synthese-label">Capacité d'emprunt</div>
-                <div class="bpc-synthese-value" id="syn-emprunt-val">—</div>
+          <!-- ZONE 1 — Arbre de décision (9 nœuds) -->
+          <div>
+            <div class="sb2-tree-label">Étapes</div>
+            <div class="sb2-tree" id="sb2-tree">
+              <div class="sb2-node active" data-step="0">
+                <div class="sb2-node-bullet">0</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Introduction</div></div>
               </div>
-            </div>
-
-            <div class="bpc-synthese-line locked" id="syn-apport">
-              <div class="bpc-synthese-icon">💰</div>
-              <div class="bpc-synthese-content">
-                <div class="bpc-synthese-label">Ton apport</div>
-                <div class="bpc-synthese-value">—  <span class="bpc-step-hint">étape 3</span></div>
+              <div class="sb2-node" data-step="1">
+                <div class="sb2-node-bullet">1</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Ton projet</div></div>
               </div>
-            </div>
-
-            <div class="bpc-synthese-line locked" id="syn-budget">
-              <div class="bpc-synthese-icon">🏠</div>
-              <div class="bpc-synthese-content">
-                <div class="bpc-synthese-label">Budget total</div>
-                <div class="bpc-synthese-value" id="syn-budget-val">—  <span class="bpc-step-hint">étape 3+</span></div>
-                <span id="syn-apport-hint" class="syn-apport-hint" style="display:none;"></span>
+              <div class="sb2-node" data-step="2">
+                <div class="sb2-node-bullet">2</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Capacité mensuelle</div></div>
               </div>
-            </div>
-
-            <div class="bpc-synthese-logements" id="syn-logements">
-              <div class="bpc-synthese-logement locked" id="syn-studio">
-                <div class="bpc-logement-icon">🏢</div>
-                <div class="bpc-logement-label">Studio / T1</div>
-                <div class="bpc-logement-surface">≈ 30 m²</div>
-                <div class="bpc-logement-status" id="syn-studio-status">—</div>
+              <div class="sb2-node" data-step="3">
+                <div class="sb2-node-bullet">3</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Ton apport</div></div>
               </div>
-              <div class="bpc-synthese-logement locked" id="syn-2p">
-                <div class="bpc-logement-icon">🏠</div>
-                <div class="bpc-logement-label">2 pièces</div>
-                <div class="bpc-logement-surface">≈ 50 m²</div>
-                <div class="bpc-logement-status" id="syn-2p-status">—</div>
+              <div class="sb2-node" data-step="4">
+                <div class="sb2-node-bullet">4</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Vrai coût d'achat</div></div>
               </div>
-              <div class="bpc-synthese-logement locked" id="syn-3p">
-                <div class="bpc-logement-icon">🏡</div>
-                <div class="bpc-logement-label">3 pièces</div>
-                <div class="bpc-logement-surface">≈ 70 m²</div>
-                <div class="bpc-logement-status" id="syn-3p-status">—</div>
+              <div class="sb2-node" data-step="5">
+                <div class="sb2-node-bullet">5</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Emplacement &amp; typologie</div></div>
+              </div>
+              <div class="sb2-node" data-step="6">
+                <div class="sb2-node-bullet">6</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Stratégie locatif</div></div>
+              </div>
+              <div class="sb2-node" data-step="7">
+                <div class="sb2-node-bullet">7</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Les étapes</div></div>
+              </div>
+              <div class="sb2-node" data-step="8">
+                <div class="sb2-node-bullet">★</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Diagnostic final</div></div>
               </div>
             </div>
           </div>
 
-          <!-- Nav links -->
-          <div class="bpc-nav">
-            <a href="dashboard.html" class="bpc-nav-link">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-              Dashboard
+          <div class="sb2-divider"></div>
+
+          <!-- ZONE 2 — Synthèse live (bloc unique) -->
+          <div>
+            <div class="sb2-dashboard-label">Ton projet en chiffres</div>
+            <div class="sb2-synth locked" id="sb2-synth">
+              <div class="sb2-synth-head">
+                <span class="sb2-synth-icon">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v11H3z"/><path d="M9 22V12h6v10"/></svg>
+                </span>
+                <span class="sb2-synth-label">Prix bien max</span>
+              </div>
+              <div class="sb2-synth-hero">
+                <span id="m-prix">—</span><span class="sb2-synth-hero-unit" id="m-prix-unit" style="display:none;">k€</span>
+              </div>
+              <div class="sb2-synth-sub" id="m-prix-sub">Calcul à partir de l'étape 2</div>
+              <div class="sb2-synth-meta">
+                <div class="sb2-synth-row pending" id="row-capacite">
+                  <span class="sb2-synth-row-label">
+                    <span class="sb2-synth-row-dot"></span>
+                    Soit
+                  </span>
+                  <span class="sb2-synth-row-value" id="m-capacite">à l'étape 2</span>
+                </div>
+                <div class="sb2-synth-row pending" id="row-apport">
+                  <span class="sb2-synth-row-label">
+                    <span class="sb2-synth-row-dot"></span>
+                    Dont apport
+                  </span>
+                  <span class="sb2-synth-row-value" id="m-apport">à l'étape 3</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sb2-divider"></div>
+
+          <!-- Footer : retour Dashboard -->
+          <div class="sb2-footer">
+            <a href="dashboard.html" class="sb2-back">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              Retour au Dashboard
             </a>
           </div>
-        </div>
+
+        </aside>
       </div><!-- /brique-progress-col -->
 
     </div><!-- /brique-layout -->
@@ -3937,13 +4094,9 @@ function goToScreen(idx) {
   if (target) target.classList.add('active');
   S.currentScreen = idx;
 
-  // Show/hide synthèse panel based on screen
-  var synthese = document.querySelector('.bpc-synthese');
-  if (synthese) {
-    synthese.style.display = (idx >= 2) ? 'block' : 'none';
-  }
-
+  // Sidebar v2 : la synthèse est toujours rendue, l'état verrouillé est géré par updateSynthesePanel()
   updateProgressPanel(idx);
+  updateSynthesePanel();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   // Screen-specific init
@@ -4040,54 +4193,74 @@ function syncStateFromScreen(screenIdx) {
 }
 
 /* ─── PANEL PROGRESSION ──────────────────────────────────── */
+var SB2_RING_CIRC = 150.8; // 2 * π * r (r=24)
+var SB2_TITLES = [
+  'Prépare ton projet immobilier.',
+  'Tu choisis ton projet.',
+  'Tu fixes ta capacité.',
+  'Tu fixes ton apport.',
+  'Tu intègres les vrais coûts.',
+  'Tu confrontes au marché.',
+  'Tu valides ta stratégie.',
+  'Tu connais le chemin.',
+  'C’est noté.'
+];
+
 function updateProgressPanel(idx) {
   var pct = Math.round(idx / (TOTAL_SCREENS - 1) * 100);
 
-  // Ring
-  var circumference = 213.6;
-  var offset = circumference - (pct / 100) * circumference;
-  var ringFill = $('bpc-ring-fill');
-  if (ringFill) { ringFill.style.strokeDashoffset = offset; }
-  var ringPct = $('bpc-ring-pct');
+  // Ring sb2 (r=24, circ=150.8)
+  var ringFill = $('sb2-ring-fill');
+  if (ringFill) {
+    var off = SB2_RING_CIRC - (SB2_RING_CIRC * pct / 100);
+    ringFill.setAttribute('stroke-dashoffset', off);
+  }
+  var ringPct = $('sb2-ring-pct');
   if (ringPct) ringPct.textContent = pct + '%';
 
-  // Steps
-  var steps = document.querySelectorAll('.bpc-step');
-  steps.forEach(function(step) {
-    var sc = parseInt(step.getAttribute('data-screen') || '0');
-    step.classList.remove('active', 'done');
-    if (sc === idx) step.classList.add('active');
-    else if (sc < idx) step.classList.add('done');
+  // Tree nodes : done < idx, active = idx, pending > idx
+  var nodes = document.querySelectorAll('.sb2-node');
+  nodes.forEach(function(node) {
+    var i = parseInt(node.getAttribute('data-step') || '0', 10);
+    node.classList.remove('active', 'done');
+    var bullet = node.querySelector('.sb2-node-bullet');
+    if (i < idx) {
+      node.classList.add('done');
+      if (bullet) bullet.innerHTML = '<span class="sb2-node-check">✓</span>';
+    } else {
+      if (i === idx) node.classList.add('active');
+      var origNum = (i === 8) ? '★' : String(i);
+      if (bullet) bullet.textContent = origNum;
+    }
   });
 
-  // Dots (barre du haut mobile)
+  // Dots barre du haut (mobile)
   var dotsEl = $('prog-dots');
   var fillEl = $('prog-fill');
   if (dotsEl && TOTAL_SCREENS > 0) {
     var html = '';
-    for (var i = 0; i < TOTAL_SCREENS; i++) {
-      var cls = i < idx ? 'done' : (i === idx ? 'active' : '');
+    for (var i2 = 0; i2 < TOTAL_SCREENS; i2++) {
+      var cls = i2 < idx ? 'done' : (i2 === idx ? 'active' : '');
       html += '<div class="brick-prog-dot ' + cls + '"></div>';
     }
     dotsEl.innerHTML = html;
   }
   if (fillEl) fillEl.style.width = pct + '%';
 
-  // Panel title
-  var TITLES = [
-    'Prépare ton projet immobilier.',
-    'Quel type de bien tu vises\u00a0?',
-    'Posons ta capacité mensuelle.',
-    'Calculons ton apport réel.',
-    'Le vrai coût de ton achat.',
-    '',
-    'Analyse de rentabilité locative.',
-    'Les grandes étapes avant les clés.',
-    'Ton diagnostic est prêt\u00a0!'
-  ];
-  var titleEl = $('bpc-title');
-  if (titleEl && TITLES[idx]) titleEl.textContent = TITLES[idx];
+  // Titre dynamique sb2
+  var titleEl = $('sb2-title');
+  if (titleEl && SB2_TITLES[idx]) titleEl.textContent = SB2_TITLES[idx];
 }
+
+// Clic sur un nœud de l'arbre = navigation directe
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.sb2-node').forEach(function(node){
+    node.addEventListener('click', function(){
+      var i = parseInt(node.getAttribute('data-step') || '0', 10);
+      if (typeof goToScreen === 'function') goToScreen(i);
+    });
+  });
+});
 
 /* ─── PROJECT CARD SELECTION ─────────────────────────────── */
 function selectProjectCard(el) {
@@ -4527,65 +4700,69 @@ function updatePillBadge(inputId, badgeId, prefillVal) {
 
 /* ─── SYNTHÈSE PANEL (colonne droite) ───────────────────── */
 function updateSynthesePanel() {
-  // Capacité emprunt (dès écran 2)
-  if (S.capitalEmpruntable && S.capitalEmpruntable > 0) {
-    var el = $('syn-emprunt-val');
-    if (el) el.textContent = fmt(S.capitalEmpruntable);
-    var line = $('syn-emprunt');
-    if (line) line.classList.remove('locked');
+  var synth = document.getElementById('sb2-synth');
+  if (!synth) return;
+
+  var prixEl    = document.getElementById('m-prix');
+  var unitEl    = document.getElementById('m-prix-unit');
+  var subEl     = document.getElementById('m-prix-sub');
+  var capEl     = document.getElementById('m-capacite');
+  var apportEl  = document.getElementById('m-apport');
+  var rowCap    = document.getElementById('row-capacite');
+  var rowApport = document.getElementById('row-apport');
+
+  // État verrouillé tant qu'on n'a pas la capacité (avant écran 2)
+  if (!S.capitalEmpruntable || S.capitalEmpruntable <= 0) {
+    synth.classList.add('locked');
+    if (prixEl)   prixEl.textContent = '\u2014';
+    if (unitEl)   unitEl.style.display = 'none';
+    if (subEl)    subEl.textContent = 'Calcul \u00e0 partir de l\'\u00e9tape 2';
+    if (capEl)    capEl.textContent = '\u00e0 l\'\u00e9tape 2';
+    if (apportEl) apportEl.textContent = '\u00e0 l\'\u00e9tape 3';
+    if (rowCap)    rowCap.classList.add('pending');
+    if (rowApport) rowApport.classList.add('pending');
+    return;
   }
 
-  // Apport (écran 3)
-  if (S.apport && S.apport > 0) {
-    var apportEl = document.querySelector('#syn-apport .bpc-synthese-value');
-    if (apportEl) apportEl.textContent = fmt(S.apport);
-    var apportLine = $('syn-apport');
-    if (apportLine) apportLine.classList.remove('locked');
+  // Déverrouillé à partir de l'écran 2
+  synth.classList.remove('locked');
+
+  // Hero : prix bien max en k€ arrondi
+  var budgetTotal = S.capitalEmpruntable + (S.apport || 0);
+  var prixK = Math.round(budgetTotal / 1000);
+  if (prixEl) prixEl.textContent = String(prixK);
+  if (unitEl) unitEl.style.display = '';
+
+  // Sub : duree + taux
+  var dureeStr = (S.duree ? S.duree : 20) + ' ans';
+  var tauxStr  = (S.taux ? S.taux.toFixed(1).replace('.', ',') : '3,0') + ' %';
+  if (subEl) {
+    var prefix = (S.apport && S.apport > 0) ? 'Apport int\u00e9gr\u00e9 \u00b7 ' : 'Sur ';
+    subEl.textContent = (S.apport && S.apport > 0)
+      ? (prefix + dureeStr + ' \u00b7 taux ' + tauxStr)
+      : ('Sur ' + dureeStr + ' \u00b7 taux ' + tauxStr);
   }
 
-  // Budget total = capitalEmpruntable + apport (dès écran 2, même sans apport)
-  if (S.capitalEmpruntable > 0) {
-    var budgetTotal = S.capitalEmpruntable + (S.apport || 0);
-    var budgetEl = $('syn-budget-val');
-    if (budgetEl) budgetEl.textContent = fmt(budgetTotal);
-    var budgetLine = $('syn-budget');
-    if (budgetLine) budgetLine.classList.remove('locked');
-
-    // Apport hint badge
-    var apportHintEl = $('syn-apport-hint');
-    if (apportHintEl) {
-      if (!S.apport || S.apport === 0) {
-        apportHintEl.textContent = '\u26A0 Apport \u00e0 compl\u00e9ter';
-        apportHintEl.className = 'syn-apport-hint pending';
-        apportHintEl.style.display = 'inline-flex';
-      } else if (S.apport < budgetTotal * 0.05) {
-        apportHintEl.textContent = '\u26A0 Apport peut \u00eatre trop faible (< 5% recommand\u00e9)';
-        apportHintEl.className = 'syn-apport-hint warning';
-        apportHintEl.style.display = 'inline-flex';
-      } else {
-        apportHintEl.style.display = 'none';
-      }
+  // Capacité mensuelle
+  if (capEl) {
+    if (S.mensualiteCible && S.mensualiteCible > 0) {
+      capEl.textContent = fmt(Math.round(S.mensualiteCible)) + ' \u20ac/mois';
+      if (rowCap) rowCap.classList.remove('pending');
+    } else {
+      capEl.textContent = '\u00e0 l\'\u00e9tape 2';
+      if (rowCap) rowCap.classList.add('pending');
     }
+  }
 
-    // Logements (actifs dès écran 2 avec budget = capitalEmpruntable seul ou + apport)
-    var prixM2 = S.prixM2 || 2500;
-    var surfaces = { studio: 30, '2p': 50, '3p': 70 };
-    var ids = ['studio', '2p', '3p'];
-    ids.forEach(function(id) {
-      var surface = surfaces[id];
-      var prixLogement = surface * prixM2;
-      var card = $('syn-' + id);
-      var statusEl = $('syn-' + id + '-status');
-      if (!card) return;
-      card.classList.remove('locked', 'in-budget', 'out-budget');
-      if (prixLogement <= budgetTotal) {
-        card.classList.add('in-budget');
-        if (statusEl) statusEl.textContent = '\u2713 Atteignable';
-      } else {
-        card.classList.add('out-budget');
-        if (statusEl) statusEl.textContent = 'Hors budget';
-      }
-    });
+  // Apport
+  if (apportEl) {
+    if (S.apport && S.apport > 0) {
+      apportEl.textContent = fmt(Math.round(S.apport));
+      if (rowApport) rowApport.classList.remove('pending');
+    } else {
+      apportEl.textContent = '\u00e0 l\'\u00e9tape 3';
+      if (rowApport) rowApport.classList.add('pending');
+    }
   }
 }
 
