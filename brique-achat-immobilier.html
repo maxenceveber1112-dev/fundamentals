@@ -2863,6 +2863,250 @@ html.dark .s4-result-card--mensuel {
     background: #faf9ff;
   }
 }
+
+/* ─── SCREEN 5 — Emplacement & typologie (Commit 5a) ────────────────── */
+.s5-watermark {
+  position:absolute; top:1rem; right:1rem; width:160px; height:160px;
+  pointer-events:none; z-index:0; opacity:0.8;
+}
+.s5-watermark svg { width:100%; height:100%; color:var(--v3-accent-strong); }
+
+.s5-block {
+  position:relative; z-index:1;
+  margin-top:1.5rem; padding:1.25rem 1.25rem 1.1rem;
+  background:var(--v3-bg-elevated); border:1px solid var(--v3-border-subtle);
+  border-radius:14px; box-shadow:var(--v3-shadow-card);
+}
+.s5-block-kicker {
+  font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--v3-accent-strong); font-weight:600; margin-bottom:0.85rem;
+}
+.s5-block-header {
+  display:flex; justify-content:space-between; align-items:center; gap:0.75rem;
+  margin-bottom:0.85rem;
+}
+.s5-block-header .s5-block-kicker { margin-bottom:0; }
+.s5-change-btn {
+  display:inline-flex; align-items:center; gap:0.35rem;
+  padding:0.4rem 0.75rem; font-size:0.78rem; font-weight:600;
+  color:var(--v3-accent-strong);
+  background:var(--v3-accent-soft); border:1px solid transparent;
+  border-radius:999px; cursor:pointer;
+  font-family:inherit; transition:all 0.15s ease;
+}
+.s5-change-btn:hover {
+  background:var(--v3-accent-strong); color:#fff;
+}
+html.dark .s5-change-btn:hover { color:#0B0B1A; }
+.s5-change-btn:focus-visible {
+  outline:none; box-shadow:0 0 0 3px var(--v3-accent-soft);
+}
+@media (max-width:520px){
+  .s5-block-header { flex-direction:column; align-items:flex-start; gap:0.5rem; }
+}
+
+/* MODALE typologie */
+.s5-modal-overlay {
+  position:fixed; inset:0; z-index:200;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(11, 11, 26, 0.55); backdrop-filter:blur(4px);
+  padding:1rem; animation:s5ModalFade 0.18s ease-out;
+}
+.s5-modal-overlay[hidden] { display:none; }
+@keyframes s5ModalFade {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+.s5-modal {
+  position:relative; max-width:520px; width:100%;
+  background:var(--v3-bg-elevated); border:1px solid var(--v3-border-subtle);
+  border-radius:16px; box-shadow:0 25px 60px rgba(0,0,0,0.25);
+  padding:1.5rem 1.5rem 1.4rem;
+  animation:s5ModalSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes s5ModalSlide {
+  from { opacity:0; transform:translateY(8px) scale(0.98); }
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+.s5-modal-close {
+  position:absolute; top:0.6rem; right:0.7rem;
+  width:32px; height:32px; border-radius:50%;
+  border:none; background:transparent; cursor:pointer;
+  font-size:1.4rem; line-height:1; color:var(--v3-text-secondary);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:inherit; transition:background 0.15s ease, color 0.15s ease;
+}
+.s5-modal-close:hover {
+  background:var(--v3-accent-soft); color:var(--v3-accent-strong);
+}
+.s5-modal-kicker {
+  font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--v3-accent-strong); font-weight:600; margin-bottom:0.5rem;
+}
+.s5-modal-title {
+  font-size:1.25rem; font-weight:700; color:var(--v3-text);
+  margin:0 0 0.4rem; font-family:'Cardo', serif;
+}
+.s5-modal-sub {
+  font-size:0.85rem; color:var(--v3-text-secondary);
+  margin:0 0 1rem; line-height:1.5;
+}
+
+/* BLOC 1 — Commune */
+.s5-commune-row {
+  display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:start;
+}
+@media (max-width:720px){ .s5-commune-row { grid-template-columns:1fr; } }
+.s5-input-wrap { display:flex; flex-direction:column; gap:0.4rem; }
+.s5-input-label { font-size:0.78rem; color:var(--v3-text-secondary); font-weight:500; }
+.s5-autocomplete { position:relative; }
+.s5-autocomplete input {
+  width:100%; padding:0.7rem 0.9rem; font-size:0.95rem;
+  border:1px solid var(--v3-border-subtle); border-radius:10px;
+  background:var(--v3-bg-elevated); color:var(--v3-text);
+  font-family:inherit; transition:border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.s5-autocomplete input:focus {
+  outline:none; border-color:var(--v3-accent-strong);
+  box-shadow:0 0 0 3px var(--v3-accent-soft);
+}
+.s5-suggest {
+  position:absolute; top:calc(100% + 4px); left:0; right:0;
+  background:var(--v3-bg-elevated); border:1px solid var(--v3-border-subtle);
+  border-radius:10px; box-shadow:var(--v3-shadow-card);
+  max-height:240px; overflow-y:auto; z-index:30; display:none;
+}
+.s5-suggest.open { display:block; }
+.s5-suggest-item {
+  padding:0.55rem 0.85rem; font-size:0.88rem; color:var(--v3-text);
+  cursor:pointer; border-bottom:1px solid var(--v3-border-subtle);
+  display:flex; justify-content:space-between; gap:0.5rem;
+}
+.s5-suggest-item:last-child { border-bottom:none; }
+.s5-suggest-item:hover, .s5-suggest-item:focus-visible {
+  background:var(--v3-accent-soft); outline:none;
+}
+.s5-suggest-item .ssi-meta {
+  color:var(--v3-text-muted); font-size:0.78rem; flex-shrink:0;
+}
+.s5-commune-info {
+  background:var(--v3-accent-soft); border-radius:10px;
+  padding:0.85rem 1rem; display:flex; flex-direction:column; gap:0.35rem;
+  min-height:74px; justify-content:center;
+}
+.s5-info-line { display:flex; justify-content:space-between; align-items:baseline; gap:0.5rem; }
+.s5-info-label { font-size:0.78rem; color:var(--v3-text-secondary); font-weight:500; }
+.s5-info-value { font-size:1.15rem; font-weight:700; color:var(--v3-accent-strong); font-variant-numeric:tabular-nums; }
+.s5-info-source { font-size:0.7rem; color:var(--v3-text-muted); }
+
+/* BLOC 2 — Pills typologie */
+.s5-typo-pills {
+  display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.6rem;
+}
+.s5-typo-pill {
+  padding:0.45rem 0.95rem; font-size:0.85rem; font-weight:500;
+  background:var(--v3-bg-elevated); color:var(--v3-text-secondary);
+  border:1px solid var(--v3-border-subtle); border-radius:999px;
+  cursor:pointer; user-select:none;
+  transition:all 0.15s ease;
+  display:inline-flex; align-items:center; gap:0.4rem;
+}
+.s5-typo-pill:hover {
+  border-color:var(--v3-accent-strong); color:var(--v3-text);
+}
+.s5-typo-pill.selected {
+  background:var(--v3-accent-strong); color:#fff; border-color:var(--v3-accent-strong);
+}
+html.dark .s5-typo-pill.selected { color:#0B0B1A; }
+.s5-typo-pill.suggested::after {
+  content:'★'; font-size:0.7rem; color:var(--v3-accent-strong);
+  margin-left:0.25rem; opacity:0.7;
+}
+.s5-typo-pill.selected.suggested::after { color:#fff; opacity:0.85; }
+html.dark .s5-typo-pill.selected.suggested::after { color:#0B0B1A; }
+.s5-typo-helper {
+  font-size:0.78rem; color:var(--v3-text-muted);
+}
+
+/* BLOC 3 — Cards typologies */
+.s5-cards-grid {
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:0.85rem;
+  margin-bottom:1rem;
+}
+@media (max-width:780px){ .s5-cards-grid { grid-template-columns:1fr; } }
+.s5-card {
+  position:relative; padding:1.1rem 1rem 1rem;
+  border-radius:12px; border:1.5px solid var(--v3-border-subtle);
+  background:var(--v3-bg-elevated);
+  display:flex; flex-direction:column; gap:0.45rem;
+  transition:all 0.18s ease;
+}
+.s5-card.in-budget {
+  border-color:var(--v3-accent-strong);
+  background:linear-gradient(180deg, var(--v3-accent-soft) 0%, var(--v3-bg-elevated) 60%);
+}
+.s5-card.out-budget {
+  opacity:0.65; border-style:dashed;
+}
+.s5-card-head { display:flex; justify-content:space-between; align-items:center; gap:0.5rem; }
+.s5-card-typo { font-size:1.05rem; font-weight:700; color:var(--v3-text); }
+.s5-card-icon { font-size:1.3rem; }
+.s5-card-detail { font-size:0.78rem; color:var(--v3-text-muted); }
+.s5-card-price {
+  font-size:1.35rem; font-weight:700; color:var(--v3-accent-strong);
+  font-variant-numeric:tabular-nums; margin-top:0.2rem;
+}
+.s5-card.out-budget .s5-card-price { color:var(--v3-text-muted); }
+.s5-card-surface { font-size:0.8rem; color:var(--v3-text-secondary); }
+.s5-card-status {
+  margin-top:0.4rem; font-size:0.78rem; font-weight:600;
+  display:inline-flex; align-items:center; gap:0.3rem;
+}
+.s5-card.in-budget .s5-card-status { color:var(--v3-accent-strong); }
+.s5-card.out-budget .s5-card-status { color:var(--v3-text-muted); }
+
+/* Budget recap */
+.s5-budget-recap {
+  display:flex; align-items:baseline; justify-content:center; gap:0.5rem;
+  padding:0.7rem 1rem; background:var(--v3-accent-soft);
+  border-radius:10px; flex-wrap:wrap;
+}
+.s5-recap-label { font-size:0.82rem; color:var(--v3-text-secondary); }
+.s5-recap-value {
+  font-size:1.1rem; font-weight:700; color:var(--v3-accent-strong);
+  font-variant-numeric:tabular-nums;
+}
+.s5-recap-detail { font-size:0.75rem; color:var(--v3-text-muted); }
+
+/* BLOC 4 — Adaptation si budget insuffisant (sans changement de commune) */
+.s5-neighbours {
+  margin-top:1.25rem; padding:1rem 1.1rem; border-radius:12px;
+  background:var(--v3-bg-elevated); border:1px dashed var(--v3-border-subtle);
+  flex-direction:column; gap:0.75rem;
+}
+.s5-neighbours-msg {
+  display:flex; align-items:center; gap:0.5rem;
+  font-size:0.88rem; color:var(--v3-text-secondary);
+}
+.s5-neighbours-msg strong { color:var(--v3-text); font-weight:600; }
+.s5-neighbours-icon {
+  color:var(--v3-accent-strong); font-weight:700; font-size:1rem;
+}
+.s5-neighbours-actions {
+  display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem;
+}
+.s5-neighbours-cta-secondary {
+  padding:0.5rem 0.9rem; font-size:0.82rem; font-weight:600; cursor:pointer;
+  background:transparent; color:var(--v3-accent-strong);
+  border:1.5px solid var(--v3-accent-strong); border-radius:999px;
+  font-family:inherit; transition:all 0.15s ease;
+}
+.s5-neighbours-cta-secondary:hover {
+  background:var(--v3-accent-strong); color:#fff;
+}
+html.dark .s5-neighbours-cta-secondary:hover { color:#0B0B1A; }
+.s5-neighbours-or { font-size:0.78rem; color:var(--v3-text-muted); }
+.s5-neighbours-tip { font-size:0.82rem; color:var(--v3-text-secondary); }
 </style>
 </head>
 <body data-brick-name="Achat immobilier">
@@ -2930,7 +3174,7 @@ html.dark .s4-result-card--mensuel {
         <!-- ═══ SCREEN 1 — Ton projet ═══ -->
         <div class="screen" id="screen-1">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 1 / 7 · TON PROJET</div>
+            <div class="brick-kicker">ÉTAPE 1 / 8 · TON PROJET</div>
             <h2 class="brick-title">Quel achat tu prépares&nbsp;?</h2>
             <p class="brick-subtitle">On adapte les calculs selon ton type de projet.</p>
 
@@ -3096,7 +3340,7 @@ html.dark .s4-result-card--mensuel {
         <!-- ═══ SCREEN 2 — Carte diagnostic live ═══ -->
         <div class="screen" id="screen-2">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 2 / 7 · CAPACITÉ MENSUELLE</div>
+            <div class="brick-kicker">ÉTAPE 2 / 8 · CAPACITÉ MENSUELLE</div>
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
             <p class="brick-subtitle">Tes données budget, modifiables en un clic. Le diagnostic se recalcule en temps réel.</p>
 
@@ -3281,7 +3525,7 @@ html.dark .s4-result-card--mensuel {
         <!-- ═══ SCREEN 3 — Ton apport réel ═══ -->
         <div class="screen" id="screen-3">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 3 / 7 · APPORT</div>
+            <div class="brick-kicker">ÉTAPE 3 / 8 · APPORT</div>
             <h2 class="brick-title">Ton <button class="glossary-term" onclick="showGlossaryPopover(this,'Apport')" tabindex="0">apport</button> ne doit pas vider ta sécurité.</h2>
             <p class="brick-subtitle">L'apport utile est celui que tu peux mobiliser sans te mettre en tension.</p>
 
@@ -3372,7 +3616,7 @@ html.dark .s4-result-card--mensuel {
         <!-- ═══ SCREEN 4 — Le vrai coût d'achat ═══ -->
         <div class="screen" id="screen-4">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 4 / 7 · COÛT RÉEL</div>
+            <div class="brick-kicker">ÉTAPE 4 / 8 · COÛT RÉEL</div>
             <h2 class="brick-title">Le prix affiché n'est pas le coût total.</h2>
             <p class="brick-subtitle">On additionne les coûts visibles et invisibles.</p>
 
@@ -3512,6 +3756,93 @@ html.dark .s4-result-card--mensuel {
 
             <div class="nav-btns" style="margin-top:1.5rem;">
               <button class="btn-hero-secondary" onclick="goToScreen(3)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(5)">
+                Continuer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SCREEN 5 — Emplacement & typologie (Commit 5a) ═══ -->
+        <div class="screen" id="screen-5">
+          <div class="brick-card" style="position:relative;overflow:hidden;">
+            <div class="brick-kicker">ÉTAPE 5 / 8 · EMPLACEMENT &amp; TYPOLOGIE</div>
+            <h2 class="brick-title">Confronte ton budget au marché local.</h2>
+            <p class="brick-sub">On part de ta commune et on calcule directement 3 typologies adaptées à ton budget. Tu peux en tester d’autres à tout moment.</p>
+
+            <!-- Watermark SVG -->
+            <div class="s5-watermark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" opacity="0.04">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/>
+              </svg>
+            </div>
+
+            <!-- BLOC 1 : Commune -->
+            <div class="s5-block">
+              <div class="s5-block-kicker">● Ta commune</div>
+              <div class="s5-commune-row">
+                <div class="s5-input-wrap">
+                  <label class="s5-input-label" for="input-commune-s5">Nom de la commune</label>
+                  <div class="s5-autocomplete">
+                    <input type="text" id="input-commune-s5" placeholder="Ex. Nancy, Lyon, Bordeaux…" autocomplete="off" oninput="s5OnCommuneInput()" onfocus="s5OnCommuneInput()" onblur="setTimeout(s5HideSuggest,200)"/>
+                    <div class="s5-suggest" id="s5-suggest" role="listbox"></div>
+                  </div>
+                </div>
+                <div class="s5-commune-info" id="s5-commune-info">
+                  <div class="s5-info-line">
+                    <span class="s5-info-label">Prix moyen estimé</span>
+                    <span class="s5-info-value" id="s5-prixm2">—</span>
+                  </div>
+                  <div class="s5-info-source">Source&nbsp;: DVF 2024 (data.gouv) · agrégé département</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BLOC 2 : 3 cards atteignables (avec bouton "Changer") -->
+            <div class="s5-block">
+              <div class="s5-block-header">
+                <div class="s5-block-kicker">● 3 typologies sur ta commune</div>
+                <button type="button" class="s5-change-btn" id="s5-change-btn" onclick="s5OpenTypoModal()" aria-haspopup="dialog" aria-controls="s5-typo-modal">
+                  <span id="s5-change-btn-label">Changer de typologie</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+              </div>
+              <div class="s5-cards-grid" id="s5-cards-grid"><!-- cards injected by JS --></div>
+              <div class="s5-budget-recap" id="s5-budget-recap">
+                <span class="s5-recap-label">Ton budget total</span>
+                <span class="s5-recap-value" id="s5-budget-val">—</span>
+                <span class="s5-recap-detail" id="s5-budget-detail">emprunt + apport</span>
+              </div>
+            </div>
+
+            <!-- BLOC 4 : Adaptation conditionnelle si budget insuffisant -->
+            <div class="s5-neighbours" id="s5-neighbours" style="display:none;">
+              <div class="s5-neighbours-msg">
+                <span class="s5-neighbours-icon" aria-hidden="true">⚠</span>
+                <span id="s5-neighbours-text">Sur <strong id="s5-budget-tight-commune">cette commune</strong>, une ou plusieurs typologies dépassent ton budget.</span>
+              </div>
+              <div class="s5-neighbours-actions">
+                <button class="s5-neighbours-cta-secondary" onclick="goToScreen(2)">← Ajuster ma capacité</button>
+                <button class="s5-neighbours-cta-secondary" onclick="goToScreen(3)">← Ajuster mon apport</button>
+                <span class="s5-neighbours-or">ou</span>
+                <span class="s5-neighbours-tip">Choisis une typologie plus accessible ci-dessus.</span>
+              </div>
+            </div>
+
+            <!-- MODALE : choix typologie -->
+            <div class="s5-modal-overlay" id="s5-typo-modal" role="dialog" aria-modal="true" aria-labelledby="s5-modal-title" hidden onclick="s5CloseTypoModalIfOverlay(event)">
+              <div class="s5-modal" role="document">
+                <button type="button" class="s5-modal-close" onclick="s5CloseTypoModal()" aria-label="Fermer">×</button>
+                <div class="s5-modal-kicker">● Tester une autre typologie</div>
+                <h3 class="s5-modal-title" id="s5-modal-title">Quelle typologie tu vises&nbsp;?</h3>
+                <p class="s5-modal-sub">Les 3 cards ci-dessous s’ajusteront autour de ton choix. L’étoile indique la suggestion auto basée sur ton budget.</p>
+                <div class="s5-typo-pills" id="s5-typo-pills"><!-- pills injected by JS --></div>
+              </div>
+            </div>
+
+            <div class="nav-btns" style="margin-top:1.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(4)">← Retour</button>
               <button class="btn-hero-primary" onclick="goToScreen(6)">
                 Continuer
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -3523,7 +3854,7 @@ html.dark .s4-result-card--mensuel {
         <!-- ═══ SCREEN 6 — Investissement locatif (refonte) ═══ -->
         <div class="screen" id="screen-6">
           <div class="brick-card" style="position:relative;overflow:hidden;">
-            <div class="brick-kicker">ÉTAPE 5 / 7 · INVESTISSEMENT LOCATIF</div>
+            <div class="brick-kicker">ÉTAPE 6 / 8 · INVESTISSEMENT LOCATIF</div>
             <h2 class="brick-title">Acheter pour louer&nbsp;: analyse de rentabilité.</h2>
 
             <!-- Watermark SVG parallax -->
@@ -3724,7 +4055,7 @@ html.dark .s4-result-card--mensuel {
         <!-- ═══ SCREEN 7 — Les étapes d'un achat ═══ -->
         <div class="screen" id="screen-7">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 6 / 7 · PROCESSUS</div>
+            <div class="brick-kicker">ÉTAPE 7 / 8 · PROCESSUS</div>
             <h2 class="brick-title">Les grandes étapes avant les clés.</h2>
             <p class="brick-subtitle">Clique sur une étape pour voir le détail.</p>
 
@@ -3986,20 +4317,44 @@ var ASSURANCE_RATES = {
   '65_plus': 0.0060
 };
 
-/* ─── PRIX M² PAR DÉPARTEMENT ────────────────────────────── */
+/* ─── PRIX M² PAR DÉPARTEMENT (DVF 2024 data.gouv + sources notaires Alsace-Moselle) ───── */
 var PRIX_M2 = {
-  '75':7500,'92':6000,'93':3800,'94':4500,'77':3200,'78':4000,'91':3000,'95':3200,
-  '69':4200,'13':3500,'06':5000,'31':3300,'33':3800,'44':3500,'67':3000,'57':2200,'54':2000,
-  '59':2200,'76':2400,'38':3000,'34':3200,'35':3200,'29':2400,'45':2000,'37':2500,
-  'default':2500
+  '01':2900,'02':1400,'03':1400,'04':2400,'05':3000,'06':5200,'07':2100,'08':1300,
+  '09':1600,'10':1600,'11':2200,'12':1700,'13':3900,'14':3000,'15':1400,'16':1500,
+  '17':3200,'18':1300,'19':1600,'21':2400,'22':2200,'23':1100,'24':1700,'25':2100,
+  '26':2300,'27':2000,'28':2000,'29':2300,'2A':4500,'2B':3300,'30':2700,'31':2900,
+  '32':1700,'33':3700,'34':3400,'35':3000,'36':1200,'37':2400,'38':2800,'39':1800,
+  '40':3200,'41':1700,'42':1800,'43':1600,'44':3300,'45':2100,'46':1700,'47':1600,
+  '48':1800,'49':2300,'50':2100,'51':2200,'52':1100,'53':1600,'54':1900,'55':1200,
+  '56':3000,'57':2200,'58':1200,'59':2300,'60':2300,'61':1500,'62':2100,'63':2000,
+  '64':3600,'65':1900,'66':2600,'67':3000,'68':2400,'69':3800,'70':1300,'71':1600,
+  '72':1700,'73':4300,'74':4800,'75':9700,'76':2300,'77':3100,'78':4300,'79':1500,
+  '80':2000,'81':1800,'82':1900,'83':4400,'84':2800,'85':2800,'86':1700,'87':1600,
+  '88':1600,'89':1500,'90':1600,'91':3300,'92':6700,'93':4200,'94':5200,'95':3500,
+  '971':2400,'972':2500,'973':1900,'974':2900,'976':1800,
+  'default':2300
 };
 var DEPT_NAMES = {
-  '75':'Paris','92':'Hauts-de-Seine','93':'Seine-Saint-Denis','94':'Val-de-Marne',
-  '77':'Seine-et-Marne','78':'Yvelines','91':'Essonne','95':"Val-d'Oise",
-  '69':'Rhône','13':'Bouches-du-Rhône','06':'Alpes-Maritimes','31':'Haute-Garonne',
-  '33':'Gironde','44':'Loire-Atlantique','67':'Bas-Rhin','57':'Moselle','54':'Meurthe-et-Moselle',
-  '59':'Nord','76':'Seine-Maritime','38':'Isère','34':'Hérault','35':'Ille-et-Vilaine',
-  '29':'Finistère','45':'Loiret','37':'Indre-et-Loire'
+  '01':'Ain','02':'Aisne','03':'Allier','04':'Alpes-de-Haute-Provence','05':'Hautes-Alpes',
+  '06':'Alpes-Maritimes','07':'Ardèche','08':'Ardennes','09':'Ariège','10':'Aube',
+  '11':'Aude','12':'Aveyron','13':'Bouches-du-Rhône','14':'Calvados','15':'Cantal',
+  '16':'Charente','17':'Charente-Maritime','18':'Cher','19':'Corrèze','21':"Côte-d'Or",
+  '22':"Côtes-d'Armor",'23':'Creuse','24':'Dordogne','25':'Doubs','26':'Drôme',
+  '27':'Eure','28':'Eure-et-Loir','29':'Finistère','2A':'Corse-du-Sud','2B':'Haute-Corse',
+  '30':'Gard','31':'Haute-Garonne','32':'Gers','33':'Gironde','34':'Hérault',
+  '35':'Ille-et-Vilaine','36':'Indre','37':'Indre-et-Loire','38':'Isère','39':'Jura',
+  '40':'Landes','41':'Loir-et-Cher','42':'Loire','43':'Haute-Loire','44':'Loire-Atlantique',
+  '45':'Loiret','46':'Lot','47':'Lot-et-Garonne','48':'Lozère','49':'Maine-et-Loire',
+  '50':'Manche','51':'Marne','52':'Haute-Marne','53':'Mayenne','54':'Meurthe-et-Moselle',
+  '55':'Meuse','56':'Morbihan','57':'Moselle','58':'Nièvre','59':'Nord',
+  '60':'Oise','61':'Orne','62':'Pas-de-Calais','63':'Puy-de-Dôme','64':'Pyrénées-Atlantiques',
+  '65':'Hautes-Pyrénées','66':'Pyrénées-Orientales','67':'Bas-Rhin','68':'Haut-Rhin','69':'Rhône',
+  '70':'Haute-Saône','71':'Saône-et-Loire','72':'Sarthe','73':'Savoie','74':'Haute-Savoie',
+  '75':'Paris','76':'Seine-Maritime','77':'Seine-et-Marne','78':'Yvelines','79':'Deux-Sèvres',
+  '80':'Somme','81':'Tarn','82':'Tarn-et-Garonne','83':'Var','84':'Vaucluse',
+  '85':'Vendée','86':'Vienne','87':'Haute-Vienne','88':'Vosges','89':'Yonne',
+  '90':'Territoire de Belfort','91':'Essonne','92':'Hauts-de-Seine','93':'Seine-Saint-Denis','94':'Val-de-Marne',
+  '95':"Val-d'Oise",'971':'Guadeloupe','972':'Martinique','973':'Guyane','974':'La Réunion','976':'Mayotte'
 };
 function getDeptFromPostal(cp) {
   if (!cp || cp.length < 2) return null;
@@ -4009,6 +4364,21 @@ function getDeptFromPostal(cp) {
 function getPrixM2(cp) {
   var dept = getDeptFromPostal(cp);
   return PRIX_M2[dept] || PRIX_M2['default'];
+}
+
+/* ─── TYPOLOGIES (surface moyenne + multiplicateur prix/m²) ────────────── */
+/* Source : ordres de grandeur DVF 2024 + Notaires de France. */
+/* Multiplicateur appliqué au prix/m² départemental moyen. */
+var TYPOLOGIES = [
+  { id:'studio', label:'Studio',  surface:22, mult:1.15, icon:'🏙️',  short:'≤ 30 m², 1 pièce' },
+  { id:'t2',     label:'T2',      surface:42, mult:1.05, icon:'🏠',   short:'40–50 m², 2 pièces' },
+  { id:'t3',     label:'T3',      surface:62, mult:1.00, icon:'🏡',   short:'60–75 m², 3 pièces' },
+  { id:'t4',     label:'T4 +',    surface:85, mult:0.97, icon:'🏡',   short:'≥ 80 m², 4 pièces +' },
+  { id:'maison', label:'Maison',  surface:105,mult:0.93, icon:'🏡',   short:'Avec terrain' }
+];
+function getTypoById(id) { for (var i=0;i<TYPOLOGIES.length;i++){ if (TYPOLOGIES[i].id===id) return TYPOLOGIES[i]; } return TYPOLOGIES[2]; }
+function estimateTypoPrice(typo, prixM2Base) {
+  return Math.round(typo.surface * prixM2Base * typo.mult);
 }
 
 /* ─── HORIZON SLIDER DATA ───────────────────────────────── */
@@ -4023,6 +4393,7 @@ var S = {
   currentScreen: 0,
   projectType: '', horizon: '3m', status: '', primo: '', propertyType: '',
   codePostal: '', prixM2: 2500, deptName: '',
+  communeNom: '', communeInsee: '', communeChoisie: false, typoChoisie: '', typosShortlist: [],
   revenus: 0, revenusCompl: 0, autresEntrees: 0, charges: 0, chargesFixes: 0, credits: 0, loyer: 0,
   duree: 25, taux: 3.0, assurance: 0, assuranceEmprunteur: 0, presetMode: 'equilibre',
   mensualiteCible: 0, mensualiteMax: 0, tauxEffort: 0, tauxEffortA: 0, resteAVivre: 0, resteVivreB: 0,
@@ -4260,6 +4631,7 @@ function goToScreen(idx) {
     }
     updateCost();
   }
+  if (idx === 5) initScreen5();
   if (idx === 6) initScreen6();
   if (idx === 7) { buildTimeline(); initTimelinePersonalization(); }
   if (idx === 8) buildFinalScreen();
@@ -6527,6 +6899,275 @@ function getHorizonLabel(h) {
   var labels = {'0-6':'Moins de 6 mois','6-12':'6 à 12 mois','12-24':'1 à 2 ans','24+':'Plus de 2 ans'};
   return labels[h] || h || '—';
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   SCREEN 5 — Emplacement & typologie (Commit 5a)
+   ──────────────────────────────────────────────────────────────────── */
+
+var S5_COMMUNE_API = 'https://geo.api.gouv.fr/communes';
+var _s5SuggestTimer = null;
+var _s5SuggestCache = {};
+
+function s5OnCommuneInput() {
+  var input = $('input-commune-s5');
+  if (!input) return;
+  var q = (input.value || '').trim();
+  if (q.length < 2) { s5HideSuggest(); return; }
+  if (_s5SuggestTimer) clearTimeout(_s5SuggestTimer);
+  _s5SuggestTimer = setTimeout(function(){ s5FetchSuggest(q); }, 220);
+}
+
+function s5FetchSuggest(q) {
+  if (_s5SuggestCache[q]) { s5RenderSuggest(_s5SuggestCache[q]); return; }
+  var url = S5_COMMUNE_API + '?nom=' + encodeURIComponent(q) + '&fields=code,nom,codeDepartement,codesPostaux,population&boost=population&limit=8';
+  fetch(url).then(function(r){ return r.ok ? r.json() : []; }).then(function(data){
+    _s5SuggestCache[q] = data || [];
+    s5RenderSuggest(_s5SuggestCache[q]);
+  }).catch(function(){ s5RenderSuggest([]); });
+}
+
+function s5RenderSuggest(items) {
+  var box = $('s5-suggest');
+  if (!box) return;
+  if (!items || !items.length) { box.classList.remove('open'); box.innerHTML = ''; return; }
+  var html = '';
+  for (var i=0; i<items.length; i++) {
+    var it = items[i];
+    var cps = (it.codesPostaux && it.codesPostaux[0]) || '—';
+    var dep = it.codeDepartement || '';
+    var nom = (it.nom || '').replace(/"/g,'&quot;');
+    html += '<div class="s5-suggest-item" role="option" tabindex="-1"' +
+            ' data-insee="' + it.code + '"' +
+            ' data-nom="' + nom + '"' +
+            ' data-cp="' + cps + '"' +
+            ' data-dep="' + dep + '"' +
+            ' onmousedown="s5PickCommune(this)">' +
+            '<span>' + nom + '</span>' +
+            '<span class="ssi-meta">' + cps + ' · ' + dep + '</span>' +
+            '</div>';
+  }
+  box.innerHTML = html;
+  box.classList.add('open');
+}
+
+function s5HideSuggest() {
+  var box = $('s5-suggest');
+  if (box) { box.classList.remove('open'); }
+}
+
+function s5PickCommune(el) {
+  var input = $('input-commune-s5');
+  var nom = el.getAttribute('data-nom') || '';
+  var insee = el.getAttribute('data-insee') || '';
+  var cp = el.getAttribute('data-cp') || '';
+  var dep = el.getAttribute('data-dep') || '';
+  if (input) input.value = nom;
+  s5HideSuggest();
+  S.communeNom = nom;
+  S.communeInsee = insee;
+  S.codePostal = cp;
+  S.communeChoisie = true;
+  // Le prix m² reste un fallback département (DVF agrégé)
+  S.prixM2 = getPrixM2(cp);
+  S.deptName = DEPT_NAMES[dep] || dep;
+  s5RenderInfo();
+  s5RenderCards();
+}
+
+function s5RenderInfo() {
+  var el = $('s5-prixm2');
+  if (!el) return;
+  if (!S.communeChoisie) { el.textContent = '—'; return; }
+  el.textContent = new Intl.NumberFormat('fr-FR').format(S.prixM2) + ' €/m²';
+}
+
+/* Budget total = capacité d'emprunt + apport mobilisable */
+function s5GetBudget() {
+  var emprunt = Number(S.capitalEmpruntable) || 0;
+  var apport = Number((typeof S.apportMobilisable !== 'undefined' ? S.apportMobilisable : 0)) ||
+               (Number(S.epargneTotale || 0) - Number(S.matelasActuel || 0) - Number(S.epargneBloquee || 0));
+  if (apport < 0) apport = 0;
+  return { emprunt: emprunt, apport: apport, total: emprunt + apport };
+}
+
+function s5SuggestTypoId(budget, prixM2) {
+  // Choisit la plus grande typologie qui rentre dans le budget
+  if (!prixM2 || prixM2 <= 0) return 't3';
+  for (var i = TYPOLOGIES.length - 1; i >= 0; i--) {
+    var price = estimateTypoPrice(TYPOLOGIES[i], prixM2);
+    if (price <= budget) return TYPOLOGIES[i].id;
+  }
+  return TYPOLOGIES[0].id; // studio par défaut si rien ne rentre
+}
+
+function s5RenderPills() {
+  var box = $('s5-typo-pills');
+  if (!box) return;
+  var b = s5GetBudget();
+  var suggested = s5SuggestTypoId(b.total, S.prixM2);
+  if (!S.typoChoisie) S.typoChoisie = suggested;
+  var html = '';
+  for (var i=0; i<TYPOLOGIES.length; i++) {
+    var t = TYPOLOGIES[i];
+    var classes = ['s5-typo-pill'];
+    if (t.id === S.typoChoisie) classes.push('selected');
+    if (t.id === suggested) classes.push('suggested');
+    html += '<button type="button" class="' + classes.join(' ') + '" data-typo="' + t.id + '" onclick="s5PickTypo(\'' + t.id + '\')">' +
+            '<span aria-hidden="true">' + t.icon + '</span> ' + t.label + '</button>';
+  }
+  box.innerHTML = html;
+}
+
+function s5PickTypo(id) {
+  S.typoChoisie = id;
+  s5RenderPills();
+  s5RenderCards();
+  // Fermeture auto de la modale si ouverte
+  if (document.getElementById('s5-typo-modal') && !document.getElementById('s5-typo-modal').hidden) {
+    s5CloseTypoModal();
+  }
+}
+
+function s5UpdateChangeBtnLabel() {
+  var lbl = $('s5-change-btn-label');
+  if (!lbl) return;
+  var t = getTypoById(S.typoChoisie);
+  lbl.textContent = t ? ('Typologie : ' + t.label) : 'Changer de typologie';
+}
+
+function s5OpenTypoModal() {
+  var modal = $('s5-typo-modal');
+  if (!modal) return;
+  s5RenderPills(); // re-render pour reflet étoile/sélection à jour
+  modal.hidden = false;
+  document.body.style.overflow = 'hidden';
+  // Focus 1ère pill sélectionnée ou bouton fermer
+  setTimeout(function(){
+    var sel = modal.querySelector('.s5-typo-pill.selected') || modal.querySelector('.s5-typo-pill');
+    if (sel) sel.focus();
+  }, 50);
+}
+
+function s5CloseTypoModal() {
+  var modal = $('s5-typo-modal');
+  if (!modal) return;
+  modal.hidden = true;
+  document.body.style.overflow = '';
+  // Restaure focus sur le bouton d'ouverture
+  var btn = $('s5-change-btn');
+  if (btn) btn.focus();
+}
+
+function s5CloseTypoModalIfOverlay(e) {
+  if (e && e.target && e.target.id === 's5-typo-modal') s5CloseTypoModal();
+}
+
+// Esc pour fermer la modale
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') {
+    var modal = document.getElementById('s5-typo-modal');
+    if (modal && !modal.hidden) s5CloseTypoModal();
+  }
+});
+
+function s5BuildShortlist() {
+  // 3 typologies cohérentes autour de la typo choisie : la précédente, la choisie, la suivante.
+  var idx = 0;
+  for (var i=0; i<TYPOLOGIES.length; i++) {
+    if (TYPOLOGIES[i].id === S.typoChoisie) { idx = i; break; }
+  }
+  var start = Math.max(0, Math.min(idx - 1, TYPOLOGIES.length - 3));
+  return TYPOLOGIES.slice(start, start + 3);
+}
+
+function s5RenderCards() {
+  var grid = $('s5-cards-grid');
+  var budgetEl = $('s5-budget-val');
+  var detailEl = $('s5-budget-detail');
+  if (!grid) return;
+  var b = s5GetBudget();
+  if (budgetEl) budgetEl.textContent = b.total > 0 ? new Intl.NumberFormat('fr-FR').format(Math.round(b.total)) + ' €' : '—';
+  if (detailEl) {
+    detailEl.textContent = b.total > 0
+      ? '= ' + new Intl.NumberFormat('fr-FR').format(Math.round(b.emprunt)) + ' € emprunt + ' + new Intl.NumberFormat('fr-FR').format(Math.round(b.apport)) + ' € apport'
+      : 'emprunt + apport';
+  }
+  if (!S.communeChoisie) {
+    grid.innerHTML = '<div class="s5-card-detail" style="grid-column:1/-1;text-align:center;padding:1.5rem;">Choisis ta commune pour voir les typologies accessibles.</div>';
+    var ng = $('s5-neighbours'); if (ng) ng.style.display = 'none';
+    return;
+  }
+  var shortlist = s5BuildShortlist();
+  S.typosShortlist = shortlist.map(function(t){return t.id;});
+  var html = '';
+  var anyOut = false;
+  for (var i=0; i<shortlist.length; i++) {
+    var t = shortlist[i];
+    var price = estimateTypoPrice(t, S.prixM2);
+    var inBudget = (b.total > 0 && price <= b.total);
+    if (!inBudget) anyOut = true;
+    var cls = 's5-card ' + (inBudget ? 'in-budget' : 'out-budget');
+    html += '<div class="' + cls + '" data-typo="' + t.id + '">' +
+            '<div class="s5-card-head">' +
+              '<span class="s5-card-typo">' + t.label + '</span>' +
+              '<span class="s5-card-icon" aria-hidden="true">' + t.icon + '</span>' +
+            '</div>' +
+            '<div class="s5-card-detail">' + t.short + '</div>' +
+            '<div class="s5-card-price">' + new Intl.NumberFormat('fr-FR').format(price) + ' €</div>' +
+            '<div class="s5-card-surface">~ ' + t.surface + ' m² · ' + Math.round(S.prixM2 * t.mult) + ' €/m²</div>' +
+            '<div class="s5-card-status">' + (inBudget ? '✓ Atteignable' : '⚠ Hors budget') + '</div>' +
+            '</div>';
+  }
+  grid.innerHTML = html;
+  // Bloc adaptation : visible uniquement si au moins une typologie est hors budget
+  var ng = $('s5-neighbours');
+  if (ng) ng.style.display = anyOut ? 'flex' : 'none';
+  // Mise à jour du nom de commune dans le message d'adaptation
+  var tightCommuneEl = $('s5-budget-tight-commune');
+  if (tightCommuneEl) tightCommuneEl.textContent = S.communeNom || 'cette commune';
+  // Label du bouton "Changer"
+  s5UpdateChangeBtnLabel();
+}
+
+function initScreen5() {
+  // Pré-remplissage depuis code postal S1 si pas encore choisi
+  var input = $('input-commune-s5');
+  if (input && !S.communeChoisie) {
+    if (S.codePostal && !input.value) {
+      // Lookup commune principale du CP via geo.api.gouv
+      fetch(S5_COMMUNE_API + '?codePostal=' + encodeURIComponent(S.codePostal) + '&fields=code,nom,codesPostaux,codeDepartement&boost=population&limit=1')
+        .then(function(r){ return r.ok ? r.json() : []; })
+        .then(function(data){
+          if (data && data.length) {
+            var c = data[0];
+            input.value = c.nom;
+            S.communeNom = c.nom;
+            S.communeInsee = c.code;
+            S.communeChoisie = true;
+            S.prixM2 = getPrixM2(S.codePostal);
+            s5RenderInfo();
+            s5RenderCards();
+          }
+        }).catch(function(){});
+    }
+  } else if (S.communeChoisie && input && !input.value) {
+    input.value = S.communeNom || '';
+  }
+  s5RenderInfo();
+  s5RenderPills();
+  s5RenderCards();
+}
+
+// Expose pour onclick HTML
+window.s5OnCommuneInput = s5OnCommuneInput;
+window.s5HideSuggest = s5HideSuggest;
+window.s5PickCommune = s5PickCommune;
+window.s5PickTypo = s5PickTypo;
+window.s5OpenTypoModal = s5OpenTypoModal;
+window.s5CloseTypoModal = s5CloseTypoModal;
+window.s5CloseTypoModalIfOverlay = s5CloseTypoModalIfOverlay;
+window.initScreen5 = initScreen5;
+
 </script>
 
 <div id="pdf-preview" style="display:none"></div>
