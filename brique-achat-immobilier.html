@@ -1219,13 +1219,23 @@ html.dark .preset-btn.active { color:var(--v3-accent-strong); }
 /* ══════════════════════════════════════════════════════════════
    PARAMS AVANCÉS (accordéon collapsible)
 ══════════════════════════════════════════════════════════════ */
+/* (Commit 4) Toggle en mini-pill style — cohérence avec hypotheses-pill S2 */
 .params-toggle {
-  display:flex; align-items:center; gap:0.4rem;
-  font-size:0.78rem; font-weight:600;
-  color:var(--text-muted); cursor:pointer; margin-top:0.5rem; padding:0.4rem 0;
-  border:none; background:none; transition:color 0.15s ease;
+  display:inline-flex; align-items:center; gap:0.45rem;
+  font-size:0.78rem; font-weight:500;
+  color:var(--text-muted); cursor:pointer; margin-top:0.5rem;
+  padding:0.45rem 0.95rem;
+  background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.18);
+  border-radius:9999px; transition:all 0.18s ease;
 }
-.params-toggle:hover { color:var(--accent-strong); }
+.params-toggle::before {
+  content:''; width:6px; height:6px; border-radius:50%;
+  background:#8B5CF6; flex-shrink:0;
+}
+.params-toggle:hover {
+  color:var(--accent-strong); background:rgba(139,92,246,0.12);
+  border-color:rgba(139,92,246,0.28);
+}
 .params-body { display:none; padding-top:0.5rem; }
 .params-body.open { display:flex; flex-direction:column; gap:0.75rem; animation:fadeSlideUp 0.25s ease; }
 
@@ -1267,10 +1277,14 @@ html.dark .repartition-mobilisable { background:var(--v3-accent-strong); }
   background:var(--cream-grad); border:1px solid var(--cream-border);
   padding:1.5rem; display:flex; flex-direction:column; gap:0.75rem;
 }
+/* (Commit 4) Watermark hero apport — SVG à la place de l'emoji */
 .apport-hero-bg {
-  position:absolute; right:-10px; bottom:-10px; opacity:0.08;
-  font-size:7rem; pointer-events:none; user-select:none;
+  position:absolute; right:-12px; bottom:-12px;
+  width:120px; height:120px; opacity:0.08; pointer-events:none; user-select:none;
+  color:var(--accent-strong);
 }
+.apport-hero-bg svg { width:100%; height:100%; }
+html.dark .apport-hero-bg { opacity:0.11; color:var(--v3-accent-strong, #FBBF24); }
 .apport-hero-label { font-size:0.6875rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--accent-strong); }
 html.dark .apport-hero-label { color:var(--v3-accent-strong); }
 .apport-hero-value { font-family:var(--font-display); font-size:2rem; font-weight:400; color:var(--text); line-height:1.1; }
@@ -2478,34 +2492,38 @@ html.dark .cs-logement-status { color:var(--v3-accent-strong); }
   margin-bottom:1rem;
   border:1px solid var(--border-subtle);
 }
+/* (Commit 4) Palette unifiée — nuances de violet (light) / jaune (dark) pour les 4 groupes S4 */
 .s4-group--prix {
-  background:rgba(91,33,182,0.06);
-  border-color:rgba(91,33,182,0.12);
+  background:rgba(91,33,182,0.07);
+  border-color:rgba(91,33,182,0.14);
   padding:1.5rem;
   text-align:center;
 }
-html.dark .s4-group--prix { background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.14); }
+html.dark .s4-group--prix { background:rgba(251,191,36,0.08); border-color:rgba(251,191,36,0.16); }
 .s4-group--frais {
-  background:rgba(99,102,241,0.05);
-  border-color:rgba(99,102,241,0.10);
+  background:rgba(124,58,237,0.05);
+  border-color:rgba(124,58,237,0.10);
 }
-html.dark .s4-group--frais { background:rgba(99,102,241,0.08); border-color:rgba(99,102,241,0.12); }
+html.dark .s4-group--frais { background:rgba(245,158,11,0.06); border-color:rgba(245,158,11,0.12); }
 .s4-group--travaux {
-  background:rgba(20,184,166,0.05);
-  border-color:rgba(20,184,166,0.10);
+  background:rgba(139,92,246,0.045);
+  border-color:rgba(139,92,246,0.09);
 }
-html.dark .s4-group--travaux { background:rgba(20,184,166,0.08); border-color:rgba(20,184,166,0.12); }
+html.dark .s4-group--travaux { background:rgba(234,179,8,0.055); border-color:rgba(234,179,8,0.11); }
 .s4-group--charges {
-  background:rgba(245,158,11,0.05);
-  border-color:rgba(245,158,11,0.10);
+  background:rgba(167,139,250,0.05);
+  border-color:rgba(167,139,250,0.10);
 }
-html.dark .s4-group--charges { background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.12); }
+html.dark .s4-group--charges { background:rgba(250,204,21,0.05); border-color:rgba(250,204,21,0.10); }
 
-/* Watermark icon */
+/* Watermark SVG — commit 4 : remplace emojis par icônes thématiques sobres */
 .s4-group-watermark {
-  position:absolute; right:-10px; top:50%; transform:translateY(-50%);
-  font-size:4rem; opacity:0.06; pointer-events:none; user-select:none;
+  position:absolute; right:-12px; bottom:-12px;
+  width:96px; height:96px; opacity:0.07; pointer-events:none; user-select:none;
+  color:var(--accent-strong);
 }
+.s4-group-watermark svg { width:100%; height:100%; }
+html.dark .s4-group-watermark { opacity:0.10; color:var(--v3-accent-strong, #FBBF24); }
 
 /* Group kicker */
 .s4-kicker {
@@ -2514,12 +2532,13 @@ html.dark .s4-group--charges { background:rgba(245,158,11,0.08); border-color:rg
   margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem;
 }
 .s4-kicker-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
-.s4-kicker--frais { color:#4F46E5; }
-.s4-kicker--travaux { color:#0D9488; }
-.s4-kicker--charges { color:#D97706; }
-html.dark .s4-kicker--frais { color:#818CF8; }
-html.dark .s4-kicker--travaux { color:#2DD4BF; }
-html.dark .s4-kicker--charges { color:#FBBF24; }
+/* (Commit 4) Kickers — nuances de violet (light) / jaune (dark) */
+.s4-kicker--frais { color:#7C3AED; }
+.s4-kicker--travaux { color:#8B5CF6; }
+.s4-kicker--charges { color:#A78BFA; }
+html.dark .s4-kicker--frais { color:#F59E0B; }
+html.dark .s4-kicker--travaux { color:#EAB308; }
+html.dark .s4-kicker--charges { color:#FACC15; }
 
 /* Hero prix */
 .s4-prix-badge {
@@ -2584,10 +2603,11 @@ html.dark .s4-kicker--charges { color:#FBBF24; }
   text-transform:uppercase; padding:0.15rem 0.45rem;
   border-radius:var(--r-full);
 }
-.s4-badge-estime { background:rgba(20,184,166,0.12); color:#0D9488; }
-html.dark .s4-badge-estime { background:rgba(45,212,191,0.15); color:#2DD4BF; }
-.s4-badge-modifie { background:rgba(99,102,241,0.12); color:#4F46E5; }
-html.dark .s4-badge-modifie { background:rgba(129,140,248,0.15); color:#818CF8; }
+/* (Commit 4) Badges Estimé/Modifié — nuances de violet (light) / jaune (dark) au lieu de teal */
+.s4-badge-estime { background:rgba(139,92,246,0.12); color:#7C3AED; }
+html.dark .s4-badge-estime { background:rgba(251,191,36,0.14); color:#FBBF24; }
+.s4-badge-modifie { background:rgba(91,33,182,0.14); color:#5B21B6; }
+html.dark .s4-badge-modifie { background:rgba(245,158,11,0.18); color:#F59E0B; }
 
 /* Sous-total */
 .s4-subtotal {
@@ -3299,11 +3319,12 @@ html.dark .s4-result-card--mensuel {
               </div>
             </div>
 
-            <!-- Autres apports -->
+            <!-- Autres apports (Commit 4 — label clarifié + helper text) -->
             <div style="margin-top:1rem;">
               <div class="field-group">
-                <label class="field-label" for="input-aide-famille">Autres apports</label>
+                <label class="field-label" for="input-aide-famille">Autres apports <span style="font-weight:400;color:var(--text-faint);font-size:0.72rem;">(facultatif)</span></label>
                 <div class="euro-wrap"><input type="number" id="input-aide-famille" class="field-input" placeholder="ex : don familial..." min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
+                <div style="font-size:0.7rem;color:var(--text-faint);margin-top:0.35rem;">Don familial, héritage, PTZ — viendra s'ajouter à ton apport mobilisable.</div>
               </div>
             </div>
 
@@ -3329,7 +3350,9 @@ html.dark .s4-result-card--mensuel {
 
             <!-- Hero card apport mobilisable -->
             <div class="apport-hero" id="apport-hero" style="margin-top:1.25rem;">
-              <div class="apport-hero-bg">🏠</div>
+              <div class="apport-hero-bg" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-7h4v7h4a1 1 0 0 0 1-1V10"/></svg>
+              </div>
               <div class="apport-hero-label">TON APPORT MOBILISABLE</div>
               <div class="apport-hero-value" id="apport-hero-value">--</div>
               <div class="apport-hero-sub" id="apport-hero-sub"></div>
@@ -3355,7 +3378,9 @@ html.dark .s4-result-card--mensuel {
 
             <!-- GROUPE 1 — PRIX DU BIEN (hero) -->
             <div class="s4-group s4-group--prix">
-              <div class="s4-group-watermark">🏢</div>
+              <div class="s4-group-watermark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-7h4v7h4a1 1 0 0 0 1-1V10"/></svg>
+              </div>
               <div class="s4-prix-badge">Prérempli avec ta capacité d'emprunt</div>
               <div class="s4-prix-value" id="s4-prix-display" onclick="s4EditPrix()">--</div>
               <input type="number" class="s4-prix-input" id="input-prix-bien" placeholder="ex : 200 000" min="0" inputmode="numeric"/>
@@ -3364,8 +3389,10 @@ html.dark .s4-result-card--mensuel {
 
             <!-- GROUPE 2 — FRAIS D'ACQUISITION -->
             <div class="s4-group s4-group--frais">
-              <div class="s4-group-watermark">📄</div>
-              <div class="s4-kicker s4-kicker--frais"><span class="s4-kicker-dot" style="background:#4F46E5"></span> FRAIS D'ACQUISITION</div>
+              <div class="s4-group-watermark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+              </div>
+              <div class="s4-kicker s4-kicker--frais"><span class="s4-kicker-dot" style="background:#7C3AED"></span> FRAIS D'ACQUISITION</div>
               <div class="s4-fields">
                 <div class="s4-field-card" data-input="input-frais-notaire" onclick="s4EditField(this)">
                   <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Frais de notaire')" tabindex="0">Frais de notaire</button></div>
@@ -3406,8 +3433,10 @@ html.dark .s4-result-card--mensuel {
 
             <!-- GROUPE 3 — TRAVAUX & INSTALLATION -->
             <div class="s4-group s4-group--travaux">
-              <div class="s4-group-watermark">🔧</div>
-              <div class="s4-kicker s4-kicker--travaux"><span class="s4-kicker-dot" style="background:#0D9488"></span> TRAVAUX & INSTALLATION</div>
+              <div class="s4-group-watermark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+              <div class="s4-kicker s4-kicker--travaux"><span class="s4-kicker-dot" style="background:#8B5CF6"></span> TRAVAUX & INSTALLATION</div>
               <div class="s4-field-card" data-input="input-travaux-autres" onclick="s4EditField(this)" style="max-width:100%;">
                 <div class="s4-field-label">Travaux & Installation
                   <span class="field-tooltip"><span class="tooltip-icon" onclick="event.stopPropagation()">?</span><span class="tooltip-text">Incluant meubles, déménagement et équipements</span></span>
@@ -3419,8 +3448,10 @@ html.dark .s4-result-card--mensuel {
 
             <!-- GROUPE 4 — CHARGES RÉCURRENTES -->
             <div class="s4-group s4-group--charges">
-              <div class="s4-group-watermark">🧾</div>
-              <div class="s4-kicker s4-kicker--charges"><span class="s4-kicker-dot" style="background:#D97706"></span> CHARGES RÉCURRENTES</div>
+              <div class="s4-group-watermark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+              </div>
+              <div class="s4-kicker s4-kicker--charges"><span class="s4-kicker-dot" style="background:#A78BFA"></span> CHARGES RÉCURRENTES</div>
               <div class="s4-fields">
                 <div class="s4-field-card" data-input="input-taxe-fonciere" onclick="s4EditField(this)">
                   <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Taxe foncière')" tabindex="0">Taxe foncière</button> / an</div>
@@ -4817,7 +4848,12 @@ function updateSynthesePanel() {
   var currentIdx = (typeof S.currentScreen === 'number') ? S.currentScreen : 0;
   function txtCap()    { return currentIdx >= 2 ? 'En attente de tes revenus' : '\u00e0 l\'\u00e9tape 2'; }
   function txtApport() { return currentIdx >= 3 ? 'En attente de ton apport'   : '\u00e0 l\'\u00e9tape 3'; }
-  function txtSub()    { return currentIdx >= 2 ? 'Renseigne tes revenus pour voir ta capacit\u00e9' : 'Calcul \u00e0 partir de l\'\u00e9tape 2'; }
+  // (Commit 4) Wording sub plus actionnable selon position courante
+  function txtSub()    {
+    if (currentIdx >= 4) return 'Reviens \u00e0 l\'\u00e9tape 2 pour renseigner tes revenus';
+    if (currentIdx >= 2) return 'Renseigne tes revenus pour voir ta capacit\u00e9';
+    return 'Calcul \u00e0 partir de l\'\u00e9tape 2';
+  }
 
   // État verrouillé tant qu'on n'a pas la capacité (avant écran 2)
   if (!S.capitalEmpruntable || S.capitalEmpruntable <= 0) {
