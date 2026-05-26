@@ -3124,6 +3124,358 @@ html.dark .s5-typo-pill.selected.suggested::after { color:#0B0B1A; }
 html.dark .s5-neighbours-cta-secondary:hover { color:#0B0B1A; }
 .s5-neighbours-or { font-size:0.78rem; color:var(--v3-text-muted); }
 .s5-neighbours-tip { font-size:0.82rem; color:var(--v3-text-secondary); }
+
+/* ═══════════════════════════════════════════════════════════════
+   COMMIT 6 — S7 DOUBLE VUE (Projection + Processus)
+═══════════════════════════════════════════════════════════════ */
+
+/* Switcher tabs */
+.s7-vue-switcher {
+  display:inline-flex; gap:.25rem; padding:.25rem;
+  background: var(--surface-2);
+  border-radius: var(--r-full);
+  border:1px solid var(--border-subtle);
+  margin-bottom: 1.5rem;
+}
+.s7-vue-tab {
+  padding:.5rem 1.1rem; border-radius: var(--r-full);
+  font-size:.85rem; font-weight:500;
+  color: var(--text-muted); cursor:pointer;
+  transition: all .2s var(--ease-out);
+  display:inline-flex; align-items:center; gap:.45rem;
+  border:none; background:transparent; font-family:inherit;
+}
+.s7-vue-tab svg { width:14px; height:14px; opacity:.7; }
+.s7-vue-tab.active {
+  background: var(--bg-elevated);
+  color: var(--accent-strong);
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  font-weight:600;
+}
+.s7-vue-tab.active svg { opacity:1; }
+
+.s7-vue { animation: fadeIn .25s var(--ease-out); }
+.s7-vue[hidden] { display:none; }
+
+/* ── VUE PROJECTION ── */
+.s7-proj-kpis {
+  display:grid; grid-template-columns: repeat(3, 1fr);
+  gap:.75rem; margin-bottom: 1.5rem;
+}
+.s7-kpi {
+  padding:1rem 1.1rem; border-radius: var(--r-md);
+  background: var(--surface-2);
+  border:1px solid var(--border-subtle);
+}
+.s7-kpi-label {
+  font-size:.7rem; font-weight:600; letter-spacing:.08em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom:.25rem;
+}
+.s7-kpi-value {
+  font-family: var(--font-display); font-style: italic;
+  font-size:1.45rem; color: var(--text); font-weight:500;
+  line-height:1.2;
+}
+.s7-kpi-hint { font-size:.72rem; color: var(--text-faint); margin-top:.15rem; }
+.s7-kpi.highlight {
+  background: linear-gradient(135deg, var(--accent-soft), transparent);
+  border-color: rgba(167,139,250,.25);
+}
+.s7-kpi.highlight .s7-kpi-value { color: var(--accent-strong); }
+
+.s7-hypotheses {
+  display:flex; align-items:flex-start; gap:.65rem;
+  padding:.85rem 1rem; border-radius: var(--r-md);
+  background: var(--accent-soft);
+  border:1px solid rgba(196,181,253,.3);
+  font-size:.82rem; color: var(--text-secondary);
+  margin-bottom:1rem;
+}
+html.dark .s7-hypotheses { border-color: rgba(167,139,250,.25); }
+.s7-hypotheses-icon { font-size:1rem; flex-shrink:0; }
+
+.s7-chart-wrap {
+  background: var(--surface);
+  border:1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding:1.5rem 1.25rem 1.25rem;
+  margin-bottom:1.25rem;
+}
+.s7-chart-header {
+  display:flex; justify-content:space-between; align-items:baseline;
+  gap:1rem; flex-wrap:wrap;
+  margin-bottom:1rem;
+}
+.s7-chart-title { font-size:.9rem; font-weight:600; color: var(--text); }
+.s7-chart-legend {
+  display:flex; gap:1rem; font-size:.72rem; color: var(--text-muted);
+  flex-wrap:wrap;
+}
+.s7-legend-item { display:inline-flex; align-items:center; gap:.4rem; }
+.s7-legend-dot { width:8px; height:8px; border-radius:50%; }
+.s7-legend-dot.crd { background:#FB923C; }
+.s7-legend-dot.val { background:#818CF8; }
+.s7-legend-dot.net { background:#22C55E; }
+html.dark .s7-legend-dot.net { background:#4ade80; }
+
+.s7-chart-svg { width:100%; height:240px; display:block; }
+.s7-chart-svg .grid-line { stroke: var(--border-subtle); stroke-width:1; }
+.s7-chart-svg .axis-label { font-size:10px; fill: var(--text-faint); font-family: var(--font-body); }
+.s7-chart-svg .curve-crd { stroke:#FB923C; stroke-width:2; fill:none; }
+.s7-chart-svg .curve-val { stroke:#818CF8; stroke-width:2; fill:none; stroke-dasharray:4 3; }
+.s7-chart-svg .curve-net { stroke:#22C55E; stroke-width:2.5; fill:none; }
+html.dark .s7-chart-svg .curve-net { stroke:#4ade80; }
+.s7-chart-svg .area-net { fill:rgba(34,197,94,.10); }
+html.dark .s7-chart-svg .area-net { fill:rgba(74,222,128,.12); }
+.s7-chart-svg .jalon-line { stroke: var(--text-faint); stroke-width:1; stroke-dasharray:2 3; }
+.s7-chart-svg .jalon-label { font-size:10px; fill: var(--text-muted); font-weight:500; font-family: var(--font-body); }
+.s7-chart-svg .dot-revente { fill: var(--accent-strong); stroke: var(--bg-elevated); stroke-width:2; }
+
+.s7-revente-wrap {
+  background: var(--surface);
+  border:1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding:1.25rem;
+  margin-bottom:1.25rem;
+}
+.s7-revente-head {
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin-bottom:1rem;
+}
+.s7-revente-title { font-size:.9rem; font-weight:600; color: var(--text); }
+.s7-revente-year {
+  font-family: var(--font-display); font-style: italic;
+  font-size:1.15rem; color: var(--accent-strong); font-weight:600;
+}
+.s7-revente-slider {
+  -webkit-appearance:none; appearance:none;
+  width:100%; height:6px; border-radius:3px;
+  background: linear-gradient(to right, var(--accent-strong) 40%, var(--track) 40%);
+  outline:none;
+}
+.s7-revente-slider::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none;
+  width:20px; height:20px; border-radius:50%;
+  background:#fff; border:3px solid var(--accent-strong);
+  cursor:pointer; box-shadow: 0 2px 6px rgba(91,33,182,.25);
+}
+.s7-revente-slider::-moz-range-thumb {
+  width:20px; height:20px; border-radius:50%;
+  background:#fff; border:3px solid var(--accent-strong);
+  cursor:pointer;
+}
+.s7-revente-bornes {
+  display:flex; justify-content:space-between;
+  margin-top:.4rem; font-size:.7rem; color: var(--text-faint);
+}
+.s7-revente-result {
+  display:grid; grid-template-columns: 1fr 1fr; gap:.75rem;
+  margin-top:1rem;
+}
+.s7-revente-card {
+  padding:.9rem 1rem; border-radius: var(--r-md);
+  background: var(--surface-2); border:1px solid var(--border-subtle);
+}
+.s7-revente-card-label {
+  font-size:.68rem; font-weight:600; letter-spacing:.08em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom:.2rem;
+}
+.s7-revente-card-value {
+  font-family: var(--font-display); font-style: italic;
+  font-size:1.25rem; font-weight:500; color: var(--text);
+}
+.s7-revente-card.net {
+  background: linear-gradient(135deg, var(--green-soft), transparent);
+  border-color: rgba(34,197,94,.18);
+}
+.s7-revente-card.net .s7-revente-card-value { color: var(--green); }
+.s7-revente-detail {
+  font-size:.74rem; color: var(--text-muted); margin-top:.85rem;
+  padding-top:.85rem; border-top:1px solid var(--border-subtle);
+}
+.s7-revente-detail span { display:inline-block; margin-right:.85rem; margin-bottom:.25rem; }
+.s7-revente-detail strong { color: var(--text-secondary); font-weight:600; }
+.s7-disclaimer {
+  font-size:.7rem; color: var(--text-faint); text-align:center; padding:0 1rem;
+  margin:.5rem 0 1rem;
+}
+
+/* ── VUE PROCESSUS ── */
+.s7-frise-wrap {
+  background: var(--surface);
+  border:1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding:1.25rem 1.5rem;
+  margin-bottom:1.5rem;
+  overflow-x:auto;
+}
+.s7-frise {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  position:relative; min-width:600px;
+  padding:1.25rem 0 .25rem;
+}
+.s7-frise::before {
+  content:''; position:absolute; left:1.5rem; right:1.5rem; top:2.5rem;
+  height:2px; background: linear-gradient(to right, #C4B5FD, #818CF8, #FB923C);
+  border-radius:1px;
+}
+html.dark .s7-frise::before {
+  background: linear-gradient(to right, #A78BFA, #818CF8, #FB923C);
+}
+.s7-frise-step {
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center; min-width:80px;
+}
+.s7-frise-dot {
+  width:32px; height:32px; border-radius:50%;
+  background: var(--bg-elevated);
+  border:2px solid var(--accent-strong);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:.8rem; color: var(--accent-strong);
+  box-shadow: 0 0 0 4px var(--bg-elevated);
+}
+.s7-frise-step.done .s7-frise-dot {
+  background: var(--accent-strong); color:#fff;
+}
+html.dark .s7-frise-step.done .s7-frise-dot { color:#0B0B1A; }
+.s7-frise-step.legal .s7-frise-dot {
+  border-color:#FB923C; color:#FB923C;
+}
+.s7-frise-when {
+  font-size:.66rem; font-weight:600; color: var(--text-muted);
+  margin-top:.4rem; letter-spacing:.02em;
+}
+.s7-frise-what {
+  font-size:.72rem; color: var(--text-secondary); margin-top:.1rem;
+}
+
+.s7-process-list { display:flex; flex-direction:column; gap:.65rem; }
+.s7-process-card {
+  background: var(--surface);
+  border:1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  overflow:hidden;
+  transition: all .2s var(--ease-out);
+}
+.s7-process-card:hover { border-color: var(--border-hover); }
+.s7-process-card.open {
+  background: var(--bg-elevated);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+html.dark .s7-process-card.open { border-color: var(--accent-strong); }
+.s7-process-head {
+  padding:1rem 1.25rem; cursor:pointer;
+  display:flex; align-items:center; gap:1rem;
+  transition: background .15s;
+}
+.s7-process-head:hover { background: var(--surface-2); }
+.s7-process-card.open .s7-process-head:hover { background: transparent; }
+.s7-process-num {
+  width:32px; height:32px; border-radius:50%;
+  background: var(--accent-soft); color: var(--accent-strong);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:.85rem; flex-shrink:0;
+}
+.s7-process-card.legal .s7-process-num {
+  background: rgba(251,146,60,.15); color:#c2410c;
+}
+html.dark .s7-process-card.legal .s7-process-num { color:#FB923C; }
+.s7-process-body { flex:1; min-width:0; }
+.s7-process-title-row {
+  display:flex; align-items:baseline; gap:.6rem; flex-wrap:wrap;
+}
+.s7-process-title {
+  font-size:.95rem; font-weight:600; color: var(--text);
+}
+.s7-process-when {
+  font-size:.72rem; color: var(--text-muted); font-weight:500;
+}
+.s7-process-badge {
+  display:inline-flex; align-items:center; gap:.25rem;
+  font-size:.62rem; font-weight:600; padding:.15rem .5rem;
+  border-radius: var(--r-full); letter-spacing:.03em;
+  text-transform: uppercase;
+}
+.s7-process-badge.legal { background: rgba(251,146,60,.12); color:#c2410c; }
+html.dark .s7-process-badge.legal { color:#FB923C; }
+.s7-process-badge.urgent { background: var(--red-soft); color:#b91c1c; }
+html.dark .s7-process-badge.urgent { color:#f87171; }
+.s7-process-preview {
+  font-size:.82rem; color: var(--text-muted); margin-top:.25rem;
+  line-height:1.5;
+}
+.s7-process-chevron {
+  color: var(--text-faint); transition: transform .25s var(--ease-out);
+  flex-shrink:0;
+}
+.s7-process-card.open .s7-process-chevron { transform: rotate(180deg); }
+.s7-process-detail {
+  max-height:0; overflow:hidden;
+  transition: max-height .3s var(--ease-out);
+}
+.s7-process-card.open .s7-process-detail { max-height:1000px; }
+.s7-process-detail-inner {
+  padding:.85rem 1.25rem 1.25rem 4.25rem;
+  border-top:1px solid var(--border-subtle);
+  margin-top:0;
+}
+.s7-process-body-text {
+  font-size:.85rem; color: var(--text-secondary); line-height:1.65;
+  margin-bottom:.85rem;
+}
+.s7-process-data {
+  background: var(--surface-2); border-radius: var(--r-sm);
+  padding:.6rem 1rem; margin-bottom:.85rem;
+  border:1px solid var(--border-subtle);
+}
+.s7-process-data-row {
+  display:flex; justify-content:space-between;
+  padding:.3rem 0; font-size:.82rem;
+  border-bottom:1px solid var(--border-subtle);
+}
+.s7-process-data-row:last-child { border-bottom:none; }
+.s7-process-data-row span:first-child { color: var(--text-muted); }
+.s7-process-data-row span:last-child { color: var(--text); font-weight:600; }
+.s7-process-legal-box {
+  background: rgba(251,146,60,.08);
+  border-left:3px solid #FB923C;
+  border-radius: var(--r-sm);
+  padding:.75rem 1rem; margin-bottom:.85rem;
+  font-size:.82rem; color: var(--text-secondary);
+}
+.s7-process-legal-box strong { color:#c2410c; }
+html.dark .s7-process-legal-box strong { color:#FB923C; }
+.s7-process-cta {
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.45rem 1rem; border-radius: var(--r-full);
+  background: var(--accent-strong); color:#fff;
+  font-size:.8rem; font-weight:600; border:none;
+  text-decoration:none; cursor:pointer;
+  font-family: inherit;
+}
+html.dark .s7-process-cta { color:#0B0B1A; }
+.s7-process-cta.disabled {
+  background: var(--surface-2); color: var(--text-muted);
+  border:1px dashed var(--border-mid);
+  cursor:not-allowed; pointer-events:none;
+}
+html.dark .s7-process-cta.disabled { color: var(--text-muted); }
+.s7-process-cta.disabled::after { content:' · bientôt'; font-weight:400; opacity:.8; }
+
+.tl-progress {
+  text-align:center; font-size:.75rem; color: var(--text-faint);
+  margin-top:1rem;
+}
+
+@media (max-width: 600px) {
+  .s7-proj-kpis { grid-template-columns: 1fr; }
+  .s7-revente-result { grid-template-columns: 1fr; }
+  .s7-process-detail-inner { padding-left: 1.25rem; }
+}
 </style>
 </head>
 <body data-brick-name="Achat immobilier">
@@ -4082,15 +4434,117 @@ html.dark .s5-neighbours-cta-secondary:hover { color:#0B0B1A; }
         <!-- ═══ SCREEN 7 — Les étapes d'un achat ═══ -->
         <div class="screen" id="screen-7">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 7 / 8 · PROCESSUS</div>
-            <h2 class="brick-title">Les grandes étapes avant les clés.</h2>
-            <p class="brick-subtitle">Clique sur une étape pour voir le détail.</p>
+            <div class="brick-kicker">ÉTAPE 7 / 8 · PROJECTION &amp; PROCESSUS</div>
+            <h2 class="brick-title">Visualise ton parcours, de l'offre aux clés.</h2>
+            <p class="brick-subtitle">Projection patrimoniale à long terme et étapes administratives concrètes.</p>
 
-            <div class="tl-container" id="timeline">
-              <!-- Populated by buildTimeline() -->
+            <!-- Switcher Projection / Processus -->
+            <div class="s7-vue-switcher" role="tablist" aria-label="Choisir une vue">
+              <button class="s7-vue-tab active" role="tab" aria-selected="true" data-vue="proj" onclick="s7SwitchVue('proj')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="14 7 21 7 21 14"/></svg>
+                Projection financière
+              </button>
+              <button class="s7-vue-tab" role="tab" aria-selected="false" data-vue="proc" onclick="s7SwitchVue('proc')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Étapes administratives
+              </button>
             </div>
 
-            <div class="tl-progress" id="tl-progress">0 / 10 étapes consultées</div>
+            <!-- ═══ VUE 1 — PROJECTION FINANCIÈRE ═══ -->
+            <div class="s7-vue active" id="s7-vue-proj" role="tabpanel">
+
+              <!-- KPI résumé -->
+              <div class="s7-proj-kpis">
+                <div class="s7-kpi">
+                  <div class="s7-kpi-label">Montant emprunté</div>
+                  <div class="s7-kpi-value" id="s7-kpi-emprunt">—</div>
+                  <div class="s7-kpi-hint" id="s7-kpi-emprunt-hint">—</div>
+                </div>
+                <div class="s7-kpi">
+                  <div class="s7-kpi-label">Coût total crédit</div>
+                  <div class="s7-kpi-value" id="s7-kpi-cout">—</div>
+                  <div class="s7-kpi-hint">intérêts + assurance</div>
+                </div>
+                <div class="s7-kpi highlight">
+                  <div class="s7-kpi-label">Patrimoine à 10 ans</div>
+                  <div class="s7-kpi-value" id="s7-kpi-patrimoine">—</div>
+                  <div class="s7-kpi-hint">valeur bien – capital restant</div>
+                </div>
+              </div>
+
+              <!-- Hypothèses -->
+              <div class="s7-hypotheses">
+                <span class="s7-hypotheses-icon" aria-hidden="true">✨</span>
+                <span>Projection conservatrice : valorisation du bien <strong>+1 %/an</strong>, taux fixe <strong id="s7-hyp-taux">3,8 %</strong>, assurance <strong id="s7-hyp-ass">0,36 %</strong>. Ajustables aux hypothèses.</span>
+              </div>
+
+              <!-- Graph patrimoine -->
+              <div class="s7-chart-wrap">
+                <div class="s7-chart-header">
+                  <div class="s7-chart-title">Évolution sur <span id="s7-chart-duree">25</span> ans</div>
+                  <div class="s7-chart-legend">
+                    <span class="s7-legend-item"><span class="s7-legend-dot val"></span> Valeur du bien</span>
+                    <span class="s7-legend-item"><span class="s7-legend-dot crd"></span> Capital dû</span>
+                    <span class="s7-legend-item"><span class="s7-legend-dot net"></span> Patrimoine net</span>
+                  </div>
+                </div>
+                <svg class="s7-chart-svg" id="s7-chart-svg" viewBox="0 0 600 240" preserveAspectRatio="none" aria-label="Graphique d'évolution patrimoniale">
+                  <!-- Populated by s7BuildChart() -->
+                </svg>
+              </div>
+
+              <!-- Scénario revente -->
+              <div class="s7-revente-wrap">
+                <div class="s7-revente-head">
+                  <div class="s7-revente-title">Et si tu revends ?</div>
+                  <div class="s7-revente-year" id="s7-revente-year-display">à 10 ans</div>
+                </div>
+                <input type="range" class="s7-revente-slider" id="s7-revente-slider"
+                       min="3" max="25" value="10" step="1"
+                       aria-label="Année de revente"
+                       oninput="s7UpdateRevente(this.value)">
+                <div class="s7-revente-bornes">
+                  <span>3 ans</span><span>15 ans</span><span>25 ans</span>
+                </div>
+                <div class="s7-revente-result">
+                  <div class="s7-revente-card">
+                    <div class="s7-revente-card-label">Valeur estimée du bien</div>
+                    <div class="s7-revente-card-value" id="s7-revente-valeur">—</div>
+                  </div>
+                  <div class="s7-revente-card net">
+                    <div class="s7-revente-card-label">Plus-value nette</div>
+                    <div class="s7-revente-card-value" id="s7-revente-net">—</div>
+                  </div>
+                </div>
+                <div class="s7-revente-detail">
+                  <span id="s7-revente-crd"><strong>Capital restant dû :</strong> —</span>
+                  <span id="s7-revente-frais"><strong>Frais agence (5 %) :</strong> —</span>
+                  <span><strong>IRPP plus-value :</strong> exonéré (RP)</span>
+                </div>
+              </div>
+
+              <p class="s7-disclaimer">
+                Simulation simplifiée. La fiscalité réelle (LMNP, IR, IS…) et l'évolution réelle du marché peuvent significativement modifier le résultat.
+              </p>
+            </div><!-- /s7-vue-proj -->
+
+            <!-- ═══ VUE 2 — PROCESSUS ADMINISTRATIF ═══ -->
+            <div class="s7-vue" id="s7-vue-proc" role="tabpanel" hidden>
+
+              <!-- Frise horizontale compacte -->
+              <div class="s7-frise-wrap">
+                <div class="s7-frise" id="s7-frise">
+                  <!-- Populated by s7BuildFrise() -->
+                </div>
+              </div>
+
+              <!-- Accordéon refondu -->
+              <div class="s7-process-list" id="timeline">
+                <!-- Populated by buildTimeline() -->
+              </div>
+
+              <div class="tl-progress" id="tl-progress">0 / 7 étapes consultées</div>
+            </div><!-- /s7-vue-proc -->
 
             <div class="nav-btns" style="margin-top:1.5rem;">
               <button class="btn-hero-secondary" onclick="goToScreen(6)">← Retour</button>
@@ -6089,6 +6543,21 @@ var TL_PREVIEWS = {
   'primo': 'Vérifier ton éligibilité au Prêt à Taux Zéro.'
 };
 
+/* ─── COMMIT 6 — Nouveau rendu Processus (cartes .s7-process-card) ─── */
+var S7_PROCESS_WHEN = {
+  1: 'J0',
+  2: 'J0 → J+15',
+  '2b': 'J0 → J+15',
+  3: 'J0 → J+15',
+  4: '~3 mois en moyenne',
+  5: 'J+90',
+  6: 'J+90 · +10j légal',
+  7: '~45 jours',
+  8: 'J+90 + 3 mois',
+  9: 'Jour des clés +',
+  10: 'Après les clés'
+};
+
 function buildTimeline() {
   var container = $('timeline');
   if (!container) return;
@@ -6099,93 +6568,63 @@ function buildTimeline() {
   _tlTotal = steps.length;
   _tlUpdateProgress();
 
-  var lastPhaseIdx = -1;
   var firstPertinent = null;
 
   for (var i = 0; i < steps.length; i++) {
     var step = steps[i];
-    var phase = _tlGetPhase(step.num);
     var isLegal = _tlIsLegal(step);
     var isGreyed = _tlIsGreyed(step);
     var isUrgent = _tlIsUrgent(step);
-    var numColor = isLegal ? '#f59e0b' : phase.color;
+    var stepNum = step.num;
+    var displayNum = (typeof stepNum === 'number' && stepNum < 10) ? '0' + stepNum : String(stepNum);
+    var whenLabel = S7_PROCESS_WHEN[stepNum] || '';
+    var preview = TL_PREVIEWS[step.detailKey] || '';
 
-    // Phase separator
-    if (phase.idx !== lastPhaseIdx) {
-      lastPhaseIdx = phase.idx;
-      var sep = document.createElement('div');
-      sep.className = 'tl-phase-sep';
-      sep.style.color = phase.color;
-      sep.textContent = 'PHASE ' + phase.idx + ' · ' + phase.name;
-      container.appendChild(sep);
-    }
-
-    // Card
     var card = document.createElement('div');
-    card.className = 'tl-card' + (isGreyed ? ' tl-greyed' : '');
-    card.setAttribute('data-step', step.num);
+    card.className = 's7-process-card' + (isLegal ? ' legal' : '') + (isGreyed ? ' s7-greyed' : '');
+    card.setAttribute('data-step', stepNum);
 
     var html = '';
-
-    // Accordion arrow
-    html += '<span class="tl-arrow">▼</span>';
-
-    // Glyph
-    html += '<div class="tl-glyph">' + (step.glyph || '') + '</div>';
-
-    // Header: dot + kicker + badges + who
-    html += '<div class="tl-header">';
-    html += '<span class="tl-dot" style="background:' + phase.color + '"></span>';
-    html += '<span class="tl-kicker" style="color:' + phase.color + '">' + phase.name + '</span>';
-    if (isLegal) html += '<span class="tl-badge tl-badge-legal">⚖️ Délai légal</span>';
-    if (isUrgent) html += '<span class="tl-badge tl-badge-urgent">⚡ Urgent</span>';
-    if (isGreyed) html += '<span class="tl-badge tl-badge-na">Non applicable</span>';
-    html += '<span class="tl-who" style="background:rgba(' + _tlHexToRgb(phase.color) + ',0.15);color:' + phase.color + '">' + step.who + '</span>';
+    html += '<div class="s7-process-head" role="button" tabindex="0" aria-expanded="false">';
+    html += '  <div class="s7-process-num">' + displayNum + '</div>';
+    html += '  <div class="s7-process-body">';
+    html += '    <div class="s7-process-title-row">';
+    html += '      <span class="s7-process-title">' + step.title + '</span>';
+    if (whenLabel) html += '      <span class="s7-process-when">' + whenLabel + '</span>';
+    if (isLegal) html += '      <span class="s7-process-badge legal">⚖ Délai légal</span>';
+    if (isUrgent) html += '      <span class="s7-process-badge urgent">⚡ Urgent</span>';
+    html += '    </div>';
+    if (preview) html += '    <div class="s7-process-preview">' + preview + '</div>';
+    html += '  </div>';
+    html += '  <svg class="s7-process-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>';
     html += '</div>';
 
-    // Number + title
-    html += '<div class="tl-title-row">';
-    html += '<span class="tl-num" style="color:' + numColor + '">' + (typeof step.num === 'number' && step.num < 10 ? '0' + step.num : step.num) + '</span>';
-    html += '<span class="tl-title">' + step.title + '</span>';
-    html += '</div>';
-
-    // Kicker preview (always visible)
-    var preview = TL_PREVIEWS[step.detailKey] || '';
-    if (preview) html += '<div class="tl-kicker-preview">' + preview + '</div>';
-
-    // Detail (accordion) — personalized content
-    html += '<div class="tl-detail" id="tl-detail-' + step.num + '">';
+    html += '<div class="s7-process-detail" id="tl-detail-' + stepNum + '">';
+    html += '  <div class="s7-process-detail-inner">';
     html += _tlDetailHTML(step.detailKey || '');
-
-    // Legal block
     if (step.legal) {
-      html += '<div class="tl-legal-block">';
-      html += '<div class="tl-legal-badge">⚖️ Délai légal</div>';
-      html += '<div>' + step.legal + '</div>';
-      html += '</div>';
+      html += '<div class="s7-process-legal-box"><strong>⚖ Délai légal :</strong> ' + step.legal + '</div>';
     }
-
-    html += '</div>'; // .tl-detail
+    html += '  </div>';
+    html += '</div>';
 
     card.innerHTML = html;
 
-    // Click-only accordion behavior
     if (!isGreyed) {
-      card.addEventListener('click', (function(s) { return function(e) { tlAccordionToggle(s, e); }; })(step.num));
+      var head = card.querySelector('.s7-process-head');
+      head.addEventListener('click', (function(s) { return function(e) { tlAccordionToggle(s, e); }; })(stepNum));
+      head.addEventListener('keydown', (function(s) { return function(e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tlAccordionToggle(s, e); }
+      }; })(stepNum));
     }
     container.appendChild(card);
 
-    if (!isGreyed && firstPertinent === null) firstPertinent = step.num;
-
-    // Duration indicator after certain steps
-    var numKey = typeof step.num === 'number' ? step.num : 0;
-    if (TIMELINE_DURATIONS[numKey]) {
-      var dur = document.createElement('div');
-      dur.className = 'tl-duration';
-      dur.textContent = TIMELINE_DURATIONS[numKey];
-      container.appendChild(dur);
-    }
+    if (!isGreyed && firstPertinent === null) firstPertinent = stepNum;
   }
+
+  // Build frise + projection vue when on screen 7
+  s7BuildFrise();
+  s7BuildProjection();
 
   // Auto-open first pertinent step
   if (firstPertinent !== null) {
@@ -6202,10 +6641,12 @@ function _tlHexToRgb(hex) {
 
 function tlAccordionOpen(num) {
   var detail = document.getElementById('tl-detail-' + num);
-  var card = detail ? detail.closest('.tl-card') : null;
-  if (detail && !detail.classList.contains('open')) {
-    detail.classList.add('open');
-    if (card) card.classList.add('tl-open');
+  var card = detail ? detail.closest('.s7-process-card, .tl-card') : null;
+  if (card && !card.classList.contains('open')) {
+    card.classList.add('open');
+    if (detail) detail.classList.add('open');
+    var head = card.querySelector('.s7-process-head');
+    if (head) head.setAttribute('aria-expanded', 'true');
     _tlConsulted[num] = true;
     _tlUpdateProgress();
   }
@@ -6213,27 +6654,31 @@ function tlAccordionOpen(num) {
 
 function tlAccordionClose(num) {
   var detail = document.getElementById('tl-detail-' + num);
-  var card = detail ? detail.closest('.tl-card') : null;
-  if (detail && detail.classList.contains('open')) {
-    detail.classList.remove('open');
-    if (card) card.classList.remove('tl-open');
+  var card = detail ? detail.closest('.s7-process-card, .tl-card') : null;
+  if (card && card.classList.contains('open')) {
+    card.classList.remove('open');
+    if (detail) detail.classList.remove('open');
+    var head = card.querySelector('.s7-process-head');
+    if (head) head.setAttribute('aria-expanded', 'false');
   }
 }
 
 function tlAccordionToggle(num, e) {
-  if (e && e.target && (e.target.tagName === 'A' || e.target.closest('a') || e.target.classList.contains('tl-cta-pill') || e.target.closest('.tl-cta-pill'))) return;
-  var detail = document.getElementById('tl-detail-' + num);
-  if (!detail) return;
-  var isOpen = detail.classList.contains('open');
+  if (e && e.target && (e.target.tagName === 'A' || e.target.closest('a') || e.target.classList.contains('s7-process-cta') || e.target.closest('.s7-process-cta') || e.target.classList.contains('tl-cta-pill') || e.target.closest('.tl-cta-pill'))) return;
+  var card = document.querySelector('.s7-process-card[data-step="' + num + '"], .tl-card[data-step="' + num + '"]');
+  if (!card) return;
+  var isOpen = card.classList.contains('open');
 
   // Close all open cards first
-  document.querySelectorAll('.tl-detail.open').forEach(function(d) {
-    d.classList.remove('open');
-    var parentCard = d.closest('.tl-card');
-    if (parentCard) parentCard.classList.remove('tl-open');
+  document.querySelectorAll('.s7-process-card.open, .tl-card.tl-open').forEach(function(c) {
+    c.classList.remove('open');
+    c.classList.remove('tl-open');
+    var d = c.querySelector('.s7-process-detail, .tl-detail');
+    if (d) d.classList.remove('open');
+    var h = c.querySelector('.s7-process-head');
+    if (h) h.setAttribute('aria-expanded', 'false');
   });
 
-  // If was closed, open it
   if (!isOpen) {
     tlAccordionOpen(num);
   }
@@ -6250,22 +6695,22 @@ function toggleTimelineStep(el) {
 
 function initTimelinePersonalization() {
   // Étape 1
-  setTLVal('tl1-capacite', formatEuro(S.capitalEmpruntable));
-  setTLVal('tl1-apport', formatEuro(S.apport));
-  setTLVal('tl1-budget', formatEuro((S.capitalEmpruntable||0) + (S.apport||0)));
+  setTLVal('tl1-capacite', fmt(S.capitalEmpruntable));
+  setTLVal('tl1-apport', fmt(S.apport));
+  setTLVal('tl1-budget', fmt((S.capitalEmpruntable||0) + (S.apport||0)));
   setTLVal('tl1-type', S.typeBien || '—');
   setTLVal('tl1-horizon', getHorizonLabel(S.horizon));
 
   // Étape 2
-  setTLVal('tl2-revenus', formatEuro(S.revenus) + '/mois');
-  setTLVal('tl2-credits', formatEuro(S.credits) + '/mois');
+  setTLVal('tl2-revenus', fmt(S.revenus) + '/mois');
+  setTLVal('tl2-credits', fmt(S.credits) + '/mois');
   setTLVal('tl2-taux', Math.round(S.tauxEffortA || 0) + '%');
-  setTLVal('tl2-mensualite', formatEuro(S.mensualiteMax || S.mensualiteCible) + '/mois');
+  setTLVal('tl2-mensualite', fmt(S.mensualiteMax || S.mensualiteCible) + '/mois');
 
   // Étape 5 prix
   var budgetMax = (S.capitalEmpruntable||0) + (S.apport||0);
-  setTLVal('tl5-prix', formatEuro(S.prixBien));
-  setTLVal('tl5-budget', formatEuro(budgetMax));
+  setTLVal('tl5-prix', fmt(S.prixBien));
+  setTLVal('tl5-budget', fmt(budgetMax));
   var a5 = document.getElementById('tl5-alerte');
   if (a5) a5.style.display = ((S.prixBien||0) > budgetMax) ? 'block' : 'none';
 
@@ -6276,9 +6721,9 @@ function initTimelinePersonalization() {
   }
 
   // Étape 10 — charges
-  setTLVal('tl11-copro', formatEuro(S.chargesCopro || 0) + '/an');
-  setTLVal('tl11-assurance', formatEuro(S.assuranceHab || S.assuranceHabitation || 0) + '/mois');
-  setTLVal('tl11-entretien', formatEuro(S.entretienAnnuel || 0) + '/an');
+  setTLVal('tl11-copro', fmt(S.chargesCopro || 0) + '/an');
+  setTLVal('tl11-assurance', fmt(S.assuranceHab || S.assuranceHabitation || 0) + '/mois');
+  setTLVal('tl11-entretien', fmt(S.entretienAnnuel || 0) + '/an');
 }
 
 function setTLVal(id, val) {
@@ -6289,6 +6734,269 @@ function setTLVal(id, val) {
 function getHorizonLabel(h) {
   var labels = {'3m':'< 3 mois','6m':'3–6 mois','12m':'6–12 mois','1y+':'> 1 an','curiosite':'Simple curiosité'};
   return labels[h] || '—';
+}
+
+/* ─── COMMIT 6 — S7 PROJECTION + FRISE + SWITCHER ──────────────────────── */
+function s7SwitchVue(v) {
+  var tabs = document.querySelectorAll('.s7-vue-tab');
+  for (var i = 0; i < tabs.length; i++) {
+    var active = tabs[i].dataset.vue === v;
+    tabs[i].classList.toggle('active', active);
+    tabs[i].setAttribute('aria-selected', active ? 'true' : 'false');
+  }
+  var proj = document.getElementById('s7-vue-proj');
+  var proc = document.getElementById('s7-vue-proc');
+  if (proj) { if (v === 'proj') { proj.removeAttribute('hidden'); proj.classList.add('active'); } else { proj.setAttribute('hidden', ''); proj.classList.remove('active'); } }
+  if (proc) { if (v === 'proc') { proc.removeAttribute('hidden'); proc.classList.add('active'); } else { proc.setAttribute('hidden', ''); proc.classList.remove('active'); } }
+}
+
+/* Build frise horizontale dans la vue Processus */
+var S7_FRISE_STEPS = [
+  { n: 1, when: 'J0',          what: 'Budget',     done: true, legal: false },
+  { n: 2, when: 'J0–J+15',     what: 'Dossier',    done: true, legal: false },
+  { n: 3, when: 'J+15–J+90',   what: 'Recherche',  done: false, legal: false },
+  { n: 4, when: '+10j légal',  what: 'Compromis',  done: false, legal: true },
+  { n: 5, when: '~45j',        what: 'Financement',done: false, legal: false },
+  { n: 6, when: '+3 mois',     what: 'Acte',       done: false, legal: true },
+  { n: 7, when: 'Jour des clés',what:'Emménager',  done: false, legal: false }
+];
+function s7BuildFrise() {
+  var frise = document.getElementById('s7-frise');
+  if (!frise) return;
+  var html = '';
+  for (var i = 0; i < S7_FRISE_STEPS.length; i++) {
+    var s = S7_FRISE_STEPS[i];
+    var cls = 's7-frise-step' + (s.done ? ' done' : '') + (s.legal ? ' legal' : '');
+    html += '<div class="' + cls + '">';
+    html += '  <div class="s7-frise-dot">' + s.n + '</div>';
+    html += '  <div class="s7-frise-when">' + s.when + '</div>';
+    html += '  <div class="s7-frise-what">' + s.what + '</div>';
+    html += '</div>';
+  }
+  frise.innerHTML = html;
+}
+
+/* Calcul amortissement réel : retourne {monthly, totalInterest, totalInsurance, schedule} */
+function s7CalcAmortissement(principal, annualRate, years, insuranceRate) {
+  var n = years * 12;
+  var r = annualRate / 100 / 12;
+  var monthly = (r > 0) ? principal * r / (1 - Math.pow(1 + r, -n)) : principal / n;
+  var insuranceMonthly = principal * (insuranceRate / 100) / 12;
+  var crdSchedule = []; // capital restant dû à chaque année
+  var crd = principal;
+  crdSchedule.push(crd);
+  var totalInterest = 0;
+  for (var k = 1; k <= n; k++) {
+    var interest = crd * r;
+    var capital = monthly - interest;
+    crd = Math.max(0, crd - capital);
+    totalInterest += interest;
+    if (k % 12 === 0) crdSchedule.push(crd);
+  }
+  return {
+    monthly: monthly + insuranceMonthly,
+    monthlyCapital: monthly,
+    insuranceMonthly: insuranceMonthly,
+    totalInterest: totalInterest,
+    totalInsurance: insuranceMonthly * n,
+    crdSchedule: crdSchedule
+  };
+}
+
+/* Cache projection data utilisé pour slider revente */
+var _s7ProjectionData = null;
+
+function s7BuildProjection() {
+  // Récupère les valeurs depuis le State (S)
+  var prixBien = n(S.prixBien) || 0;
+  var apport = n(S.apport) || 0;
+  var emprunt = Math.max(0, prixBien - apport);
+  // Fallback si pas de prix bien défini → utilise la capacité d'emprunt
+  if (emprunt <= 0) {
+    emprunt = n(S.capitalEmpruntable) || 0;
+    prixBien = emprunt + apport;
+  }
+  if (emprunt <= 0) return; // Rien à afficher
+
+  var taux = n(S.taux) || 3.8;
+  var duree = n(S.duree) || 25;
+  var assRate = 0.36; // assurance % du capital initial / an
+  // Si S.assurance définie en €/mois, on convertit
+  if (S.assurance && emprunt > 0) {
+    var assMois = n(S.assurance);
+    if (assMois > 0) assRate = (assMois * 12 / emprunt) * 100;
+  }
+
+  var amort = s7CalcAmortissement(emprunt, taux, duree, assRate);
+  var coutTotal = amort.totalInterest + amort.totalInsurance;
+
+  // Valorisation bien +1%/an
+  var valoRate = 0.01;
+  var valSchedule = [prixBien];
+  for (var y = 1; y <= duree; y++) valSchedule.push(prixBien * Math.pow(1 + valoRate, y));
+
+  // Patrimoine net = valeur bien - capital restant dû
+  var netSchedule = [];
+  for (var i = 0; i <= duree; i++) {
+    var crd = amort.crdSchedule[i] || 0;
+    netSchedule.push(valSchedule[i] - crd);
+  }
+
+  _s7ProjectionData = {
+    prixBien: prixBien,
+    emprunt: emprunt,
+    apport: apport,
+    taux: taux,
+    duree: duree,
+    assRate: assRate,
+    coutTotal: coutTotal,
+    valSchedule: valSchedule,
+    crdSchedule: amort.crdSchedule,
+    netSchedule: netSchedule
+  };
+
+  // KPI
+  setS7Text('s7-kpi-emprunt', fmt(emprunt));
+  setS7Text('s7-kpi-emprunt-hint', 'sur ' + duree + ' ans · ' + taux.toString().replace('.', ',') + ' %');
+  setS7Text('s7-kpi-cout', fmt(coutTotal));
+  var patrimoine10 = netSchedule[Math.min(10, duree)] - apport;
+  setS7Text('s7-kpi-patrimoine', (patrimoine10 >= 0 ? '+ ' : '– ') + fmt(Math.abs(patrimoine10)));
+  setS7Text('s7-hyp-taux', taux.toString().replace('.', ',') + ' %');
+  setS7Text('s7-hyp-ass', assRate.toFixed(2).replace('.', ',') + ' %');
+  setS7Text('s7-chart-duree', String(duree));
+
+  // Slider bornes
+  var slider = document.getElementById('s7-revente-slider');
+  if (slider) {
+    slider.max = String(duree);
+    var defaultYear = Math.min(10, duree);
+    slider.value = String(defaultYear);
+  }
+
+  s7BuildChart();
+  s7UpdateRevente(slider ? slider.value : 10);
+}
+
+function setS7Text(id, txt) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = txt;
+}
+
+/* Construit le SVG : grid + axes + 3 courbes + area + jalon revente */
+function s7BuildChart() {
+  var svg = document.getElementById('s7-chart-svg');
+  if (!svg || !_s7ProjectionData) return;
+  var d = _s7ProjectionData;
+  var W = 600, H = 240, padL = 40, padR = 15, padT = 20, padB = 30;
+  var innerW = W - padL - padR;
+  var innerH = H - padT - padB;
+  var yearsCount = d.duree;
+
+  // Échelle Y : 0 → max(valSchedule, crdSchedule[0]) arrondi sup à 50k
+  var maxRaw = Math.max(d.valSchedule[d.valSchedule.length - 1], d.crdSchedule[0]);
+  var yMax = Math.ceil(maxRaw / 50000) * 50000;
+  var xStep = innerW / yearsCount;
+
+  function xPos(y) { return padL + y * xStep; }
+  function yPos(v) { return padT + innerH - (v / yMax) * innerH; }
+
+  function pathFromSchedule(schedule) {
+    var parts = [];
+    for (var i = 0; i < schedule.length; i++) {
+      parts.push((i === 0 ? 'M' : 'L') + xPos(i).toFixed(1) + ',' + yPos(schedule[i]).toFixed(1));
+    }
+    return parts.join(' ');
+  }
+
+  var crdPath = pathFromSchedule(d.crdSchedule);
+  var valPath = pathFromSchedule(d.valSchedule);
+  var netPath = pathFromSchedule(d.netSchedule);
+  var areaPath = netPath + ' L' + xPos(d.netSchedule.length - 1).toFixed(1) + ',' + yPos(0).toFixed(1) + ' L' + xPos(0).toFixed(1) + ',' + yPos(0).toFixed(1) + ' Z';
+
+  // Y axis labels (4 graduations)
+  var yLabels = '';
+  var gridLines = '';
+  for (var i = 0; i <= 4; i++) {
+    var v = yMax * (4 - i) / 4;
+    var yy = padT + (innerH * i / 4);
+    gridLines += '<line class="grid-line" x1="' + padL + '" y1="' + yy + '" x2="' + (W - padR) + '" y2="' + yy + '"/>';
+    yLabels += '<text class="axis-label" x="' + (padL - 5) + '" y="' + (yy + 4) + '" text-anchor="end">' + (v >= 1000 ? Math.round(v / 1000) + 'k' : '0') + '</text>';
+  }
+  // X axis (years) — show 0, 1/4, 1/2, 3/4, full
+  var xMarks = [0, Math.floor(yearsCount / 4), Math.floor(yearsCount / 2), Math.floor(yearsCount * 3 / 4), yearsCount];
+  var xLabels = '';
+  for (var j = 0; j < xMarks.length; j++) {
+    var y = xMarks[j];
+    var label = y === 0 ? 'An 0' : y + ' ans';
+    xLabels += '<text class="axis-label" x="' + xPos(y) + '" y="' + (H - 8) + '" text-anchor="middle">' + label + '</text>';
+  }
+
+  // Jalon revente (default 10 ans ou min)
+  var jalonYear = Math.min(10, yearsCount);
+  var jalonX = xPos(jalonYear);
+  var jalonY = yPos(d.netSchedule[jalonYear]);
+
+  svg.innerHTML =
+    gridLines +
+    '<line class="grid-line" x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (H - padB) + '"/>' +
+    yLabels + xLabels +
+    '<path class="area-net" d="' + areaPath + '"/>' +
+    '<path class="curve-val" d="' + valPath + '"/>' +
+    '<path class="curve-crd" d="' + crdPath + '"/>' +
+    '<path class="curve-net" d="' + netPath + '"/>' +
+    '<line class="jalon-line" id="s7-jalon-line" x1="' + jalonX + '" y1="' + padT + '" x2="' + jalonX + '" y2="' + (H - padB) + '"/>' +
+    '<text class="jalon-label" id="s7-jalon-label" x="' + (jalonX + 4) + '" y="' + (padT + 12) + '">Revente an ' + jalonYear + '</text>' +
+    '<circle class="dot-revente" id="s7-dot-revente" cx="' + jalonX + '" cy="' + jalonY + '" r="5"/>';
+}
+
+/* Met à jour les valeurs revente + jalon SVG selon le slider */
+function s7UpdateRevente(year) {
+  if (!_s7ProjectionData) return;
+  year = parseInt(year, 10);
+  var d = _s7ProjectionData;
+  if (year < 1) year = 1;
+  if (year > d.duree) year = d.duree;
+
+  var valeur = d.valSchedule[year];
+  var crd = d.crdSchedule[year];
+  var frais = valeur * 0.05; // frais agence 5%
+  var net = valeur - crd - frais - d.apport;
+  // plus-value nette par rapport à l'apport initial
+  // Affichage :
+  setS7Text('s7-revente-year-display', 'à ' + year + ' an' + (year > 1 ? 's' : ''));
+  setS7Text('s7-revente-valeur', fmt(Math.round(valeur)));
+  setS7Text('s7-revente-net', (net >= 0 ? '+ ' : '– ') + fmt(Math.round(Math.abs(net))));
+  var crdEl = document.getElementById('s7-revente-crd');
+  if (crdEl) crdEl.innerHTML = '<strong>Capital restant dû :</strong> ' + fmt(Math.round(crd));
+  var fraisEl = document.getElementById('s7-revente-frais');
+  if (fraisEl) fraisEl.innerHTML = '<strong>Frais agence (5 %) :</strong> –' + fmt(Math.round(frais));
+
+  // Met à jour le gradient du slider
+  var slider = document.getElementById('s7-revente-slider');
+  if (slider) {
+    var minY = parseInt(slider.min, 10);
+    var maxY = parseInt(slider.max, 10);
+    var pct = ((year - minY) / (maxY - minY)) * 100;
+    slider.style.background = 'linear-gradient(to right, var(--accent-strong) ' + pct + '%, var(--track) ' + pct + '%)';
+  }
+
+  // Met à jour le jalon dans le SVG
+  var W = 600, padL = 40, padR = 15, padT = 20, padB = 30;
+  var innerW = W - padL - padR;
+  var xStep = innerW / d.duree;
+  var jalonX = padL + year * xStep;
+  // recalc yPos comme dans s7BuildChart
+  var maxRaw = Math.max(d.valSchedule[d.valSchedule.length - 1], d.crdSchedule[0]);
+  var yMax = Math.ceil(maxRaw / 50000) * 50000;
+  var innerH = 240 - padT - padB;
+  var jalonY = padT + innerH - (d.netSchedule[year] / yMax) * innerH;
+
+  var jLine = document.getElementById('s7-jalon-line');
+  var jLabel = document.getElementById('s7-jalon-label');
+  var jDot = document.getElementById('s7-dot-revente');
+  if (jLine) { jLine.setAttribute('x1', jalonX); jLine.setAttribute('x2', jalonX); }
+  if (jLabel) { jLabel.setAttribute('x', jalonX + 4); jLabel.textContent = 'Revente an ' + year; }
+  if (jDot) { jDot.setAttribute('cx', jalonX); jDot.setAttribute('cy', jalonY); }
 }
 
 /* ─── ÉCRAN FINAL 8 : DIAGNOSTIC ────────────────────────── */
@@ -6832,43 +7540,43 @@ function buildPDFContent(date) {
   // Section Capacité
   var totalRev = (S.revenus||0) + (S.autresEntrees||0);
   html += pdfSection('MA CAPACITÉ FINANCIÈRE', [
-    ['Revenus nets du foyer', formatEuro(S.revenus) + '/mois'],
-    S.autresEntrees > 0 ? ['Autres entrées / Aides', formatEuro(S.autresEntrees) + '/mois'] : null,
-    ['Crédits existants', formatEuro(S.credits) + '/mois'],
-    ['Charges fixes', formatEuro(S.chargesFixes) + '/mois'],
+    ['Revenus nets du foyer', fmt(S.revenus) + '/mois'],
+    S.autresEntrees > 0 ? ['Autres entrées / Aides', fmt(S.autresEntrees) + '/mois'] : null,
+    ['Crédits existants', fmt(S.credits) + '/mois'],
+    ['Charges fixes', fmt(S.chargesFixes) + '/mois'],
     ['Taux d\'effort actuel', Math.round(S.tauxEffortA||0) + '%'],
-    ['Mensualité maximale immo', formatEuro(S.mensualiteMax || S.mensualiteCible) + '/mois'],
-    ['Capacité d\'emprunt', formatEuro(S.capitalEmpruntable), true],
-    ['Reste à vivre estimé', formatEuro(S.resteVivreB) + '/mois']
+    ['Mensualité maximale immo', fmt(S.mensualiteMax || S.mensualiteCible) + '/mois'],
+    ['Capacité d\'emprunt', fmt(S.capitalEmpruntable), true],
+    ['Reste à vivre estimé', fmt(S.resteVivreB) + '/mois']
   ].filter(Boolean));
 
   // Section Apport
   var budgetTotal = (S.capitalEmpruntable||0) + (S.apport||0);
   html += pdfSection('MON APPORT', [
-    ['Épargne de précaution', formatEuro(S.matelasActuel)],
-    ['Apport mobilisable', formatEuro(S.apport), true],
-    ['Budget total (emprunt + apport)', formatEuro(budgetTotal), true]
+    ['Épargne de précaution', fmt(S.matelasActuel)],
+    ['Apport mobilisable', fmt(S.apport), true],
+    ['Budget total (emprunt + apport)', fmt(budgetTotal), true]
   ]);
 
   // Section Prix d'achat
   var coutTotal = (S.prixBien||0) + (S.fraisNotaire||0) + (S.fraisGarantie||0) + (S.fraisDossier||0) + (S.travauxAutres||0);
   html += pdfSection('PRIX TOTAL D\'ACHAT', [
-    ['Prix du bien', formatEuro(S.prixBien)],
-    ['Frais de notaire', formatEuro(S.fraisNotaire)],
-    ['Frais de garantie', formatEuro(S.fraisGarantie)],
-    ['Frais de dossier', formatEuro(S.fraisDossier)],
-    S.travauxAutres > 0 ? ['Travaux & Installation', formatEuro(S.travauxAutres)] : null,
-    ['Coût total acquisition', formatEuro(coutTotal), true],
-    ['Mensualité propriétaire', formatEuro((S.mensualiteMax||0) + (S.assuranceEmprunteur||22)) + '/mois', true]
+    ['Prix du bien', fmt(S.prixBien)],
+    ['Frais de notaire', fmt(S.fraisNotaire)],
+    ['Frais de garantie', fmt(S.fraisGarantie)],
+    ['Frais de dossier', fmt(S.fraisDossier)],
+    S.travauxAutres > 0 ? ['Travaux & Installation', fmt(S.travauxAutres)] : null,
+    ['Coût total acquisition', fmt(coutTotal), true],
+    ['Mensualité propriétaire', fmt((S.mensualiteMax||0) + (S.assuranceEmprunteur||22)) + '/mois', true]
   ].filter(Boolean));
 
   // Section Charges récurrentes
   var chargesAn = (S.chargesCopro||0) + ((S.assuranceHab||S.assuranceHabitation||0)*12) + (S.entretienAnnuel||0);
   html += pdfSection('CHARGES RÉCURRENTES', [
-    ['Charges copropriété', formatEuro(S.chargesCopro||0) + '/an'],
-    ['Assurance habitation', formatEuro(S.assuranceHab||S.assuranceHabitation||0) + '/mois'],
-    ['Entretien annuel estimé', formatEuro(S.entretienAnnuel||0) + '/an'],
-    ['Total charges récurrentes', formatEuro(chargesAn) + '/an', true]
+    ['Charges copropriété', fmt(S.chargesCopro||0) + '/an'],
+    ['Assurance habitation', fmt(S.assuranceHab||S.assuranceHabitation||0) + '/mois'],
+    ['Entretien annuel estimé', fmt(S.entretienAnnuel||0) + '/an'],
+    ['Total charges récurrentes', fmt(chargesAn) + '/an', true]
   ]);
 
   // Section Hypothèses
@@ -6882,14 +7590,14 @@ function buildPDFContent(date) {
   if (S.projectType === 'investissement_locatif' || S.usage === 'locatif') {
     var loyerRetenu = (S.loyerEstime||0) * 0.70;
     html += pdfSection('ANALYSE LOCATIVE', [
-      ['Loyer mensuel estimé (CC)', formatEuro(S.loyerEstime) + '/mois'],
+      ['Loyer mensuel estimé (CC)', fmt(S.loyerEstime) + '/mois'],
       ['Rendement brut', (S.rendementBrut||0).toFixed(1) + '%'],
       ['Rendement net', (S.rendementNet||0).toFixed(1) + '%'],
-      ['Cash-flow mensuel', ((S.cashFlow||0) >= 0 ? '+' : '') + formatEuro(S.cashFlow)],
+      ['Cash-flow mensuel', ((S.cashFlow||0) >= 0 ? '+' : '') + fmt(S.cashFlow)],
       ['Statut', (S.cashFlow||0) >= 0 ? 'Autofinancé' : 'Effort d\'épargne mensuel'],
-      ['Capacité d\'emprunt résiduelle', formatEuro(S.capaciteResiduelle||0), true]
+      ['Capacité d\'emprunt résiduelle', fmt(S.capaciteResiduelle||0), true]
     ]);
-    html += '<div class="pdf-note">Les banques retiennent 70% des revenus locatifs dans le calcul de capacité. Avec ' + formatEuro(S.loyerEstime) + ' de loyer, ' + formatEuro(Math.round(loyerRetenu)) + ' supplémentaires sont retenus, ce qui porte la capacité résiduelle estimée à ' + formatEuro(S.capaciteResiduelle||0) + '.</div>';
+    html += '<div class="pdf-note">Les banques retiennent 70% des revenus locatifs dans le calcul de capacité. Avec ' + fmt(S.loyerEstime) + ' de loyer, ' + fmt(Math.round(loyerRetenu)) + ' supplémentaires sont retenus, ce qui porte la capacité résiduelle estimée à ' + fmt(S.capaciteResiduelle||0) + '.</div>';
   }
 
   // ═══ PARTIE 2 : RÉSUMÉ DES ÉTAPES ═══
@@ -6898,9 +7606,9 @@ function buildPDFContent(date) {
   // Étape 1
   html += pdfStep('PRÉPARATION', '01', 'Définir son budget', 'Toi',
     pdfDataTable([
-      ['Capacité d\'emprunt', formatEuro(S.capitalEmpruntable)],
-      ['Apport mobilisable', formatEuro(S.apport)],
-      ['Budget total', formatEuro(budgetTotal)],
+      ['Capacité d\'emprunt', fmt(S.capitalEmpruntable)],
+      ['Apport mobilisable', fmt(S.apport)],
+      ['Budget total', fmt(budgetTotal)],
       ['Type de bien', S.typeBien || '—'],
       ['Horizon', getHorizonLabel(S.horizon)]
     ]),
@@ -6910,10 +7618,10 @@ function buildPDFContent(date) {
   // Étape 2
   html += pdfStep('PRÉPARATION', '02', 'Calculer sa capacité', 'Toi / Banque',
     pdfDataTable([
-      ['Revenus nets', formatEuro(S.revenus) + '/mois'],
-      ['Crédits existants', formatEuro(S.credits) + '/mois'],
+      ['Revenus nets', fmt(S.revenus) + '/mois'],
+      ['Crédits existants', fmt(S.credits) + '/mois'],
       ['Taux d\'effort actuel', Math.round(S.tauxEffortA||0) + '%'],
-      ['Mensualité max immo', formatEuro(S.mensualiteMax||S.mensualiteCible) + '/mois']
+      ['Mensualité max immo', fmt(S.mensualiteMax||S.mensualiteCible) + '/mois']
     ]),
     'Ne pas tenir compte des crédits en cours dans le calcul.'
   );
@@ -6942,8 +7650,8 @@ function buildPDFContent(date) {
   var prixMax = Math.max(S.prixBien||0, budgetTotal);
   html += pdfStep('FINANCEMENT', '05', 'Faire une offre d\'achat', 'Toi',
     pdfDataTable([
-      ['Prix cible saisi', formatEuro(S.prixBien)],
-      ['Budget maximum', formatEuro(budgetTotal)]
+      ['Prix cible saisi', fmt(S.prixBien)],
+      ['Budget maximum', fmt(budgetTotal)]
     ]) + '<p style="font-size:0.8rem;color:#555;margin-top:6px">Le parcours de vie inclut un modèle d\'offre d\'achat automatique personnalisé.</p>' +
     ((S.prixBien||0) > budgetTotal ? '<p style="font-size:0.75rem;color:#d97706">Le prix saisi dépasse ta capacité calculée.</p>' : ''),
     'Proposer un prix sans connaître sa limite réelle.'
@@ -6982,9 +7690,9 @@ function buildPDFContent(date) {
   // Étape 11 — Budget propriétaire
   html += pdfStep('INSTALLATION', '10', 'Gérer son budget propriétaire', 'Toi',
     pdfDataTable([
-      ['Charges copropriété', formatEuro(S.chargesCopro||0) + '/an'],
-      ['Assurance habitation', formatEuro(S.assuranceHab||S.assuranceHabitation||0) + '/mois'],
-      ['Entretien annuel estimé', formatEuro(S.entretienAnnuel||0) + '/an']
+      ['Charges copropriété', fmt(S.chargesCopro||0) + '/an'],
+      ['Assurance habitation', fmt(S.assuranceHab||S.assuranceHabitation||0) + '/mois'],
+      ['Entretien annuel estimé', fmt(S.entretienAnnuel||0) + '/an']
     ]),
     'Sous-estimer les charges récurrentes après l\'achat.'
   );
