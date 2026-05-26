@@ -2582,6 +2582,51 @@ html.dark .s4-kicker--charges { color:#FACC15; }
   font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem;
 }
 
+/* Budget max possible (badge en-dessous prix) */
+.s4-prix-budget {
+  display:inline-flex; align-items:center; gap:.5rem;
+  margin-top:.85rem; padding:.35rem .7rem;
+  background:var(--bg-elevated); border:1px solid var(--cream-border);
+  border-radius:999px;
+  font-size:.72rem; color:var(--text-muted);
+}
+.s4-prix-budget-label { font-weight:500; }
+.s4-prix-budget-val { font-weight:700; color:var(--text-strong); font-variant-numeric:tabular-nums; }
+.s4-prix-budget.over .s4-prix-budget-val { color:var(--orange); }
+
+/* Warning prix > budget max */
+.s4-prix-warn {
+  display:flex; align-items:flex-start; gap:.6rem;
+  margin-top:.85rem; padding:.7rem .85rem;
+  background:var(--orange-soft);
+  border:1px solid color-mix(in srgb, var(--orange) 35%, transparent);
+  border-radius:12px;
+  color:var(--text-strong);
+  text-align:left;
+}
+.s4-prix-warn[hidden] { display:none; }
+.s4-prix-warn svg { color:var(--orange); flex-shrink:0; margin-top:.1rem; }
+.s4-prix-warn-title { font-weight:700; font-size:.82rem; color:var(--orange); margin-bottom:.15rem; }
+.s4-prix-warn-text { font-size:.76rem; color:var(--text-muted); line-height:1.4; }
+.s4-prix-warn-text strong { color:var(--text-strong); font-weight:700; }
+
+/* Budget tag global (S5/S6/S7) — petit chip Prix vs Budget max */
+.brick-budget-tag {
+  display:inline-flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+  margin:.6rem 0 1.1rem;
+  padding:.35rem .7rem;
+  background:var(--bg-elevated); border:1px solid var(--cream-border);
+  border-radius:999px;
+  font-size:.72rem; color:var(--text-muted);
+  font-variant-numeric:tabular-nums;
+}
+.brick-budget-tag[hidden] { display:none; }
+.brick-budget-tag .bbt-prix { font-weight:700; color:var(--text-strong); }
+.brick-budget-tag .bbt-sep { opacity:.4; }
+.brick-budget-tag .bbt-max { font-weight:500; }
+.brick-budget-tag.over .bbt-prix { color:var(--orange); }
+.brick-budget-tag.over::after { content:'⚠'; color:var(--orange); font-size:.8rem; margin-left:.2rem; }
+
 /* Mini-card champ */
 .s4-fields { display:grid; grid-template-columns:1fr 1fr; gap:0.625rem; }
 .s4-field-card {
@@ -3823,6 +3868,41 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   transition: transform .25s var(--ease-out);
 }
 .s8-vs-teaser.open .s8-vs-chevron { transform: rotate(180deg); }
+
+/* Highlight aéré au-dessus du teaser "Acheter vs Louer" — attire l'œil sans encombrer */
+.s8-vs-highlight {
+  display: flex; align-items: center; justify-content: center; gap: .9rem;
+  margin: 2.5rem auto 1.1rem;
+  max-width: 480px;
+}
+.s8-vs-highlight-label {
+  font-size: .68rem; font-weight: 600; letter-spacing: .14em;
+  color: var(--text-muted); text-transform: uppercase;
+  white-space: nowrap;
+}
+.s8-vs-highlight-dot {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cream-border) 30%, var(--cream-border) 70%, transparent);
+  max-width: 80px;
+}
+.s8-vs-highlight-dot:first-child {
+  background: linear-gradient(90deg, transparent, var(--cream-border));
+}
+.s8-vs-highlight-dot:last-child {
+  background: linear-gradient(90deg, var(--cream-border), transparent);
+}
+/* Pulse subtil pour attirer l'œil sur le teaser fermé */
+.s8-vs-teaser:not(.open) {
+  animation: s8VsBreathe 3.2s ease-in-out 1.5s 2 forwards;
+}
+@keyframes s8VsBreathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0); transform: translateY(0); }
+  50%      { box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.06); transform: translateY(-1px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .s8-vs-teaser:not(.open) { animation: none; }
+}
 .s8-vs-content {
   max-height: 0; overflow: hidden;
   transition: max-height .35s var(--ease-out);
@@ -4419,6 +4499,17 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <div class="s4-prix-value" id="s4-prix-display" onclick="s4EditPrix()">--</div>
               <input type="number" class="s4-prix-input" id="input-prix-bien" placeholder="ex : 200 000" min="0" inputmode="numeric"/>
               <div class="s4-prix-sub">Prix du bien — modifiable</div>
+              <div class="s4-prix-budget" id="s4-prix-budget" aria-live="polite">
+                <span class="s4-prix-budget-label">Budget max possible</span>
+                <span class="s4-prix-budget-val" id="s4-prix-budget-val">—</span>
+              </div>
+              <div class="s4-prix-warn" id="s4-prix-warn" role="alert" hidden>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <div class="s4-prix-warn-body">
+                  <div class="s4-prix-warn-title">Prix au-dessus de ton budget max</div>
+                  <div class="s4-prix-warn-text" id="s4-prix-warn-text">—</div>
+                </div>
+              </div>
             </div>
 
             <!-- GROUPE 2 — FRAIS D'ACQUISITION -->
@@ -4560,6 +4651,11 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
             <div class="brick-kicker">ÉTAPE 5 / 8 · EMPLACEMENT &amp; TYPOLOGIE</div>
             <h2 class="brick-title">Confronte ton budget au marché local.</h2>
             <p class="brick-sub">On part de ta commune et on calcule directement 3 typologies adaptées à ton budget. Tu peux en tester d’autres à tout moment.</p>
+            <div class="brick-budget-tag" id="s5-budget-tag" hidden>
+              <span>Prix d'achat <span class="bbt-prix" id="s5-bbt-prix">—</span></span>
+              <span class="bbt-sep">·</span>
+              <span class="bbt-max">sur <span id="s5-bbt-max">—</span> max possibles</span>
+            </div>
 
             <!-- Watermark SVG -->
             <div class="s5-watermark" aria-hidden="true">
@@ -4646,6 +4742,11 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           <div class="brick-card" style="position:relative;overflow:hidden;">
             <div class="brick-kicker">ÉTAPE 6 / 8 · INVESTISSEMENT LOCATIF</div>
             <h2 class="brick-title">Acheter pour louer&nbsp;: analyse de rentabilité.</h2>
+            <div class="brick-budget-tag" id="s6-budget-tag" hidden>
+              <span>Prix d'achat <span class="bbt-prix" id="s6-bbt-prix">—</span></span>
+              <span class="bbt-sep">·</span>
+              <span class="bbt-max">sur <span id="s6-bbt-max">—</span> max possibles</span>
+            </div>
 
             <!-- Watermark SVG parallax -->
             <div class="locatif-watermark" id="locatif-watermark">
@@ -4858,6 +4959,11 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
             <div class="brick-kicker">ÉTAPE 7 / 8 · PROJECTION &amp; PROCESSUS</div>
             <h2 class="brick-title">Visualise ton parcours, de l'offre aux clés.</h2>
             <p class="brick-subtitle">Projection patrimoniale à long terme et étapes administratives concrètes.</p>
+            <div class="brick-budget-tag" id="s7-budget-tag" hidden>
+              <span>Prix d'achat <span class="bbt-prix" id="s7-bbt-prix">—</span></span>
+              <span class="bbt-sep">·</span>
+              <span class="bbt-max">sur <span id="s7-bbt-max">—</span> max possibles</span>
+            </div>
 
             <!-- Switcher Projection / Processus -->
             <div class="s7-vue-switcher" role="tablist" aria-label="Choisir une vue">
@@ -5107,6 +5213,11 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           </div>
 
           <!-- ═══ 6. ACHETER VS LOUER (COLLAPSÉ PAR DÉFAUT) ═══ -->
+          <div class="s8-vs-highlight" aria-hidden="true">
+            <span class="s8-vs-highlight-dot"></span>
+            <span class="s8-vs-highlight-label">UNE DERNIÈRE QUESTION ESSENTIELLE</span>
+            <span class="s8-vs-highlight-dot"></span>
+          </div>
           <div class="s8-vs-teaser" id="s8-vs-teaser" role="button" tabindex="0"
                aria-expanded="false" aria-controls="s8-vs-content"
                onclick="s8ToggleVs(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();s8ToggleVs(this);}">
@@ -5593,6 +5704,52 @@ function getMensualiteCible() {
   return Math.max(0, maxMens);
 }
 
+/* Mensualité réelle basée sur le prix saisi en S4 (pas la capacité max).
+   Utilisée par S6 (cashflow), S7 (projection), S8 (acheter vs louer). */
+function getEmpruntReel() {
+  var prix = n(S.prixBien);
+  var apport = n(S.apport);
+  if (prix <= 0) return 0;
+  var fees = estimateAcquisitionFees(prix, S.propertyType);
+  return Math.max(0, prix + fees - apport);
+}
+
+function getMensReelle() {
+  var emprunt = getEmpruntReel();
+  if (emprunt <= 0) return 0;
+  var taux = n(S.taux) || 3.8;
+  var duree = n(S.duree) || 25;
+  var r = (taux / 100) / 12;
+  var n_mois = duree * 12;
+  if (r === 0) return emprunt / n_mois;
+  return emprunt * r / (1 - Math.pow(1 + r, -n_mois));
+}
+
+/* Budget total maximum (capacité + apport) */
+function getBudgetMax() {
+  return n(S.capitalEmpruntable) + n(S.apport);
+}
+
+/* Met à jour les badges "Prix d'achat X sur Y max possibles" sur S5/S6/S7 */
+function updateBudgetTags() {
+  var prix = n(S.prixBien);
+  var budgetMax = getBudgetMax();
+  ['s5', 's6', 's7'].forEach(function(s) {
+    var tag = $(s + '-budget-tag');
+    var prixEl = $(s + '-bbt-prix');
+    var maxEl = $(s + '-bbt-max');
+    if (!tag || !prixEl || !maxEl) return;
+    if (prix > 0 && budgetMax > 0) {
+      prixEl.textContent = fmt(Math.round(prix));
+      maxEl.textContent = fmt(Math.round(budgetMax));
+      tag.hidden = false;
+      tag.classList.toggle('over', prix > budgetMax);
+    } else {
+      tag.hidden = true;
+    }
+  });
+}
+
 function getApportMobilisable() {
   var protectedAmount = Math.max(n(S.matelasCible), n(S.matelasActuel));
   return calculateMobilizableDownPayment(S.epargneTotale, S.aideFamille, protectedAmount, n(S.epargneBloquee), n(S.reserve));
@@ -5646,6 +5803,9 @@ function goToScreen(idx) {
   if (idx === 6) initScreen6();
   if (idx === 7) { buildTimeline(); initTimelinePersonalization(); }
   if (idx === 8) buildFinalScreen();
+
+  // Met à jour les badges "Prix d'achat / budget max" sur S5/S6/S7
+  if (idx >= 5 && idx <= 7) updateBudgetTags();
 
   if (typeof autosaveBrickProgress === 'function') {
     autosaveBrickProgress(BRICK_ID, idx, S);
@@ -6525,6 +6685,34 @@ function updateCost() {
       legend.innerHTML += '<span class="stacked-legend-item"><span class="stacked-legend-dot" style="background:' + seg.color + '"></span>' + seg.label + ' ' + fmt(seg.val) + '</span>';
     });
   }
+
+  // === Budget max possible + warning si prix > budget ===
+  S.prixBien = prix;
+  s4UpdateBudgetWarning(prix);
+}
+
+/* Affiche le badge "Budget max possible" + warning si prix > budget max */
+function s4UpdateBudgetWarning(prix) {
+  var apport = n(S.apport) || getApportMobilisable();
+  var budgetMax = n(S.capitalEmpruntable) + apport;
+  var badge = $('s4-prix-budget');
+  var badgeVal = $('s4-prix-budget-val');
+  var warn = $('s4-prix-warn');
+  var warnText = $('s4-prix-warn-text');
+
+  if (badgeVal) badgeVal.textContent = budgetMax > 0 ? fmt(Math.round(budgetMax)) : '—';
+
+  if (!warn || !warnText) return;
+  if (prix > budgetMax && budgetMax > 0) {
+    if (badge) badge.classList.add('over');
+    var ecart = prix - budgetMax;
+    var apportSuggere = Math.max(0, prix - n(S.capitalEmpruntable));
+    warnText.innerHTML = 'Ton prix dépasse ton budget max de <strong>' + fmt(Math.round(ecart)) + '</strong>. Il faudrait <strong>' + fmt(Math.round(apportSuggere)) + ' d\'apport</strong> (au lieu de ' + fmt(Math.round(apport)) + ') pour boucler le financement.';
+    warn.hidden = false;
+  } else {
+    if (badge) badge.classList.remove('over');
+    warn.hidden = true;
+  }
 }
 
 /* ─── ÉCRAN 4 : CARD INTERACTIONS ────────────────────────── */
@@ -6792,7 +6980,10 @@ function recalcLocatif() {
   if (badgeEl) badgeEl.style.display = '';
   if (capBubble) capBubble.style.display = '';
 
-  var mensualite = n(S.mensualiteCible) || getMensualiteCible();
+  // Mensualité réelle basée sur le prix saisi en S4 (et non la capacité max).
+  // Fallback sur mensualiteCible si prixBien pas encore défini.
+  var mensReelle = getMensReelle();
+  var mensualite = mensReelle > 0 ? mensReelle : (n(S.mensualiteCible) || getMensualiteCible());
   var assuranceEmpr = n(S.assuranceEmprunteur);
   var assurancePNO = n(($('input-assurance-pno-s6') || {}).value) || 15;
   var vacance = n(($('input-vacance-s6') || {}).value);
