@@ -3776,6 +3776,25 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   border-color: var(--accent);
   border-style: solid;
 }
+/* ── A11Y : focus visible homogène sur tous les éléments interactifs custom (commit 6c) ── */
+.s7-vue-tab:focus-visible,
+.s7-process-head:focus-visible,
+.s8-vs-teaser:focus-visible,
+.s8-levier:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+  border-radius: var(--r-md);
+}
+.s7-revente-slider:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 4px;
+}
+.s7-revente-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.s7-revente-slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
 .s8-vs-teaser.open {
   border-style: solid; border-color: var(--accent);
   background: var(--bg-elevated);
@@ -4960,8 +4979,8 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
             </div>
           </div>
           <!-- ═══ 2. SCORE GLOBAL + 4 SOUS-SCORES ═══ -->
-          <div class="s8-score-card">
-            <div class="s8-score-ring-wrap">
+          <div class="s8-score-card" role="region" aria-labelledby="s8-score-verdict">
+            <div class="s8-score-ring-wrap" role="img" aria-label="Score global du diagnostic" id="s8-score-ring-wrap">
               <svg class="s8-score-ring" viewBox="0 0 140 140" aria-hidden="true">
                 <defs>
                   <linearGradient id="s8ScoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -4983,7 +5002,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <div class="s8-score-verdict" id="s8-score-verdict">Projet à analyser.</div>
               <div class="s8-score-desc" id="s8-score-desc">Analyse en cours…</div>
 
-              <div class="s8-subscores" id="s8-subscores">
+              <div class="s8-subscores" id="s8-subscores" role="group" aria-label="Détail des 4 sous-scores du diagnostic">
                 <div class="s8-subscore" data-key="faisabilite">
                   <div class="s8-subscore-label">Faisabilité</div>
                   <div class="s8-subscore-bar"><div class="s8-subscore-bar-fill" style="width:0%"></div></div>
@@ -7570,6 +7589,8 @@ function buildFinalScreen() {
   S.subscores = subs;
   var scoreNum = $('s8-score-num');
   if (scoreNum) scoreNum.textContent = S.score;
+  var ringWrap = $('s8-score-ring-wrap');
+  if (ringWrap) ringWrap.setAttribute('aria-label', 'Score global : ' + S.score + ' sur 100');
   var ring = $('s8-score-ring-fill');
   if (ring) {
     var circ = 2 * Math.PI * 60;
@@ -7596,6 +7617,7 @@ function buildFinalScreen() {
   }
 
   var subContainer = $('s8-subscores');
+  var subLabels = { faisabilite: 'Faisabilité', effort: 'Effort', rentabilite: 'Rentabilité', risque: 'Risque' };
   if (subContainer) {
     var subDivs = subContainer.querySelectorAll('.s8-subscore');
     subDivs.forEach(function(d) {
@@ -7606,11 +7628,17 @@ function buildFinalScreen() {
       else if (val < 70) cls = 'mid';
       d.classList.remove('ok', 'mid', 'low', 'focus');
       d.classList.add(cls);
-      if (k === minKey && hasWeakness) d.classList.add('focus');
+      var isFocus = (k === minKey && hasWeakness);
+      if (isFocus) d.classList.add('focus');
       var fill = d.querySelector('.s8-subscore-bar-fill');
       var valEl = d.querySelector('.s8-subscore-val');
       if (fill) fill.style.width = val + '%';
       if (valEl) valEl.textContent = val;
+      // a11y : annonce complète du sous-score
+      var aria = subLabels[k] + ' : ' + val + ' sur 100';
+      if (isFocus) aria += ' — point d\'attention';
+      d.setAttribute('aria-label', aria);
+      d.setAttribute('role', 'img');
     });
   }
 
