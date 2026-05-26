@@ -3817,6 +3817,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   margin-top: .1rem;
 }
 .s8-vs-teaser-hint strong { color: var(--green); font-weight: 700; }
+.s8-vs-teaser-hint.neg strong { color: var(--orange); font-weight: 700; }
 .s8-vs-chevron {
   color: var(--text-faint);
   transition: transform .25s var(--ease-out);
@@ -3869,6 +3870,23 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   font-size: .9rem; color: var(--text);
 }
 .s8-vs-verdict strong { color: var(--green); font-weight: 700; }
+.s8-vs-verdict.neg { background: linear-gradient(135deg, rgba(251,146,60,.10), transparent); border-color: rgba(251,146,60,.25); }
+.s8-vs-verdict.neg strong { color: var(--orange); }
+.s8-vs-col-section {
+  font-size: .7rem; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--text-muted); font-weight: 600;
+  margin: .85rem 0 .35rem; padding-bottom: .25rem;
+  border-bottom: 1px solid var(--border-soft, var(--border-mid));
+}
+.s8-vs-col-section.muted { opacity: .7; margin-top: 1rem; }
+.s8-vs-col-line.muted { color: var(--text-muted); font-size: .82rem; }
+.s8-vs-col-line.muted span:last-child { color: var(--text-muted); font-weight: 500; }
+.s8-vs-note {
+  margin-top: .85rem; padding: .6rem .85rem;
+  font-size: .72rem; color: var(--text-muted); line-height: 1.45;
+  background: var(--surface-2);
+  border-radius: var(--r-sm);
+}
 
 /* Mobile S8 */
 @media (max-width: 720px) {
@@ -5105,24 +5123,28 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="s8-vs-grid">
                   <div class="s8-vs-col">
                     <div class="s8-vs-col-title">🏠 Acheter <span id="s8-vs-buy-price"></span></div>
-                    <div class="s8-vs-col-line"><span>Apport mobilisé</span><span id="s8-vs-buy-apport">--</span></div>
-                    <div class="s8-vs-col-line"><span>Mensualités × 120</span><span id="s8-vs-buy-mens">--</span></div>
-                    <div class="s8-vs-col-line"><span>Charges + entretien</span><span id="s8-vs-buy-charges">--</span></div>
-                    <div class="s8-vs-col-line"><span>Valeur bien à 10 ans</span><span id="s8-vs-buy-val">--</span></div>
-                    <div class="s8-vs-col-line"><span>Capital restant dû</span><span id="s8-vs-buy-crd">--</span></div>
+                    <div class="s8-vs-col-section">Patrimoine créé à 10 ans</div>
+                    <div class="s8-vs-col-line"><span>Valeur du bien</span><span id="s8-vs-buy-val">--</span></div>
+                    <div class="s8-vs-col-line"><span>− Capital restant dû</span><span id="s8-vs-buy-crd">--</span></div>
+                    <div class="s8-vs-col-line"><span>− Apport + frais notaire (immobilisés)</span><span id="s8-vs-buy-init">--</span></div>
                     <div class="s8-vs-col-line total"><span>Patrimoine net</span><span id="s8-vs-buy-total">--</span></div>
+                    <div class="s8-vs-col-section muted">Dépenses cumulées 10 ans</div>
+                    <div class="s8-vs-col-line muted"><span>Mensualités × 120</span><span id="s8-vs-buy-mens">--</span></div>
+                    <div class="s8-vs-col-line muted"><span>Charges + entretien</span><span id="s8-vs-buy-charges">--</span></div>
                   </div>
                   <div class="s8-vs-col">
                     <div class="s8-vs-col-title">🏘 Louer <span style="font-weight:400;color:var(--text-muted);font-size:.72rem;">(équivalent)</span></div>
-                    <div class="s8-vs-col-line"><span>Loyer mensuel initial</span><span id="s8-vs-rent-init">--</span></div>
-                    <div class="s8-vs-col-line"><span>Indexation IRL +1,5 %/an</span><span>—</span></div>
-                    <div class="s8-vs-col-line"><span>Total loyers × 120</span><span id="s8-vs-rent-total">--</span></div>
-                    <div class="s8-vs-col-line"><span>Apport épargné placé 3 %</span><span id="s8-vs-rent-place">--</span></div>
-                    <div class="s8-vs-col-line"><span>Aucun patrimoine constitué</span><span>0 €</span></div>
-                    <div class="s8-vs-col-line total"><span>Solde net</span><span id="s8-vs-rent-solde">--</span></div>
+                    <div class="s8-vs-col-section">Patrimoine créé à 10 ans</div>
+                    <div class="s8-vs-col-line"><span>Apport placé à 3 %/an</span><span id="s8-vs-rent-place">--</span></div>
+                    <div class="s8-vs-col-line" id="s8-vs-rent-diff-line"><span>Différentiel mensuel placé</span><span id="s8-vs-rent-diff">--</span></div>
+                    <div class="s8-vs-col-line total"><span>Patrimoine net</span><span id="s8-vs-rent-solde">--</span></div>
+                    <div class="s8-vs-col-section muted">Dépenses cumulées 10 ans</div>
+                    <div class="s8-vs-col-line muted"><span>Loyer initial</span><span id="s8-vs-rent-init">--</span></div>
+                    <div class="s8-vs-col-line muted"><span>Total loyers (IRL +1,5 %/an)</span><span id="s8-vs-rent-total">--</span></div>
                   </div>
                 </div>
                 <div class="s8-vs-verdict" id="s8-vs-verdict">Calcul en cours…</div>
+                <div class="s8-vs-note">Comparatif simplifié. Hypothèses : valorisation bien +1 %/an, charges 1,5 % du prix/an, fiscalité non intégrée.</div>
               </div>
             </div>
           </div>
@@ -7720,7 +7742,7 @@ function buildFinalScreen() {
   s8BuildVsRent({
     prixBien: prixBien, mob: mob, mensualite: mensualite,
     borrowing: borrowing, duree: S.duree, taux: S.taux,
-    coutCredit: coutCredit
+    coutCredit: coutCredit, propertyType: S.propertyType || 'ancien'
   });
 
   // ====== 7. RECO CARDS ======
@@ -7829,7 +7851,13 @@ function s8BuildLeviers(ctx) {
   }).join('');
 }
 
-/* ─── Comparatif Acheter vs Louer sur 10 ans ─── */
+/* ─── Comparatif Acheter vs Louer sur 10 ans (refondu commit 7) ───
+   Méthode : compare 2 patrimoines nets sur 10 ans.
+   - Acheter : (valeur bien − CRD) − (apport + frais notaire immobilisés).
+     Les mensualités et charges sont des flux "logement" (équivalent loyer), pas un appauvrissement.
+   - Louer : apport placé à 3 %/an + différentiel mensuel (mens + charges − loyer) placé mois par mois à 3 %/an.
+   Patrimoine = stock final, comparable des deux côtés.
+*/
 function s8BuildVsRent(ctx) {
   var prixBien = ctx.prixBien || 0;
   if (!prixBien) {
@@ -7840,60 +7868,109 @@ function s8BuildVsRent(ctx) {
 
   var YEARS = 10;
   var months = YEARS * 12;
-  var apport = ctx.mob || 0;
-  var mens = ctx.mensualite || 0;
+  var apport = Math.max(0, ctx.mob || 0);
   var taux = ctx.taux || 3.8;
-  var duree = ctx.duree || 25;
-
-  // ACHAT
-  var totalMens = mens * months;
-  var chargesAn = prixBien * 0.015;
-  var totalCharges = chargesAn * YEARS;
-  var valeur10 = prixBien * Math.pow(1.01, YEARS);
+  var dureeAns = ctx.duree || 25;
+  var dureeMois = dureeAns * 12;
   var r = (taux / 12) / 100;
+
+  // Emprunt REÉL = prix du bien + frais notaire − apport (l'apport sert d'abord à réduire l'emprunt)
+  var fraisNotaire = (typeof estimateAcquisitionFees === 'function') ? estimateAcquisitionFees(prixBien, ctx.propertyType || 'ancien') : Math.round(prixBien * 0.08);
+  var coutAcquisition = prixBien + fraisNotaire;
+  var empruntReel = Math.max(0, coutAcquisition - apport);
+  // Mensualité recalculée sur l'emprunt réel (à prix donné, mens ≠ mens cible si on n'emprunte pas le max)
+  var mensReelle;
+  if (r > 0 && empruntReel > 0) {
+    mensReelle = empruntReel * r / (1 - Math.pow(1 + r, -dureeMois));
+  } else {
+    mensReelle = empruntReel / dureeMois;
+  }
+
+  // ===== ACHETER : patrimoine net à 10 ans =====
+  var valeur10 = prixBien * Math.pow(1.01, YEARS);
   var crd;
-  if (r > 0 && ctx.borrowing > 0) {
+  if (r > 0 && empruntReel > 0) {
     var facteur = Math.pow(1 + r, months);
-    crd = ctx.borrowing * facteur - mens * (facteur - 1) / r;
+    crd = empruntReel * facteur - mensReelle * (facteur - 1) / r;
     crd = Math.max(0, crd);
   } else {
-    crd = Math.max(0, ctx.borrowing - mens * months);
+    crd = Math.max(0, empruntReel - mensReelle * months);
   }
-  var patrimoineNet = valeur10 - crd - apport - totalMens - totalCharges;
+  var capitalImmobilise = apport + fraisNotaire; // sortie cash one-shot, immobilisée dans le bien
+  var patrimoineAcheter = valeur10 - crd - capitalImmobilise;
 
-  // LOCATION
-  var loyerInit = prixBien * 0.0038;
+  // Flux info uniquement (dépenses cumulées 10 ans)
+  var totalMens = mensReelle * months;
+  var chargesMensuelles = (prixBien * 0.015) / 12;
+  var totalCharges = chargesMensuelles * months;
+
+  // ===== LOUER : patrimoine net à 10 ans =====
+  var loyerInit = prixBien * 0.0038; // ~4,56 %/an brut
+  // Apport placé à 3 %/an composé (et frais notaire aussi puisque le locataire n'a pas à les sortir)
+  var capitalPlace = capitalImmobilise * Math.pow(1.03, YEARS);
+
+  // Différentiel mensuel : (mens + charges_mens) − loyer_du_mois, placé mensuellement à 3 %/an
+  // taux mensuel placement
+  var rPlace = Math.pow(1.03, 1/12) - 1;
   var totalLoyers = 0;
+  var diffPlace = 0; // valeur acquise du différentiel à 10 ans
   for (var y = 0; y < YEARS; y++) {
-    totalLoyers += loyerInit * 12 * Math.pow(1.015, y);
+    var loyerAnnee = loyerInit * Math.pow(1.015, y); // mensuel cette année
+    // Équivalent pour l'acheteur = mens + charges (constantes année par année ici)
+    var fluxAcheteurMois = mensReelle + chargesMensuelles;
+    var diffMois = fluxAcheteurMois - loyerAnnee; // si positif, le locataire place ce diff
+    for (var m = 0; m < 12; m++) {
+      totalLoyers += loyerAnnee;
+      if (diffMois > 0) {
+        // capitalisation mensuelle jusqu'à la fin (months − ((y*12)+m+1) mois restants)
+        var moisRestants = months - (y * 12 + m + 1);
+        diffPlace += diffMois * Math.pow(1 + rPlace, moisRestants);
+      }
+    }
   }
-  var apportPlace = apport * Math.pow(1.03, YEARS) - apport;
-  var soldeLoc = apportPlace - totalLoyers;
+  var patrimoineLouer = capitalPlace + diffPlace;
 
-  var ecart = patrimoineNet - soldeLoc;
+  // Note : le total "loyers" affiché est juste informatif (dépenses cumulées côté locataire)
+  var ecart = patrimoineAcheter - patrimoineLouer; // > 0 = acheter gagne
 
+  // ===== AFFICHAGE =====
   var set = function(id, txt) { var e = $(id); if (e) e.textContent = txt; };
+  var signed = function(v) { return (v >= 0 ? '+ ' : '– ') + fmt(Math.abs(Math.round(v))); };
+
   set('s8-vs-buy-price', '(' + fmt(prixBien) + ')');
-  set('s8-vs-buy-apport', '– ' + fmt(apport));
-  set('s8-vs-buy-mens', '– ' + fmt(Math.round(totalMens)));
-  set('s8-vs-buy-charges', '– ' + fmt(Math.round(totalCharges)));
   set('s8-vs-buy-val', '+ ' + fmt(Math.round(valeur10)));
   set('s8-vs-buy-crd', '– ' + fmt(Math.round(crd)));
-  set('s8-vs-buy-total', (patrimoineNet >= 0 ? '+ ' : '– ') + fmt(Math.abs(Math.round(patrimoineNet))));
+  set('s8-vs-buy-init', '– ' + fmt(Math.round(capitalImmobilise)));
+  set('s8-vs-buy-total', signed(patrimoineAcheter));
+  set('s8-vs-buy-mens', fmt(Math.round(totalMens)));
+  set('s8-vs-buy-charges', fmt(Math.round(totalCharges)));
 
+  set('s8-vs-rent-place', '+ ' + fmt(Math.round(capitalPlace)));
+  set('s8-vs-rent-diff', '+ ' + fmt(Math.round(diffPlace)));
+  set('s8-vs-rent-solde', signed(patrimoineLouer));
   set('s8-vs-rent-init', fmt(Math.round(loyerInit)) + '/mois');
-  set('s8-vs-rent-total', '– ' + fmt(Math.round(totalLoyers)));
-  set('s8-vs-rent-place', '+ ' + fmt(Math.round(apportPlace)));
-  set('s8-vs-rent-solde', (soldeLoc >= 0 ? '+ ' : '– ') + fmt(Math.abs(Math.round(soldeLoc))));
+  set('s8-vs-rent-total', fmt(Math.round(totalLoyers)));
+
+  // Si différentiel négatif (locataire ne place rien supplémentaire), masque la ligne
+  var diffLine = $('s8-vs-rent-diff-line');
+  if (diffLine) diffLine.style.display = (diffPlace > 0 ? '' : 'none');
 
   var hint = $('s8-vs-hint');
   var verdict = $('s8-vs-verdict');
-  if (ecart > 0) {
+  if (verdict) verdict.classList.remove('neg');
+  if (hint) hint.classList.remove('neg');
+  if (ecart >= 0) {
     if (hint) hint.innerHTML = 'Comparatif sur 10 ans · gain estimé <strong>+ ' + fmt(Math.round(ecart)) + '</strong>';
-    if (verdict) verdict.innerHTML = 'En achetant, tu <strong>économises ~' + fmt(Math.round(ecart)) + '</strong> sur 10 ans par rapport à la location équivalente.';
+    if (verdict) verdict.innerHTML = 'Sur 10 ans, l\'achat te fait <strong>gagner ~' + fmt(Math.round(ecart)) + '</strong> de patrimoine par rapport à la location équivalente.';
   } else {
-    if (hint) hint.innerHTML = 'Comparatif sur 10 ans · écart estimé <strong>– ' + fmt(Math.abs(Math.round(ecart))) + '</strong>';
-    if (verdict) verdict.innerHTML = 'Sur 10 ans, la location reste légèrement plus avantageuse de ~' + fmt(Math.abs(Math.round(ecart))) + '. L\'achat devient gagnant au-delà.';
+    if (hint) {
+      hint.classList.add('neg');
+      hint.innerHTML = 'Comparatif sur 10 ans · écart <strong>– ' + fmt(Math.abs(Math.round(ecart))) + '</strong>';
+    }
+    if (verdict) {
+      verdict.classList.add('neg');
+      verdict.innerHTML = 'Sur 10 ans, la location reste plus avantageuse de <strong>~' + fmt(Math.abs(Math.round(ecart))) + '</strong>. L\'achat devient généralement gagnant au-delà de 7–10 ans.';
+    }
   }
 }
 
