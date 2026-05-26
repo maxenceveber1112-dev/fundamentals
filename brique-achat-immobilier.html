@@ -3476,6 +3476,390 @@ html.dark .s7-process-cta.disabled { color: var(--text-muted); }
   .s7-revente-result { grid-template-columns: 1fr; }
   .s7-process-detail-inner { padding-left: 1.25rem; }
 }
+
+/* ═════════════════════════════════════════════════════════════
+   COMMIT 6b — S8 DIAGNOSTIC PERSONNALISÉ (refonte)
+   1. Hero (conservé via .diag-premium-section existant)
+   2. Score global + 4 sous-scores avec focus du plus faible
+   3. Bilan en chiffres (KPI + bloc locatif conditionnel)
+   4. Typologies sur la commune (nuancées ok/tight/over)
+   5. Top 3 leviers personnalisés
+   6. Acheter vs Louer (collapsable)
+═════════════════════════════════════════════════════════════ */
+
+/* ─── 2. Score global ─── */
+.s8-score-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.25rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+.s8-score-ring-wrap {
+  position: relative;
+  width: 140px; height: 140px;
+  flex-shrink: 0;
+}
+.s8-score-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.s8-score-ring-bg { fill: none; stroke: var(--track); stroke-width: 9; }
+.s8-score-ring-fill {
+  fill: none; stroke: url(#s8ScoreGradient);
+  stroke-width: 9; stroke-linecap: round;
+  transition: stroke-dashoffset 1.5s var(--ease-out);
+}
+.s8-score-ring-text {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+}
+.s8-score-num {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 2.6rem; font-weight: 500; line-height: 1;
+  color: var(--accent-strong);
+}
+.s8-score-base {
+  font-size: .7rem; color: var(--text-muted);
+  font-weight: 500; letter-spacing: .05em;
+}
+.s8-score-body { min-width: 0; }
+.s8-score-verdict-kicker {
+  font-size: .68rem; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent-strong);
+  margin-bottom: .35rem;
+}
+.s8-score-verdict {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 1.45rem; font-weight: 500; color: var(--text);
+  line-height: 1.2; letter-spacing: -0.01em;
+  margin-bottom: .75rem;
+}
+.s8-score-desc {
+  font-size: .85rem; color: var(--text-secondary);
+  line-height: 1.55;
+}
+.s8-score-desc strong { color: var(--text); font-weight: 700; }
+
+/* 4 sous-scores compacts */
+.s8-subscores {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: .5rem; margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.s8-subscore {
+  text-align: center;
+  padding: .5rem .25rem;
+  border-radius: var(--r-sm);
+  transition: all .2s var(--ease-out);
+  position: relative;
+}
+.s8-subscore-label {
+  font-size: .65rem; font-weight: 600; letter-spacing: .03em;
+  color: var(--text-muted);
+  margin-bottom: .25rem;
+}
+.s8-subscore-bar {
+  height: 4px; background: var(--track);
+  border-radius: 2px; overflow: hidden; margin-bottom: .35rem;
+}
+.s8-subscore-bar-fill { height: 100%; border-radius: 2px; transition: width .8s var(--ease-out); }
+.s8-subscore-val {
+  font-size: .85rem; font-weight: 700;
+  color: var(--text-secondary);
+}
+.s8-subscore.ok .s8-subscore-bar-fill { background: var(--green); }
+.s8-subscore.mid .s8-subscore-bar-fill { background: var(--yellow); }
+.s8-subscore.low .s8-subscore-bar-fill { background: var(--orange); }
+
+/* Sous-score focus = celui qui pose problème */
+.s8-subscore.focus {
+  background: rgba(251,146,60,.08);
+  border: 1px solid rgba(251,146,60,.2);
+  padding: .6rem .5rem .55rem;
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(251,146,60,.12);
+}
+.s8-subscore.focus .s8-subscore-label { color: #c2410c; font-weight: 700; }
+html.dark .s8-subscore.focus .s8-subscore-label { color: #FB923C; }
+.s8-subscore.focus .s8-subscore-val { color: var(--text); }
+.s8-subscore.focus::before {
+  content: '\2193 point d\27 attention';
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  font-size: .58rem; font-weight: 700;
+  background: #FB923C; color: #fff;
+  padding: .12rem .45rem; border-radius: var(--r-full);
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+
+/* ─── 3. Bilan en chiffres ─── */
+.s8-bilan {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+}
+.s8-bilan-kicker {
+  font-size: .68rem; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--accent-strong);
+  margin-bottom: .85rem;
+  display: flex; align-items: center; gap: .4rem;
+}
+.s8-bilan-kicker::before { content: '\25CF'; font-size: .55rem; }
+.s8-bilan-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: .75rem;
+  margin-bottom: .85rem;
+}
+.s8-bilan-cell {
+  padding: .85rem 1rem;
+  background: var(--surface-2);
+  border-radius: var(--r-md);
+}
+.s8-bilan-cell-label {
+  font-size: .65rem; font-weight: 600; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: .2rem;
+}
+.s8-bilan-cell-value {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 1.15rem; font-weight: 500; color: var(--text);
+  line-height: 1.1;
+}
+.s8-bilan-locatif {
+  margin-top: .25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.s8-bilan-locatif-label {
+  font-size: .7rem; font-weight: 600; color: var(--text-muted);
+  margin-bottom: .65rem;
+  letter-spacing: .04em;
+}
+.s8-bilan-locatif-cell {
+  background: linear-gradient(135deg, rgba(167,139,250,.10), rgba(129,140,248,.06));
+  border: 1px solid rgba(167,139,250,.18);
+}
+.s8-bilan-locatif-cell .s8-bilan-cell-value {
+  color: var(--accent-strong);
+}
+html.dark .s8-bilan-locatif-cell .s8-bilan-cell-value { color: #C4B5FD; }
+.s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #c2410c; }
+html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
+
+/* ─── 4. Typologies sur la commune ─── */
+.s8-typo-section {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+}
+.s8-typo-sub {
+  font-size: .82rem; color: var(--text-secondary);
+  margin-top: -.35rem; margin-bottom: .65rem;
+}
+.s8-typo-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: .75rem; margin-top: 1rem;
+}
+.s8-typo-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 1rem;
+  position: relative;
+  transition: all .2s var(--ease-out);
+}
+.s8-typo-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+.s8-typo-label {
+  font-size: .82rem; font-weight: 600; color: var(--text);
+  margin-bottom: .15rem;
+}
+.s8-typo-price {
+  font-size: .72rem; color: var(--text-muted); margin-bottom: .65rem;
+}
+.s8-typo-badge {
+  display: inline-flex; align-items: center; gap: .25rem;
+  font-size: .68rem; font-weight: 600; padding: .2rem .55rem;
+  border-radius: var(--r-full);
+}
+.s8-typo-card.ok { border-color: rgba(34,197,94,.25); }
+.s8-typo-card.ok .s8-typo-badge { background: var(--green-soft); color: #15803d; }
+html.dark .s8-typo-card.ok .s8-typo-badge { color: var(--green); }
+.s8-typo-card.tight { border-color: rgba(251,191,36,.3); }
+.s8-typo-card.tight .s8-typo-badge { background: rgba(251,191,36,.15); color: #a16207; }
+html.dark .s8-typo-card.tight .s8-typo-badge { color: var(--yellow); }
+.s8-typo-card.over { border-color: rgba(248,113,113,.25); opacity: .85; }
+.s8-typo-card.over .s8-typo-badge { background: var(--red-soft); color: #b91c1c; }
+html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
+
+/* ─── 5. Top 3 leviers ─── */
+.s8-leviers {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+}
+.s8-leviers-title {
+  font-family: var(--font-display); font-style: italic;
+  font-size: 1.15rem; font-weight: 500; color: var(--text);
+  margin-bottom: 1rem; letter-spacing: -0.01em;
+}
+.s8-levier-list { display: flex; flex-direction: column; gap: .65rem; }
+.s8-levier {
+  display: flex; align-items: center; gap: 1rem;
+  padding: .85rem 1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  transition: all .2s var(--ease-out);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+}
+.s8-levier:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+  transform: translateX(2px);
+}
+.s8-levier:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+.s8-levier-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, #A78BFA, #818CF8);
+  color: #fff; font-weight: 700; font-size: .82rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.s8-levier-body { flex: 1; min-width: 0; }
+.s8-levier-action {
+  font-size: .9rem; font-weight: 600; color: var(--text);
+  line-height: 1.3;
+}
+.s8-levier-action strong { color: var(--accent-strong); }
+.s8-levier-result {
+  font-size: .78rem; color: var(--text-muted);
+  margin-top: .15rem;
+}
+.s8-levier-result strong { color: var(--green); font-weight: 700; }
+.s8-levier-arrow {
+  color: var(--text-faint); flex-shrink: 0;
+  transition: transform .2s, color .2s;
+}
+.s8-levier:hover .s8-levier-arrow {
+  color: var(--accent-strong); transform: translateX(3px);
+}
+
+/* ─── 6. Acheter vs Louer (collapsable) ─── */
+.s8-vs-teaser {
+  background: var(--surface);
+  border: 1px dashed var(--border-mid);
+  border-radius: var(--r-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  cursor: pointer;
+  transition: all .2s var(--ease-out);
+}
+.s8-vs-teaser:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  border-style: solid;
+}
+.s8-vs-teaser.open {
+  border-style: solid; border-color: var(--accent);
+  background: var(--bg-elevated);
+}
+.s8-vs-teaser-head {
+  display: flex; align-items: center; gap: .85rem;
+}
+.s8-vs-icon {
+  width: 36px; height: 36px; border-radius: var(--r-sm);
+  background: var(--accent-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.s8-vs-teaser-body { flex: 1; min-width: 0; }
+.s8-vs-teaser-title {
+  font-size: .9rem; font-weight: 600; color: var(--text);
+}
+.s8-vs-teaser-hint {
+  font-size: .76rem; color: var(--text-muted);
+  margin-top: .1rem;
+}
+.s8-vs-teaser-hint strong { color: var(--green); font-weight: 700; }
+.s8-vs-chevron {
+  color: var(--text-faint);
+  transition: transform .25s var(--ease-out);
+}
+.s8-vs-teaser.open .s8-vs-chevron { transform: rotate(180deg); }
+.s8-vs-content {
+  max-height: 0; overflow: hidden;
+  transition: max-height .35s var(--ease-out);
+}
+.s8-vs-teaser.open .s8-vs-content { max-height: 800px; }
+.s8-vs-content-inner {
+  padding-top: 1.25rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.s8-vs-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: .85rem;
+}
+.s8-vs-col {
+  padding: 1rem;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+.s8-vs-col-title {
+  font-size: .8rem; font-weight: 700;
+  color: var(--text); margin-bottom: .65rem;
+  display: flex; align-items: center; gap: .35rem;
+}
+.s8-vs-col-line {
+  display: flex; justify-content: space-between;
+  padding: .25rem 0; font-size: .78rem;
+  color: var(--text-secondary);
+  gap: .5rem;
+}
+.s8-vs-col-line span:last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.s8-vs-col-line.total {
+  margin-top: .5rem; padding-top: .5rem;
+  border-top: 1px solid var(--border-subtle);
+  font-weight: 700; color: var(--text);
+  font-size: .85rem;
+}
+.s8-vs-verdict {
+  text-align: center;
+  margin-top: 1rem;
+  padding: .85rem 1rem;
+  background: linear-gradient(135deg, var(--green-soft), transparent);
+  border: 1px solid rgba(34,197,94,.2);
+  border-radius: var(--r-md);
+  font-size: .9rem; color: var(--text);
+}
+.s8-vs-verdict strong { color: var(--green); font-weight: 700; }
+
+/* Mobile S8 */
+@media (max-width: 720px) {
+  .s8-score-card { grid-template-columns: 1fr; gap: 1.25rem; justify-items: center; text-align: center; }
+  .s8-score-body { text-align: left; }
+  .s8-bilan-row { grid-template-columns: repeat(2, 1fr); }
+  .s8-typo-grid { grid-template-columns: 1fr; }
+  .s8-vs-grid { grid-template-columns: 1fr; }
+  .s8-subscores { grid-template-columns: repeat(2, 1fr); gap: .65rem; }
+}
 </style>
 </head>
 <body data-brick-name="Achat immobilier">
@@ -4575,62 +4959,152 @@ html.dark .s7-process-cta.disabled { color: var(--text-muted); }
               </button>
             </div>
           </div>
-          <div class="closing-summary">
-            <div class="cs-kicker">● TON BILAN IMMOBILIER</div>
-
-            <!-- Chiffres clés -->
-            <div class="cs-metrics">
-              <div class="cs-metric">
-                <div class="cs-metric-label">Capacité d'emprunt</div>
-                <div class="cs-metric-value" id="cs-emprunt">—</div>
-              </div>
-              <div class="cs-metric">
-                <div class="cs-metric-label">Apport</div>
-                <div class="cs-metric-value" id="cs-apport">—</div>
-              </div>
-              <div class="cs-metric">
-                <div class="cs-metric-label">Budget total</div>
-                <div class="cs-metric-value" id="cs-budget">—</div>
-              </div>
-            </div>
-
-            <!-- Cards logement -->
-            <div class="cs-logements" id="cs-logements">
-              <div class="cs-logement" id="cs-studio">
-                <div class="cs-logement-icon">🏢</div>
-                <div class="cs-logement-label">Studio / T1</div>
-                <div class="cs-logement-status" id="cs-studio-status">—</div>
-              </div>
-              <div class="cs-logement" id="cs-2p">
-                <div class="cs-logement-icon">🏠</div>
-                <div class="cs-logement-label">2 pièces</div>
-                <div class="cs-logement-status" id="cs-2p-status">—</div>
-              </div>
-              <div class="cs-logement" id="cs-3p">
-                <div class="cs-logement-icon">🏡</div>
-                <div class="cs-logement-label">3 pièces</div>
-                <div class="cs-logement-status" id="cs-3p-status">—</div>
+          <!-- ═══ 2. SCORE GLOBAL + 4 SOUS-SCORES ═══ -->
+          <div class="s8-score-card">
+            <div class="s8-score-ring-wrap">
+              <svg class="s8-score-ring" viewBox="0 0 140 140" aria-hidden="true">
+                <defs>
+                  <linearGradient id="s8ScoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#A78BFA"/>
+                    <stop offset="100%" stop-color="#818CF8"/>
+                  </linearGradient>
+                </defs>
+                <circle class="s8-score-ring-bg" cx="70" cy="70" r="60"/>
+                <circle class="s8-score-ring-fill" id="s8-score-ring-fill" cx="70" cy="70" r="60"
+                        stroke-dasharray="376.99" stroke-dashoffset="376.99"/>
+              </svg>
+              <div class="s8-score-ring-text">
+                <div class="s8-score-num" id="s8-score-num">--</div>
+                <div class="s8-score-base">/ 100</div>
               </div>
             </div>
+            <div class="s8-score-body">
+              <div class="s8-score-verdict-kicker">VERDICT</div>
+              <div class="s8-score-verdict" id="s8-score-verdict">Projet à analyser.</div>
+              <div class="s8-score-desc" id="s8-score-desc">Analyse en cours…</div>
 
-            <!-- 3 actions -->
-            <div class="cs-actions-title">Pour aller plus loin :</div>
-            <div class="cs-actions">
-              <button class="cs-action" onclick="goToScreen(4)">
-                <span class="cs-action-icon">↓</span>
-                <span class="cs-action-label">Réduire le prix cible</span>
-                <span class="cs-action-hint">Modifier à l'étape 4</span>
-              </button>
-              <button class="cs-action" onclick="goToScreen(3)">
-                <span class="cs-action-icon">↑</span>
-                <span class="cs-action-label">Augmenter l'apport</span>
-                <span class="cs-action-hint">Modifier à l'étape 3</span>
-              </button>
-              <button class="cs-action" onclick="openHypothesesPopup()">
-                <span class="cs-action-icon">⏱</span>
-                <span class="cs-action-label">Allonger la durée</span>
-                <span class="cs-action-hint">Modifier les hypothèses</span>
-              </button>
+              <div class="s8-subscores" id="s8-subscores">
+                <div class="s8-subscore" data-key="faisabilite">
+                  <div class="s8-subscore-label">Faisabilité</div>
+                  <div class="s8-subscore-bar"><div class="s8-subscore-bar-fill" style="width:0%"></div></div>
+                  <div class="s8-subscore-val">--</div>
+                </div>
+                <div class="s8-subscore" data-key="effort">
+                  <div class="s8-subscore-label">Effort</div>
+                  <div class="s8-subscore-bar"><div class="s8-subscore-bar-fill" style="width:0%"></div></div>
+                  <div class="s8-subscore-val">--</div>
+                </div>
+                <div class="s8-subscore" data-key="rentabilite">
+                  <div class="s8-subscore-label">Rentabilité</div>
+                  <div class="s8-subscore-bar"><div class="s8-subscore-bar-fill" style="width:0%"></div></div>
+                  <div class="s8-subscore-val">--</div>
+                </div>
+                <div class="s8-subscore" data-key="risque">
+                  <div class="s8-subscore-label">Risque</div>
+                  <div class="s8-subscore-bar"><div class="s8-subscore-bar-fill" style="width:0%"></div></div>
+                  <div class="s8-subscore-val">--</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ 3. BILAN EN CHIFFRES ═══ -->
+          <div class="s8-bilan">
+            <div class="s8-bilan-kicker">TON BILAN IMMOBILIER</div>
+            <div class="s8-bilan-row">
+              <div class="s8-bilan-cell">
+                <div class="s8-bilan-cell-label">Capacité emprunt</div>
+                <div class="s8-bilan-cell-value" id="s8-bilan-emprunt">--</div>
+              </div>
+              <div class="s8-bilan-cell">
+                <div class="s8-bilan-cell-label">Apport</div>
+                <div class="s8-bilan-cell-value" id="s8-bilan-apport">--</div>
+              </div>
+              <div class="s8-bilan-cell">
+                <div class="s8-bilan-cell-label">Budget total</div>
+                <div class="s8-bilan-cell-value" id="s8-bilan-budget">--</div>
+              </div>
+              <div class="s8-bilan-cell">
+                <div class="s8-bilan-cell-label">Mensualité</div>
+                <div class="s8-bilan-cell-value" id="s8-bilan-mensualite">--</div>
+              </div>
+            </div>
+            <div class="s8-bilan-locatif" id="s8-bilan-locatif" hidden>
+              <div class="s8-bilan-locatif-label">SI TU LE METS EN LOCATION</div>
+              <div class="s8-bilan-row">
+                <div class="s8-bilan-cell s8-bilan-locatif-cell">
+                  <div class="s8-bilan-cell-label">Loyer estimé</div>
+                  <div class="s8-bilan-cell-value" id="s8-loc-loyer">--</div>
+                </div>
+                <div class="s8-bilan-cell s8-bilan-locatif-cell" id="s8-loc-cashflow-cell">
+                  <div class="s8-bilan-cell-label">Cashflow</div>
+                  <div class="s8-bilan-cell-value" id="s8-loc-cashflow">--</div>
+                </div>
+                <div class="s8-bilan-cell s8-bilan-locatif-cell">
+                  <div class="s8-bilan-cell-label">Rendement net</div>
+                  <div class="s8-bilan-cell-value" id="s8-loc-rendement">--</div>
+                </div>
+                <div class="s8-bilan-cell s8-bilan-locatif-cell">
+                  <div class="s8-bilan-cell-label">Cap résiduelle</div>
+                  <div class="s8-bilan-cell-value" id="s8-loc-cap-res">--</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ 4. TYPOLOGIES SUR LA COMMUNE ═══ -->
+          <div class="s8-typo-section">
+            <div class="s8-bilan-kicker" id="s8-typo-kicker">TYPOLOGIES SUR TA COMMUNE</div>
+            <p class="s8-typo-sub" id="s8-typo-sub">Croisement de ton budget avec les prix médians DVF.</p>
+            <div class="s8-typo-grid" id="s8-typo-grid">
+              <!-- généré par JS -->
+            </div>
+          </div>
+
+          <!-- ═══ 5. TOP 3 LEVIERS ═══ -->
+          <div class="s8-leviers" id="s8-leviers-section">
+            <h3 class="s8-leviers-title">Tes 3 leviers prioritaires</h3>
+            <div class="s8-levier-list" id="s8-levier-list">
+              <!-- généré par JS -->
+            </div>
+          </div>
+
+          <!-- ═══ 6. ACHETER VS LOUER (COLLAPSÉ PAR DÉFAUT) ═══ -->
+          <div class="s8-vs-teaser" id="s8-vs-teaser" role="button" tabindex="0"
+               aria-expanded="false" aria-controls="s8-vs-content"
+               onclick="s8ToggleVs(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();s8ToggleVs(this);}">
+            <div class="s8-vs-teaser-head">
+              <div class="s8-vs-icon" aria-hidden="true">⚖️</div>
+              <div class="s8-vs-teaser-body">
+                <div class="s8-vs-teaser-title">Acheter ou continuer à louer ?</div>
+                <div class="s8-vs-teaser-hint" id="s8-vs-hint">Comparatif chiffré sur 10 ans</div>
+              </div>
+              <svg class="s8-vs-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="s8-vs-content" id="s8-vs-content">
+              <div class="s8-vs-content-inner">
+                <div class="s8-vs-grid">
+                  <div class="s8-vs-col">
+                    <div class="s8-vs-col-title">🏠 Acheter <span id="s8-vs-buy-price"></span></div>
+                    <div class="s8-vs-col-line"><span>Apport mobilisé</span><span id="s8-vs-buy-apport">--</span></div>
+                    <div class="s8-vs-col-line"><span>Mensualités × 120</span><span id="s8-vs-buy-mens">--</span></div>
+                    <div class="s8-vs-col-line"><span>Charges + entretien</span><span id="s8-vs-buy-charges">--</span></div>
+                    <div class="s8-vs-col-line"><span>Valeur bien à 10 ans</span><span id="s8-vs-buy-val">--</span></div>
+                    <div class="s8-vs-col-line"><span>Capital restant dû</span><span id="s8-vs-buy-crd">--</span></div>
+                    <div class="s8-vs-col-line total"><span>Patrimoine net</span><span id="s8-vs-buy-total">--</span></div>
+                  </div>
+                  <div class="s8-vs-col">
+                    <div class="s8-vs-col-title">🏘 Louer <span style="font-weight:400;color:var(--text-muted);font-size:.72rem;">(équivalent)</span></div>
+                    <div class="s8-vs-col-line"><span>Loyer mensuel initial</span><span id="s8-vs-rent-init">--</span></div>
+                    <div class="s8-vs-col-line"><span>Indexation IRL +1,5 %/an</span><span>—</span></div>
+                    <div class="s8-vs-col-line"><span>Total loyers × 120</span><span id="s8-vs-rent-total">--</span></div>
+                    <div class="s8-vs-col-line"><span>Apport épargné placé 3 %</span><span id="s8-vs-rent-place">--</span></div>
+                    <div class="s8-vs-col-line"><span>Aucun patrimoine constitué</span><span>0 €</span></div>
+                    <div class="s8-vs-col-line total"><span>Solde net</span><span id="s8-vs-rent-solde">--</span></div>
+                  </div>
+                </div>
+                <div class="s8-vs-verdict" id="s8-vs-verdict">Calcul en cours…</div>
+              </div>
             </div>
           </div>
 
@@ -6999,94 +7473,409 @@ function s7UpdateRevente(year) {
   if (jDot) { jDot.setAttribute('cx', jalonX); jDot.setAttribute('cy', jalonY); }
 }
 
-/* ─── ÉCRAN FINAL 8 : DIAGNOSTIC ────────────────────────── */
+/* ─── ÉCRAN FINAL 8 : DIAGNOSTIC (refonte commit 6b) ────────── */
+
+// Calcul des 4 sous-scores (chacun /100)
+function s8CalcSubscores(st) {
+  var mob = getApportMobilisable();
+  var fees = estimateAcquisitionFees(st.prixBien, st.propertyType);
+  var mensualite = getMensualiteCible();
+
+  // FAISABILITÉ
+  var faisabilite = 30;
+  if (mob > 0) {
+    if (mob >= fees + 5000) faisabilite += 35;
+    else if (mob >= fees) faisabilite += 25;
+    else faisabilite += 10;
+  }
+  if (mensualite > 0) faisabilite += 20;
+  if (st.prixBien > 0) faisabilite += 15;
+  faisabilite = Math.min(100, faisabilite);
+
+  // EFFORT
+  var effort = calculateDebtRatio(st.credits, mensualite + n(st.assurance), getTotalRevenus());
+  var effortPct = effort * 100;
+  var effortScore;
+  if (effortPct <= 28) effortScore = 92;
+  else if (effortPct <= 33) effortScore = 75;
+  else if (effortPct <= 35) effortScore = 60;
+  else if (effortPct <= 40) effortScore = 45;
+  else if (effortPct <= 45) effortScore = 30;
+  else effortScore = 15;
+
+  // RENTABILITÉ
+  var prixBien = st.prixBien || (mob + calculateBorrowingCapacity(mensualite, st.taux, st.duree * 12));
+  var valeur10 = prixBien * Math.pow(1.01, 10);
+  var gainPotentiel = valeur10 - prixBien;
+  var rentabilite = 50;
+  if (gainPotentiel > 25000) rentabilite += 20;
+  else if (gainPotentiel > 15000) rentabilite += 12;
+  if (st.taux > 0 && st.taux <= 3.5) rentabilite += 15;
+  else if (st.taux > 0 && st.taux <= 4.2) rentabilite += 8;
+  if (st.loyerEstime > 0) {
+    var rdt = (st.loyerEstime * 12) / (prixBien || 1) * 100;
+    if (rdt > 5) rentabilite += 15;
+    else if (rdt > 4) rentabilite += 8;
+  }
+  rentabilite = Math.min(100, rentabilite);
+
+  // RISQUE
+  var risque = 30;
+  if (st.matelasActuel >= st.matelasCible) risque += 30;
+  else if (st.matelasActuel >= st.matelasCible * 0.5) risque += 15;
+  var rav = getTotalRevenus() - st.charges - st.credits - mensualite - n(st.assurance);
+  if (rav > 1500) risque += 25;
+  else if (rav > 800) risque += 15;
+  else if (rav > 400) risque += 5;
+  if (st.duree > 0 && st.duree <= 25) risque += 15;
+  else if (st.duree > 0 && st.duree <= 30) risque += 8;
+  risque = Math.min(100, risque);
+
+  return {
+    faisabilite: Math.round(faisabilite),
+    effort: Math.round(effortScore),
+    rentabilite: Math.round(rentabilite),
+    risque: Math.round(risque)
+  };
+}
+
+function s8GetVerdict(score) {
+  if (score >= 80) return { v: 'Projet solide, prêt à lancer.', d: 'Ta capacité d\'emprunt, ton apport et ton effort sont alignés. Tu peux passer en mode prospection.' };
+  if (score >= 70) return { v: 'Projet solide à ajuster.',     d: 'Les fondamentaux sont là. Vois les leviers ci-dessous pour gagner en confort.' };
+  if (score >= 55) return { v: 'Projet à cadrer.',             d: 'Le cadre est jouable mais demande des ajustements. Concentre-toi sur le point d\'attention ci-dessous.' };
+  if (score >= 40) return { v: 'Projet à retravailler.',       d: 'Plusieurs paramètres tirent ton dossier vers le bas. Les leviers ci-dessous peuvent inverser la tendance.' };
+  return { v: 'Projet à reconsidérer.',                        d: 'En l\'état, le projet est fragile. Renforce ton apport et ton épargne de précaution avant d\'avancer.' };
+}
+
 function buildFinalScreen() {
   syncStateFromScreen(S.currentScreen);
   S.score = calculateRealEstateScore(S);
-  var status, icon;
-  if (S.score >= 80) { status = 'Prêt à approfondir'; icon = '✅'; }
-  else if (S.score >= 60) { status = 'À approfondir'; icon = '🔵'; }
-  else if (S.score >= 40) { status = 'À cadrer'; icon = '⚠️'; }
-  else { status = 'Projet fragile'; icon = '❌'; }
+  var status;
+  if (S.score >= 80) status = 'Prêt à approfondir';
+  else if (S.score >= 60) status = 'À approfondir';
+  else if (S.score >= 40) status = 'À cadrer';
+  else status = 'Projet fragile';
   S.scoreStatus = status;
-
-  // score ring elements removed from DOM — no-op
 
   var mob = getApportMobilisable();
   var mensualite = getMensualiteCible();
-  var effort = calculateDebtRatio(S.credits, mensualite + n(S.assurance), getTotalRevenus());
   var borrowing = calculateBorrowingCapacity(mensualite, S.taux, S.duree * 12);
   var fees = estimateAcquisitionFees(S.prixBien, S.propertyType);
-  var prixCible = borrowing + mob - fees;
-  var rav = getTotalRevenus() - S.charges - S.credits - mensualite - n(S.assurance);
-  var coutMensuelProprio = S.taxeFonciere / 12 + S.chargesCopro / 12 + S.assuranceHab + S.entretien / 12;
-
-  var items = [
-    { label: 'Type de projet', val: formatProjectType(S.projectType) },
-    { label: 'Mensualité cible', val: fmt(mensualite) },
-    { label: "Capacité d'emprunt", val: fmt(borrowing) },
-    { label: 'Prix cible prudent', val: fmt(prixCible > 0 ? prixCible : 0) },
-    { label: 'Apport mobilisable', val: fmt(mob) },
-    { label: 'Frais estimés', val: fmt(fees) },
-    { label: 'Coût mensuel proprio', val: fmt(coutMensuelProprio) },
-    { label: "Taux d'effort", val: fmtPct(effort) },
-    { label: 'Reste à vivre', val: fmt(rav) }
-  ];
-
-  var grid = $('summary-grid');
-  if (grid) {
-    grid.innerHTML = '';
-    items.forEach(function(it) {
-      grid.innerHTML += '<div class="summary-item"><div class="summary-item-val">' + it.val + '</div><div class="summary-item-label">' + it.label + '</div></div>';
-    });
-  }
-
-  S.actions = buildActions();
-  var actionsList = $('actions-list');
-  if (actionsList) {
-    actionsList.innerHTML = '';
-    S.actions.slice(0, 3).forEach(function(a) {
-      actionsList.innerHTML += '<div class="action-item">' + a + '</div>';
-    });
-  }
-
-  // diagnostic cards removed from DOM — no-op
-
-  S.nextBrick = recommendNextBrick(S);
-  $('reco-next-title').textContent = S.nextBrick.label;
-  $('reco-next-text').textContent = S.nextBrick.reason;
-
-  // Closing summary
-  var csEmprunt = $('cs-emprunt');
-  if (csEmprunt) csEmprunt.textContent = fmt(borrowing);
-  var csApport = $('cs-apport');
-  if (csApport) csApport.textContent = fmt(mob);
   var budgetTotal = borrowing + mob;
-  var csBudget = $('cs-budget');
-  if (csBudget) csBudget.textContent = fmt(budgetTotal);
+  var prixBien = S.prixBien || budgetTotal;
+  var coutCredit = (mensualite * S.duree * 12) - borrowing;
 
-  // Logement cards in closing summary
-  var prixM2 = S.prixM2 || 2500;
-  var csConfigs = [
-    { id: 'studio', surface: 30, icon: '🏢', label: 'Studio / T1' },
-    { id: '2p', surface: 50, icon: '🏠', label: '2 pièces' },
-    { id: '3p', surface: 70, icon: '🏡', label: '3 pièces' }
-  ];
-  csConfigs.forEach(function(cfg) {
-    var prixL = cfg.surface * prixM2;
-    var card = $('cs-' + cfg.id);
-    var statusEl = $('cs-' + cfg.id + '-status');
-    if (!card) return;
-    card.classList.remove('in-budget', 'out-budget');
-    if (prixL <= budgetTotal) {
-      card.classList.add('in-budget');
-      if (statusEl) statusEl.textContent = '✓ Atteignable';
-    } else {
-      card.classList.add('out-budget');
-      if (statusEl) statusEl.textContent = 'Hors budget';
+  // ====== 2. SCORE RING + SOUS-SCORES ======
+  var subs = s8CalcSubscores(S);
+  S.subscores = subs;
+  var scoreNum = $('s8-score-num');
+  if (scoreNum) scoreNum.textContent = S.score;
+  var ring = $('s8-score-ring-fill');
+  if (ring) {
+    var circ = 2 * Math.PI * 60;
+    var offset = circ * (1 - S.score / 100);
+    requestAnimationFrame(function() { ring.style.strokeDashoffset = offset; });
+  }
+  var verdict = s8GetVerdict(S.score);
+  var vEl = $('s8-score-verdict');
+  var dEl = $('s8-score-desc');
+  if (vEl) vEl.textContent = verdict.v;
+
+  var keys = ['faisabilite', 'effort', 'rentabilite', 'risque'];
+  var labels = { faisabilite: 'la faisabilité', effort: 'l\'effort financier', rentabilite: 'la rentabilité', risque: 'le risque' };
+  var minKey = keys[0];
+  keys.forEach(function(k) { if (subs[k] < subs[minKey]) minKey = k; });
+  var hasWeakness = subs[minKey] < 65;
+
+  if (dEl) {
+    var descBase = verdict.d;
+    if (hasWeakness) {
+      descBase = descBase + ' Un point appelle ton attention : <strong>' + labels[minKey] + '</strong>.';
     }
+    dEl.innerHTML = descBase;
+  }
+
+  var subContainer = $('s8-subscores');
+  if (subContainer) {
+    var subDivs = subContainer.querySelectorAll('.s8-subscore');
+    subDivs.forEach(function(d) {
+      var k = d.getAttribute('data-key');
+      var val = subs[k] || 0;
+      var cls = 'ok';
+      if (val < 50) cls = 'low';
+      else if (val < 70) cls = 'mid';
+      d.classList.remove('ok', 'mid', 'low', 'focus');
+      d.classList.add(cls);
+      if (k === minKey && hasWeakness) d.classList.add('focus');
+      var fill = d.querySelector('.s8-subscore-bar-fill');
+      var valEl = d.querySelector('.s8-subscore-val');
+      if (fill) fill.style.width = val + '%';
+      if (valEl) valEl.textContent = val;
+    });
+  }
+
+  // ====== 3. BILAN EN CHIFFRES ======
+  var setVal = function(id, txt) { var e = $(id); if (e) e.textContent = txt; };
+  setVal('s8-bilan-emprunt', fmt(borrowing));
+  setVal('s8-bilan-apport', fmt(mob));
+  setVal('s8-bilan-budget', fmt(budgetTotal));
+  setVal('s8-bilan-mensualite', fmt(mensualite) + '/mois');
+
+  // Bloc locatif conditionnel
+  var toggleInvest = $('s6-toggle-invest');
+  var locatifActif = !toggleInvest || toggleInvest.checked === true;
+  var showLocatif = locatifActif && S.loyerEstime && S.loyerEstime > 0;
+  var locBlock = $('s8-bilan-locatif');
+  if (locBlock) locBlock.hidden = !showLocatif;
+  if (showLocatif) {
+    var loyer = Math.round(S.loyerEstime);
+    var loyerRetenu = loyer * 0.70;
+    var chargesMens = (S.chargesCopro || 0) / 12 + (S.assuranceHab || 0) + (S.entretien || 0) / 12 + (S.taxeFonciere || 0) / 12;
+    var cashflow = loyerRetenu - mensualite - n(S.assurance) - chargesMens;
+    var rendementNet = ((loyerRetenu * 12) - chargesMens * 12) / (prixBien || 1) * 100;
+    var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
+    var mensMaxRes = (revenusAvecLoyer * 0.35) - (S.credits || 0) - mensualite - n(S.assurance);
+    var rCap = ((S.taux || 3.0) / 12) / 100;
+    var nCap = (S.duree || 25) * 12;
+    var capRes = mensMaxRes > 0
+      ? Math.round(mensMaxRes * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
+      : 0;
+    setVal('s8-loc-loyer', fmt(loyer) + '/mois');
+    setVal('s8-loc-cashflow', (cashflow >= 0 ? '+ ' : '– ') + fmt(Math.abs(Math.round(cashflow))) + '/mois');
+    var cfCell = $('s8-loc-cashflow-cell');
+    if (cfCell) { cfCell.classList.toggle('neg', cashflow < 0); }
+    setVal('s8-loc-rendement', (Math.round(rendementNet * 10) / 10).toFixed(1).replace('.', ',') + ' %');
+    setVal('s8-loc-cap-res', capRes > 0 ? fmt(capRes) : '—');
+  }
+
+  // ====== 4. TYPOLOGIES SUR LA COMMUNE ======
+  var prixM2 = S.prixM2 || 2500;
+  var villeName = S.commune && S.commune.nom ? S.commune.nom : (typeof S.commune === 'string' ? S.commune : 'ta commune');
+  var typoKick = $('s8-typo-kicker');
+  var typoSub = $('s8-typo-sub');
+  if (typoKick) typoKick.textContent = 'TYPOLOGIES SUR ' + String(villeName).toUpperCase();
+  if (typoSub) typoSub.textContent = 'Croisement de ton budget avec les prix médians DVF (' + fmt(prixM2) + '/m²).';
+
+  var typoGrid = $('s8-typo-grid');
+  if (typoGrid) {
+    var typos = [
+      { surface: 30, icon: '🏢', label: 'Studio / T1' },
+      { surface: 50, icon: '🏠', label: 'T2 / 2 pièces' },
+      { surface: 65, icon: '🏡', label: 'T3 / 3 pièces' }
+    ];
+    typoGrid.innerHTML = typos.map(function(t) {
+      var prixL = t.surface * prixM2;
+      var ratio = budgetTotal > 0 ? prixL / budgetTotal : 99;
+      var cls, badge;
+      if (ratio <= 0.80) { cls = 'ok'; badge = '✓ Confortable'; }
+      else if (ratio <= 1.00) { cls = 'tight'; badge = '⚠ Tendu'; }
+      else if (ratio <= 1.10) { cls = 'tight'; badge = '⚠ Limite'; }
+      else { cls = 'over'; badge = '✗ Hors budget'; }
+      return '<div class="s8-typo-card ' + cls + '">'
+        + '<div class="s8-typo-icon">' + t.icon + '</div>'
+        + '<div class="s8-typo-label">' + t.label + '</div>'
+        + '<div class="s8-typo-price">~' + fmt(prixL) + ' · ' + t.surface + 'm² × ' + fmt(prixM2) + '</div>'
+        + '<span class="s8-typo-badge">' + badge + '</span>'
+        + '</div>';
+    }).join('');
+  }
+
+  // ====== 5. TOP 3 LEVIERS ======
+  s8BuildLeviers({
+    mob: mob, mensualite: mensualite, borrowing: borrowing,
+    fees: fees, duree: S.duree, taux: S.taux,
+    prixM2: prixM2, budgetTotal: budgetTotal,
+    subs: subs, minKey: minKey
   });
+
+  // ====== 6. ACHETER VS LOUER ======
+  s8BuildVsRent({
+    prixBien: prixBien, mob: mob, mensualite: mensualite,
+    borrowing: borrowing, duree: S.duree, taux: S.taux,
+    coutCredit: coutCredit
+  });
+
+  // ====== 7. RECO CARDS ======
+  S.nextBrick = recommendNextBrick(S);
+  var rtitle = $('reco-next-title'); if (rtitle) rtitle.textContent = S.nextBrick.label;
+  var rtext = $('reco-next-text'); if (rtext) rtext.textContent = S.nextBrick.reason;
+
+  // Actions (conservées pour PDF)
+  S.actions = buildActions();
 }
+
+/* ─── Génération des 3 leviers contextuels ─── */
+function s8BuildLeviers(ctx) {
+  var list = $('s8-levier-list');
+  if (!list) return;
+  var leviers = [];
+
+  // Levier durée
+  if (ctx.subs.effort < 75 && ctx.duree > 0 && ctx.duree < 30 && ctx.mensualite > 0) {
+    var newDuree = Math.min(ctx.duree + 5, 30);
+    var rNew = (ctx.taux / 12) / 100;
+    var nNew = newDuree * 12;
+    var newMens = ctx.borrowing > 0 && rNew > 0
+      ? ctx.borrowing * rNew / (1 - Math.pow(1 + rNew, -nNew))
+      : ctx.mensualite;
+    var gain = ctx.mensualite - newMens;
+    if (gain > 20) {
+      leviers.push({
+        action: 'Allonger la durée du prêt de <strong>' + ctx.duree + ' → ' + newDuree + ' ans</strong>',
+        result: '→ Mensualité <strong>– ' + fmt(Math.round(gain)) + '/mois</strong> · effort plus tenable',
+        onclick: 'openHypothesesPopup()'
+      });
+    }
+  }
+
+  // Levier apport
+  if (ctx.mob < ctx.fees + 10000) {
+    var ajout = 8000;
+    var rA = (ctx.taux / 12) / 100;
+    var nA = ctx.duree * 12;
+    var newBorrow = Math.max(0, ctx.borrowing - ajout);
+    var newMens2 = newBorrow > 0 && rA > 0
+      ? newBorrow * rA / (1 - Math.pow(1 + rA, -nA))
+      : 0;
+    var gain2 = ctx.mensualite - newMens2;
+    leviers.push({
+      action: 'Augmenter ton apport de <strong>+ ' + fmt(ajout) + '</strong>',
+      result: '→ Mensualité <strong>– ' + fmt(Math.round(gain2)) + '/mois</strong> · dossier banque renforcé',
+      onclick: "goToScreen(3)"
+    });
+  }
+
+  // Levier commune
+  if (ctx.prixM2 > 1800) {
+    var prixCible = Math.round(ctx.prixM2 * 0.88 / 10) * 10;
+    leviers.push({
+      action: 'Cibler une commune voisine moins chère',
+      result: '→ Prix m² ~<strong>' + fmt(prixCible) + '</strong> · même surface, budget confortable',
+      onclick: "goToScreen(5)"
+    });
+  }
+
+  // Levier rentabilité
+  if (ctx.subs.rentabilite < 65 && leviers.length < 3) {
+    leviers.push({
+      action: 'Envisager le <strong>locatif</strong> pour rentabiliser',
+      result: '→ Loyer net couvre une partie de la mensualité · cap. résiduelle pour 2e projet',
+      onclick: "goToScreen(6)"
+    });
+  }
+
+  // Levier risque
+  if (ctx.subs.risque < 60 && leviers.length < 3) {
+    leviers.push({
+      action: 'Renforcer ton <strong>épargne de précaution</strong> avant d\'acheter',
+      result: '→ 3 mois de charges minimum · sécurise ton parcours bancaire',
+      onclick: "goToNextBrick()"
+    });
+  }
+
+  // Fallback
+  if (leviers.length === 0) {
+    leviers.push({
+      action: 'Préparer ton <strong>dossier bancaire</strong>',
+      result: '→ Revenus, épargne, relevés : maximise tes chances',
+      onclick: ''
+    });
+    leviers.push({
+      action: 'Comparer les scénarios via le <strong>parcours achat</strong>',
+      result: '→ Bientôt disponible · simulation poussée',
+      onclick: ''
+    });
+  }
+
+  leviers = leviers.slice(0, 3);
+  list.innerHTML = leviers.map(function(l, i) {
+    var click = l.onclick ? ' onclick="' + l.onclick + '"' : '';
+    return '<button type="button" class="s8-levier"' + click + '>'
+      + '<div class="s8-levier-num">' + (i + 1) + '</div>'
+      + '<div class="s8-levier-body">'
+      + '<div class="s8-levier-action">' + l.action + '</div>'
+      + '<div class="s8-levier-result">' + l.result + '</div>'
+      + '</div>'
+      + '<svg class="s8-levier-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>'
+      + '</button>';
+  }).join('');
+}
+
+/* ─── Comparatif Acheter vs Louer sur 10 ans ─── */
+function s8BuildVsRent(ctx) {
+  var prixBien = ctx.prixBien || 0;
+  if (!prixBien) {
+    var hint0 = $('s8-vs-hint');
+    if (hint0) hint0.textContent = 'Renseigne un prix de bien pour activer le comparatif';
+    return;
+  }
+
+  var YEARS = 10;
+  var months = YEARS * 12;
+  var apport = ctx.mob || 0;
+  var mens = ctx.mensualite || 0;
+  var taux = ctx.taux || 3.8;
+  var duree = ctx.duree || 25;
+
+  // ACHAT
+  var totalMens = mens * months;
+  var chargesAn = prixBien * 0.015;
+  var totalCharges = chargesAn * YEARS;
+  var valeur10 = prixBien * Math.pow(1.01, YEARS);
+  var r = (taux / 12) / 100;
+  var crd;
+  if (r > 0 && ctx.borrowing > 0) {
+    var facteur = Math.pow(1 + r, months);
+    crd = ctx.borrowing * facteur - mens * (facteur - 1) / r;
+    crd = Math.max(0, crd);
+  } else {
+    crd = Math.max(0, ctx.borrowing - mens * months);
+  }
+  var patrimoineNet = valeur10 - crd - apport - totalMens - totalCharges;
+
+  // LOCATION
+  var loyerInit = prixBien * 0.0038;
+  var totalLoyers = 0;
+  for (var y = 0; y < YEARS; y++) {
+    totalLoyers += loyerInit * 12 * Math.pow(1.015, y);
+  }
+  var apportPlace = apport * Math.pow(1.03, YEARS) - apport;
+  var soldeLoc = apportPlace - totalLoyers;
+
+  var ecart = patrimoineNet - soldeLoc;
+
+  var set = function(id, txt) { var e = $(id); if (e) e.textContent = txt; };
+  set('s8-vs-buy-price', '(' + fmt(prixBien) + ')');
+  set('s8-vs-buy-apport', '– ' + fmt(apport));
+  set('s8-vs-buy-mens', '– ' + fmt(Math.round(totalMens)));
+  set('s8-vs-buy-charges', '– ' + fmt(Math.round(totalCharges)));
+  set('s8-vs-buy-val', '+ ' + fmt(Math.round(valeur10)));
+  set('s8-vs-buy-crd', '– ' + fmt(Math.round(crd)));
+  set('s8-vs-buy-total', (patrimoineNet >= 0 ? '+ ' : '– ') + fmt(Math.abs(Math.round(patrimoineNet))));
+
+  set('s8-vs-rent-init', fmt(Math.round(loyerInit)) + '/mois');
+  set('s8-vs-rent-total', '– ' + fmt(Math.round(totalLoyers)));
+  set('s8-vs-rent-place', '+ ' + fmt(Math.round(apportPlace)));
+  set('s8-vs-rent-solde', (soldeLoc >= 0 ? '+ ' : '– ') + fmt(Math.abs(Math.round(soldeLoc))));
+
+  var hint = $('s8-vs-hint');
+  var verdict = $('s8-vs-verdict');
+  if (ecart > 0) {
+    if (hint) hint.innerHTML = 'Comparatif sur 10 ans · gain estimé <strong>+ ' + fmt(Math.round(ecart)) + '</strong>';
+    if (verdict) verdict.innerHTML = 'En achetant, tu <strong>économises ~' + fmt(Math.round(ecart)) + '</strong> sur 10 ans par rapport à la location équivalente.';
+  } else {
+    if (hint) hint.innerHTML = 'Comparatif sur 10 ans · écart estimé <strong>– ' + fmt(Math.abs(Math.round(ecart))) + '</strong>';
+    if (verdict) verdict.innerHTML = 'Sur 10 ans, la location reste légèrement plus avantageuse de ~' + fmt(Math.abs(Math.round(ecart))) + '. L\'achat devient gagnant au-delà.';
+  }
+}
+
+/* ─── Toggle Acheter vs Louer (collapsable) ─── */
+function s8ToggleVs(el) {
+  if (!el) return;
+  var isOpen = el.classList.toggle('open');
+  el.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
 
 function buildDiagnosticCards(items, effort) {
   var grid = $('diag-cards-grid');
