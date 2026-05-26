@@ -1374,15 +1374,32 @@ html.dark .s6-loyer-kicker { color:#a78bfa; }
 /* Charges & Risques grouped card */
 .s6-charges-group {
   padding:1rem 1.125rem; border-radius:1rem;
-  background:rgba(20,184,166,0.06); border:1px solid rgba(20,184,166,0.12);
+  background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.12);
   margin-top:0.75rem;
 }
-html.dark .s6-charges-group { background:rgba(20,184,166,0.1); border-color:rgba(20,184,166,0.18); }
+html.dark .s6-charges-group { background:rgba(139,92,246,0.09); border-color:rgba(139,92,246,0.18); }
 .s6-charges-kicker {
   font-size:0.68rem; font-weight:700; text-transform:uppercase;
-  letter-spacing:0.06em; color:#0d9488; margin-bottom:0.75rem;
+  letter-spacing:0.06em; color:#7c3aed; margin-bottom:0.75rem;
 }
-html.dark .s6-charges-kicker { color:#2dd4bf; }
+html.dark .s6-charges-kicker { color:#a78bfa; }
+
+/* Bannière pédago suggestion loyer (commit 5b) */
+.s6-suggest-banner {
+  display:flex; align-items:flex-start; gap:0.65rem;
+  padding:0.85rem 1rem; border-radius:0.875rem;
+  background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.15);
+  margin-bottom:0.9rem; font-size:0.85rem; line-height:1.45;
+  color:var(--text);
+}
+html.dark .s6-suggest-banner {
+  background:rgba(139,92,246,0.13); border-color:rgba(139,92,246,0.25);
+}
+.s6-suggest-icon { font-size:1.05rem; flex-shrink:0; margin-top:1px; }
+.s6-suggest-text strong {
+  color:#7c3aed; font-weight:700; white-space:nowrap;
+}
+html.dark .s6-suggest-text strong { color:#a78bfa; }
 .s6-charges-grid {
   display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem;
 }
@@ -3881,6 +3898,16 @@ html.dark .s5-neighbours-cta-secondary:hover { color:#0B0B1A; }
 
             <div id="s6-invest-full" style="display:none;">
 
+              <!-- Bannière pédago : source du loyer pré-rempli (depuis S5) -->
+              <div class="s6-suggest-banner" id="s6-suggest-banner" style="display:none;">
+                <span class="s6-suggest-icon">✨</span>
+                <span class="s6-suggest-text">
+                  On a estimé le loyer à <strong id="s6-suggest-loyer">—</strong>
+                  pour <span id="s6-suggest-typo">ton bien</span> à <strong id="s6-suggest-commune">ta commune</strong>
+                  — ratio empirique de <strong>6 % brut annuel</strong>. Ajuste librement.
+                </span>
+              </div>
+
               <!-- Hero loyer input -->
               <div class="s6-loyer-hero">
                 <div class="s6-hero-watermark">
@@ -4273,6 +4300,21 @@ html.dark .s5-neighbours-cta-secondary:hover { color:#0B0B1A; }
                     Dont apport
                   </span>
                   <span class="sb2-synth-row-value" id="m-apport">à l'étape 3</span>
+                </div>
+                <!-- Locatif rows (commit 5b) - cachées par défaut -->
+                <div class="sb2-synth-row" id="row-loyer" style="display:none;">
+                  <span class="sb2-synth-row-label">
+                    <span class="sb2-synth-row-dot"></span>
+                    Loyer estimé
+                  </span>
+                  <span class="sb2-synth-row-value" id="m-loyer">—</span>
+                </div>
+                <div class="sb2-synth-row" id="row-cap-residuelle" style="display:none;">
+                  <span class="sb2-synth-row-label">
+                    <span class="sb2-synth-row-dot"></span>
+                    Cap. résiduelle
+                  </span>
+                  <span class="sb2-synth-row-value" id="m-cap-residuelle">—</span>
                 </div>
               </div>
             </div>
@@ -5280,6 +5322,32 @@ function updateSynthesePanel() {
       if (rowApport) rowApport.classList.add('pending');
     }
   }
+
+  // Lignes locatif (commit 5b) : visibles uniquement si step >= 6, toggle ON ET loyer renseigné
+  var rowLoyer = document.getElementById('row-loyer');
+  var rowCapRes = document.getElementById('row-cap-residuelle');
+  var loyerEl = document.getElementById('m-loyer');
+  var capResEl = document.getElementById('m-cap-residuelle');
+  var toggleInvest = document.getElementById('s6-toggle-invest');
+  var locatifActif = !toggleInvest || toggleInvest.checked === true;
+  var showLocatif = (currentIdx >= 6) && locatifActif && S.loyerEstime && S.loyerEstime > 0;
+  if (rowLoyer)  rowLoyer.style.display = showLocatif ? '' : 'none';
+  if (rowCapRes) rowCapRes.style.display = showLocatif ? '' : 'none';
+  if (showLocatif) {
+    // fmt() retourne déjà "X €", on ajoute juste /mois
+    if (loyerEl) loyerEl.textContent = fmt(Math.round(S.loyerEstime)) + '/mois';
+    // Recalcul capacité résiduelle = budget total avec 70 % du loyer réintégré
+    var loyerRetenu = S.loyerEstime * 0.70;
+    var mensualiteImmo = S.mensualiteCible || S.mensualiteMax || 0;
+    var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
+    var mensMaxRes = (revenusAvecLoyer * 0.35) - (S.credits || 0) - mensualiteImmo - (S.assuranceEmprunteur || 22);
+    var rCap = ((S.taux || 3.0) / 12) / 100;
+    var nCap = (S.duree || 25) * 12;
+    var capRes = mensMaxRes > 0
+      ? Math.round(mensMaxRes * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
+      : 0;
+    if (capResEl) capResEl.textContent = capRes > 0 ? fmt(capRes) : '—';
+  }
 }
 
 function updateDiagBadge(inputId, badgeId, prefillVal) {
@@ -5614,11 +5682,23 @@ function initScreen6() {
     s6ToggleInvestment();
   }
 
-  // Prefill loyer from S if exists
+  // Prefill loyer :
+  //  1) Si l'user a déjà saisi un loyer, on respecte sa valeur
+  //  2) Sinon, ratio empirique = prix du bien × 0.5 % / mois (≈6 % brut annuel typique en France)
   var loyerInput = $('input-loyer-estime-s6');
-  if (loyerInput && S.loyerEstime > 0 && !loyerInput.value) {
-    loyerInput.value = S.loyerEstime;
+  if (loyerInput && !loyerInput.value) {
+    var loyerSugg = s6SuggestLoyer();
+    if (loyerSugg > 0) {
+      loyerInput.value = loyerSugg;
+      S.loyerEstime = loyerSugg;
+      S.loyerSuggested = loyerSugg;
+    } else if (S.loyerEstime > 0) {
+      loyerInput.value = S.loyerEstime;
+    }
   }
+
+  // Bannière pédago : explique la source du loyer pré-rempli
+  s6UpdateSuggestBanner();
 
   // Taxe foncière display
   s6UpdateTaxeFonciere();
@@ -5630,11 +5710,53 @@ function initScreen6() {
   s6InitWatermark();
 }
 
+// Ratio empirique : prix bien × 0.5 % mensuel ≈ 6 % brut annuel
+// Source S5 : si l'user a choisi une typologie, on prend l'estimé typo × prix m² commune.
+// Fallback : S.prixBien (saisi en S4) ou S.prixCible.
+function s6SuggestLoyer() {
+  var prix = 0;
+  // 1 : prix issu de la typo S5 choisie
+  if (typeof getTypoById === 'function' && S.typoChoisie && S.prixM2) {
+    var typo = getTypoById(S.typoChoisie);
+    if (typo) prix = estimateTypoPrice(typo, S.prixM2);
+  }
+  // 2 : fallback sur prix saisi en S4
+  if (!prix || prix <= 0) prix = n(S.prixBien) || n(S.prixCible) || 0;
+  if (!prix || prix <= 0) return 0;
+  return Math.round(prix * 0.005);
+}
+
+function s6UpdateSuggestBanner() {
+  var banner = $('s6-suggest-banner');
+  if (!banner) return;
+  if (!S.loyerSuggested || S.loyerSuggested <= 0) {
+    banner.style.display = 'none';
+    return;
+  }
+  banner.style.display = 'flex';
+  var nomEl = $('s6-suggest-commune');
+  var typoEl = $('s6-suggest-typo');
+  var loyerEl = $('s6-suggest-loyer');
+  if (nomEl)   nomEl.textContent   = S.communeNom || 'ta commune';
+  if (typoEl && typeof getTypoById === 'function') {
+    var t = getTypoById(S.typoChoisie);
+    typoEl.textContent = t ? t.label : 'ton bien';
+  } else if (typoEl) {
+    typoEl.textContent = 'ton bien';
+  }
+  if (loyerEl) loyerEl.textContent = new Intl.NumberFormat('fr-FR').format(S.loyerSuggested) + '\u00a0€';
+}
+
 function s6ToggleInvestment() {
   var checked = $('s6-toggle-invest').checked;
   $('s6-invest-full').style.display = checked ? 'block' : 'none';
   $('s6-invest-minimal').style.display = checked ? 'none' : 'block';
-  if (checked) recalcLocatif();
+  if (checked) {
+    recalcLocatif();
+  } else {
+    // Toggle OFF : on rafraîchit la sidebar pour masquer les rows locatif
+    if (typeof updateSynthesePanel === 'function') updateSynthesePanel();
+  }
 }
 
 function s6UpdateTaxeFonciere() {
@@ -5820,6 +5942,9 @@ function recalcLocatif() {
   S.chargesLoc = chargesLoc;
   S.assurancePno = assurancePNO;
   S.gestionLoc = gestionLoc;
+
+  // Met à jour la sidebar v2 (loyer estimé + capacité résiduelle) en live
+  if (typeof updateSynthesePanel === 'function') updateSynthesePanel();
 }
 
 function s6InitWatermark() {
