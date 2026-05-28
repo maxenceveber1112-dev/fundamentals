@@ -672,7 +672,7 @@
         <div class="ctx-confirm-bloc" id="ctx-confirm-bloc">
           <div class="ctx-confirm-top">
             <div class="ctx-confirm-label">Depuis ton profil</div>
-            <div class="ctx-confirm-headline">On a détecté des dettes dans ton profil.</div>
+            <div class="ctx-confirm-headline" id="ctx-headline">On a détecté des dettes dans ton profil.</div>
             <div class="ctx-confirm-sub">C'est bien ta situation actuelle ?</div>
           </div>
           <div class="ctx-confirm-btns" id="confirm-btns">
@@ -951,6 +951,10 @@
     }
     html.dark .f-sidebar { background:var(--bg-elevated,#161824); backdrop-filter:blur(14px); }
     .f-sidebar:hover { width:240px; }
+    @media (max-width: 768px) {
+      .f-sidebar { display: none !important; }
+      body.f-has-sidebar { padding-left: 0 !important; }
+    }
     .f-sidebar-logo {
       height:64px; display:flex; align-items:center; padding:0 20px; flex-shrink:0; text-decoration:none;
     }
@@ -1130,7 +1134,7 @@
     </div>
     <div class="f-sidebar-bottom">
       <div class="f-sb-avatar-row">
-        <div class="f-sb-avatar-circle">MV</div>
+        <div class="f-sb-avatar-circle" id="sb-avatar-initiales">—</div>
       </div>
     </div>
   `;
@@ -1188,11 +1192,32 @@
   wrap.className = 'nav-avatar-wrap';
   wrap.innerHTML = `
     <button class="nav-avatar-btn" aria-label="Menu profil">
-      <div class="nav-avatar-circle">MV</div>
+      <div class="nav-avatar-circle" id="nav-avatar-initiales">—</div>
       <svg class="nav-avatar-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
     </button>
   `;
   navRight.appendChild(wrap);
+
+  // Initiales dynamiques depuis fund_profil ou email Supabase
+  (function setInitiales() {
+    try {
+      const fp = JSON.parse(localStorage.getItem('fund_profil') || 'null') || {};
+      const email = (typeof currentUser !== 'undefined' && currentUser?.email)
+        || fp.email || '';
+      const rawName = email.split('@')[0].replace(/[._\-]/g, ' ').trim();
+      const parts = rawName.split(' ').filter(Boolean);
+      const initiales = parts.length >= 2
+        ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+        : rawName.slice(0, 2).toUpperCase();
+      const displayInitiales = initiales || '—';
+      // Nav avatar
+      const navEl = document.getElementById('nav-avatar-initiales');
+      if (navEl) navEl.textContent = displayInitiales;
+      // Sidebar avatar
+      const sbEl = document.getElementById('sb-avatar-initiales');
+      if (sbEl) sbEl.textContent = displayInitiales;
+    } catch(e) {}
+  })();
 })();
 </script>
 
@@ -1236,24 +1261,140 @@ const DETTE_CONFIG = {
    ÉTAT LOCAL
 ══════════════════════════════════════════════════════════════ */
 let dettes = [];
-let profil = { revenus: 2500 }; // mock — en prod: loadFromStorage('fund_profil')
+// Lire les revenus depuis fund_profil ou fund_brick_budget_base — aucune valeur hardcodée
+// Si revenus inconnus → revenus = null, le taux affiche "— %"
+let profil = (function() {
+  try {
+    const fp = JSON.parse(localStorage.getItem('fund_profil') || 'null') || {};
+    const fb = JSON.parse(localStorage.getItem('fund_brick_budget_base') || 'null') || {};
+    const fbData = (fb && fb.data) ? fb.data : fb;
+    const revRaw = parseFloat(fp.revenusMensuels) || parseFloat(fp.revenus)
+      || parseFloat(fbData.revenus) || parseFloat(fbData.revenus_nets) || 0;
+    return Object.assign({}, fp, { revenus: revRaw > 0 ? revRaw : null });
+  } catch(e) { return { revenus: null }; }
+})();
 let detteCounter = 0;
 let onboardingConfirmed = false;
+
+/* ══════════════════════════════════════════════════════════════
+   GATE — Prérequis : budget_base + fonds_urgence doivent être terminés
+══════════════════════════════════════════════════════════════ */
+(function checkPrerequisites() {
+  try {
+    const dash = JSON.parse(localStorage.getItem('fund_dashboard') || 'null');
+    if (!dash || !Array.isArray(dash.briques)) return; // pas de dashboard → mode démo, on laisse passer
+    const budget = dash.briques.find(b => b.id === 'budget_base');
+    const epargne = dash.briques.find(b => b.id === 'fonds_urgence');
+    const budgetDone = budget && budget.statut === 'terminee';
+    const epargneDone = epargne && epargne.statut === 'terminee';
+    if (!budgetDone || !epargneDone) {
+      // Bloquer l'accès et afficher un message
+      document.addEventListener('DOMContentLoaded', function() {
+        const shell = document.getElementById('f-content') || document.body;
+        const gate = document.createElement('div');
+        gate.style.cssText = `
+          position:fixed; inset:0; z-index:9999;
+          background:var(--bg,#FAFAF9); display:flex; flex-direction:column;
+          align-items:center; justify-content:center; text-align:center;
+          padding:2rem; gap:1.5rem;
+        `;
+        gate.innerHTML = \`
+          <div style="font-size:2.5rem;">🔒</div>
+          <div style="font-family:'Fraunces',Georgia,serif; font-size:1.5rem; font-weight:700; color:var(--text,#1C1917);">
+            \${!budgetDone && !epargneDone
+              ? 'Commence d\'abord les briques Budget et Épargne'
+              : !budgetDone
+                ? 'Commence d\'abord la brique Budget'
+                : 'Termine d\'abord la brique Épargne de précaution'}
+          </div>
+          <div style="font-size:0.95rem; color:var(--text-muted); max-width:340px; line-height:1.6;">
+            Pour analyser tes dettes correctement, on a besoin de connaître tes revenus, tes charges et ton matelas d'urgence.
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.75rem; width:100%; max-width:280px;">
+            \${!budgetDone ? \`<a href="brique-budget-base.html" style="display:block; padding:0.875rem 1.5rem; background:var(--accent-strong,#5B21B6); color:#fff; border-radius:9999px; font-weight:600; text-decoration:none; font-size:0.95rem;">Faire la brique Budget →</a>\` : ''}
+            \${budgetDone && !epargneDone ? \`<a href="brique-fonds-urgence.html" style="display:block; padding:0.875rem 1.5rem; background:var(--accent-strong,#5B21B6); color:#fff; border-radius:9999px; font-weight:600; text-decoration:none; font-size:0.95rem;">Faire la brique Épargne →</a>\` : ''}
+            <a href="dashboard.html" style="font-size:0.875rem; color:var(--text-muted); text-decoration:none;">← Retour au Dashboard</a>
+          </div>
+        \`;
+        document.body.appendChild(gate);
+        // Bloquer aussi le body
+        document.body.style.overflow = 'hidden';
+      });
+    }
+  } catch(e) { /* pas de localStorage → mode démo, on laisse passer */ }
+})();
 
 /* ══════════════════════════════════════════════════════════════
    INITIALISATION
 ══════════════════════════════════════════════════════════════ */
 (function init() {
-  // Simuler des données onboarding (en prod: lire fund_profil + fund_brick_budget_base)
-  const mockOnboardingDettes = [
-    { type: 'credit_immo', mensualite: 750, taeg: 3.2 },
-    { type: 'credit_conso', mensualite: 180, taeg: null }
-  ];
+  // En prod : lire les dettes depuis fund_brick_plan_desendettement (reprise)
+  // puis fund_brick_budget_base (données budget), puis fund_profil.dettes_types (types seulement)
+  let prefillDettes = [];
+  try {
+    // 1. Reprise brique dettes déjà commencée
+    const brickData = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null');
+    const brickRaw = brickData?.data?.rawData || brickData?.rawData || null;
+    if (brickRaw?.dettes && brickRaw.dettes.length > 0) {
+      prefillDettes = brickRaw.dettes.map(d => ({
+        type: d.type || 'autre',
+        mensualite: d.montant_mensuel || d.mensualite || '',
+        taeg: d.taeg || null
+      }));
+    }
+    // 2. Données budget (mensualités connues)
+    if (prefillDettes.length === 0) {
+      const budgetData = JSON.parse(localStorage.getItem('fund_brick_budget_base') || 'null');
+      const budgetRaw = budgetData?.data || budgetData || {};
+      if (budgetRaw.dettes && budgetRaw.dettes.length > 0) {
+        prefillDettes = budgetRaw.dettes.map(d => ({
+          type: d.type || 'credit_conso',
+          mensualite: d.montant_mensuel || '',
+          taeg: d.taeg || null
+        }));
+      }
+    }
+    // 3. Fallback : types depuis profil (sans montants — l'user saisira)
+    if (prefillDettes.length === 0) {
+      const fp = JSON.parse(localStorage.getItem('fund_profil') || 'null') || {};
+      const detteTypes = (fp.dettes_types || []).filter(d => d !== 'aucun');
+      // Mapper les types onboarding vers les types brique
+      const typeMap = {
+        'decouvert_regulier': 'decouvert_regulier',
+        'paiement_fractionne_mini_credit': 'paiement_fractionne',
+        'credit_conso': 'credit_conso',
+        'credit_immo': 'credit_immo',
+        'autre_credit': 'autre'
+      };
+      detteTypes.forEach(t => {
+        prefillDettes.push({ type: typeMap[t] || 'autre', mensualite: '', taeg: null });
+      });
+    }
+  } catch(e) {}
 
-  // Pré-remplir depuis onboarding
-  mockOnboardingDettes.forEach(d => addDetteFromData(d));
+  // Si aucune donnée réelle, utiliser les mocks de démo
+  if (prefillDettes.length === 0) {
+    prefillDettes = [
+      { type: 'credit_immo', mensualite: 750, taeg: 3.2 },
+      { type: 'credit_conso', mensualite: 180, taeg: null }
+    ];
+  }
 
-  // Mise à jour initiale speedometer
+  // Adapter le message ctx selon la source des données
+  const ctxBloc = document.getElementById('ctx-confirm-bloc');
+  const ctxHeadline = document.getElementById('ctx-headline');
+  if (prefillDettes.length > 0 && prefillDettes.some(d => d.mensualite)) {
+    // Données avec montants → afficher le ctx de confirmation
+    if (ctxHeadline) ctxHeadline.textContent = 'On a détecté des dettes dans ton profil.';
+  } else if (prefillDettes.length > 0) {
+    // Types connus mais sans montants → adapter le message
+    if (ctxHeadline) ctxHeadline.textContent = 'On a trouvé des types de crédits dans ton profil — précise les montants.';
+  } else {
+    // Aucune donnée → masquer le bloc ctx
+    if (ctxBloc) ctxBloc.style.display = 'none';
+  }
+
+  prefillDettes.forEach(d => addDetteFromData(d));
   setTimeout(updateSpeedometer, 400);
 })();
 
@@ -1411,7 +1552,7 @@ function removeDette(id) {
    CALCUL & SPEEDOMETER
 ══════════════════════════════════════════════════════════════ */
 function updateSpeedometer() {
-  const revenus = profil.revenus || 0;
+  const revenus = profil.revenus || null; // null si inconnu — pas de fallback hardcodé
 
   // Calcul par catégorie
   let totalVert = 0, totalJaune = 0, totalOrange = 0, totalRouge = 0;
@@ -1425,7 +1566,7 @@ function updateSpeedometer() {
   });
 
   const totalMens = totalVert + totalJaune + totalOrange + totalRouge;
-  const taux = revenus > 0 ? (totalMens / revenus) * 100 : 0;
+  const taux = (revenus && revenus > 0) ? (totalMens / revenus) * 100 : null; // null si revenus inconnus
 
   // ─── Mise à jour SVG speedometer ───
   // Arc = demi-cercle → longueur totale ≈ 440 (π × r=140)
@@ -1439,10 +1580,10 @@ function updateSpeedometer() {
   }
 
   // Chaque segment est dessiné cumulativement (arc = sum précédents + soi-même)
-  const tauxVert   = revenus > 0 ? (totalVert / revenus) * 100 : 0;
-  const tauxJaune  = revenus > 0 ? ((totalVert + totalJaune) / revenus) * 100 : 0;
-  const tauxOrange = revenus > 0 ? ((totalVert + totalJaune + totalOrange) / revenus) * 100 : 0;
-  const tauxTotal  = Math.min(taux, MAX_TAUX);
+  const tauxVert   = (revenus && revenus > 0) ? (totalVert / revenus) * 100 : 0;
+  const tauxJaune  = (revenus && revenus > 0) ? ((totalVert + totalJaune) / revenus) * 100 : 0;
+  const tauxOrange = (revenus && revenus > 0) ? ((totalVert + totalJaune + totalOrange) / revenus) * 100 : 0;
+  const tauxTotal  = taux !== null ? Math.min(taux, MAX_TAUX) : 0;
 
   // Les arcs se superposent (vert en dessous, rouge au-dessus)
   // On utilise stroke-dashoffset décroissant pour chaque couche
@@ -1451,7 +1592,7 @@ function updateSpeedometer() {
   document.getElementById('arc-vert').style.strokeDashoffset   = tauxToOffset(tauxTotal);
   document.getElementById('arc-orange').style.strokeDashoffset = tauxToOffset(tauxOrange);
   document.getElementById('arc-rouge').style.strokeDashoffset  = tauxToOffset(
-    revenus > 0 ? ((totalVert + totalJaune + totalOrange) / revenus) * 100 : 0
+    (revenus && revenus > 0) ? ((totalVert + totalJaune + totalOrange) / revenus) * 100 : 0
   );
 
   // ─── Aiguille — rotate SVG natif, pivot (190,190), bloquée à MAX_TAUX ───
@@ -1464,33 +1605,40 @@ function updateSpeedometer() {
   needle.setAttribute('transform', `rotate(${svgAngle.toFixed(2)}, 190, 190)`);
   // Transition CSS sur le élément SVG (nécessite définir transition via CSS, pas inline)
   // Rouge si taux réel > 35%
-  if (taux > 35) {
-    needle.classList.add('needle-over');
-  } else {
-    needle.classList.remove('needle-over');
-  }
-
   // ─── Texte central ───
   const valEl = document.getElementById('speedo-val');
-  valEl.textContent = taux.toFixed(1) + '%';
-  const color = taux < 20 ? 'var(--dette-vert)' : taux < 35 ? 'var(--dette-orange)' : 'var(--dette-rouge)';
-  valEl.setAttribute('fill', taux === 0 ? 'var(--text-muted)' : color);
+  if (taux === null) {
+    valEl.textContent = '—';
+    valEl.setAttribute('fill', 'var(--text-muted)');
+  } else {
+    valEl.textContent = taux.toFixed(1) + '%';
+    const color = taux < 20 ? 'var(--dette-vert)' : taux < 35 ? 'var(--dette-orange)' : 'var(--dette-rouge)';
+    valEl.setAttribute('fill', taux === 0 ? 'var(--text-muted)' : color);
+  }
+
+  // Needle : si taux null (revenus inconnus), laisser à 0% (position gauche)
+  const tauxForNeedle = taux !== null ? taux : 0;
+  if (tauxForNeedle > 35) needle.classList.add('needle-over');
+  else needle.classList.remove('needle-over');
 
   // ─── Pill statut ───
   const pill = document.getElementById('speedo-pill');
   const pillText = document.getElementById('speedo-pill-text');
-  if (taux === 0) {
+  if (taux === null) {
+    pill.className = 'speedo-status-pill vert';
+    pillText.textContent = 'Revenus non renseignés — taux non calculable';
+  } else if (taux === 0) {
     pill.className = 'speedo-status-pill vert';
     pillText.textContent = 'En attente de saisie';
   } else if (taux < 20) {
     pill.className = 'speedo-status-pill vert';
-    pillText.textContent = `Tu es largement dans les clous ✓`;
+    pillText.textContent = 'Tu es largement dans les clous ✓';
   } else if (taux < 35) {
     pill.className = 'speedo-status-pill orange';
-    pillText.textContent = `Attention, tu te rapproches de la limite`;
+    pillText.textContent = 'Attention, tu te rapproches de la limite';
   } else {
     pill.className = 'speedo-status-pill rouge';
-    pillText.textContent = `Au-delà de la limite des 35%`;
+    pillText.textContent = 'Au-delà de la limite des 35%';
   }
 
   // ─── Card pédagogique ───
@@ -1500,12 +1648,17 @@ function updateSpeedometer() {
   const recapMens = document.getElementById('recap-mensualites');
   const recapTaux = document.getElementById('recap-taux');
   recapMens.textContent = totalMens > 0 ? totalMens.toFixed(0) + ' €/mois' : '— €/mois';
-  recapTaux.textContent = taux > 0 ? taux.toFixed(1) + ' %' : '—';
-  recapTaux.className = 'sticky-recap-taux ' + (taux < 20 ? 'vert' : taux < 35 ? 'orange' : 'rouge');
+  if (taux === null) {
+    recapTaux.textContent = '—';
+    recapTaux.className = 'sticky-recap-taux vert';
+  } else {
+    recapTaux.textContent = taux.toFixed(1) + ' %';
+    recapTaux.className = 'sticky-recap-taux ' + (taux < 20 ? 'vert' : taux < 35 ? 'orange' : 'rouge');
+  }
 
   // ─── Panel latéral ───
   document.getElementById('panel-mensualites').textContent = totalMens > 0 ? totalMens.toFixed(0) + ' €' : '—';
-  document.getElementById('panel-taux').textContent = taux > 0 ? taux.toFixed(1) + ' %' : '—';
+  document.getElementById('panel-taux').textContent = taux !== null ? taux.toFixed(1) + ' %' : (revenus ? '—' : 'À renseigner');
   const nbMauvaises = dettes.filter(d => ['orange','rouge'].includes((DETTE_CONFIG[d.type] || {}).badge)).length;
   document.getElementById('panel-mauvaises').textContent = nbMauvaises > 0 ? nbMauvaises + ' dette' + (nbMauvaises > 1 ? 's' : '') : '—';
 
@@ -1521,9 +1674,9 @@ function updatePedaCard(taux, totalMens) {
   const text = document.getElementById('peda-text');
   const revenus = profil.revenus;
 
-  const restCapacite = Math.max(0, revenus * 0.35 - totalMens);
+  const restCapacite = revenus ? Math.max(0, revenus * 0.35 - totalMens) : null;
 
-  if (taux === 0) {
+  if (taux === null || taux === 0) {
     card.className = 'peda-card vert';
     icon.textContent = '💡';
     title.textContent = 'La règle des 35% — Comment ça marche ?';
@@ -1534,14 +1687,12 @@ function updatePedaCard(taux, totalMens) {
     icon.textContent = '✅';
     title.textContent = 'La règle des 35% — Tu es dans les clous';
     text.innerHTML = `Ton taux de <strong>${taux.toFixed(1)}%</strong> est bien en dessous de la limite des 35%.
-      Il te reste <strong>${restCapacite.toFixed(0)} €/mois</strong> de capacité d'emprunt supplémentaire.
-      Tu es en bonne position pour un projet immo si tu le souhaites.`;
+      ${restCapacite !== null ? 'Il te reste <strong>' + restCapacite.toFixed(0) + ' €/mois</strong> de capacité d\'emprunt supplémentaire. Tu es en bonne position pour un projet immo si tu le souhaites.' : 'Tu es en bonne position. Renseigne tes revenus pour voir ta marge exacte.'}`;
   } else if (taux < 35) {
     card.className = 'peda-card orange';
     icon.textContent = '⚠️';
     title.textContent = 'La règle des 35% — Attention à la limite';
-    text.innerHTML = `Ton taux est à <strong>${taux.toFixed(1)}%</strong> — il te reste seulement <strong>${restCapacite.toFixed(0)} €/mois</strong>
-      de marge avant la limite bancaire de 35%. Un nouveau crédit (prêt immo notamment) pourrait être difficile à obtenir.`;
+    text.innerHTML = `Ton taux est à <strong>${taux.toFixed(1)}%</strong> — ${restCapacite !== null ? 'il te reste seulement <strong>' + restCapacite.toFixed(0) + ' €/mois</strong> de marge avant la limite bancaire de 35%' : 'marge avant la limite à calculer (renseigne tes revenus)'}. Un nouveau crédit (prêt immo notamment) pourrait être difficile à obtenir.`;
   } else {
     card.className = 'peda-card rouge';
     icon.textContent = '🚨';
