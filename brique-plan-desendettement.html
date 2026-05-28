@@ -1268,7 +1268,7 @@ let profil = (function() {
     const fp = JSON.parse(localStorage.getItem('fund_profil') || 'null') || {};
     const fb = JSON.parse(localStorage.getItem('fund_brick_budget_base') || 'null') || {};
     const fbData = (fb && fb.data) ? fb.data : fb;
-    const revRaw = parseFloat(fp.revenusMensuels) || parseFloat(fp.revenus)
+    const revRaw = parseFloat(fp.revenus_nets_mensuel) || parseFloat(fp.revenusMensuels) || parseFloat(fp.revenus)
       || parseFloat(fbData.revenus) || parseFloat(fbData.revenus_nets) || 0;
     return Object.assign({}, fp, { revenus: revRaw > 0 ? revRaw : null });
   } catch(e) { return { revenus: null }; }
@@ -1384,12 +1384,9 @@ function checkPrerequisitesAndStart() {
     }
   } catch(e) {}
 
-  // Si aucune donnée réelle, utiliser les mocks de démo
+  // Si aucune donnée réelle → une ligne vide à saisir (no-hardcode)
   if (prefillDettes.length === 0) {
-    prefillDettes = [
-      { type: 'credit_immo', mensualite: 750, taeg: 3.2 },
-      { type: 'credit_conso', mensualite: 180, taeg: null }
-    ];
+    prefillDettes = [{ type: 'credit_conso', mensualite: '', taeg: null }];
   }
 
   // Adapter le message ctx selon la source des données
