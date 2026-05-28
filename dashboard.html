@@ -1550,23 +1550,33 @@
     container.appendChild(simEmprunt);
 
     // 2. Visualiser mes dettes
-    const credits = budgetData?.credits || budgetData?.total_credits || null;
-    const nbDettes = budgetData?.nb_credits || null;
+    const dettesSimData = loadFromStorage('fund_brick_plan_desendettement');
+    const dettesSimRaw = dettesSimData?.data || dettesSimData || null;
+    const creditsMens = dettesSimRaw?.rawData?.credits_mensuel
+      || dettesSimRaw?.credits_mensuel
+      || budgetData?.credits
+      || budgetData?.total_credits
+      || null;
+    const nbDettesSim = dettesSimRaw?.rawData?.dettes?.length
+      || budgetData?.nb_credits
+      || null;
+    const tauxEndetSim = dettesSimRaw?.rawData?.taux_endettement || null;
+    const dettesBriqueDone = !!(dettesSimData);
     const simDettes = makeSimCard({
       id: 'sim_dettes',
       icon: iconSVG('chart'),
       colorClass: 'teal',
-      name: 'Visualiser mes dettes',
-      sub: 'Crédits en cours et impact mensuel',
-      value: credits ? formatEuro(credits) + '/mois' : null,
-      valueLabel: credits ? 'en remboursements' : null,
-      rows: credits ? [
-        { label: 'Crédits en cours', val: (nbDettes || '—') + '' },
-        { label: 'Mensualités totales', val: formatEuro(credits) },
-      ] : [],
-      ctaLabel: 'Bientôt disponible',
-      ctaHref: null,
-      ctaDisabled: true,
+      name: 'Gérer mes dettes',
+      sub: 'Taux d\'endettement et plan de remboursement',
+      value: creditsMens ? formatEuro(creditsMens) + '/mois' : null,
+      valueLabel: creditsMens ? 'en mensualités' : null,
+      rows: creditsMens ? [
+        { label: 'Mensualités totales', val: formatEuro(creditsMens) },
+        tauxEndetSim ? { label: 'Taux d\'endettement', val: tauxEndetSim.toFixed(1) + ' %' } : null,
+      ].filter(Boolean) : [],
+      ctaLabel: dettesBriqueDone ? 'Voir mon plan' : 'Commencer',
+      ctaHref: 'brique-plan-desendettement.html',
+      ctaDisabled: false,
     });
     container.appendChild(simDettes);
 
@@ -1827,24 +1837,41 @@
     }
 
     // ── DETTES EN COURS ─────────────────────────────────────
+    // Lire en priorité depuis fund_brick_plan_desendettement, fallback sur budget
+    const dettesWidgetBrick = loadFromStorage('fund_brick_plan_desendettement');
+    const dettesWidgetRaw = dettesWidgetBrick?.data?.rawData || dettesWidgetBrick?.rawData || null;
     const budgetForDettes = loadFromStorage('fund_brick_budget_base');
     const budgetDettesData = budgetForDettes?.data || budgetForDettes || null;
-    const dettesRaw = budgetDettesData?.dettes || [];
-    const totalMensualites = dettesRaw.reduce((s, d) => s + (d.montant_mensuel || 0), 0);
+    // Données dettes : source prioritaire = brique dettes complétée, fallback = budget
+    const dettesRaw = dettesWidgetRaw?.dettes || budgetDettesData?.dettes || [];
+    const totalMensualites = dettesWidgetRaw?.credits_mensuel
+      || dettesRaw.reduce((s, d) => s + (d.montant_mensuel || 0), 0);
     const nbDettes = dettesRaw.length;
-    if (nbDettes > 0 && totalMensualites > 0) {
+    const tauxEndetWidget = dettesWidgetRaw?.taux_endettement || null;
+    const methodeWidget = dettesWidgetRaw?.methode_choisie || null;
+    if (totalMensualites > 0) {
+      const dettesRows = [
+        { label: 'Mensualités totales', val: formatEuro(totalMensualites), color: 'orange' },
+      ];
+      if (tauxEndetWidget) dettesRows.push({
+        label: "Taux d'endettement",
+        val: tauxEndetWidget.toFixed(1) + ' %',
+        color: tauxEndetWidget > 35 ? 'red' : tauxEndetWidget > 25 ? 'orange' : 'green'
+      });
+      if (methodeWidget) dettesRows.push({
+        label: 'Stratégie',
+        val: methodeWidget === 'avalanche' ? 'Avalanche' : 'Boule de neige'
+      });
       cards.push({
         title: 'Dettes en cours',
         brique: 'dettes',
         status: 'en-cours',
-        statusLabel: nbDettes + ' dette' + (nbDettes > 1 ? 's' : ''),
+        statusLabel: nbDettes > 0 ? nbDettes + ' dette' + (nbDettes > 1 ? 's' : '') : 'Actives',
         value: formatEuro(totalMensualites),
         valueLabel: '/ mois',
-        rows: [
-          { label: 'Mensualités totales', val: formatEuro(totalMensualites), color: 'orange' },
-        ],
+        rows: dettesRows,
         progress: null,
-        cta: { href: 'brique-budget-base.html', label: 'Gérer mes dettes' }
+        cta: { href: 'brique-plan-desendettement.html', label: dettesWidgetBrick ? 'Voir mon plan' : 'Gérer mes dettes' }
       });
     }
 

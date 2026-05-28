@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamentals — Gestion des dettes</title>
+
+  <!-- Bootstrap theme (synchrone, avant render) -->
+  <script>
+(function() {
+  var saved = localStorage.getItem('fundamental-theme');
+  var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
+})();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <style>
+  /* ══════════════════════════════════════════════════════════════
+     TOKENS — identiques aux 3 briques validées
+  ══════════════════════════════════════════════════════════════ */
+  :root {
+    --bg:              #FAF8F5;
+    --bg-elevated:     #FFFFFF;
+    --bg-glass:        rgba(255,255,255,0.70);
+    --cream-grad:      linear-gradient(180deg, #F6F1E8 0%, #EFE7D8 100%);
+    --cream-border:    rgba(184,159,113,0.18);
+    --nav-bg:          rgba(250,248,245,0.88);
+    --nav-border:      rgba(28,25,23,0.07);
+    --border-subtle:   rgba(28,25,23,0.07);
+    --border-mid:      rgba(28,25,23,0.11);
+    --border-hover:    rgba(28,25,23,0.18);
+    --text:            #1C1917;
+    --text-secondary:  #57534E;
+    --text-muted:      #78716C;
+    --text-faint:      #A8A29E;
+    --accent:          #C4B5FD;
+    --accent-strong:   #5B21B6;
+    --accent-fill:     #C4B5FD;
+    --accent-soft:     rgba(196,181,253,0.22);
+    --accent-pill-text:#2E1065;
+    --track:           #E7E5E4;
+    --shadow-card:     0 1px 2px rgba(20,20,30,0.04), 0 4px 16px rgba(20,20,30,0.04);
+    --shadow-hover:    0 4px 20px rgba(20,20,30,0.10);
+    --green:           #22C55E;
+    --green-soft:      rgba(34,197,94,0.12);
+    --red:             #f87171;
+    --red-soft:        rgba(239,68,68,0.10);
+    --orange:          #FB923C;
+    --orange-soft:     rgba(249,115,22,0.10);
+    --yellow:          #FBBF24;
+    --purple:          #C084FC;
+    --surface:         #FFFFFF;
+    --surface-2:       #F5F5F4;
+    --surface-3:       #EDEBE8;
+    --border:          rgba(28,25,23,0.07);
+    --indigo:          #6366F1;
+    --violet:          #818CF8;
+    --indigo-dim:      rgba(99,102,241,0.10);
+    --indigo-glow:     rgba(99,102,241,0.18);
+    --r-sm:0.5rem; --r-md:0.875rem; --r-lg:1rem; --r-xl:1.5rem; --r-full:9999px;
+    --ease-out:cubic-bezier(0.16,1,0.3,1); --t:180ms;
+
+    /* Tokens dettes */
+    --dette-vert:      #22C55E;
+    --dette-vert-soft: rgba(34,197,94,0.12);
+    --dette-jaune:     #FBBF24;
+    --dette-jaune-soft:rgba(251,191,36,0.15);
+    --dette-orange:    #FB923C;
+    --dette-orange-soft:rgba(249,115,22,0.10);
+    --dette-rouge:     #f87171;
+    --dette-rouge-soft:rgba(239,68,68,0.10);
+  }
+
+  html.dark {
+    --bg:              #0B0B1A;
+    --bg-elevated:     #161824;
+    --bg-glass:        rgba(255,255,255,0.04);
+    --cream-grad:      linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    --cream-border:    rgba(255,255,255,0.08);
+    --nav-bg:          rgba(11,11,26,0.82);
+    --nav-border:      rgba(255,255,255,0.05);
+    --border-subtle:   rgba(255,255,255,0.06);
+    --border-mid:      rgba(255,255,255,0.10);
+    --border-hover:    rgba(255,255,255,0.16);
+    --text:            #F5F5F4;
+    --text-secondary:  #D4D4D8;
+    --text-muted:      #A1A1AA;
+    --text-faint:      #71717A;
+    --accent-strong:   #A78BFA;
+    --accent-soft:     rgba(167,139,250,0.14);
+    --accent-pill-text:#FFFFFF;
+    --track:           rgba(255,255,255,0.08);
+    --shadow-card:     0 1px 2px rgba(0,0,0,0.4), 0 4px 24px rgba(0,0,0,0.20);
+    --shadow-hover:    0 4px 28px rgba(0,0,0,0.45);
+    --green:           #4ade80;
+    --green-soft:      rgba(74,222,128,0.12);
+    --surface:         rgba(255,255,255,0.04);
+    --surface-2:       rgba(255,255,255,0.06);
+    --surface-3:       rgba(255,255,255,0.09);
+    --border:          rgba(255,255,255,0.06);
+    --indigo:          #818CF8;
+    --violet:          #A78BFA;
+    --indigo-dim:      rgba(99,102,241,0.14);
+    --indigo-glow:     rgba(99,102,241,0.22);
+
+    --dette-vert:      #4ade80;
+    --dette-vert-soft: rgba(74,222,128,0.12);
+    --dette-jaune:     #FBBF24;
+    --dette-jaune-soft:rgba(251,191,36,0.12);
+    --dette-orange:    #FB923C;
+    --dette-orange-soft:rgba(249,115,22,0.10);
+    --dette-rouge:     #f87171;
+    --dette-rouge-soft:rgba(239,68,68,0.10);
+  }
+
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  html { -webkit-font-smoothing:antialiased; }
+  body {
+    min-height:100dvh;
+    background: var(--bg);
+    color: var(--text);
+    font-family:'Inter', system-ui, sans-serif;
+    font-size:1rem; line-height:1.6;
+    overflow-x:hidden;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  html.dark body {
+    background: radial-gradient(1100px 600px at 70% -5%, #1E1B4B 0%, transparent 55%),
+                linear-gradient(180deg, #0B0B1A 0%, #050507 100%);
+    background-attachment: fixed;
+  }
+  button { cursor:pointer; background:none; border:none; font:inherit; color:inherit; }
+  a { color:inherit; text-decoration:none; }
+  :focus-visible { outline:2px solid var(--accent-strong); outline-offset:3px; border-radius:var(--r-sm); }
+  @media(prefers-reduced-motion:reduce){ *,*::before,*::after{ animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+
+  /* ── Animations ── */
+  @keyframes fadeSlideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn      { from { opacity:0; } to { opacity:1; } }
+  @keyframes countUp     { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+  @keyframes popIn       { from { opacity:0; transform:scale(0.95) translateY(4px); } to { opacity:1; transform:scale(1) translateY(0); } }
+  @keyframes arcDraw     { from { stroke-dashoffset: 440; } to { stroke-dashoffset: var(--arc-target, 0); } }
+  @keyframes pulse-dot   { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ══════════════════════════════════════════════════════════════
+     NAV — injectée dynamiquement par mock-platform-scripts
+     (sidebar.js + nav-avatar.js en production)
+  ══════════════════════════════════════════════════════════════ */
+  /* Pas de CSS mock-nav ici — injecté via JS inline */
+
+  /* ══════════════════════════════════════════════════════════════
+     LAYOUT PRINCIPAL
+  ══════════════════════════════════════════════════════════════ */
+  .brique-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 2rem;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 4.5rem 2rem 6rem;
+    align-items: start;
+  }
+  @media(max-width:768px) {
+    .brique-layout { grid-template-columns:1fr; padding:4rem 1rem 5rem; }
+    .brique-progress-col { display:none; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     PROGRESS PANEL (colonne droite)
+  ══════════════════════════════════════════════════════════════ */
+  .brique-progress-col { position:sticky; top:4.5rem; }
+  .brique-progress-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-card);
+  }
+  .bpc-header { display:flex; align-items:center; gap:1rem; margin-bottom:1.25rem; }
+  .bpc-ring-wrap { position:relative; width:72px; height:72px; flex-shrink:0; }
+  .bpc-ring-wrap svg { transform:rotate(-90deg); }
+  .bpc-ring-pct {
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.8125rem; font-weight:700; color:var(--accent-strong);
+    transform:rotate(0deg);
+  }
+  .bpc-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.25rem; }
+  .bpc-title  { font-family:'Fraunces',Georgia,serif; font-size:0.9375rem; font-weight:400; font-style:italic; color:var(--text); line-height:1.35; }
+  .bpc-steps { display:flex; flex-direction:column; gap:0.25rem; }
+  .bpc-step {
+    display:flex; align-items:center; gap:0.625rem;
+    padding:0.5rem 0.5rem; border-radius:var(--r-md);
+    transition:all 0.2s;
+  }
+  .bpc-step.active { background:var(--accent-soft); }
+  .bpc-step-num {
+    width:20px; height:20px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.6875rem; font-weight:700;
+    background:var(--surface-2); color:var(--text-faint); border:1px solid var(--border-mid);
+    transition:all 0.3s;
+  }
+  .bpc-step.active  .bpc-step-num { background:var(--accent-strong); color:#fff; border-color:transparent; }
+  .bpc-step.done    .bpc-step-num { background:var(--green-soft); color:var(--green); border-color:transparent; }
+  .bpc-step-label { font-size:0.8125rem; color:var(--text-muted); }
+  .bpc-step.active .bpc-step-label { color:var(--text); font-weight:600; }
+  .bpc-step.done   .bpc-step-label { color:var(--text-muted); text-decoration:line-through; }
+  .bpc-divider { height:1px; background:var(--border-subtle); margin:1rem 0; }
+
+  /* ══════════════════════════════════════════════════════════════
+     SCREENS
+  ══════════════════════════════════════════════════════════════ */
+  .screen { display:none; flex-direction:column; gap:1.5rem; animation:fadeSlideUp 0.35s var(--ease-out) both; }
+  .screen.active { display:flex; }
+
+  /* ══════════════════════════════════════════════════════════════
+     HERO CREAM (S0)
+  ══════════════════════════════════════════════════════════════ */
+  .hero-cream {
+    background: var(--cream-grad);
+    border: 1px solid var(--cream-border);
+    border-radius: 1.375rem;
+    padding: 2.75rem 3rem 2.5rem;
+    position: relative; overflow: hidden;
+  }
+  html.dark .hero-cream { backdrop-filter:blur(20px); }
+  .hero-cream::after {
+    content: '📊';
+    position:absolute; right:2.5rem; bottom:-0.5rem;
+    font-size:7rem; opacity:0.10; pointer-events:none;
+    line-height:1; user-select:none;
+  }
+  .hero-kicker {
+    display:flex; align-items:center; gap:0.5rem;
+    font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--text-muted); margin-bottom:0.75rem;
+  }
+  .hero-kicker-dot { width:7px; height:7px; border-radius:50%; background:var(--red); flex-shrink:0; }
+  .hero-title {
+    font-family:'Fraunces',Georgia,serif;
+    font-size:clamp(1.5rem,2.5vw,2rem); font-weight:400; font-style:italic;
+    line-height:1.2; margin-bottom:0.875rem; color:var(--text);
+  }
+  .hero-desc { font-size:0.9375rem; color:var(--text-muted); margin-bottom:1.5rem; max-width:44ch; line-height:1.6; }
+  .badge-rassurant {
+    display:inline-flex; align-items:center; gap:0.375rem;
+    background:var(--green-soft); color:var(--green);
+    border-radius:9999px; font-size:0.75rem; font-weight:600;
+    padding:0.3rem 0.75rem; margin-bottom:1.25rem;
+  }
+  .hero-actions { display:flex; align-items:center; gap:1rem; }
+  .btn-hero-primary {
+    display:inline-flex; align-items:center; gap:0.5rem;
+    border-radius:9999px; background:var(--accent-fill);
+    color:var(--accent-pill-text);
+    padding:0.75rem 2rem; font-size:0.9375rem; font-weight:600;
+    border:none; cursor:pointer; transition:all var(--t) var(--ease-out);
+  }
+  html.dark .btn-hero-primary {
+    background:linear-gradient(135deg,#6D28D9,#4F46E5);
+    color:#fff;
+    box-shadow:0 4px 20px rgba(109,40,217,0.35);
+  }
+  .btn-hero-primary:hover { transform:translateY(-1px); box-shadow:var(--shadow-hover); }
+  .btn-hero-secondary {
+    font-size:0.8125rem; color:var(--text-muted); background:none; border:none;
+    cursor:pointer; padding:0.5rem;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     BRICK CARD
+  ══════════════════════════════════════════════════════════════ */
+  .brick-card {
+    background:var(--bg-elevated);
+    border:1px solid var(--border-subtle);
+    border-radius:1.25rem;
+    box-shadow:var(--shadow-card);
+    padding:2rem 2.25rem;
+    position:relative; overflow:hidden;
+  }
+  html.dark .brick-card { backdrop-filter:blur(12px); }
+  .brick-card::before {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(ellipse 60% 40% at 50% 0%,var(--accent-soft) 0%,transparent 100%);
+    opacity:0.06;
+  }
+  .brick-kicker {
+    font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--text-muted); margin-bottom:0.5rem;
+  }
+  .brick-title {
+    font-family:'Fraunces',Georgia,serif;
+    font-size:clamp(1.25rem,2vw,1.625rem); font-weight:400; font-style:italic;
+    color:var(--text); margin-bottom:0.375rem; line-height:1.25;
+  }
+  .brick-subtitle { font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem; }
+
+  /* ══════════════════════════════════════════════════════════════
+     CTX NARRATIVE (données cross-brique reprises)
+  ══════════════════════════════════════════════════════════════ */
+  .ctx-card {
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+    border-radius:var(--r-md);
+    padding:0.75rem 1rem;
+    display:flex; align-items:center; gap:0.75rem;
+    margin-bottom:1.25rem;
+  }
+  html.dark .ctx-card { border-color:var(--accent-strong); }
+  .ctx-icon {
+    width:28px; height:28px; border-radius:50%; flex-shrink:0;
+    background:var(--accent-fill); display:flex; align-items:center; justify-content:center;
+    font-size:0.875rem;
+  }
+  .ctx-text { font-size:0.8125rem; color:var(--text-secondary); }
+  .ctx-text strong { color:var(--text); font-weight:600; }
+  .ctx-badge-repris {
+    display:inline-flex; align-items:center; gap:0.2rem;
+    background:var(--accent-soft); color:var(--accent-strong);
+    border:1px solid var(--accent-strong);
+    border-radius:9999px; font-size:0.6rem; font-weight:700; padding:0.1rem 0.4rem;
+    vertical-align:middle; margin-left:0.3rem;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     SPEEDOMETER — taux d'endettement (Option B)
+  ══════════════════════════════════════════════════════════════ */
+  .speedo-wrap {
+    display:flex; flex-direction:column; align-items:center;
+    gap:0; margin:0.5rem 0 1.5rem;
+  }
+  .speedo-svg-container {
+    position:relative; width:100%; max-width:380px;
+    margin: 0 auto;
+  }
+  .speedo-svg { width:100%; height:auto; overflow:visible; }
+
+  /* Labels sous le demi-cercle */
+  .speedo-taux-display {
+    text-align:center; margin-top:-0.5rem;
+  }
+  .speedo-taux-val {
+    font-family:'Fraunces',Georgia,serif;
+    font-size:2.25rem; font-weight:400; line-height:1; display:block;
+    transition: color 0.5s ease;
+  }
+  .speedo-taux-label { font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem; display:block; }
+
+  /* Légende des segments */
+  .speedo-legend {
+    display:flex; flex-wrap:wrap; gap:0.625rem;
+    justify-content:center; margin-top:1.25rem;
+  }
+  .speedo-legend-item {
+    display:flex; align-items:center; gap:0.4rem;
+    font-size:0.75rem; color:var(--text-muted);
+  }
+  .speedo-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+  /* Jauge état (pill) */
+  .speedo-status-pill {
+    display:inline-flex; align-items:center; gap:0.375rem;
+    border-radius:9999px; font-size:0.78rem; font-weight:600;
+    padding:0.35rem 0.875rem; margin-top:0.75rem;
+    transition: all 0.4s ease;
+  }
+  .speedo-status-pill.vert   { background:var(--dette-vert-soft); color:var(--dette-vert); }
+  .speedo-status-pill.orange { background:var(--dette-orange-soft); color:var(--dette-orange); }
+  .speedo-status-pill.rouge  { background:var(--dette-rouge-soft); color:var(--dette-rouge); }
+  .speedo-status-dot { width:6px; height:6px; border-radius:50%; background:currentColor; animation:pulse-dot 2s infinite; }
+
+  /* ══════════════════════════════════════════════════════════════
+     CARD PÉDAGOGIQUE 35%
+  ══════════════════════════════════════════════════════════════ */
+  .peda-card {
+    border-radius:var(--r-lg); padding:1.125rem 1.25rem;
+    border:1px solid; transition:all 0.4s ease;
+    display:flex; align-items:flex-start; gap:0.875rem;
+  }
+  .peda-card.vert   { background:var(--dette-vert-soft); border-color:rgba(34,197,94,0.3); }
+  .peda-card.orange { background:var(--dette-orange-soft); border-color:rgba(251,115,22,0.3); }
+  .peda-card.rouge  { background:var(--dette-rouge-soft); border-color:rgba(239,68,68,0.3); }
+  html.dark .peda-card.vert   { background:rgba(74,222,128,0.08); }
+  html.dark .peda-card.orange { background:rgba(249,115,22,0.08); }
+  html.dark .peda-card.rouge  { background:rgba(239,68,68,0.08); }
+  .peda-icon { font-size:1.25rem; margin-top:0.1rem; flex-shrink:0; }
+  .peda-content {}
+  .peda-title { font-size:0.875rem; font-weight:700; margin-bottom:0.25rem; }
+  .peda-card.vert   .peda-title { color:var(--dette-vert); }
+  .peda-card.orange .peda-title { color:var(--dette-orange); }
+  .peda-card.rouge  .peda-title { color:var(--dette-rouge); }
+  .peda-text { font-size:0.8125rem; color:var(--text-secondary); line-height:1.55; }
+  .peda-text strong { font-weight:600; color:var(--text); }
+
+  /* ══════════════════════════════════════════════════════════════
+     LIGNE DE DETTE (pattern image fournie)
+  ══════════════════════════════════════════════════════════════ */
+  .dettes-list { display:flex; flex-direction:column; gap:0.625rem; }
+  .dette-row {
+    background:var(--surface-2);
+    border:1px solid var(--border-subtle);
+    border-radius:var(--r-lg);
+    padding:1rem 1.125rem;
+    display:flex; flex-direction:column; gap:0.75rem;
+    transition:all 0.2s;
+    animation:fadeSlideUp 0.3s var(--ease-out) both;
+  }
+  .dette-row-top { display:flex; gap:0.75rem; align-items:center; }
+  .dette-dot {
+    width:12px; height:12px; border-radius:50%; flex-shrink:0;
+    transition:background 0.3s;
+  }
+  .dette-dot.vert   { background:var(--dette-vert); }
+  .dette-dot.jaune  { background:var(--dette-jaune); }
+  .dette-dot.orange { background:var(--dette-orange); }
+  .dette-dot.rouge  { background:var(--dette-rouge); }
+  .dette-select {
+    flex:1;
+    background:var(--bg-elevated); border:1.5px solid var(--border-mid);
+    border-radius:var(--r-md); padding:0.625rem 0.875rem;
+    font-size:0.9rem; color:var(--text); font-family:inherit;
+    cursor:pointer; transition:border-color 0.15s, box-shadow 0.15s;
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 0.75rem center;
+    padding-right:2.25rem;
+  }
+  html.dark .dette-select { background-color:var(--surface-2); }
+  .dette-select:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+
+  .dette-fields { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+  .dette-input-wrap { position:relative; }
+  .dette-input {
+    width:100%;
+    background:var(--bg-elevated); border:1.5px solid var(--border-mid);
+    border-radius:var(--r-md); padding:0.625rem 2.5rem 0.625rem 0.875rem;
+    font-size:0.9rem; color:var(--text); font-family:inherit;
+    transition:border-color 0.15s, box-shadow 0.15s;
+  }
+  .dette-input::placeholder { color:var(--text-faint); }
+  .dette-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+  .dette-input.required-filled { border-color:var(--green); }
+  .dette-input-suffix {
+    position:absolute; right:0.75rem; top:50%; transform:translateY(-50%);
+    font-size:0.8rem; color:var(--text-faint); pointer-events:none;
+  }
+  .dette-optional { font-size:0.7rem; color:var(--text-faint); margin-top:0.125rem; }
+
+  /* Badge classification */
+  .dette-classification {
+    display:flex; align-items:center; gap:0.5rem; margin-top:0.125rem;
+    min-height:1.5rem; transition:all 0.3s;
+  }
+  .dette-badge {
+    border-radius:9999px; font-size:0.7rem; font-weight:700;
+    padding:0.2rem 0.625rem;
+    transition:all 0.3s;
+  }
+  .dette-badge.vert   { background:var(--dette-vert-soft); color:var(--dette-vert); }
+  .dette-badge.jaune  { background:var(--dette-jaune-soft); color:#92400E; }
+  html.dark .dette-badge.jaune { color:#FDE68A; }
+  .dette-badge.orange { background:var(--dette-orange-soft); color:var(--dette-orange); }
+  .dette-badge.rouge  { background:var(--dette-rouge-soft); color:var(--dette-rouge); }
+  .dette-badge-text { font-size:0.78rem; color:var(--text-muted); font-style:italic; }
+
+  .dette-remove {
+    width:28px; height:28px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-faint); font-size:1rem; line-height:1;
+    transition:all 0.15s;
+    background:transparent; border:none;
+  }
+  .dette-remove:hover { background:var(--red-soft); color:var(--red); }
+
+  /* Confirmation depuis onboarding */
+  /* ══ Bloc ctx questionnaire — pattern identique brique budget ══ */
+  .ctx-confirm-bloc {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-xl);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+  html.dark .ctx-confirm-bloc {
+    background: var(--bg-elevated);
+    border-color: var(--border-subtle);
+  }
+  .ctx-confirm-top { display: flex; flex-direction: column; gap: 0.375rem; }
+  .ctx-confirm-label {
+    font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent-strong);
+  }
+  html.dark .ctx-confirm-label { color: #C4B5FD; }
+  .ctx-confirm-headline {
+    font-size: 1.125rem; font-weight: 700;
+    color: var(--text); line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .ctx-confirm-sub {
+    font-family: 'Fraunces', Georgia, serif;
+    font-style: italic; font-size: 1rem;
+    color: var(--text-secondary); line-height: 1.4;
+  }
+  .ctx-confirm-btns { display: flex; gap: 1rem; align-items: center; }
+  .btn-confirm-yes {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 9999px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    padding: 0.7rem 1.75rem;
+    font-size: 0.9375rem; font-weight: 700;
+    border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  html.dark .btn-confirm-yes {
+    background: linear-gradient(135deg, rgba(109,40,217,0.55), rgba(79,70,229,0.55));
+    color: #E9D5FF;
+  }
+  .btn-confirm-yes:hover { transform: translateY(-1px); filter: brightness(1.05); }
+  .btn-confirm-no {
+    font-size: 0.9375rem; font-weight: 500;
+    color: var(--text-muted); background: none; border: none;
+    cursor: pointer; padding: 0.5rem 0;
+    transition: color 0.15s;
+  }
+  .btn-confirm-no:hover { color: var(--text); }
+  .ctx-confirm-success {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.875rem; color: var(--dette-vert); font-weight: 600;
+    background: var(--dette-vert-soft); border-radius: var(--r-md);
+    padding: 0.625rem 1rem;
+  }
+
+  .add-dette-btn {
+    width:100%; border:1.5px dashed var(--border-mid); border-radius:9999px;
+    background:transparent; color:var(--text-muted);
+    padding:0.75rem; font-size:0.875rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:0.5rem;
+    transition:all 0.2s;
+  }
+  .add-dette-btn:hover { border-color:var(--accent-strong); color:var(--accent-strong); }
+
+  /* ══════════════════════════════════════════════════════════════
+     NAV BOUTONS
+  ══════════════════════════════════════════════════════════════ */
+  .nav-btns {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:0.5rem;
+  }
+  .btn-back {
+    display:flex; align-items:center; gap:0.375rem;
+    color:var(--text-muted); font-size:0.875rem;
+    background:none; border:none; cursor:pointer; padding:0.5rem 0;
+    transition:color 0.15s;
+  }
+  .btn-back:hover { color:var(--text); }
+  .btn-primary {
+    display:inline-flex; align-items:center; gap:0.5rem;
+    border-radius:9999px; background:var(--accent-fill);
+    color:var(--accent-pill-text);
+    padding:0.75rem 1.75rem; font-size:0.9rem; font-weight:600;
+    border:none; cursor:pointer; transition:all var(--t) var(--ease-out);
+  }
+  html.dark .btn-primary {
+    background:linear-gradient(135deg,#6D28D9,#4F46E5);
+    color:#fff; box-shadow:0 4px 20px rgba(109,40,217,0.35);
+  }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:var(--shadow-hover); }
+  .btn-primary:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
+
+  /* ══════════════════════════════════════════════════════════════
+     SECTION SÉPARATEUR
+  ══════════════════════════════════════════════════════════════ */
+  .section-label {
+    display:flex; align-items:center; gap:0.75rem;
+    font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--text-faint); margin:0.25rem 0;
+  }
+  .section-label::before, .section-label::after {
+    content:''; flex:1; height:1px; background:var(--border-subtle);
+  }
+
+  /* Aiguille — transition et couleur */
+  #speedo-needle {
+    transition: transform 1.1s cubic-bezier(0.34, 1.1, 0.64, 1);
+  }
+  #speedo-needle .needle-line {
+    transition: stroke 0.4s ease;
+  }
+  #speedo-needle .needle-pivot {
+    transition: stroke 0.4s ease;
+  }
+  #speedo-needle.needle-over .needle-line  { stroke: #f87171 !important; }
+  #speedo-needle.needle-over .needle-pivot { stroke: #f87171 !important; }
+
+  /* ══════════════════════════════════════════════════════════════
+     TOTAL MENSUALITÉS (sticky récap)
+  ══════════════════════════════════════════════════════════════ */
+  .sticky-recap {
+    position:sticky; bottom:0; z-index:50;
+    margin:0 -2.25rem -2rem;
+    padding:0.875rem 2.25rem;
+    background:var(--bg-elevated);
+    backdrop-filter:blur(12px);
+    border-top:1px solid var(--border-subtle);
+    display:flex; gap:1.5rem; align-items:center; justify-content:space-between;
+  }
+  .sticky-recap-item { display:flex; flex-direction:column; gap:0.1rem; }
+  .sticky-recap-lbl { font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.1em; color:var(--text-faint); }
+  .sticky-recap-val { font-family:'Fraunces',Georgia,serif; font-size:1.125rem; font-weight:400; color:var(--text); }
+  .sticky-recap-taux {
+    font-family:'Fraunces',Georgia,serif; font-size:1.125rem; font-weight:400;
+    transition:color 0.4s;
+  }
+  .sticky-recap-taux.vert   { color:var(--dette-vert); }
+  .sticky-recap-taux.orange { color:var(--dette-orange); }
+  .sticky-recap-taux.rouge  { color:var(--dette-rouge); }
+  </style>
+</head>
+<body data-brick-name="Gestion des dettes">
+
+<!-- sidebar.js injecte automatiquement .f-sidebar pour les pages brique-* -->
+<div class="f-sidebar-shell">
+<div class="f-content" style="flex:1;min-width:0;">
+
+<div class="brique-layout">
+
+  <!-- ════════════════════════════════════════════
+       COLONNE PRINCIPALE
+  ════════════════════════════════════════════ -->
+  <main class="brique-main">
+
+    <!-- ─── SCREEN 0 : HERO ──────────────────── -->
+    <section class="screen active" id="screen-0">
+
+      <div class="hero-cream">
+        <div class="hero-kicker">
+          <span class="hero-kicker-dot"></span>
+          Survie &amp; stabilité · 15 min
+        </div>
+        <h1 class="hero-title">Comprends et maîtrise<br>tes dettes.</h1>
+        <p class="hero-desc">
+          On identifie tes crédits en cours, on calcule ton taux d'endettement réel face à la limite des 35%, 
+          puis on construit une stratégie adaptée à ton profil : visualisation de tes bonnes dettes dans le temps 
+          ou plan de remboursement priorisé, avec un engagement concret et une date de libération estimée.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-hero-primary" onclick="goToScreen(1)">
+            Commencer →
+          </button>
+        </div>
+
+    </section>
+
+    <!-- ─── SCREEN 1 : IDENTIFICATION + SPEEDOMETER ── -->
+    <section class="screen" id="screen-1">
+
+      <div class="brick-card">
+        <div class="brick-kicker">Étape 1 · Tes dettes</div>
+        <h2 class="brick-title">Parlons de ce que tu dois.</h2>
+        <p class="brick-subtitle">Saisis chaque crédit en cours — on calcule ton taux en temps réel.</p>
+
+        <!-- Bloc ctx questionnaire — pattern brique budget -->
+        <div class="ctx-confirm-bloc" id="ctx-confirm-bloc">
+          <div class="ctx-confirm-top">
+            <div class="ctx-confirm-label">Depuis ton profil</div>
+            <div class="ctx-confirm-headline">On a détecté des dettes dans ton profil.</div>
+            <div class="ctx-confirm-sub">C'est bien ta situation actuelle ?</div>
+          </div>
+          <div class="ctx-confirm-btns" id="confirm-btns">
+            <button class="btn-confirm-yes" onclick="confirmOnboarding(true)">Oui, c'est ça</button>
+            <button class="btn-confirm-no" onclick="confirmOnboarding(false)">Non, je modifie</button>
+          </div>
+        </div>
+
+        <!-- ═══ SPEEDOMETER — taux d'endettement ═══ -->
+        <div class="speedo-wrap">
+          <div class="speedo-svg-container">
+            <svg class="speedo-svg" viewBox="0 0 380 255" xmlns="http://www.w3.org/2000/svg" aria-label="Taux d'endettement">
+
+              <!-- Fond de piste (arc gris) -->
+              <path id="speedo-track"
+                d="M 40 190 A 150 150 0 0 1 340 190"
+                fill="none" stroke="var(--track)" stroke-width="18" stroke-linecap="round"/>
+
+              <!-- Segment vert (bonnes dettes) — animé via JS -->
+              <path id="arc-vert"
+                d="M 40 190 A 150 150 0 0 1 340 190"
+                fill="none" stroke="#22C55E" stroke-width="18" stroke-linecap="round"
+                stroke-dasharray="440" stroke-dashoffset="440"
+                style="transition:stroke-dashoffset 1.1s var(--ease-out);"/>
+
+              <!-- Segment orange (dettes à surveiller) -->
+              <path id="arc-orange"
+                d="M 40 190 A 150 150 0 0 1 340 190"
+                fill="none" stroke="#FB923C" stroke-width="18" stroke-linecap="round"
+                stroke-dasharray="440" stroke-dashoffset="440"
+                style="transition:stroke-dashoffset 1.1s var(--ease-out) 0.15s;"/>
+
+              <!-- Segment rouge (dettes dangereuses) -->
+              <path id="arc-rouge"
+                d="M 40 190 A 150 150 0 0 1 340 190"
+                fill="none" stroke="#f87171" stroke-width="18" stroke-linecap="round"
+                stroke-dasharray="440" stroke-dashoffset="440"
+                style="transition:stroke-dashoffset 1.1s var(--ease-out) 0.3s;"/>
+
+              <!-- Aiguille (needle) — pivot SVG natif en (190,190) -->
+              <g id="speedo-needle" transform="rotate(-90, 190, 190)">
+                <line class="needle-line"
+                  x1="190" y1="190"
+                  x2="190" y2="58"
+                  stroke="#78716C" stroke-width="3" stroke-linecap="round"/>
+                <circle class="needle-pivot" cx="190" cy="190" r="6"
+                  fill="var(--bg-elevated)" stroke="#78716C" stroke-width="2.5"/>
+              </g>
+
+              <!-- Valeur taux — sous le pivot, hors arc -->
+              <text id="speedo-val" x="190" y="222"
+                font-family="'Fraunces',Georgia,serif" font-size="28" font-weight="400"
+                fill="var(--text)" text-anchor="middle" dominant-baseline="middle"
+                style="transition:fill 0.5s ease;">0%</text>
+
+              <text x="190" y="243"
+                font-family="Inter,sans-serif" font-size="11" font-weight="500"
+                fill="var(--text-muted)" text-anchor="middle">taux d'endettement</text>
+
+              <!-- Labels bornes -->
+              <text x="33" y="207" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="var(--text-muted)" text-anchor="middle">0%</text>
+              <text x="347" y="207" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="var(--text-muted)" text-anchor="middle">38%</text>
+            </svg>
+          </div>
+
+          <!-- Pill statut dynamique (sans répétition du %) -->
+          <div class="speedo-status-pill vert" id="speedo-pill">
+            <span class="speedo-status-dot"></span>
+            <span id="speedo-pill-text">En attente de saisie</span>
+          </div>
+
+          <!-- Légende segments -->
+          <div class="speedo-legend" id="speedo-legend">
+            <div class="speedo-legend-item">
+              <div class="speedo-legend-dot" style="background:#22C55E;"></div>
+              <span>Bonnes dettes</span>
+            </div>
+            <div class="speedo-legend-item">
+              <div class="speedo-legend-dot" style="background:#FB923C;"></div>
+              <span>À surveiller</span>
+            </div>
+            <div class="speedo-legend-item">
+              <div class="speedo-legend-dot" style="background:#f87171;"></div>
+              <span>Dettes coûteuses</span>
+            </div>
+            <div class="speedo-legend-item">
+              <div class="speedo-legend-dot" style="background:transparent; border:2px solid var(--border-hover);"></div>
+              <span>Capacité disponible</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ CARTE PÉDAGOGIQUE 35% ═══ -->
+        <div class="peda-card vert" id="peda-card">
+          <div class="peda-icon" id="peda-icon">✅</div>
+          <div class="peda-content">
+            <div class="peda-title" id="peda-title">La règle des 35% — Tu es dans les clous</div>
+            <div class="peda-text" id="peda-text">
+              Le taux d'endettement, c'est simple : <strong>mensualités crédit ÷ revenus nets</strong>.
+              Les banques fixent la limite à <strong>35%</strong>. En dessous, tu es en zone verte.
+              Au-dessus, obtenir un nouveau crédit (comme un prêt immo) devient très difficile.
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ LISTE DES DETTES ═══ -->
+        <div class="section-label">Tes crédits en cours</div>
+
+        <div class="dettes-list" id="dettes-list">
+          <!-- Dettes injectées par JS -->
+        </div>
+
+        <button class="add-dette-btn" onclick="addDette()">
+          <span style="font-size:1.1rem; line-height:1;">+</span>
+          Ajouter une dette / crédit
+        </button>
+
+        <!-- Tu as oublié quelque chose ? -->
+        <div style="margin-top:0.25rem; font-size:0.78rem; color:var(--text-faint); text-align:center;">
+          Tu as oublié quelque chose dans l'onboarding ?
+          <button style="background:none;border:none;font-size:0.78rem;color:var(--accent-strong);cursor:pointer;font-family:inherit;" onclick="addDette()">+ Ajouter une dette</button>
+        </div>
+
+        <!-- Récap sticky -->
+        <div class="sticky-recap">
+          <div class="sticky-recap-item">
+            <div class="sticky-recap-lbl">Mensualités totales</div>
+            <div class="sticky-recap-val" id="recap-mensualites">— €/mois</div>
+          </div>
+          <div class="sticky-recap-item" style="text-align:center;">
+            <div class="sticky-recap-lbl">Taux endettement</div>
+            <div class="sticky-recap-taux vert" id="recap-taux">—</div>
+          </div>
+          <button class="btn-primary" id="btn-s1-next" onclick="goToScreen(2)" disabled>
+            Voir mon analyse →
+          </button>
+        </div>
+
+      </div><!-- /brick-card -->
+
+      <div class="nav-btns" style="padding:0 0.25rem;">
+        <button class="btn-back" onclick="goToScreen(0)">← Retour</button>
+      </div>
+
+    </section><!-- /screen-1 -->
+
+    <!-- ─── SCREEN 2 (placeholder) ── -->
+    <section class="screen" id="screen-2">
+      <div class="brick-card">
+        <div class="brick-kicker">Étape 2 · Stratégie</div>
+        <h2 class="brick-title">Ton plan personnalisé.</h2>
+        <p class="brick-subtitle">À venir — bifurcation bonnes dettes / mauvaises dettes.</p>
+      </div>
+      <div class="nav-btns" style="padding:0 0.25rem;">
+        <button class="btn-back" onclick="goToScreen(1)">← Retour</button>
+        <button class="btn-primary" onclick="goToScreen(3)">Continuer →</button>
+      </div>
+    </section>
+
+    <!-- ─── SCREEN 3 (placeholder) ── -->
+    <section class="screen" id="screen-3">
+      <div class="brick-card">
+        <div class="brick-kicker">Étape 3 · Plan de remboursement</div>
+        <h2 class="brick-title">Combien de mois pour être libre ?</h2>
+        <p class="brick-subtitle">À venir — slider + courbes boule de neige / avalanche.</p>
+      </div>
+      <div class="nav-btns" style="padding:0 0.25rem;">
+        <button class="btn-back" onclick="goToScreen(2)">← Retour</button>
+        <button class="btn-primary" onclick="goToScreen(4)">Continuer →</button>
+      </div>
+    </section>
+
+    <!-- ─── SCREEN 4 (placeholder) ── -->
+    <section class="screen" id="screen-4">
+      <div class="brick-card">
+        <div class="brick-kicker">Étape 4 · Engagement</div>
+        <h2 class="brick-title">Ton engagement concret.</h2>
+        <p class="brick-subtitle">À venir — engagement + bridge cross-brique.</p>
+      </div>
+      <div class="nav-btns" style="padding:0 0.25rem;">
+        <button class="btn-back" onclick="goToScreen(3)">← Retour</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ════════════════════════════════════════════
+       COLONNE DROITE — PROGRESS PANEL
+  ════════════════════════════════════════════ -->
+  <aside class="brique-progress-col">
+    <div class="brique-progress-card">
+      <div class="bpc-header">
+        <div class="bpc-ring-wrap">
+          <svg width="72" height="72" viewBox="0 0 72 72">
+            <circle cx="36" cy="36" r="28" fill="none" stroke="var(--track)" stroke-width="4"/>
+            <circle id="bpc-ring-arc" cx="36" cy="36" r="28" fill="none"
+              stroke="var(--accent-strong)" stroke-width="4"
+              stroke-linecap="round"
+              stroke-dasharray="176"
+              stroke-dashoffset="176"
+              transform="rotate(-90 36 36)"
+              style="transition:stroke-dashoffset 0.8s ease-out;"/>
+          </svg>
+          <div class="bpc-ring-pct" id="bpc-pct">0%</div>
+        </div>
+        <div>
+          <div class="bpc-kicker">Progression</div>
+          <div class="bpc-title">Gestion des dettes</div>
+        </div>
+      </div>
+      <div class="bpc-divider"></div>
+      <div class="bpc-steps">
+        <div class="bpc-step active" id="step-1">
+          <div class="bpc-step-num">1</div>
+          <div class="bpc-step-label">Tes dettes</div>
+        </div>
+        <div class="bpc-step" id="step-2">
+          <div class="bpc-step-num">2</div>
+          <div class="bpc-step-label">Stratégie</div>
+        </div>
+        <div class="bpc-step" id="step-3">
+          <div class="bpc-step-num">3</div>
+          <div class="bpc-step-label">Plan de remboursement</div>
+        </div>
+        <div class="bpc-step" id="step-4">
+          <div class="bpc-step-num">4</div>
+          <div class="bpc-step-label">Engagement</div>
+        </div>
+      </div>
+      <div class="bpc-divider"></div>
+      <!-- Synthèse temps réel -->
+      <div style="display:flex; flex-direction:column; gap:0.625rem;">
+        <div style="font-size:0.6875rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-faint);">En temps réel</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.8rem; color:var(--text-muted);">Mensualités totales</span>
+          <span style="font-family:'Fraunces',Georgia,serif; font-size:1rem;" id="panel-mensualites">—</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.8rem; color:var(--text-muted);">Taux d'endettement</span>
+          <span style="font-family:'Fraunces',Georgia,serif; font-size:1rem;" id="panel-taux">—</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.8rem; color:var(--text-muted);">Dettes à prioriser</span>
+          <span style="font-family:'Fraunces',Georgia,serif; font-size:1rem;" id="panel-mauvaises">—</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div><!-- /brique-layout -->
+
+</div><!-- /f-content -->
+</div><!-- /f-sidebar-shell -->
+
+<!-- ══════ Émulation fidèle sidebar.js + nav-avatar.js ══════ -->
+<script id="mock-platform-scripts">
+/* ══════════════════════════════════════════════════════════════
+   MAQUETTE — Émulation fidèle de sidebar.js + nav-avatar.js
+   CSS/HTML identique à la production
+══════════════════════════════════════════════════════════════ */
+
+/* ── Émulation sidebar.js ── */
+(function() {
+  const brickName = document.body.getAttribute('data-brick-name') || 'Gestion des dettes';
+
+  /* CSS identique à sidebar.js (production) */
+  const style = document.createElement('style');
+  style.textContent = `
+    body.f-has-sidebar { padding-left: 64px !important; box-sizing: border-box; }
+    .f-sidebar {
+      position:fixed; top:0; left:0; width:64px; height:100dvh;
+      background:var(--bg-elevated,#FFFFFF);
+      border-right:1px solid var(--border-subtle,rgba(28,25,23,.07));
+      display:flex; flex-direction:column;
+      z-index:500; transition:width 200ms cubic-bezier(.4,0,.2,1); overflow:hidden;
+    }
+    html.dark .f-sidebar { background:var(--bg-elevated,#161824); backdrop-filter:blur(14px); }
+    .f-sidebar:hover { width:240px; }
+    .f-sidebar-logo {
+      height:64px; display:flex; align-items:center; padding:0 20px; flex-shrink:0; text-decoration:none;
+    }
+    .f-sb-mark {
+      width:32px; height:32px; border-radius:8px; flex-shrink:0;
+      background:var(--accent-soft,rgba(196,181,253,.22));
+      border:1px solid var(--border-subtle,rgba(28,25,23,.07));
+      display:flex; align-items:center; justify-content:center;
+      color:var(--accent-strong,#5B21B6);
+      font-family:'Fraunces',serif; font-style:italic; font-weight:500; font-size:18px; line-height:1;
+    }
+    html.dark .f-sb-mark { background:rgba(167,139,250,.14); color:#C4B5FD; border-color:rgba(255,255,255,.08); }
+    .f-sb-wordmark {
+      margin-left:12px; font-size:14px; font-weight:600;
+      color:var(--text,#1C1917); letter-spacing:-.01em; white-space:nowrap;
+      opacity:0; transform:translateX(-4px);
+      transition:opacity 120ms ease 60ms, transform 150ms ease 60ms;
+    }
+    html.dark .f-sb-wordmark { color:var(--text,#F5F5F4); }
+    .f-sidebar:hover .f-sb-wordmark { opacity:1; transform:translateX(0); }
+    .f-sidebar-nav { flex:1; display:flex; flex-direction:column; padding:8px 0; gap:2px; overflow:hidden; }
+    .f-sidebar-item {
+      position:relative; display:flex; align-items:center;
+      height:44px; padding:0 0 0 22px; margin:0 8px; border-radius:10px;
+      color:var(--text-muted,#78716C); text-decoration:none; cursor:pointer;
+      white-space:nowrap; overflow:hidden; transition:background .15s ease, color .15s ease;
+    }
+    .f-sidebar-item:hover { background:rgba(28,25,23,.06); color:var(--text,#1C1917); }
+    html.dark .f-sidebar-item:hover { background:rgba(255,255,255,.06); color:var(--text,#F5F5F4); }
+    .f-sb-ico { flex-shrink:0; width:20px; height:20px; display:flex; align-items:center; justify-content:center; }
+    .f-sb-label {
+      margin-left:14px; font-size:13.5px; font-weight:500;
+      color:var(--text-secondary,#57534E); white-space:nowrap;
+      opacity:0; transform:translateX(-6px);
+      transition:opacity 120ms ease 60ms, transform 150ms ease 60ms;
+    }
+    html.dark .f-sb-label { color:var(--text-secondary,#D4D4D8); }
+    .f-sidebar:hover .f-sb-label { opacity:1; transform:translateX(0); }
+    .f-sidebar-item.active { background:var(--accent-soft,rgba(196,181,253,.22)); color:var(--accent-strong,#5B21B6); }
+    html.dark .f-sidebar-item.active { background:rgba(167,139,250,.14); color:#C4B5FD; }
+    .f-sidebar-item.active::before {
+      content:''; position:absolute; left:-8px; top:8px; bottom:8px;
+      width:2px; background:var(--accent-strong,#5B21B6); border-radius:0 2px 2px 0;
+    }
+    html.dark .f-sidebar-item.active::before { background:#A78BFA; }
+    .f-sidebar-item.active .f-sb-label { color:var(--accent-strong,#5B21B6); }
+    html.dark .f-sidebar-item.active .f-sb-label { color:#C4B5FD; }
+    .f-sidebar-bottom { border-top:1px solid var(--border-subtle,rgba(28,25,23,.07)); padding:10px 0 14px; overflow:hidden; }
+    html.dark .f-sidebar-bottom { border-color:rgba(255,255,255,.08); }
+    .f-sb-avatar-row { display:flex; align-items:center; height:48px; padding:0 14px; overflow:hidden; }
+    .f-sb-avatar-circle {
+      width:36px; height:36px; border-radius:50%;
+      background:var(--accent-soft,rgba(196,181,253,.22));
+      border:1px solid var(--border-subtle,rgba(28,25,23,.07));
+      color:var(--accent-strong,#5B21B6);
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700; flex-shrink:0;
+    }
+    html.dark .f-sb-avatar-circle { background:linear-gradient(135deg,#8B5CF6,#3B82F6); color:#fff; border-color:rgba(255,255,255,.08); }
+    /* Ctx-header */
+    .f-ctx-header {
+      position:sticky; top:0; z-index:400; height:56px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 2rem;
+      background:var(--nav-bg,rgba(250,248,245,.88));
+      backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--border-subtle,rgba(28,25,23,.07));
+    }
+    html.dark .f-ctx-header { background:var(--nav-bg,rgba(11,11,26,.82)); border-color:rgba(255,255,255,.08); }
+    .f-ctx-left { display:flex; align-items:center; gap:8px; }
+    .f-ctx-title { font-size:14px; font-weight:600; color:var(--text,#1C1917); letter-spacing:-.01em; }
+    html.dark .f-ctx-title { color:var(--text,#F5F5F4); }
+    .f-ctx-breadcrumb { font-size:12.5px; color:var(--text-muted,#78716C); }
+    html.dark .f-ctx-breadcrumb { color:var(--text-muted,#A1A1AA); }
+    .f-ctx-breadcrumb b { color:var(--text,#1C1917); font-weight:500; }
+    html.dark .f-ctx-breadcrumb b { color:var(--text,#F5F5F4); }
+    .f-ctx-right { display:flex; align-items:center; gap:8px; }
+    /* Toggle slide (identique production) */
+    .f-theme-toggle {
+      position:relative; width:44px; height:24px; border-radius:999px;
+      background:#E7E5E4; border:1px solid rgba(28,25,23,.08);
+      cursor:pointer; transition:background .25s ease, border-color .25s ease; flex-shrink:0;
+    }
+    html.dark .f-theme-toggle { background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.12); }
+    .f-tt-knob {
+      position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%;
+      background:#FFF; box-shadow:0 1px 3px rgba(0,0,0,.18);
+      transition:transform 200ms cubic-bezier(.4,0,.2,1);
+    }
+    html.dark .f-tt-knob { background:#1C1B33; transform:translateX(20px); }
+    .f-tt-sun {
+      position:absolute; left:5px; top:50%; transform:translateY(-50%);
+      color:var(--text-muted,#78716C); pointer-events:none; transition:opacity .25s;
+    }
+    .f-tt-moon {
+      position:absolute; right:5px; top:50%; transform:translateY(-50%);
+      color:var(--text-faint,#A8A29E); pointer-events:none; opacity:.45; transition:opacity .25s;
+    }
+    html.dark .f-tt-sun { opacity:.35; }
+    html.dark .f-tt-moon { opacity:1; color:#C4B5FD; }
+    /* Compat tokens */
+    :root {
+      --indigo:var(--accent-strong,#5B21B6); --violet:var(--accent-strong,#5B21B6);
+      --indigo-dim:var(--accent-soft,rgba(196,181,253,.22)); --indigo-glow:rgba(91,33,182,.15);
+      --border-hover-nav:rgba(28,25,23,.18);
+    }
+    html.dark {
+      --indigo:#A78BFA; --violet:#A78BFA;
+      --indigo-dim:rgba(167,139,250,.14); --indigo-glow:rgba(167,139,250,.20);
+    }
+    /* nav-avatar.js styles */
+    .nav-back-dashboard {
+      display:inline-flex; align-items:center; gap:0.45rem;
+      padding:0.35rem 0.8rem 0.35rem 0.6rem; border-radius:9999px;
+      border:1px solid var(--border); background:var(--surface-2);
+      color:var(--text-muted); font-size:0.78rem; font-weight:600;
+      text-decoration:none; cursor:pointer; letter-spacing:-0.01em; font-family:inherit;
+      transition:border-color 160ms, background 160ms, color 160ms, box-shadow 160ms;
+    }
+    .nav-back-dashboard:hover {
+      border-color:var(--indigo); background:var(--indigo-dim); color:var(--violet);
+      box-shadow:0 0 0 3px var(--indigo-glow);
+    }
+    .nav-back-dashboard svg { opacity:0.7; transition:transform 160ms, opacity 160ms; }
+    .nav-back-dashboard:hover svg { opacity:1; transform:translateX(-2px); }
+    .nav-avatar-wrap { position:relative; }
+    .nav-avatar-btn {
+      display:flex; align-items:center; gap:0.45rem;
+      padding:0.28rem 0.55rem 0.28rem 0.28rem; border-radius:9999px;
+      border:1px solid var(--border); background:var(--surface-2);
+      cursor:pointer; transition:border-color 160ms, background 160ms, box-shadow 160ms;
+      font-family:inherit;
+    }
+    .nav-avatar-btn:hover {
+      border-color:var(--border-hover-nav); background:var(--surface-3);
+      box-shadow:0 0 0 3px var(--indigo-glow);
+    }
+    .nav-avatar-circle {
+      width:26px; height:26px; border-radius:50%;
+      background:linear-gradient(135deg,var(--indigo) 0%,var(--purple,#C084FC) 100%);
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.68rem; font-weight:800; color:#fff; flex-shrink:0;
+      box-shadow:0 0 0 2px rgba(99,102,241,0.3), 0 2px 6px rgba(99,102,241,0.25);
+    }
+    .nav-avatar-chevron { color:var(--text-faint); transition:transform 160ms; flex-shrink:0; }
+  `;
+  document.head.appendChild(style);
+
+  /* Sidebar HTML (identique production) */
+  const sidebar = document.createElement('aside');
+  sidebar.className = 'f-sidebar';
+  sidebar.setAttribute('role', 'navigation');
+  sidebar.innerHTML = `
+    <a href="dashboard.html" class="f-sidebar-logo" aria-label="Fundamental">
+      <div class="f-sb-mark">f</div>
+      <span class="f-sb-wordmark">Fundamental</span>
+    </a>
+    <div class="f-sidebar-nav">
+      <a href="dashboard.html" class="f-sidebar-item">
+        <span class="f-sb-ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </span>
+        <span class="f-sb-label">Dashboard</span>
+      </a>
+      <a href="dashboard.html#explorer-section" class="f-sidebar-item">
+        <span class="f-sb-ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+          </svg>
+        </span>
+        <span class="f-sb-label">Explorer</span>
+      </a>
+    </div>
+    <div class="f-sidebar-bottom">
+      <div class="f-sb-avatar-row">
+        <div class="f-sb-avatar-circle">MV</div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(sidebar);
+
+  /* Ctx-header HTML (identique production) */
+  const ctxHeader = document.createElement('div');
+  ctxHeader.className = 'f-ctx-header';
+  ctxHeader.id = 'f-ctx-header';
+  ctxHeader.innerHTML = `
+    <div class="f-ctx-left">
+      <span class="f-ctx-title">${brickName}</span>
+      <span class="f-ctx-breadcrumb">&middot;&nbsp;&nbsp;Dashboard&nbsp;/&nbsp;<b>${brickName}</b></span>
+    </div>
+    <div class="f-ctx-right" id="nav-right-slot">
+      <button class="f-theme-toggle" id="f-theme-toggle" type="button" aria-label="Basculer le thème">
+        <svg class="f-tt-sun" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        <svg class="f-tt-moon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <span class="f-tt-knob"></span>
+      </button>
+    </div>
+  `;
+  document.body.insertBefore(ctxHeader, document.body.firstChild);
+  document.body.classList.add('f-has-sidebar');
+
+  /* Toggle thème */
+  document.getElementById('f-theme-toggle').addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('fundamental-theme', isDark ? 'dark' : 'light');
+  });
+})();
+
+/* ── Émulation nav-avatar.js (bouton retour Dashboard + avatar pill) ── */
+(function() {
+  const navRight = document.getElementById('nav-right-slot');
+  if (!navRight) return;
+  const toggle = navRight.querySelector('.f-theme-toggle');
+
+  /* Bouton ← Dashboard */
+  const backBtn = document.createElement('a');
+  backBtn.href = 'dashboard.html';
+  backBtn.className = 'nav-back-dashboard';
+  backBtn.innerHTML = `
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Dashboard
+  `;
+  navRight.insertBefore(backBtn, toggle);
+
+  /* Avatar pill */
+  const wrap = document.createElement('div');
+  wrap.className = 'nav-avatar-wrap';
+  wrap.innerHTML = `
+    <button class="nav-avatar-btn" aria-label="Menu profil">
+      <div class="nav-avatar-circle">MV</div>
+      <svg class="nav-avatar-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+  `;
+  navRight.appendChild(wrap);
+})();
+</script>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   CONFIGURATION DES TYPES DE DETTES
+══════════════════════════════════════════════════════════════ */
+const DETTE_CONFIG = {
+  credit_immo: {
+    label: 'Crédit immobilier', badge: 'vert', badgeLabel: 'Bonne dette',
+    desc: 'Pas d\'action urgente ici.', color: '#22C55E', taux: 3.8
+  },
+  pret_etudiant: {
+    label: 'Prêt étudiant', badge: 'jaune', badgeLabel: 'Contexte spécifique',
+    desc: 'Taux généralement faible — à surveiller.', color: '#FBBF24', taux: 1.5
+  },
+  credit_conso: {
+    label: 'Crédit conso', badge: 'orange', badgeLabel: 'Alerte',
+    desc: 'Ce crédit coûte cher.', color: '#FB923C', taux: 6.5
+  },
+  decouvert_regulier: {
+    label: 'Découvert régulier', badge: 'rouge', badgeLabel: 'Alerte forte',
+    desc: 'Frais élevés — à solder en priorité.', color: '#f87171', taux: 16
+  },
+  credit_renouvelable: {
+    label: 'Crédit renouvelable', badge: 'rouge', badgeLabel: 'Piège à intérêts',
+    desc: 'Taux très élevé — priorité absolue.', color: '#f87171', taux: 19.5
+  },
+  paiement_fractionne: {
+    label: 'Paiement fractionné (BNPL)', badge: 'orange', badgeLabel: 'Engagement court',
+    desc: 'Attention à l\'accumulation.', color: '#FB923C', taux: 0
+  },
+  autre: {
+    label: 'Autre crédit', badge: 'jaune', badgeLabel: 'À analyser',
+    desc: 'Précise le type pour une analyse.', color: '#FBBF24', taux: 5
+  }
+};
+
+/* ══════════════════════════════════════════════════════════════
+   ÉTAT LOCAL
+══════════════════════════════════════════════════════════════ */
+let dettes = [];
+let profil = { revenus: 2500 }; // mock — en prod: loadFromStorage('fund_profil')
+let detteCounter = 0;
+let onboardingConfirmed = false;
+
+/* ══════════════════════════════════════════════════════════════
+   INITIALISATION
+══════════════════════════════════════════════════════════════ */
+(function init() {
+  // Simuler des données onboarding (en prod: lire fund_profil + fund_brick_budget_base)
+  const mockOnboardingDettes = [
+    { type: 'credit_immo', mensualite: 750, taeg: 3.2 },
+    { type: 'credit_conso', mensualite: 180, taeg: null }
+  ];
+
+  // Pré-remplir depuis onboarding
+  mockOnboardingDettes.forEach(d => addDetteFromData(d));
+
+  // Mise à jour initiale speedometer
+  setTimeout(updateSpeedometer, 400);
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   CONFIRMATION ONBOARDING
+══════════════════════════════════════════════════════════════ */
+function confirmOnboarding(yes) {
+  const btns = document.getElementById('confirm-btns');
+  if (yes) {
+    onboardingConfirmed = true;
+    btns.outerHTML = `<div class="ctx-confirm-success">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      Données confirmées depuis ton profil
+    </div>`;
+  } else {
+    // Vider, masquer le bloc ctx et laisser l'user saisir
+    dettes = [];
+    document.getElementById('dettes-list').innerHTML = '';
+    document.getElementById('ctx-confirm-bloc').style.display = 'none';
+    onboardingConfirmed = false;
+    updateSpeedometer();
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   GESTION DES DETTES
+══════════════════════════════════════════════════════════════ */
+function addDetteFromData(data) {
+  const id = ++detteCounter;
+  const dette = { id, type: data.type, mensualite: data.mensualite || '', taeg: data.taeg || '' };
+  dettes.push(dette);
+  renderDette(dette, true);
+  updateSpeedometer();
+}
+
+function addDette() {
+  const id = ++detteCounter;
+  const dette = { id, type: 'credit_conso', mensualite: '', taeg: '' };
+  dettes.push(dette);
+  renderDette(dette, false);
+  // Focus sur le premier input de la nouvelle ligne
+  setTimeout(() => {
+    const el = document.getElementById(`mens-${id}`);
+    if (el) el.focus();
+  }, 100);
+}
+
+function renderDette(dette, prefilled) {
+  const list = document.getElementById('dettes-list');
+  const cfg = DETTE_CONFIG[dette.type] || DETTE_CONFIG.autre;
+
+  const div = document.createElement('div');
+  div.className = 'dette-row';
+  div.id = `dette-row-${dette.id}`;
+  div.style.animationDelay = '0ms';
+
+  const options = Object.entries(DETTE_CONFIG).map(([val, c]) =>
+    `<option value="${val}" ${val === dette.type ? 'selected' : ''}>${c.label}</option>`
+  ).join('');
+
+  div.innerHTML = `
+    <div class="dette-row-top">
+      <div class="dette-dot ${cfg.badge}" id="dot-${dette.id}"></div>
+      <select class="dette-select" id="type-${dette.id}" onchange="onTypeChange(${dette.id})">
+        ${options}
+      </select>
+      <button class="dette-remove" onclick="removeDette(${dette.id})" title="Supprimer" aria-label="Supprimer ce crédit">×</button>
+    </div>
+    <div class="dette-fields">
+      <div class="dette-input-wrap">
+        <input type="number" class="dette-input ${dette.mensualite ? 'required-filled' : ''}"
+          id="mens-${dette.id}"
+          placeholder="Mensualité (€)"
+          value="${dette.mensualite || ''}"
+          min="1" step="1"
+          oninput="onMensChange(${dette.id})"
+          required />
+        <span class="dette-input-suffix">€/mois</span>
+      </div>
+      <div class="dette-input-wrap">
+        <input type="number" class="dette-input"
+          id="taeg-${dette.id}"
+          placeholder="TAEG (optionnel)"
+          value="${dette.taeg || ''}"
+          min="0" max="100" step="0.01"
+          oninput="onTaegChange(${dette.id})" />
+        <span class="dette-input-suffix">%</span>
+      </div>
+    </div>
+    <div class="dette-classification" id="classif-${dette.id}">
+      <span class="dette-badge ${cfg.badge}" id="badge-${dette.id}">${cfg.badgeLabel}</span>
+      <span class="dette-badge-text" id="badge-text-${dette.id}">${cfg.desc}</span>
+    </div>
+  `;
+
+  list.appendChild(div);
+}
+
+function onTypeChange(id) {
+  const sel = document.getElementById(`type-${id}`);
+  const type = sel.value;
+  const cfg = DETTE_CONFIG[type] || DETTE_CONFIG.autre;
+  const dette = dettes.find(d => d.id === id);
+  if (dette) dette.type = type;
+
+  // Mise à jour dot
+  const dot = document.getElementById(`dot-${id}`);
+  dot.className = `dette-dot ${cfg.badge}`;
+
+  // Mise à jour badge
+  const badge = document.getElementById(`badge-${id}`);
+  badge.className = `dette-badge ${cfg.badge}`;
+  badge.textContent = cfg.badgeLabel;
+  document.getElementById(`badge-text-${id}`).textContent = cfg.desc;
+
+  updateSpeedometer();
+}
+
+function onMensChange(id) {
+  const input = document.getElementById(`mens-${id}`);
+  const val = parseFloat(input.value) || 0;
+  const dette = dettes.find(d => d.id === id);
+  if (dette) dette.mensualite = val;
+
+  // Feedback visuel
+  if (val > 0) {
+    input.classList.add('required-filled');
+  } else {
+    input.classList.remove('required-filled');
+  }
+
+  updateSpeedometer();
+}
+
+function onTaegChange(id) {
+  const input = document.getElementById(`taeg-${id}`);
+  const val = parseFloat(input.value) || null;
+  const dette = dettes.find(d => d.id === id);
+  if (dette) dette.taeg = val;
+}
+
+function removeDette(id) {
+  const row = document.getElementById(`dette-row-${id}`);
+  if (row) {
+    row.style.opacity = '0';
+    row.style.transform = 'translateX(-8px)';
+    row.style.transition = 'all 0.2s ease';
+    setTimeout(() => { row.remove(); }, 200);
+  }
+  dettes = dettes.filter(d => d.id !== id);
+  updateSpeedometer();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CALCUL & SPEEDOMETER
+══════════════════════════════════════════════════════════════ */
+function updateSpeedometer() {
+  const revenus = profil.revenus || 0;
+
+  // Calcul par catégorie
+  let totalVert = 0, totalJaune = 0, totalOrange = 0, totalRouge = 0;
+  dettes.forEach(d => {
+    const mens = parseFloat(d.mensualite) || 0;
+    const cfg = DETTE_CONFIG[d.type] || DETTE_CONFIG.autre;
+    if (cfg.badge === 'vert')   totalVert   += mens;
+    else if (cfg.badge === 'jaune')  totalJaune  += mens;
+    else if (cfg.badge === 'orange') totalOrange += mens;
+    else if (cfg.badge === 'rouge')  totalRouge  += mens;
+  });
+
+  const totalMens = totalVert + totalJaune + totalOrange + totalRouge;
+  const taux = revenus > 0 ? (totalMens / revenus) * 100 : 0;
+
+  // ─── Mise à jour SVG speedometer ───
+  // Arc = demi-cercle → longueur totale ≈ 440 (π × r=140)
+  // 0% → dashoffset=440 (invisible), 50% → dashoffset=0 (plein demi-cercle)
+  const TOTAL_ARC = 440;
+  const MAX_TAUX = 38; // 38% = plein arc (limite bancaire 35% visible dans le dernier tiers)
+
+  function tauxToOffset(t) {
+    const pct = Math.min(t / MAX_TAUX, 1);
+    return TOTAL_ARC * (1 - pct);
+  }
+
+  // Chaque segment est dessiné cumulativement (arc = sum précédents + soi-même)
+  const tauxVert   = revenus > 0 ? (totalVert / revenus) * 100 : 0;
+  const tauxJaune  = revenus > 0 ? ((totalVert + totalJaune) / revenus) * 100 : 0;
+  const tauxOrange = revenus > 0 ? ((totalVert + totalJaune + totalOrange) / revenus) * 100 : 0;
+  const tauxTotal  = Math.min(taux, MAX_TAUX);
+
+  // Les arcs se superposent (vert en dessous, rouge au-dessus)
+  // On utilise stroke-dashoffset décroissant pour chaque couche
+  // Trick : arc rouge = de 0 à totalTaux, orange = de 0 à totalSansRouge, etc.
+  // On inverse l'ordre d'empilement
+  document.getElementById('arc-vert').style.strokeDashoffset   = tauxToOffset(tauxTotal);
+  document.getElementById('arc-orange').style.strokeDashoffset = tauxToOffset(tauxOrange);
+  document.getElementById('arc-rouge').style.strokeDashoffset  = tauxToOffset(
+    revenus > 0 ? ((totalVert + totalJaune + totalOrange) / revenus) * 100 : 0
+  );
+
+  // ─── Aiguille — rotate SVG natif, pivot (190,190), bloquée à MAX_TAUX ───
+  // L'aiguille pointe vers le haut à angle 0 ("midi").
+  // À 0% on veut "9h" → -90° (gauche), à MAX_TAUX% on veut "3h" → +90° (droite).
+  // Formule : -90 + (tauxClamped / MAX_TAUX) * 180
+  const tauxClamped = Math.min(taux, MAX_TAUX);
+  const svgAngle = -90 + (tauxClamped / MAX_TAUX) * 180;
+  const needle = document.getElementById('speedo-needle');
+  needle.setAttribute('transform', `rotate(${svgAngle.toFixed(2)}, 190, 190)`);
+  // Transition CSS sur le élément SVG (nécessite définir transition via CSS, pas inline)
+  // Rouge si taux réel > 35%
+  if (taux > 35) {
+    needle.classList.add('needle-over');
+  } else {
+    needle.classList.remove('needle-over');
+  }
+
+  // ─── Texte central ───
+  const valEl = document.getElementById('speedo-val');
+  valEl.textContent = taux.toFixed(1) + '%';
+  const color = taux < 20 ? 'var(--dette-vert)' : taux < 35 ? 'var(--dette-orange)' : 'var(--dette-rouge)';
+  valEl.setAttribute('fill', taux === 0 ? 'var(--text-muted)' : color);
+
+  // ─── Pill statut ───
+  const pill = document.getElementById('speedo-pill');
+  const pillText = document.getElementById('speedo-pill-text');
+  if (taux === 0) {
+    pill.className = 'speedo-status-pill vert';
+    pillText.textContent = 'En attente de saisie';
+  } else if (taux < 20) {
+    pill.className = 'speedo-status-pill vert';
+    pillText.textContent = `Tu es largement dans les clous ✓`;
+  } else if (taux < 35) {
+    pill.className = 'speedo-status-pill orange';
+    pillText.textContent = `Attention, tu te rapproches de la limite`;
+  } else {
+    pill.className = 'speedo-status-pill rouge';
+    pillText.textContent = `Au-delà de la limite des 35%`;
+  }
+
+  // ─── Card pédagogique ───
+  updatePedaCard(taux, totalMens);
+
+  // ─── Sticky recap ───
+  const recapMens = document.getElementById('recap-mensualites');
+  const recapTaux = document.getElementById('recap-taux');
+  recapMens.textContent = totalMens > 0 ? totalMens.toFixed(0) + ' €/mois' : '— €/mois';
+  recapTaux.textContent = taux > 0 ? taux.toFixed(1) + ' %' : '—';
+  recapTaux.className = 'sticky-recap-taux ' + (taux < 20 ? 'vert' : taux < 35 ? 'orange' : 'rouge');
+
+  // ─── Panel latéral ───
+  document.getElementById('panel-mensualites').textContent = totalMens > 0 ? totalMens.toFixed(0) + ' €' : '—';
+  document.getElementById('panel-taux').textContent = taux > 0 ? taux.toFixed(1) + ' %' : '—';
+  const nbMauvaises = dettes.filter(d => ['orange','rouge'].includes((DETTE_CONFIG[d.type] || {}).badge)).length;
+  document.getElementById('panel-mauvaises').textContent = nbMauvaises > 0 ? nbMauvaises + ' dette' + (nbMauvaises > 1 ? 's' : '') : '—';
+
+  // ─── Bouton suivant ───
+  const hasAllMens = dettes.length > 0 && dettes.every(d => parseFloat(d.mensualite) > 0);
+  document.getElementById('btn-s1-next').disabled = !hasAllMens;
+}
+
+function updatePedaCard(taux, totalMens) {
+  const card = document.getElementById('peda-card');
+  const icon = document.getElementById('peda-icon');
+  const title = document.getElementById('peda-title');
+  const text = document.getElementById('peda-text');
+  const revenus = profil.revenus;
+
+  const restCapacite = Math.max(0, revenus * 0.35 - totalMens);
+
+  if (taux === 0) {
+    card.className = 'peda-card vert';
+    icon.textContent = '💡';
+    title.textContent = 'La règle des 35% — Comment ça marche ?';
+    text.innerHTML = `Le taux d'endettement = <strong>mensualités crédit ÷ revenus nets</strong>. La limite bancaire est fixée à <strong>35%</strong>.
+      Saisis tes crédits en cours pour voir où tu en es.`;
+  } else if (taux < 20) {
+    card.className = 'peda-card vert';
+    icon.textContent = '✅';
+    title.textContent = 'La règle des 35% — Tu es dans les clous';
+    text.innerHTML = `Ton taux de <strong>${taux.toFixed(1)}%</strong> est bien en dessous de la limite des 35%.
+      Il te reste <strong>${restCapacite.toFixed(0)} €/mois</strong> de capacité d'emprunt supplémentaire.
+      Tu es en bonne position pour un projet immo si tu le souhaites.`;
+  } else if (taux < 35) {
+    card.className = 'peda-card orange';
+    icon.textContent = '⚠️';
+    title.textContent = 'La règle des 35% — Attention à la limite';
+    text.innerHTML = `Ton taux est à <strong>${taux.toFixed(1)}%</strong> — il te reste seulement <strong>${restCapacite.toFixed(0)} €/mois</strong>
+      de marge avant la limite bancaire de 35%. Un nouveau crédit (prêt immo notamment) pourrait être difficile à obtenir.`;
+  } else {
+    card.className = 'peda-card rouge';
+    icon.textContent = '🚨';
+    title.textContent = 'La règle des 35% — Tu es au-delà de la limite';
+    text.innerHTML = `Ton taux est à <strong>${taux.toFixed(1)}%</strong>, au-dessus de la limite bancaire des 35%.
+      Dans cet état, obtenir un crédit supplémentaire est très difficile. On va construire un plan pour réduire ce taux.`;
+  }
+}
+
+function degreesFromTaux(taux, maxTaux) {
+  // 0% → 180° (gauche), maxTaux% → 360° (droite)
+  const pct = Math.min(taux / maxTaux, 1);
+  return 180 + pct * 180;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════════ */
+function goToScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${n}`).classList.add('active');
+  updateProgressPanel(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgressPanel(screenIdx) {
+  const TOTAL = 4;
+  const circ = 176; // 2π × 28
+  const pct = Math.round((screenIdx / TOTAL) * 100);
+  const arc = document.getElementById('bpc-ring-arc');
+  if (arc) arc.style.strokeDashoffset = circ * (1 - pct / 100);
+  const pctEl = document.getElementById('bpc-pct');
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  for (let i = 1; i <= TOTAL; i++) {
+    const step = document.getElementById(`step-${i}`);
+    if (!step) continue;
+    step.classList.remove('active', 'done');
+    if (i < screenIdx) step.classList.add('done');
+    else if (i === screenIdx) step.classList.add('active');
+
+    const num = step.querySelector('.bpc-step-num');
+    if (i < screenIdx) {
+      num.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    } else {
+      num.textContent = i;
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOGGLE THEME (maquette)
+══════════════════════════════════════════════════════════════ */
+function toggleTheme() {
+  const html = document.documentElement;
+  html.classList.toggle('dark');
+  localStorage.setItem('fundamental-theme', html.classList.contains('dark') ? 'dark' : 'light');
+}
+</script>
+
+</body>
+</html>

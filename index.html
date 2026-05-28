@@ -1462,7 +1462,7 @@ function computeBriques() {
   if (dettes.includes('paiement_fractionne_mini_credit')) s.add('paiements_fractionnes');
   if (rev!=='a_l_aise'&&(stress>=3||obj.includes('stabiliser_budget'))) s.add('fonds_urgence');
   if (rev==='difficile_fin_mois'||['chomeur_inactif','college_lycee'].includes(status)) s.add('droits_aides');
-  if ((dettes.includes('credit_conso')||dettes.includes('paiement_fractionne_mini_credit')||dettes.includes('decouvert_regulier'))&&(obj.includes('rembourser_dettes')||(retards&&retards!=='aucun'))) s.add('plan_desendettement');
+  if ((dettes.includes('credit_conso')||dettes.includes('paiement_fractionne_mini_credit')||dettes.includes('decouvert_regulier')||dettes.includes('credit_immo')||dettes.includes('autre_credit'))&&(obj.includes('rembourser_dettes')||(retards&&retards!=='aucun')||dettes.filter(function(d){return d!=='aucun';}).length>=2)) s.add('plan_desendettement');
   if (retards==='frequent'&&rev==='difficile_fin_mois'&&dettes.filter(function(d){return d!=='aucun';}).length>=2) s.add('dispositifs_bdf');
   if (['15_17','18_24','65_plus'].includes(age)||confort==='peu_a_l_aise'||fraude==='oui') s.add('anti_arnaques');
   if (['15_17','18_24'].includes(age)&&['college_lycee','etudiant'].includes(status)) s.add('premiers_pas_bancaires');

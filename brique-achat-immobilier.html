@@ -8412,7 +8412,12 @@ function validerEtDashboard() {
     }
     var creditsInput = $('input-credits');
     if (creditsInput) {
-      var cr = n(bData.credits) || n(bData.dette_mensuelle) || 0;
+      // Priorité : fund_brick_plan_desendettement (brique dettes complétée)
+      // → écrit credits_mensuel dans fund_profil via completeBrickFull profileFields
+      // Fallback : données budget, puis données profil brut
+      var crDettes = n(profil.credits_mensuel) || 0;
+      var crBudget = n(bData.credits) || n(bData.dette_mensuelle) || 0;
+      var cr = crDettes || crBudget;
       S._prefill_credits = cr;
       if (cr > 0) { creditsInput.value = cr; S.credits = cr; }
     }

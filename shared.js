@@ -44,12 +44,12 @@ const BRIQUES_META = {
     chapitres: ['Cartographie des aides', 'Simuler ses droits', 'Faire ses demandes']
   },
   plan_desendettement: {
-    id: 'plan_desendettement', nom: 'Éteins tes dettes',
-    tagline: 'Stratégie boule de neige ou avalanche : choisis et agis.',
+    id: 'plan_desendettement', nom: 'Gestion des dettes',
+    tagline: 'Cartographie tes dettes, choisis ta stratégie, libère-toi.',
     duree: '15 min', pack: 'Survie & stabilité', pack_color: '#f87171',
     icon: '📉',
-    resume: 'Un plan concret pour liquider tes dettes dans le bon ordre et réduire le coût total.',
-    chapitres: ['Lister et prioriser ses dettes', 'Méthode boule de neige', 'Méthode avalanche']
+    resume: 'Visualise tes dettes, mesure ton taux d\'endettement et choisis la meilleure stratégie pour t\'en libérer.',
+    chapitres: ['Cartographier ses dettes', 'Choisir sa méthode', 'Engager son plan']
   },
   dispositifs_bdf: {
     id: 'dispositifs_bdf', nom: 'Dispositifs Banque de France',
@@ -528,9 +528,10 @@ function buildInsights(brickId, profil, data) {
 
 // ─── BRICK FILES + NAVIGATION ────────────────────────────────────────────
 const BRICK_FILES = {
-  budget_base:      'brique-budget-base.html',
-  fonds_urgence:    'brique-fonds-urgence.html',
-  achat_immobilier: 'brique-achat-immobilier.html'
+  budget_base:          'brique-budget-base.html',
+  fonds_urgence:        'brique-fonds-urgence.html',
+  achat_immobilier:     'brique-achat-immobilier.html',
+  plan_desendettement:  'brique-plan-desendettement.html'
 };
 
 function getNextBrick(currentBrickId) {
