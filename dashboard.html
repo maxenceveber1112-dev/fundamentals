@@ -1201,6 +1201,21 @@
             saveDashboard(dash).catch(() => {}); // Écraser les données corrompues en base
           }
         }
+
+        // ── Migration douce v2 : s'assurer que plan_desendettement figure dans le plan
+        // si le profil le recommande et qu'il n'est pas encore dans dash.briques
+        // (cas utilisateurs dont le dashboard a été sauvegardé avant l'ajout de la brique)
+        const BRIQUES_MIGRATION_V2 = ['plan_desendettement'];
+        const recoIds = profil.briques_recommandees || [];
+        let migrated = false;
+        BRIQUES_MIGRATION_V2.forEach(bid => {
+          if (recoIds.includes(bid) && !dash.briques.find(b => b.id === bid)) {
+            dash.briques.push({ id: bid, statut: 'a_faire', progression: 0 });
+            migrated = true;
+          }
+        });
+        if (migrated) saveDashboard(dash).catch(() => {});
+
         saveToStorage('fund_dashboard', dash);
       } else if (profil.briques_recommandees && profil.briques_recommandees.length > 0) {
         const validIds = profil.briques_recommandees.filter(id => BRIQUES_META[id]);
