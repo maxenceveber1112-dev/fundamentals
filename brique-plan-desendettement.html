@@ -1273,18 +1273,7 @@ const DETTE_CONFIG = {
    ÉTAT LOCAL
 ══════════════════════════════════════════════════════════════ */
 let dettes = [];
-// Lire les revenus depuis fund_profil ou fund_brick_budget_base — aucune valeur hardcodée
-// Si revenus inconnus → revenus = null, le taux affiche "— %"
-let profil = (function() {
-  try {
-    const fp = JSON.parse(localStorage.getItem('fund_profil') || 'null') || {};
-    const fb = JSON.parse(localStorage.getItem('fund_brick_budget_base') || 'null') || {};
-    const fbData = (fb && fb.data) ? fb.data : fb;
-    const revRaw = parseFloat(fp.revenus_nets_mensuel) || parseFloat(fp.revenusMensuels) || parseFloat(fp.revenus)
-      || parseFloat(fbData.revenus) || parseFloat(fbData.revenus_nets) || 0;
-    return Object.assign({}, fp, { revenus: revRaw > 0 ? revRaw : null });
-  } catch(e) { return { revenus: null }; }
-})();
+let profil = {}; // rempli après hydrateFromSupabase()
 let detteCounter = 0;
 let onboardingConfirmed = false;
 
@@ -1296,7 +1285,8 @@ let onboardingConfirmed = false;
 ══════════════════════════════════════════════════════════════ */
 function checkPrerequisitesAndStart() {
   try {
-    const dash = JSON.parse(localStorage.getItem('fund_dashboard') || 'null');
+    const dash = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_dashboard') : null)
+      || JSON.parse(localStorage.getItem('fund_dashboard') || 'null');
     // Pas de dashboard (démo) → accès direct
     if (!dash || !Array.isArray(dash.briques)) { goToScreen(1); return; }
     const budget  = dash.briques.find(b => b.id === 'budget_base');
@@ -1349,74 +1339,84 @@ function checkPrerequisitesAndStart() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   INITIALISATION
+   INITIALISATION ASYNC — attend hydrateFromSupabase() avant de lire
+   les données (pattern identique à brique-budget-base)
 ══════════════════════════════════════════════════════════════ */
-(function init() {
-  // En prod : lire les dettes depuis fund_brick_plan_desendettement (reprise)
-  // puis fund_brick_budget_base (données budget), puis fund_profil.dettes_types (types seulement)
+(async function init() {
+  // 1. Hydrater _MEM depuis Supabase (profil + dashboard + brick_data)
+  if (typeof hydrateFromSupabase === 'function') {
+    await hydrateFromSupabase();
+  }
+
+  // 2. Charger profil — revenus depuis fund_profil ou fund_brick_budget_base
+  const fp = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_profil') : null)
+    || JSON.parse(localStorage.getItem('fund_profil') || 'null') || {};
+  const fb = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_budget_base') : null)
+    || JSON.parse(localStorage.getItem('fund_brick_budget_base') || 'null') || {};
+  const fbData = (fb && fb.data) ? fb.data : fb;
+  const revRaw = parseFloat(fp.revenus_nets_mensuel) || parseFloat(fp.revenusMensuels) || parseFloat(fp.revenus)
+    || parseFloat(fbData.revenus) || parseFloat(fbData.revenus_nets) || 0;
+  profil = Object.assign({}, fp, { revenus: revRaw > 0 ? revRaw : null });
+
+  // 3. Préfill dettes — priorité : reprise brique > budget > profil types
   let prefillDettes = [];
-  try {
-    // 1. Reprise brique dettes déjà commencée
-    const brickData = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null');
-    const brickRaw = brickData?.data?.rawData || brickData?.rawData || null;
-    if (brickRaw?.dettes && brickRaw.dettes.length > 0) {
-      prefillDettes = brickRaw.dettes.map(d => ({
-        type: d.type || 'autre',
-        mensualite: d.montant_mensuel || d.mensualite || '',
+
+  // 3a. Reprise brique dettes déjà commencée
+  const brickData = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_plan_desendettement') : null)
+    || JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null');
+  const brickRaw = brickData?.data?.rawData || brickData?.data || brickData?.rawData || null;
+  if (brickRaw?.dettes && brickRaw.dettes.length > 0) {
+    prefillDettes = brickRaw.dettes
+      .filter(d => d.montant_mensuel > 0)
+      .map(d => ({ type: d.type || 'autre', mensualite: d.montant_mensuel, taeg: d.taeg || null }));
+  }
+
+  // 3b. Données budget (mensualités connues)
+  if (prefillDettes.length === 0) {
+    const budgetRaw = fbData;
+    if (budgetRaw.dettes && budgetRaw.dettes.length > 0) {
+      prefillDettes = budgetRaw.dettes.map(d => ({
+        type: d.type || 'credit_conso',
+        mensualite: d.montant_mensuel > 0 ? d.montant_mensuel : '',
         taeg: d.taeg || null
       }));
     }
-    // 2. Données budget (mensualités connues)
-    if (prefillDettes.length === 0) {
-      const budgetData = JSON.parse(localStorage.getItem('fund_brick_budget_base') || 'null');
-      const budgetRaw = budgetData?.data || budgetData || {};
-      if (budgetRaw.dettes && budgetRaw.dettes.length > 0) {
-        prefillDettes = budgetRaw.dettes.map(d => ({
-          type: d.type || 'credit_conso',
-          mensualite: d.montant_mensuel || '',
-          taeg: d.taeg || null
-        }));
-      }
-    }
-    // 3. Fallback : types depuis profil (sans montants — l'user saisira)
-    if (prefillDettes.length === 0) {
-      const fp = JSON.parse(localStorage.getItem('fund_profil') || 'null') || {};
-      const detteTypes = (fp.dettes_types || []).filter(d => d !== 'aucun');
-      // Mapper les types onboarding vers les types brique
-      const typeMap = {
-        'decouvert_regulier': 'decouvert_regulier',
-        'paiement_fractionne_mini_credit': 'paiement_fractionne',
-        'credit_conso': 'credit_conso',
-        'credit_immo': 'credit_immo',
-        'autre_credit': 'autre'
-      };
-      detteTypes.forEach(t => {
-        prefillDettes.push({ type: typeMap[t] || 'autre', mensualite: '', taeg: null });
-      });
-    }
-  } catch(e) {}
+  }
 
-  // Si aucune donnée réelle → une ligne vide à saisir (no-hardcode)
+  // 3c. Fallback : types depuis profil (sans montants)
+  if (prefillDettes.length === 0) {
+    const typeMap = {
+      'decouvert_regulier': 'decouvert_regulier',
+      'paiement_fractionne_mini_credit': 'paiement_fractionne',
+      'credit_conso': 'credit_conso',
+      'credit_immo': 'credit_immo',
+      'autre_credit': 'autre'
+    };
+    const detteTypes = (fp.dettes_types || []).filter(d => d !== 'aucun');
+    detteTypes.forEach(t => {
+      prefillDettes.push({ type: typeMap[t] || 'autre', mensualite: '', taeg: null });
+    });
+  }
+
+  // 3d. Aucune donnée → une ligne vide (no-hardcode)
   if (prefillDettes.length === 0) {
     prefillDettes = [{ type: 'credit_conso', mensualite: '', taeg: null }];
   }
 
-  // Adapter le message ctx selon la source des données
+  // 4. Message ctx selon source
   const ctxBloc = document.getElementById('ctx-confirm-bloc');
   const ctxHeadline = document.getElementById('ctx-headline');
-  if (prefillDettes.length > 0 && prefillDettes.some(d => d.mensualite)) {
-    // Données avec montants → afficher le ctx de confirmation
+  if (prefillDettes.some(d => d.mensualite)) {
     if (ctxHeadline) ctxHeadline.textContent = 'On a détecté des dettes dans ton profil.';
-  } else if (prefillDettes.length > 0) {
-    // Types connus mais sans montants → adapter le message
+  } else if (prefillDettes.length > 0 && fp.dettes_types?.length) {
     if (ctxHeadline) ctxHeadline.textContent = 'On a trouvé des types de crédits dans ton profil — précise les montants.';
   } else {
-    // Aucune donnée → masquer le bloc ctx
     if (ctxBloc) ctxBloc.style.display = 'none';
   }
 
+  // 5. Injecter les dettes + mettre à jour le speedometer
   prefillDettes.forEach(d => addDetteFromData(d));
-  setTimeout(updateSpeedometer, 400);
+  setTimeout(updateSpeedometer, 200);
 })();
 
 /* ══════════════════════════════════════════════════════════════
