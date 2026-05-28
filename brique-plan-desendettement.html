@@ -765,6 +765,18 @@
           </div>
         </div>
 
+        <!-- ═══ SAISIE REVENUS (fallback si non dispo dans profil) ═══ -->
+        <div id="revenus-input-bloc" style="display:none; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:0.875rem; padding:0.875rem 1rem; margin-top:0.25rem;">
+          <div style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem;">Tes revenus nets mensuels</div>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="number" id="input-revenus" placeholder="ex. 2 000" min="0" inputmode="numeric"
+              style="flex:1; background:var(--bg); border:1.5px solid var(--border-subtle); border-radius:0.625rem; padding:0.6rem 0.75rem; font-size:1rem; font-family:inherit; color:var(--text); outline:none;"
+              oninput="onRevenusInput(this.value)" />
+            <span style="font-size:0.9rem; color:var(--text-muted); white-space:nowrap;">€/mois</span>
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-faint); margin-top:0.375rem;">Renseigne tes revenus pour voir ton taux d’endettement.</div>
+        </div>
+
         <!-- ═══ CARTE PÉDAGOGIQUE 35% ═══ -->
         <div class="peda-card vert" id="peda-card">
           <div class="peda-icon" id="peda-icon">✅</div>
@@ -1560,8 +1572,24 @@ function removeDette(id) {
 /* ══════════════════════════════════════════════════════════════
    CALCUL & SPEEDOMETER
 ══════════════════════════════════════════════════════════════ */
+function onRevenusInput(val) {
+  const v = parseFloat(val) || 0;
+  profil.revenus = v > 0 ? v : null;
+  // Persister dans fund_profil pour cette session
+  try {
+    const fp = JSON.parse(localStorage.getItem('fund_profil') || '{}');
+    fp.revenus_nets_mensuel = v > 0 ? v : null;
+    localStorage.setItem('fund_profil', JSON.stringify(fp));
+  } catch(e) {}
+  updateSpeedometer();
+}
+
 function updateSpeedometer() {
   const revenus = profil.revenus || null; // null si inconnu — pas de fallback hardcodé
+
+  // Afficher le champ revenus si non disponible depuis le storage
+  const revBloc = document.getElementById('revenus-input-bloc');
+  if (revBloc) revBloc.style.display = revenus ? 'none' : 'block';
 
   // Calcul par catégorie
   let totalVert = 0, totalJaune = 0, totalOrange = 0, totalRouge = 0;
@@ -1674,6 +1702,19 @@ function updateSpeedometer() {
   // ─── Bouton suivant ───
   const hasAllMens = dettes.length > 0 && dettes.every(d => parseFloat(d.mensualite) > 0);
   document.getElementById('btn-s1-next').disabled = !hasAllMens;
+
+  // ─── Autosave en cours de saisie (persist dettes + revenus pour reprise) ───
+  try {
+    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    existing.data = Object.assign({}, existing.data || {}, {
+      dettes: dettes.map(d => ({ type: d.type, montant_mensuel: parseFloat(d.mensualite) || 0, taeg: parseFloat(d.taeg) || null })),
+      taux_endettement: taux,
+      revenus_utilises: revenus
+    });
+    existing.screen = existing.screen || 1;
+    existing.ts = Date.now();
+    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+  } catch(e) {}
 }
 
 function updatePedaCard(taux, totalMens) {
