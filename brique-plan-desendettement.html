@@ -653,7 +653,7 @@
           ou plan de remboursement priorisé, avec un engagement concret et une date de libération estimée.
         </p>
         <div class="hero-actions">
-          <button class="btn-hero-primary" onclick="goToScreen(1)">
+          <button class="btn-hero-primary" onclick="checkPrerequisitesAndStart()">
             Commencer →
           </button>
         </div>
@@ -1278,51 +1278,63 @@ let onboardingConfirmed = false;
 
 /* ══════════════════════════════════════════════════════════════
    GATE — Prérequis : budget_base + fonds_urgence doivent être terminés
+   Interception au clic sur "Commencer" (S0 → S1), pas au load de page.
+   L'user voit S0 librement. Le popup apparaît au clic si prérequis manquants.
+   Il peut quand même continuer (mode dégradé sans données complètes).
 ══════════════════════════════════════════════════════════════ */
-(function checkPrerequisites() {
+function checkPrerequisitesAndStart() {
   try {
     const dash = JSON.parse(localStorage.getItem('fund_dashboard') || 'null');
-    if (!dash || !Array.isArray(dash.briques)) return; // pas de dashboard → mode démo, on laisse passer
-    const budget = dash.briques.find(b => b.id === 'budget_base');
+    // Pas de dashboard (démo) → accès direct
+    if (!dash || !Array.isArray(dash.briques)) { goToScreen(1); return; }
+    const budget  = dash.briques.find(b => b.id === 'budget_base');
     const epargne = dash.briques.find(b => b.id === 'fonds_urgence');
-    const budgetDone = budget && budget.statut === 'terminee';
+    const budgetDone  = budget  && budget.statut  === 'terminee';
     const epargneDone = epargne && epargne.statut === 'terminee';
-    if (!budgetDone || !epargneDone) {
-      // Bloquer l'accès et afficher un message
-      document.addEventListener('DOMContentLoaded', function() {
-        const shell = document.getElementById('f-content') || document.body;
-        const gate = document.createElement('div');
-        gate.style.cssText = `
-          position:fixed; inset:0; z-index:9999;
-          background:var(--bg,#FAFAF9); display:flex; flex-direction:column;
-          align-items:center; justify-content:center; text-align:center;
-          padding:2rem; gap:1.5rem;
-        `;
-        gate.innerHTML = \`
-          <div style="font-size:2.5rem;">🔒</div>
-          <div style="font-family:'Fraunces',Georgia,serif; font-size:1.5rem; font-weight:700; color:var(--text,#1C1917);">
-            \${!budgetDone && !epargneDone
-              ? 'Commence d\'abord les briques Budget et Épargne'
-              : !budgetDone
-                ? 'Commence d\'abord la brique Budget'
-                : 'Termine d\'abord la brique Épargne de précaution'}
-          </div>
-          <div style="font-size:0.95rem; color:var(--text-muted); max-width:340px; line-height:1.6;">
-            Pour analyser tes dettes correctement, on a besoin de connaître tes revenus, tes charges et ton matelas d'urgence.
-          </div>
-          <div style="display:flex; flex-direction:column; gap:0.75rem; width:100%; max-width:280px;">
-            \${!budgetDone ? \`<a href="brique-budget-base.html" style="display:block; padding:0.875rem 1.5rem; background:var(--accent-strong,#5B21B6); color:#fff; border-radius:9999px; font-weight:600; text-decoration:none; font-size:0.95rem;">Faire la brique Budget →</a>\` : ''}
-            \${budgetDone && !epargneDone ? \`<a href="brique-fonds-urgence.html" style="display:block; padding:0.875rem 1.5rem; background:var(--accent-strong,#5B21B6); color:#fff; border-radius:9999px; font-weight:600; text-decoration:none; font-size:0.95rem;">Faire la brique Épargne →</a>\` : ''}
-            <a href="dashboard.html" style="font-size:0.875rem; color:var(--text-muted); text-decoration:none;">← Retour au Dashboard</a>
-          </div>
-        \`;
-        document.body.appendChild(gate);
-        // Bloquer aussi le body
-        document.body.style.overflow = 'hidden';
-      });
-    }
-  } catch(e) { /* pas de localStorage → mode démo, on laisse passer */ }
-})();
+    // Prérequis OK → accès direct
+    if (budgetDone && epargneDone) { goToScreen(1); return; }
+    // Prérequis manquants → popup d'avertissement concis
+    const missing = !budgetDone && !epargneDone ? 'Budget et Épargne de précaution'
+      : !budgetDone ? 'Budget'
+      : 'Épargne de précaution';
+    const ctaHref = !budgetDone ? 'brique-budget-base.html' : 'brique-fonds-urgence.html';
+    const ctaLabel = !budgetDone ? 'Faire la brique Budget' : 'Faire la brique Épargne';
+    // Créer le popup
+    const overlay = document.createElement('div');
+    overlay.id = 'gate-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.45);display:flex;align-items:flex-end;justify-content:center;padding:1rem;';
+    overlay.innerHTML = `
+      <div style="
+        background:var(--bg-elevated,#fff); border-radius:1.25rem;
+        padding:1.5rem 1.5rem 1.25rem; max-width:380px; width:100%;
+        box-shadow:0 8px 40px rgba(0,0,0,.18); text-align:center;
+        display:flex; flex-direction:column; gap:1rem;
+      ">
+        <div style="font-size:1.5rem;">⚠️</div>
+        <div style="font-family:'Inter',sans-serif; font-size:0.95rem; font-weight:600; color:var(--text,#1C1917);">
+          La brique <strong>${missing}</strong> n'est pas encore terminée.
+        </div>
+        <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
+          Certaines données manqueront — les résultats seront moins précis.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:0.625rem;">
+          <a href="${ctaHref}" style="display:block;padding:0.75rem 1rem;background:var(--accent-strong,#5B21B6);color:#fff;border-radius:9999px;font-weight:600;font-size:0.88rem;text-decoration:none;">
+            ${ctaLabel} →
+          </a>
+          <button onclick="document.getElementById('gate-overlay').remove(); goToScreen(1);"
+            style="background:none;border:1px solid var(--border-subtle,#e5e7eb);border-radius:9999px;padding:0.65rem 1rem;font-size:0.82rem;color:var(--text-muted);cursor:pointer;font-family:inherit;">
+            Continuer quand même (données incomplètes)
+          </button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    // Clic sur le fond pour fermer
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  } catch(e) {
+    // Erreur localStorage → accès direct
+    goToScreen(1);
+  }
+}
 
 /* ══════════════════════════════════════════════════════════════
    INITIALISATION

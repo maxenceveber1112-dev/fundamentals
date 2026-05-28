@@ -2873,12 +2873,20 @@ function buildScreen2() {
       : 'Ton épargne de précaution est en place.<br>Tu peux passer à la suite.';
     document.getElementById('atteint-actions').innerHTML = nextBriqueSolide.bientot
       ? '<span class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;opacity:0.5;cursor:not-allowed;pointer-events:none;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + '</span><span style="display:block;margin-top:0.4rem;font-size:12px;color:#999;">Bientôt disponible</span>'
-      : '<a href="' + escapeHtml(nextBriqueSolide.url) + '" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</a>';
+      : '<button onclick="validerPalierSolideAtteint()" class="btn-hero-primary" style="display:inline-flex;margin-top:0.75rem;">Prochaine étape : ' + escapeHtml(nextBriqueSolide.label) + ' →</button>';
   } else if (atteintUtile) {
     atteintBlock.style.display = 'block';
-    document.getElementById('atteint-title').textContent = 'Palier utile atteint.';
-    document.getElementById('atteint-sub').textContent = 'Vise maintenant le palier solide (' + formatEuro(calcResult.palierSecuriteSolide) + ').';
-    document.getElementById('atteint-actions').innerHTML = '';
+    document.getElementById('atteint-title').textContent = '✓ Sécurité utile atteinte.';
+    document.getElementById('atteint-sub').textContent = 'Tu as un matelas solide. Tu peux valider cette étape et passer à la suite.';
+    // CTA : valider la brique (marque terminée) OU continuer vers palier solide
+    document.getElementById('atteint-actions').innerHTML =
+      '<div style="display:flex;flex-direction:column;gap:0.625rem;margin-top:0.75rem;">' +
+        '<button onclick="validerDepuisPalierUtile()" class="btn-hero-primary" style="width:100%;">Valider et retourner au dashboard →</button>' +
+        '<button onclick="document.getElementById(\"btn-choisir-rythme\").click();" style="background:none;border:1px solid var(--border-subtle);border-radius:9999px;padding:0.6rem 1rem;font-size:0.82rem;color:var(--text-muted);cursor:pointer;font-family:inherit;">Viser le palier solide (' + formatEuro(calcResult.palierSecuriteSolide) + ')</button>' +
+      '</div>';
+    // Désactiver le CTA principal "Choisir mon rythme" pour ne pas confondre
+    var btnRythme2 = document.getElementById('btn-choisir-rythme');
+    if (btnRythme2) btnRythme2.style.display = 'none';
   } else if (atteintCoussin) {
     atteintBlock.style.display = 'block';
     document.getElementById('atteint-title').textContent = 'Premier coussin atteint.';
@@ -3444,6 +3452,120 @@ function buildModalRow(label, val) {
   '</div>';
 }
 
+
+/* ══════════════════════════════════════════════════════════════
+   validerDepuisPalierUtile
+   Valide la brique depuis S2 quand l'user a déjà atteint le palier utile.
+   Utilise les données disponibles sans nécessiter S3/S4.
+══════════════════════════════════════════════════════════════ */
+async function validerDepuisPalierUtile() {
+  if (!calcResult) calcResult = calculateMatelasSecurity(mData);
+  var palierAmt = calcResult.palierSecuriteUtile || 0;
+  // Pas de rythme choisi — on enregistre avec l'état actuel
+  var profileFields = {
+    fonds_urgence_objectif:       palierAmt,
+    fonds_urgence_actuel:         calcResult.epargneDisponible,
+    fonds_urgence_source:         selectedPlacement || 'livret',
+    charges_vitales_total:        calcResult.chargesVitalesMensuelles,
+    matelas_palier_premier:       calcResult.palierPremierCoussin,
+    matelas_palier_utile:         calcResult.palierSecuriteUtile,
+    matelas_palier_solide:        calcResult.palierSecuriteSolide
+  };
+  var rawData = {
+    epargneDisponible:        calcResult.epargneDisponible,
+    fonds_urgence_objectif:   palierAmt,
+    palier_atteint:           'utile',
+    fonds_urgence_date_estimee: null
+  };
+  var eng = {
+    id: 'eng_fonds_urgence',
+    type: 'fonds_urgence',
+    label: 'Matelas de sécurité',
+    detail: 'Palier utile atteint — ' + formatEuro(palierAmt),
+    montant_actuel: calcResult.epargneDisponible,
+    montant_cible: palierAmt,
+    versement: null,
+    brique_id: BRICK_ID,
+    atteint: true
+  };
+  var insights = typeof buildInsights === 'function'
+    ? buildInsights(BRICK_ID, {}, rawData) : [];
+  if (typeof completeBrickFull === 'function') {
+    await completeBrickFull(BRICK_ID, {
+      profileFields: profileFields,
+      rawData: rawData,
+      engagements: [eng],
+      insights: insights
+    });
+  }
+  // Update dashboard engagement
+  if (typeof loadFromStorage === 'function' && typeof saveToStorage === 'function') {
+    var dash = loadFromStorage('fund_dashboard') || (typeof getMockDashboard === 'function' ? getMockDashboard() : { engagements: [] });
+    if (!dash.engagements) dash.engagements = [];
+    var idx = dash.engagements.findIndex(function(x) { return x.id === 'eng_fonds_urgence'; });
+    if (idx >= 0) dash.engagements[idx] = eng; else dash.engagements.push(eng);
+    saveToStorage('fund_dashboard', dash);
+  }
+  setTimeout(function() { window.location.href = 'dashboard.html'; }, 200);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   validerPalierSolideAtteint
+   Valide la brique depuis S2 quand l'user a déjà atteint le palier solide
+   sans être passé par lancerMatelas() (pas de rythme à choisir).
+══════════════════════════════════════════════════════════════ */
+async function validerPalierSolideAtteint() {
+  if (!calcResult) calcResult = calculateMatelasSecurity(mData);
+  var palierAmt = calcResult.palierSecuriteSolide || 0;
+  var nextBrique = getNextBrique();
+  var profileFields = {
+    fonds_urgence_objectif:       palierAmt,
+    fonds_urgence_actuel:         calcResult.epargneDisponible,
+    fonds_urgence_source:         selectedPlacement || 'livret',
+    charges_vitales_total:        calcResult.chargesVitalesMensuelles,
+    matelas_palier_premier:       calcResult.palierPremierCoussin,
+    matelas_palier_utile:         calcResult.palierSecuriteUtile,
+    matelas_palier_solide:        calcResult.palierSecuriteSolide,
+    matelas_stabilite_profil:     calcResult.stabiliteProfil
+  };
+  var rawData = {
+    epargneDisponible:        calcResult.epargneDisponible,
+    fonds_urgence_objectif:   palierAmt,
+    palier_atteint:           'solide',
+    fonds_urgence_date_estimee: null
+  };
+  var eng = {
+    id: 'eng_fonds_urgence',
+    type: 'fonds_urgence',
+    label: 'Matelas de sécurité',
+    detail: 'Palier solide atteint — ' + formatEuro(palierAmt),
+    montant_actuel: calcResult.epargneDisponible,
+    montant_cible: palierAmt,
+    versement: null,
+    brique_id: BRICK_ID,
+    atteint: true
+  };
+  var insights = typeof buildInsights === 'function'
+    ? buildInsights(BRICK_ID, {}, rawData) : [];
+  if (typeof completeBrickFull === 'function') {
+    await completeBrickFull(BRICK_ID, {
+      profileFields: profileFields,
+      rawData: rawData,
+      engagements: [eng],
+      insights: insights
+    });
+  }
+  // Update dashboard engagement
+  if (typeof loadFromStorage === 'function' && typeof saveToStorage === 'function') {
+    var dash = loadFromStorage('fund_dashboard') || (typeof getMockDashboard === 'function' ? getMockDashboard() : { engagements: [] });
+    if (!dash.engagements) dash.engagements = [];
+    var idx = dash.engagements.findIndex(function(x) { return x.id === 'eng_fonds_urgence'; });
+    if (idx >= 0) dash.engagements[idx] = eng; else dash.engagements.push(eng);
+    saveToStorage('fund_dashboard', dash);
+  }
+  // Rediriger vers la brique suivante ou le dashboard
+  setTimeout(function() { window.location.href = nextBrique.url || 'dashboard.html'; }, 200);
+}
 
 /* ══════════════════════════════════════════════════════════════
    validerEngagement
