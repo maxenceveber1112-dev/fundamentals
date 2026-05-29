@@ -1417,6 +1417,12 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
     <h2 class="popup-title" id="popup-abo-title">Voyons tes abonnements en détail</h2>
 
     <div class="abo-list" id="abo-list">
+      <div class="abo-item" data-id="assurance" onclick="toggleAbo(this)">
+        <div class="abo-item-check"></div>
+        <span class="abo-item-emoji">🛡️</span>
+        <span class="abo-item-name">Assurances (habitation, auto, prévoyance, etc.)</span>
+        <input type="number" class="abo-item-montant" placeholder="50" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
+      </div>
       <div class="abo-item" data-id="netflix" onclick="toggleAbo(this)">
         <div class="abo-item-check"></div>
         <span class="abo-item-emoji">🎬</span>
@@ -1446,12 +1452,6 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
         <span class="abo-item-emoji">☁️</span>
         <span class="abo-item-name">Cloud / app premium (iCloud, Adobe…)</span>
         <input type="number" class="abo-item-montant" placeholder="3" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
-      </div>
-      <div class="abo-item" data-id="assurance" onclick="toggleAbo(this)">
-        <div class="abo-item-check"></div>
-        <span class="abo-item-emoji">🛡️</span>
-        <span class="abo-item-name">Assurance optionnelle</span>
-        <input type="number" class="abo-item-montant" placeholder="12" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
       </div>
       <div class="abo-item" data-id="autre_abo" onclick="toggleAbo(this)">
         <div class="abo-item-check"></div>

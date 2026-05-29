@@ -648,9 +648,7 @@
         </div>
         <h1 class="hero-title">Comprends et maîtrise<br>tes dettes.</h1>
         <p class="hero-desc">
-          On identifie tes crédits en cours, on calcule ton taux d'endettement réel face à la limite des 35%, 
-          puis on construit une stratégie adaptée à ton profil : visualisation de tes bonnes dettes dans le temps 
-          ou plan de remboursement priorisé, avec un engagement concret et une date de libération estimée.
+          Tes crédits en cours, ton taux d'endettement face à la limite des 35%, et une stratégie claire : visualisation dans le temps ou plan de remboursement priorisé.
         </p>
         <div class="hero-actions">
           <button class="btn-hero-primary" onclick="checkPrerequisitesAndStart()">
@@ -807,6 +805,9 @@
           Tu as oublié quelque chose dans l'onboarding ?
           <button style="background:none;border:none;font-size:0.78rem;color:var(--accent-strong);cursor:pointer;font-family:inherit;" onclick="addDette()">+ Ajouter une dette</button>
         </div>
+
+        <!-- Spacer pour ne pas que la sticky bar cache le contenu -->
+        <div style="height:5.5rem;"></div>
 
         <!-- Récap sticky -->
         <div class="sticky-recap">
@@ -1361,14 +1362,17 @@ function checkPrerequisitesAndStart() {
   // 3. Préfill dettes — priorité : reprise brique > budget > profil types
   let prefillDettes = [];
 
-  // 3a. Reprise brique dettes déjà commencée
+  // 3a. Reprise brique dettes déjà commencée (autosave en cours ou complétée)
   const brickData = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_plan_desendettement') : null)
     || JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null');
   const brickRaw = brickData?.data?.rawData || brickData?.data || brickData?.rawData || null;
   if (brickRaw?.dettes && brickRaw.dettes.length > 0) {
-    prefillDettes = brickRaw.dettes
-      .filter(d => d.montant_mensuel > 0)
-      .map(d => ({ type: d.type || 'autre', mensualite: d.montant_mensuel, taeg: d.taeg || null }));
+    // Garder toutes les dettes (même montant_mensuel=0, l'user peut corriger)
+    prefillDettes = brickRaw.dettes.map(d => ({
+      type: d.type || 'autre',
+      mensualite: d.montant_mensuel > 0 ? d.montant_mensuel : '',
+      taeg: d.taeg || null
+    }));
   }
 
   // 3b. Données budget (mensualités connues)

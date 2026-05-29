@@ -1826,27 +1826,33 @@
     const fondsRaw  = loadFromStorage('fund_brick_fonds_urgence');
     const fondsData = fondsRaw?.data || fondsRaw || null;
     if (fondsData && (fondsData.fonds_urgence_objectif > 0 || fondsData.fonds_urgence_actuel >= 0)) {
-      const objectif = fondsData.fonds_urgence_objectif || 0;
-      const actuel   = fondsData.fonds_urgence_actuel   || fondsData.epargne_liquide_total || 0;
+      const objectif = fondsData.fonds_urgence_objectif || fondsData.matelas_palier_solide || fondsData.matelas_palier_utile || 0;
+      const actuel   = fondsData.fonds_urgence_actuel   || fondsData.epargneDisponible || fondsData.epargne_liquide_total || 0;
       const rythme   = fondsData.fonds_urgence_rythme_mensuel || 0;
       const dateEst  = fondsData.fonds_urgence_date_estimee || '';
-      const atteint  = actuel >= objectif;
-      const pct      = objectif > 0 ? Math.min(100, Math.round(actuel / objectif * 100)) : 0;
+      const palierAtteint = fondsData.palier_atteint || null; // 'utile' | 'solide'
+      const atteint  = palierAtteint !== null || actuel >= objectif;
+      const pct      = atteint ? 100 : (objectif > 0 ? Math.min(100, Math.round(actuel / objectif * 100)) : 0);
+      const palierLabel = palierAtteint === 'solide' ? 'Palier solide atteint'
+                        : palierAtteint === 'utile'  ? 'Palier utile atteint'
+                        : 'Objectif atteint';
 
       cards.push({
         title: 'Épargne de précaution',
         brique: 'fonds_urgence',
         status: atteint ? 'atteint' : 'en-cours',
         statusLabel: atteint ? 'Atteint' : 'En cours',
-        value: formatEuro(actuel),
-        valueLabel: '/ ' + formatEuro(objectif) + ' objectif',
-        rows: [
-          { label: 'Reste à construire', val: atteint ? '—' : formatEuro(Math.max(0, objectif - actuel)),  color: '' },
-          { label: 'Rythme',             val: rythme > 0 ? formatEuro(rythme) + '/mois' : '—',              color: '' },
-          ...(dateEst && !atteint ? [{ label: 'Date estimée',    val: dateEst,                              color: '' }] : []),
+        value: atteint ? formatEuro(actuel > 0 ? actuel : objectif) : formatEuro(actuel),
+        valueLabel: atteint ? palierLabel : '/ ' + formatEuro(objectif) + ' objectif',
+        rows: atteint ? [
+          { label: 'Objectif', val: formatEuro(objectif), color: 'green' },
+        ] : [
+          { label: 'Reste à construire', val: formatEuro(Math.max(0, objectif - actuel)), color: '' },
+          { label: 'Rythme',             val: rythme > 0 ? formatEuro(rythme) + '/mois' : '—', color: '' },
+          ...(dateEst ? [{ label: 'Date estimée', val: dateEst, color: '' }] : []),
         ],
         progress: { pct, green: atteint },
-        progressLabels: { left: formatEuro(actuel), right: formatEuro(objectif) },
+        progressLabels: { left: atteint ? palierLabel : formatEuro(actuel), right: atteint ? '' : formatEuro(objectif) },
         cta: { href: 'brique-fonds-urgence.html', label: atteint ? 'Voir l\'épargne de précaution' : 'Reprendre' }
       });
     }
@@ -1866,7 +1872,7 @@
     const methodeWidget = dettesWidgetRaw?.methode_choisie || null;
     if (totalMensualites > 0) {
       const dettesRows = [
-        { label: 'Mensualités totales', val: formatEuro(totalMensualites), color: 'orange' },
+        { label: 'Mensualités totales', val: formatEuro(totalMensualites), color: tauxEndetWidget ? (tauxEndetWidget > 35 ? 'red' : tauxEndetWidget > 25 ? 'orange' : 'green') : '' },
       ];
       if (tauxEndetWidget) dettesRows.push({
         label: "Taux d'endettement",
