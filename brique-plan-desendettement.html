@@ -598,6 +598,217 @@
   #speedo-needle.needle-over .needle-pivot { stroke: #f87171 !important; }
 
   /* ══════════════════════════════════════════════════════════════
+     S2 — ROUTE A : profil sain (crédits verts/jaunes uniquement)
+  ══════════════════════════════════════════════════════════════ */
+  .route-a-sain-bloc {
+    background: var(--dette-vert-soft);
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: var(--r-xl);
+    padding: 1.375rem 1.5rem;
+    display: flex; align-items: flex-start; gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  html.dark .route-a-sain-bloc {
+    background: rgba(74,222,128,0.07);
+    border-color: rgba(74,222,128,0.18);
+  }
+  .route-a-sain-icon { font-size:1.75rem; line-height:1; flex-shrink:0; margin-top:0.1rem; }
+  .route-a-sain-content {}
+  .route-a-sain-title {
+    font-size:0.9375rem; font-weight:700;
+    color:var(--dette-vert); margin-bottom:0.25rem;
+  }
+  .route-a-sain-text {
+    font-size:0.8125rem; color:var(--text-secondary); line-height:1.55;
+  }
+
+  /* Liste CRD — Route A */
+  .crd-list { display:flex; flex-direction:column; gap:0.625rem; margin-bottom:1.5rem; }
+  .crd-row {
+    background:var(--surface-2);
+    border:1px solid var(--border-subtle);
+    border-radius:var(--r-lg);
+    padding:0.875rem 1.125rem;
+    display:flex; align-items:center; gap:0.875rem;
+  }
+  .crd-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .crd-label { flex:1; font-size:0.875rem; font-weight:500; color:var(--text); }
+  .crd-mensualite { font-size:0.8125rem; color:var(--text-muted); white-space:nowrap; }
+  .crd-fin {
+    font-size:0.75rem; font-weight:600;
+    background:var(--accent-soft); color:var(--accent-strong);
+    border-radius:9999px; padding:0.2rem 0.625rem; white-space:nowrap;
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     S2 — ROUTE B : cartes méthodes (Boule de neige / Avalanche)
+  ══════════════════════════════════════════════════════════════ */
+  .methodes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.875rem;
+    margin-bottom: 1.5rem;
+  }
+  @media(max-width:540px) { .methodes-grid { grid-template-columns:1fr; } }
+
+  .methode-card {
+    background: var(--surface-2);
+    border: 2px solid var(--border-subtle);
+    border-radius: var(--r-xl);
+    padding: 1.25rem 1.25rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+    display: flex; flex-direction: column; gap: 0.625rem;
+    position: relative;
+  }
+  .methode-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+  }
+  .methode-card.selected {
+    border-color: var(--accent-strong);
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  html.dark .methode-card.selected {
+    background: rgba(109,40,217,0.12);
+    border-color: var(--accent-strong);
+    box-shadow: 0 0 0 4px rgba(109,40,217,0.14);
+  }
+  .methode-card-emoji { font-size:1.625rem; line-height:1; }
+  .methode-card-name {
+    font-size:0.875rem; font-weight:700;
+    color:var(--text); line-height:1.2;
+  }
+  .methode-card-tagline {
+    font-size:0.75rem; color:var(--text-muted); line-height:1.45;
+  }
+  .methode-card-avantage {
+    font-size:0.72rem; font-weight:600;
+    color:var(--accent-strong);
+    background:var(--accent-soft); border-radius:9999px;
+    padding:0.2rem 0.625rem; align-self:flex-start;
+    margin-top:auto;
+  }
+  html.dark .methode-card-avantage { color:#C4B5FD; }
+  /* Badge «Recommandé» sur la carte avalanche (si mauvaises dettes avec TAEG connus) */
+  .methode-reco-pill {
+    position:absolute; top:-0.5rem; right:0.75rem;
+    background:var(--accent-strong); color:#fff;
+    border-radius:9999px; font-size:0.65rem; font-weight:700;
+    padding:0.2rem 0.6rem; letter-spacing:0.03em;
+  }
+  html.dark .methode-reco-pill { color:#F5F3FF; }
+  /* Tick de sélection */
+  .methode-card-tick {
+    display:none;
+    position:absolute; top:0.625rem; left:0.75rem;
+    width:18px; height:18px; border-radius:50%;
+    background:var(--accent-strong); color:#fff;
+    align-items:center; justify-content:center;
+    font-size:0.625rem;
+  }
+  .methode-card.selected .methode-card-tick { display:flex; }
+
+  /* Toggle switch entre les deux méthodes */
+  .methode-toggle-wrap {
+    display:flex; align-items:center; justify-content:center;
+    gap:0.75rem; margin-bottom:1.25rem;
+    font-size:0.8125rem;
+  }
+  .methode-toggle-label { color:var(--text-muted); transition:color 0.2s; }
+  .methode-toggle-label.active { color:var(--text); font-weight:600; }
+  /* Toggle switch visuel */
+  .toggle-switch {
+    position:relative; width:44px; height:24px; flex-shrink:0;
+  }
+  .toggle-switch input { opacity:0; width:0; height:0; position:absolute; }
+  .toggle-slider {
+    position:absolute; inset:0;
+    background:var(--accent-strong);
+    border-radius:9999px; cursor:pointer;
+    transition:background 0.2s;
+  }
+  .toggle-slider::before {
+    content:''; position:absolute;
+    width:18px; height:18px; left:3px; bottom:3px;
+    background:#fff; border-radius:50%;
+    transition:transform 0.25s var(--ease-out);
+  }
+  .toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); }
+  .toggle-switch input:checked + .toggle-slider { background:var(--dette-rouge); }
+
+  /* Liste ordonnée des mauvaises dettes */
+  .mauvaises-list {
+    display:flex; flex-direction:column; gap:0.625rem;
+    margin-bottom:1.5rem;
+  }
+  .mauvaise-row {
+    background:var(--surface-2);
+    border:1px solid var(--border-subtle);
+    border-radius:var(--r-lg);
+    padding:0.875rem 1.125rem;
+    display:flex; align-items:center; gap:0.75rem;
+    transition:all 0.35s var(--ease-out);
+    animation:fadeSlideUp 0.3s var(--ease-out) both;
+  }
+  .mauvaise-rank {
+    width:26px; height:26px; border-radius:50%; flex-shrink:0;
+    background:var(--accent-strong); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.72rem; font-weight:700;
+    transition:background 0.3s;
+  }
+  .mauvaise-row:nth-child(1) .mauvaise-rank { background:var(--dette-rouge); }
+  .mauvaise-row:nth-child(2) .mauvaise-rank { background:var(--dette-orange); }
+  .mauvaise-row:nth-child(3) .mauvaise-rank { background:var(--dette-orange); opacity:0.8; }
+  .mauvaise-info { flex:1; display:flex; flex-direction:column; gap:0.1rem; }
+  .mauvaise-label { font-size:0.875rem; font-weight:600; color:var(--text); }
+  .mauvaise-detail { font-size:0.75rem; color:var(--text-muted); }
+  .mauvaise-montant {
+    font-family:'Fraunces',Georgia,serif;
+    font-size:1rem; font-weight:400; color:var(--text);
+    white-space:nowrap;
+  }
+  .mauvaise-tag {
+    font-size:0.7rem; font-weight:600; border-radius:9999px;
+    padding:0.175rem 0.55rem; white-space:nowrap;
+  }
+  .mauvaise-tag.rouge { background:var(--dette-rouge-soft); color:var(--dette-rouge); }
+  .mauvaise-tag.orange { background:var(--dette-orange-soft); color:var(--dette-orange); }
+
+  /* Card surplus épargne */
+  .surplus-epargne-card {
+    background:var(--accent-soft); border:1px solid var(--accent-strong);
+    border-radius:var(--r-lg); padding:0.875rem 1.125rem;
+    display:flex; align-items:flex-start; gap:0.75rem;
+    margin-bottom:1.25rem;
+  }
+  html.dark .surplus-epargne-card { border-color:rgba(167,139,250,0.35); }
+  .surplus-icon { font-size:1.25rem; flex-shrink:0; line-height:1; margin-top:0.05rem; }
+  .surplus-content {}
+  .surplus-title { font-size:0.875rem; font-weight:700; color:var(--accent-strong); margin-bottom:0.2rem; }
+  html.dark .surplus-title { color:#C4B5FD; }
+  .surplus-text { font-size:0.8rem; color:var(--text-secondary); line-height:1.5; }
+
+  /* CTA méthode */
+  .btn-methode {
+    width:100%; border-radius:9999px;
+    background:var(--accent-fill); color:var(--accent-pill-text);
+    padding:0.875rem 1.5rem; font-size:0.9375rem; font-weight:700;
+    border:none; cursor:pointer;
+    transition:all var(--t) var(--ease-out);
+    display:flex; align-items:center; justify-content:center; gap:0.5rem;
+  }
+  html.dark .btn-methode {
+    background:linear-gradient(135deg,#6D28D9,#4F46E5);
+    color:#fff; box-shadow:0 4px 20px rgba(109,40,217,0.35);
+  }
+  .btn-methode:hover { transform:translateY(-1px); box-shadow:var(--shadow-hover); }
+  .btn-methode:disabled { opacity:0.4; cursor:not-allowed; transform:none; box-shadow:none; }
+
+  /* ══════════════════════════════════════════════════════════════
      TOTAL MENSUALITÉS (sticky récap)
   ══════════════════════════════════════════════════════════════ */
   .sticky-recap {
@@ -828,16 +1039,115 @@
 
     </section><!-- /screen-1 -->
 
-    <!-- ─── SCREEN 2 (placeholder) ── -->
+    <!-- ─── SCREEN 2 : STRATÉGIE (bifurcation Route A / Route B) ── -->
     <section class="screen" id="screen-2">
       <div class="brick-card">
-        <div class="brick-kicker">Étape 2 · Stratégie</div>
-        <h2 class="brick-title">Ton plan personnalisé.</h2>
-        <p class="brick-subtitle">À venir — bifurcation bonnes dettes / mauvaises dettes.</p>
+        <div class="brick-kicker" id="s2-kicker">Étape 2 · Stratégie</div>
+        <h2 class="brick-title" id="s2-title">Voici l'ordre d'attaque.</h2>
+        <p class="brick-subtitle" id="s2-subtitle">Les dettes les plus coûteuses d'abord &mdash; on s'en débarrasse méthodiquement.</p>
+
+        <!-- ═══ ROUTE A — Profil sain (toutes les dettes vertes/jaunes) ═══ -->
+        <div id="s2-route-a" style="display:none;">
+
+          <!-- Bloc rassurant vert -->
+          <div class="route-a-sain-bloc">
+            <div class="route-a-sain-icon">✅</div>
+            <div class="route-a-sain-content">
+              <div class="route-a-sain-title">Tes dettes sont saines</div>
+              <div class="route-a-sain-text" id="s2-ra-text">
+                Aucun crédit à risque dans ton profil. Tu peux continuer sans plan de remboursement urgent.
+              </div>
+            </div>
+          </div>
+
+          <!-- Liste des crédits avec durée estimée si TAEG connu -->
+          <div class="section-label">Tes crédits en cours</div>
+          <div class="crd-list" id="s2-crd-list">
+            <!-- injecté par buildScreen2RouteA() -->
+          </div>
+
+        </div>
+
+        <!-- ═══ ROUTE B — Mauvaises dettes (orange/rouge) ═══ -->
+        <div id="s2-route-b" style="display:none;">
+
+          <!-- Ctx narrative cross-brique -->
+          <div class="ctx-card" id="s2-ctx-card" style="display:none;">
+            <div class="ctx-icon">💡</div>
+            <div class="ctx-text" id="s2-ctx-text">Chargement&hellip;</div>
+          </div>
+
+          <!-- Cartes méthodes côte à côte -->
+          <div class="section-label">Choisis ta stratégie</div>
+          <div class="methodes-grid">
+
+            <!-- Boule de neige -->
+            <div class="methode-card" id="card-boule" role="button" tabindex="0"
+              onclick="selectMethode('boule_de_neige')" onkeydown="if(event.key==='Enter'||event.key===' ')selectMethode('boule_de_neige')">
+              <div class="methode-card-tick">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="methode-card-emoji">⛄</div>
+              <div class="methode-card-name">Boule de neige</div>
+              <div class="methode-card-tagline">Rembourse la plus <strong>petite</strong> dette en premier. Chaque victoire motive la suivante.</div>
+              <div class="methode-card-avantage">Motivation rapide</div>
+            </div>
+
+            <!-- Avalanche -->
+            <div class="methode-card" id="card-avalanche" role="button" tabindex="0"
+              onclick="selectMethode('avalanche')" onkeydown="if(event.key==='Enter'||event.key===' ')selectMethode('avalanche')">
+              <div class="methode-reco-pill" id="avalanche-reco" style="display:none;">★ Recommandé</div>
+              <div class="methode-card-tick">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="methode-card-emoji">🏔️</div>
+              <div class="methode-card-name">Avalanche</div>
+              <div class="methode-card-tagline">Attaque le <strong>TAEG le plus élevé</strong> d'abord. Tu paies moins d'intérêts au total.</div>
+              <div class="methode-card-avantage" id="avalanche-avantage">Moins d'intérêts</div>
+            </div>
+
+          </div>
+
+          <!-- Toggle switch : permuter l'ordre de la liste -->
+          <div class="methode-toggle-wrap" id="s2-toggle-wrap">
+            <span class="methode-toggle-label active" id="toggle-label-boule">Boule de neige</span>
+            <label class="toggle-switch" aria-label="Changer de méthode">
+              <input type="checkbox" id="toggle-methode" onchange="onToggleMethode(this.checked)" />
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="methode-toggle-label" id="toggle-label-avalanche">Avalanche</span>
+          </div>
+
+          <!-- Titre liste ordonnée -->
+          <div class="section-label" id="s2-liste-label">Ordre d'attaque — Boule de neige</div>
+
+          <!-- Liste ordonnée des mauvaises dettes -->
+          <div class="mauvaises-list" id="s2-mauvaises-list">
+            <!-- injecté par renderMauvaisesList() -->
+          </div>
+
+          <!-- Card surplus épargne (conditionnel) -->
+          <div class="surplus-epargne-card" id="s2-surplus-card" style="display:none;">
+            <div class="surplus-icon">💰</div>
+            <div class="surplus-content">
+              <div class="surplus-title">Tu as un surplus d'épargne disponible</div>
+              <div class="surplus-text" id="s2-surplus-text">
+                Ton épargne dépasse ton matelas de sécurité. Tu pourrais utiliser le surplus pour accélérer le remboursement d'une dette coûteuse.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ═══ CTA commun (Route A → S4, Route B → S3) ═══ -->
+        <button class="btn-methode" id="btn-s2-next" onclick="onS2Next()" disabled>
+          <span id="btn-s2-label">Choisir cette méthode →</span>
+        </button>
+
       </div>
+
       <div class="nav-btns" style="padding:0 0.25rem;">
         <button class="btn-back" onclick="goToScreen(1)">← Retour</button>
-        <button class="btn-primary" onclick="goToScreen(3)">Continuer →</button>
       </div>
     </section>
 
@@ -1539,6 +1849,286 @@ function degreesFromTaux(taux, maxTaux) {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   S2 — ÉTAT LOCAL
+══════════════════════════════════════════════════════════════ */
+let methodeChoisie = null;   // 'boule_de_neige' | 'avalanche' | 'route_a'
+let s2Route = null;          // 'A' | 'B'
+let s2MauvaisesDettes = [];  // sous-ensemble des mauvaises dettes (orange/rouge)
+
+/* ══════════════════════════════════════════════════════════════
+   S2 — BUILD SCREEN
+══════════════════════════════════════════════════════════════ */
+function buildScreen2() {
+  // Récupérer les dettes actuelles depuis l'état local
+  // Une dette est «mauvaise» si badge orange ou rouge
+  const mauvaises = dettes.filter(d => {
+    const badge = (DETTE_CONFIG[d.type] || DETTE_CONFIG.autre).badge;
+    return badge === 'orange' || badge === 'rouge';
+  });
+
+  s2MauvaisesDettes = mauvaises;
+
+  // Bifurcation
+  if (mauvaises.length === 0) {
+    // Route A — profil sain
+    s2Route = 'A';
+    buildScreen2RouteA();
+  } else {
+    // Route B — mauvaises dettes
+    s2Route = 'B';
+    buildScreen2RouteB(mauvaises);
+  }
+}
+
+/* ─── Route A : profil sain ─── */
+function buildScreen2RouteA() {
+  // Adapter le titre/sous-titre
+  document.getElementById('s2-title').textContent = 'Tes dettes sont saines.';
+  document.getElementById('s2-subtitle').textContent = 'Aucun crédit coûteux détecté dans ton profil. Tu es dans une position sereine.';
+
+  document.getElementById('s2-route-a').style.display = 'block';
+  document.getElementById('s2-route-b').style.display = 'none';
+
+  // Texte rassurant avec totalité mensualités
+  const totalMens = dettes.reduce((sum, d) => sum + (parseFloat(d.mensualite) || 0), 0);
+  const taux = profil.revenus ? ((totalMens / profil.revenus) * 100).toFixed(1) : null;
+  const raText = document.getElementById('s2-ra-text');
+  raText.innerHTML = `Ton taux d'endettement est de <strong>${taux !== null ? taux + '%' : 'à renseigner'}</strong>, bien éloigné de la limite des 35%. Continue comme ça.`;
+
+  // Liste des crédits avec durée estimée si TAEG + mensualité connus
+  const crdList = document.getElementById('s2-crd-list');
+  crdList.innerHTML = '';
+  dettes.forEach(d => {
+    const cfg = DETTE_CONFIG[d.type] || DETTE_CONFIG.autre;
+    const mens = parseFloat(d.mensualite) || 0;
+    const taeg = parseFloat(d.taeg) || null;
+    // Estimation durée (si taeg et mensualité connus — approximatif sans capital)
+    // On ne calcule PAS la durée exacte sans capital restant dû
+    // On affiche soit la durée si TAEG dispo, soit "durée inconnue"
+    const finEstimée = (taeg && mens) ? 'TAEG ' + taeg.toFixed(2) + '%' : 'Durée inconnue';
+    const row = document.createElement('div');
+    row.className = 'crd-row';
+    row.innerHTML = `
+      <div class="crd-dot" style="background:${cfg.color};"></div>
+      <div class="crd-label">${cfg.label}</div>
+      <div class="crd-mensualite">${mens > 0 ? mens.toFixed(0) + ' €/mois' : 'À renseigner'}</div>
+      <div class="crd-fin">${finEstimée}</div>
+    `;
+    crdList.appendChild(row);
+  });
+
+  // Bouton CTA Route A → aller directement à S4
+  methodeChoisie = 'route_a';
+  const btn = document.getElementById('btn-s2-next');
+  btn.disabled = false;
+  document.getElementById('btn-s2-label').textContent = 'Continuer →';
+
+  // Autosave S2
+  autosaveS2();
+}
+
+/* ─── Route B : mauvaises dettes ─── */
+function buildScreen2RouteB(mauvaises) {
+  document.getElementById('s2-route-a').style.display = 'none';
+  document.getElementById('s2-route-b').style.display = 'block';
+
+  // Vérifier si toutes les mauvaises dettes ont un TAEG renseigné
+  const allHaveTaeg = mauvaises.every(d => parseFloat(d.taeg) > 0);
+  const someHaveTaeg = mauvaises.some(d => parseFloat(d.taeg) > 0);
+
+  // Badge recommandé sur avalanche seulement si toutes les dettes ont un TAEG
+  document.getElementById('avalanche-reco').style.display = 'none'; // reset
+  if (allHaveTaeg) {
+    document.getElementById('avalanche-reco').style.display = 'block';
+    document.getElementById('avalanche-avantage').textContent = 'Moins d\'intérêts au total';
+  } else if (someHaveTaeg) {
+    // TAEG partiels — ordre approximatif mais indiqué
+    document.getElementById('avalanche-avantage').textContent = 'Ordre partiel (TAEG incomplets)';
+  } else {
+    // Aucun TAEG : mention sur avalanche que les données sont insuffisantes
+    document.getElementById('avalanche-avantage').textContent = 'TAEG manquant — ordre approximatif';
+  }
+
+  // Ctx narrative : surplus épargne ?
+  checkSurplusEpargne();
+
+  // Rendre la liste boule de neige par défaut
+  renderMauvaisesList('boule_de_neige');
+
+  // Pré-sélectionner la méthode recommandée (avalanche si TAEG dispo, sinon boule)
+  // Mais ne pas forcer — l'user choisit lui-même
+  // Bouton désactivé jusqu'à sélection
+  const btn = document.getElementById('btn-s2-next');
+  btn.disabled = true;
+  document.getElementById('btn-s2-label').textContent = 'Choisir cette méthode →';
+}
+
+/* ─── Rendre la liste ordonnée des mauvaises dettes ─── */
+function renderMauvaisesList(methode) {
+  const mauvaises = [...s2MauvaisesDettes];
+
+  // Trier selon la méthode
+  if (methode === 'boule_de_neige') {
+    // Tri par mensualité croissante (plus petite en premier)
+    mauvaises.sort((a, b) => (parseFloat(a.mensualite) || 0) - (parseFloat(b.mensualite) || 0));
+    document.getElementById('s2-liste-label').textContent = 'Ordre d\'attaque — Boule de neige';
+  } else {
+    // Tri par TAEG décroissant (le plus élevé en premier)
+    // Si TAEG manquant : on utilise le taux par défaut du DETTE_CONFIG (indicatif)
+    mauvaises.sort((a, b) => {
+      const taegA = parseFloat(a.taeg) || (DETTE_CONFIG[a.type] || {}).taux || 0;
+      const taegB = parseFloat(b.taeg) || (DETTE_CONFIG[b.type] || {}).taux || 0;
+      return taegB - taegA;
+    });
+    document.getElementById('s2-liste-label').textContent = 'Ordre d\'attaque — Avalanche';
+  }
+
+  const list = document.getElementById('s2-mauvaises-list');
+  list.innerHTML = '';
+
+  if (mauvaises.length === 0) {
+    list.innerHTML = '<div style="color:var(--text-muted);font-size:0.875rem;">Aucune dette orange ou rouge trouvée.</div>';
+    return;
+  }
+
+  mauvaises.forEach((d, i) => {
+    const cfg = DETTE_CONFIG[d.type] || DETTE_CONFIG.autre;
+    const mens = parseFloat(d.mensualite) || 0;
+    const taeg = parseFloat(d.taeg) || null;
+    // Détail selon méthode
+    let detail;
+    if (methode === 'boule_de_neige') {
+      detail = mens > 0 ? `${mens.toFixed(0)} €/mois — solder en premier` : 'Mensualité à renseigner';
+    } else {
+      detail = taeg ? `TAEG ${taeg.toFixed(2)}% — le plus coûteux` : (DETTE_CONFIG[d.type] || {}).taux ? `TAEG indicatif ~${(DETTE_CONFIG[d.type] || {}).taux}%` : 'TAEG inconnu';
+    }
+
+    const row = document.createElement('div');
+    row.className = 'mauvaise-row';
+    row.style.animationDelay = `${i * 60}ms`;
+    row.innerHTML = `
+      <div class="mauvaise-rank">${i + 1}</div>
+      <div class="mauvaise-info">
+        <div class="mauvaise-label">${cfg.label}</div>
+        <div class="mauvaise-detail">${detail}</div>
+      </div>
+      <div class="mauvaise-montant">${mens > 0 ? mens.toFixed(0) + ' €' : 'À renseigner'}</div>
+      <div class="mauvaise-tag ${cfg.badge}">${cfg.badgeLabel}</div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+/* ─── Sélectionner une méthode (clic sur carte) ─── */
+function selectMethode(m) {
+  methodeChoisie = m;
+
+  // Mise à jour visuelle des cartes
+  document.getElementById('card-boule').classList.toggle('selected', m === 'boule_de_neige');
+  document.getElementById('card-avalanche').classList.toggle('selected', m === 'avalanche');
+
+  // Synchroniser le toggle switch
+  document.getElementById('toggle-methode').checked = (m === 'avalanche');
+  onToggleLabels(m === 'avalanche');
+
+  // Re-rendre la liste
+  renderMauvaisesList(m);
+
+  // Activer le bouton CTA
+  const btn = document.getElementById('btn-s2-next');
+  btn.disabled = false;
+  document.getElementById('btn-s2-label').textContent = `Je choisis la méthode ${m === 'boule_de_neige' ? 'Boule de neige' : 'Avalanche'} →`;
+
+  // Autosave
+  autosaveS2();
+}
+
+/* ─── Toggle switch ─── */
+function onToggleMethode(isAvalanche) {
+  const m = isAvalanche ? 'avalanche' : 'boule_de_neige';
+  // Mettre à jour les cartes + liste sans dupliquer la logique
+  selectMethode(m);
+}
+
+function onToggleLabels(isAvalanche) {
+  document.getElementById('toggle-label-boule').classList.toggle('active', !isAvalanche);
+  document.getElementById('toggle-label-avalanche').classList.toggle('active', isAvalanche);
+}
+
+/* ─── Surplus épargne (cross-brique) ─── */
+function checkSurplusEpargne() {
+  try {
+    const feRaw = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_fonds_urgence') : null)
+      || JSON.parse(localStorage.getItem('fund_brick_fonds_urgence') || 'null');
+    // Structure : { screen, data: { epargne_actuelle, objectif_mensuel, palier_cible, ... }, completed }
+    const feData = (feRaw && feRaw.data && typeof feRaw.data === 'object') ? feRaw.data : feRaw || {};
+    const epargneActuelle  = parseFloat(feData.epargne_actuelle)  || parseFloat(feData.montant_actuel)  || 0;
+    const matelas          = parseFloat(feData.montant_cible)     || parseFloat(feData.objectif_total)  || 0;
+    const surplus = epargneActuelle > 0 && matelas > 0 ? epargneActuelle - matelas : 0;
+
+    const card = document.getElementById('s2-surplus-card');
+    if (surplus > 200) {
+      // Surplus réel et significatif — on affiche la suggestion
+      card.style.display = 'flex';
+      const mauvaisesPrio = [...s2MauvaisesDettes].sort((a, b) => {
+        const tA = parseFloat(a.taeg) || (DETTE_CONFIG[a.type] || {}).taux || 0;
+        const tB = parseFloat(b.taeg) || (DETTE_CONFIG[b.type] || {}).taux || 0;
+        return tB - tA;
+      });
+      const detteCible = mauvaisesPrio[0];
+      const cfgCible = detteCible ? (DETTE_CONFIG[detteCible.type] || DETTE_CONFIG.autre) : null;
+      const textSurplus = document.getElementById('s2-surplus-text');
+      textSurplus.innerHTML = cfgCible
+        ? `Tu as un surplus d'épargne de <strong>${surplus.toFixed(0)} €</strong> au-delà de ton matelas de sécurité. Tu pourrais l'utiliser pour accélérer le remboursement de ton <strong>${cfgCible.label}</strong> (le plus coûteux).`
+        : `Tu as un surplus d'épargne de <strong>${surplus.toFixed(0)} €</strong> au-delà de ton matelas de sécurité. Tu pourrais accélérer le remboursement de tes dettes coûteuses.`;
+
+      // Ctx card
+      const ctxCard = document.getElementById('s2-ctx-card');
+      const ctxText = document.getElementById('s2-ctx-text');
+      ctxCard.style.display = 'flex';
+      ctxText.innerHTML = `Épargne actuelle : <strong>${epargneActuelle.toFixed(0)} €</strong> &mdash; matelas cible : <strong>${matelas.toFixed(0)} €</strong>. Surplus disponible : <strong>${surplus.toFixed(0)} €</strong>.`;
+    } else {
+      card.style.display = 'none';
+      document.getElementById('s2-ctx-card').style.display = 'none';
+    }
+  } catch(e) {
+    // Silencieux si brique fonds_urgence non trouvée
+    document.getElementById('s2-surplus-card').style.display = 'none';
+  }
+}
+
+/* ─── Autosave S2 ─── */
+function autosaveS2() {
+  try {
+    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    existing.data = Object.assign({}, existing.data || {}, {
+      methode_choisie: methodeChoisie,
+      s2_route: s2Route,
+      mauvaises_dettes: s2MauvaisesDettes.map(d => ({
+        type: d.type,
+        montant_mensuel: parseFloat(d.mensualite) || 0,
+        taeg: parseFloat(d.taeg) || null
+      }))
+    });
+    existing.screen = Math.max(existing.screen || 0, 2);
+    existing.ts = Date.now();
+    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+  } catch(e) {}
+}
+
+/* ─── CTA S2 ─── */
+function onS2Next() {
+  autosaveS2();
+  if (s2Route === 'A') {
+    // Route A : pas de S3 (slider), aller directement à S4
+    goToScreen(4);
+  } else {
+    // Route B : passer au S3 (slider + courbes)
+    goToScreen(3);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════════════════════════ */
 function goToScreen(n) {
@@ -1546,6 +2136,8 @@ function goToScreen(n) {
   document.getElementById(`screen-${n}`).classList.add('active');
   updateProgressPanel(n);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Builders spécifiques par écran
+  if (n === 2) buildScreen2();
 }
 
 function updateProgressPanel(screenIdx) {
