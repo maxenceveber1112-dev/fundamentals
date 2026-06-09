@@ -430,7 +430,11 @@
   html.dark .dette-select { background-color:var(--surface-2); }
   .dette-select:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
 
-  .dette-fields { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+  .dette-fields { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.625rem; }
+  @media(max-width:520px) {
+    .dette-fields { grid-template-columns:1fr 1fr; }
+    .dette-fields .dette-input-wrap:last-child { grid-column:1 / -1; }
+  }
   .dette-input-wrap { position:relative; }
   .dette-input {
     width:100%;
@@ -442,6 +446,7 @@
   .dette-input::placeholder { color:var(--text-faint); }
   .dette-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
   .dette-input.required-filled { border-color:var(--green); }
+  .dette-input.optional-filled  { border-color:var(--dette-jaune); }
   .dette-input-suffix {
     position:absolute; right:0.75rem; top:50%; transform:translateY(-50%);
     font-size:0.8rem; color:var(--text-faint); pointer-events:none;
@@ -809,6 +814,203 @@
   .btn-methode:disabled { opacity:0.4; cursor:not-allowed; transform:none; box-shadow:none; }
 
   /* ══════════════════════════════════════════════════════════════
+     S3 — SIMULATION : slider + courbes par dette
+  ══════════════════════════════════════════════════════════════ */
+
+  /* Slider surplus */
+  .s3-slider-section { margin-bottom:1.75rem; }
+  .s3-slider-header {
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:0.75rem;
+  }
+  .s3-slider-label { font-size:0.875rem; font-weight:600; color:var(--text); }
+  .s3-slider-value {
+    font-family:'Fraunces',Georgia,serif; font-size:1.25rem; font-weight:400;
+    color:var(--accent-strong);
+    transition:color 0.2s;
+  }
+  .s3-slider-hint { font-size:0.75rem; color:var(--text-muted); margin-top:0.5rem; }
+
+  /* Graphe SVG */
+  .s3-chart-wrap {
+    background:var(--surface-2); border:1px solid var(--border-subtle);
+    border-radius:var(--r-xl); padding:1.25rem 1.125rem 1rem;
+    margin-bottom:1.5rem; overflow:hidden;
+  }
+  .s3-chart-header {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;
+  }
+  .s3-chart-title { font-size:0.8125rem; font-weight:700; color:var(--text); }
+  .s3-chart-legend {
+    display:flex; flex-wrap:wrap; gap:0.5rem 1rem;
+    font-size:0.7rem; color:var(--text-muted);
+  }
+  .s3-legend-item {
+    display:flex; align-items:center; gap:0.35rem;
+  }
+  .s3-legend-dot {
+    width:8px; height:8px; border-radius:50%; flex-shrink:0;
+  }
+  .s3-legend-dot.total {
+    width:10px; height:3px; border-radius:2px; /* ligne épaisse */
+  }
+  .s3-svg {
+    width:100%; height:220px; display:block;
+    overflow:visible;
+  }
+  /* SVG tokens — light */
+  .s3-svg {
+    --s3-grid:    rgba(28,25,23,0.08);
+    --s3-axis:    rgba(28,25,23,0.30);
+    --s3-today:   rgba(28,25,23,0.20);
+    --s3-ghost:   rgba(28,25,23,0.12);
+  }
+  html.dark .s3-svg {
+    --s3-grid:    rgba(255,255,255,0.07);
+    --s3-axis:    rgba(255,255,255,0.30);
+    --s3-today:   rgba(255,255,255,0.20);
+    --s3-ghost:   rgba(255,255,255,0.12);
+  }
+  .s3-svg .s3-grid    { stroke:var(--s3-grid);  stroke-width:1; }
+  .s3-svg .s3-axis    { stroke:var(--s3-axis);  stroke-width:1; opacity:0.4; }
+  .s3-svg .s3-lbl     { fill:var(--s3-axis);    font-size:8px; font-weight:500; letter-spacing:0.02em; }
+  .s3-svg .s3-ghost   { stroke:var(--s3-ghost); stroke-width:1.5; fill:none; stroke-dasharray:3 4; }
+  .s3-svg .s3-curve   { stroke-width:2; fill:none;
+                        transition:stroke-width 0.15s, opacity 0.15s; }
+  .s3-svg .s3-area    { opacity:0.07; transition:opacity 0.2s; }
+  .s3-svg .s3-total   { stroke-width:2.5; fill:none; stroke-dasharray:none; }
+  .s3-svg .s3-dot     { r:4; }
+  .s3-svg .s3-dot-lbl { font-size:9px; font-weight:600; }
+  /* Estimation mention */
+  .s3-estimation-note {
+    font-size:0.7rem; color:var(--text-faint);
+    font-style:italic; margin-top:0.375rem; text-align:right;
+  }
+
+  /* Synthèse liberté */
+  .s3-liberte-bloc {
+    background: linear-gradient(135deg, var(--accent-soft) 0%, var(--bg-elevated) 100%);
+    border: 1px solid var(--accent-strong);
+    border-radius: var(--r-xl);
+    padding: 1.25rem 1.5rem;
+    display:flex; align-items:flex-start; gap:1rem;
+    margin-bottom:1.5rem;
+  }
+  html.dark .s3-liberte-bloc {
+    background: linear-gradient(135deg, rgba(109,40,217,0.12) 0%, var(--surface-2) 100%);
+    border-color: rgba(167,139,250,0.35);
+  }
+  .s3-liberte-icon { font-size:1.75rem; line-height:1; flex-shrink:0; margin-top:0.1rem; }
+  .s3-liberte-date {
+    font-family:'Fraunces',Georgia,serif;
+    font-size:1.375rem; font-weight:400;
+    color:var(--accent-strong); line-height:1.1; margin-bottom:0.2rem;
+  }
+  html.dark .s3-liberte-date { color:#C4B5FD; }
+  .s3-liberte-sub { font-size:0.8125rem; color:var(--text-secondary); line-height:1.5; }
+  .s3-economies-pill {
+    display:inline-flex; align-items:center; gap:0.3rem;
+    background:var(--dette-vert-soft); color:var(--dette-vert);
+    border-radius:9999px; font-size:0.72rem; font-weight:700;
+    padding:0.2rem 0.625rem; margin-top:0.5rem;
+  }
+  html.dark .s3-economies-pill { background:rgba(74,222,128,0.1); color:#4ade80; }
+
+  /* Tableau recap dettes */
+  .s3-dette-recap-list { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+  .s3-dette-recap-row {
+    background:var(--surface-2); border:1px solid var(--border-subtle);
+    border-radius:var(--r-lg); padding:0.75rem 1rem;
+    display:flex; align-items:center; gap:0.75rem;
+  }
+  .s3-recap-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+  .s3-recap-label { flex:1; font-size:0.875rem; font-weight:500; color:var(--text); }
+  .s3-recap-date {
+    font-size:0.8125rem; font-weight:600;
+    color:var(--accent-strong); white-space:nowrap;
+  }
+  html.dark .s3-recap-date { color:#C4B5FD; }
+  .s3-recap-est {
+    font-size:0.7rem; color:var(--text-faint);
+    font-style:italic; white-space:nowrap;
+  }
+
+  /* Économies d'intérêts card */
+  .s3-economies-card {
+    background: var(--dette-vert-soft);
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: var(--r-lg); padding: 0.875rem 1.125rem;
+    display:flex; align-items:center; gap:0.875rem;
+    margin-bottom:1.25rem;
+  }
+  html.dark .s3-economies-card {
+    background:rgba(74,222,128,0.07); border-color:rgba(74,222,128,0.18);
+  }
+  .s3-eco-icon { font-size:1.25rem; flex-shrink:0; }
+  .s3-eco-val {
+    font-family:'Fraunces',Georgia,serif;
+    font-size:1.375rem; font-weight:400; color:var(--dette-vert);
+  }
+  html.dark .s3-eco-val { color:#4ade80; }
+  .s3-eco-label { font-size:0.8rem; color:var(--text-secondary); }
+
+  /* ══════════════════════════════════════════════════════════════
+     S3 — SLIDER RANGE (input[type=range] custom)
+  ══════════════════════════════════════════════════════════════ */
+  .slider-chip-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .slider-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    padding: 0.3rem 0.625rem;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  html.dark .slider-chip { color: #C4B5FD; }
+  #s3-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--track);
+    outline: none;
+    cursor: pointer;
+    accent-color: var(--accent-strong);
+    transition: background 0.2s;
+  }
+  #s3-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent-strong);
+    cursor: pointer;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    transition: transform 0.15s;
+  }
+  #s3-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  #s3-slider::-moz-range-thumb {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent-strong);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  /* ══════════════════════════════════════════════════════════════
      TOTAL MENSUALITÉS (sticky récap)
   ══════════════════════════════════════════════════════════════ */
   .sticky-recap {
@@ -1151,16 +1353,82 @@
       </div>
     </section>
 
-    <!-- ─── SCREEN 3 (placeholder) ── -->
+    <!-- ─── SCREEN 3 : SIMULATION ── -->
     <section class="screen" id="screen-3">
       <div class="brick-card">
-        <div class="brick-kicker">Étape 3 · Plan de remboursement</div>
-        <h2 class="brick-title">Combien de mois pour être libre ?</h2>
-        <p class="brick-subtitle">À venir — slider + courbes boule de neige / avalanche.</p>
+        <div class="brick-kicker" id="s3-kicker">Étape 3 · Simulation</div>
+        <h2 class="brick-title" id="s3-title">Combien de mois pour être libre ?</h2>
+        <p class="brick-subtitle" id="s3-subtitle">Ajuste ton effort mensuel pour voir l'impact sur chaque dette.</p>
+
+        <!-- Slider surplus mensuel -->
+        <div class="s3-slider-section">
+          <div class="s3-slider-header">
+            <span class="s3-slider-label">Surplus mensuel dédié au remboursement</span>
+            <span class="s3-slider-value" id="s3-slider-display">0 €/mois</span>
+          </div>
+          <div class="slider-chip-wrap">
+            <span class="slider-chip" id="s3-slider-chip">0 €</span>
+            <input type="range" id="s3-slider"
+              min="0" max="500" step="10" value="0"
+              oninput="onS3SliderInput(this.value)"
+              aria-label="Surplus mensuel de remboursement" />
+          </div>
+          <div class="s3-slider-hint" id="s3-slider-hint">En plus de tes mensualités actuelles — chaque euro supplémentaire réduit la durée.</div>
+        </div>
+
+        <!-- Synthèse liberté -->
+        <div class="s3-liberte-bloc" id="s3-liberte-bloc">
+          <div class="s3-liberte-icon">🗓️</div>
+          <div>
+            <div class="s3-liberte-date" id="s3-liberte-date">—</div>
+            <div class="s3-liberte-sub" id="s3-liberte-sub">Date estimée de remboursement complet</div>
+            <div class="s3-economies-pill" id="s3-economies-pill" style="display:none;">
+              <span>💚</span>
+              <span id="s3-economies-val">—</span> économisés vs. l'autre méthode
+            </div>
+          </div>
+        </div>
+
+        <!-- Graphe SVG courbes par dette -->
+        <div class="s3-chart-wrap">
+          <div class="s3-chart-header">
+            <span class="s3-chart-title" id="s3-chart-title">Évolution du capital restant dû</span>
+            <div class="s3-chart-legend" id="s3-chart-legend">
+              <!-- injecté par buildS3Chart() -->
+            </div>
+          </div>
+          <svg class="s3-svg" id="s3-svg" viewBox="0 0 380 220" preserveAspectRatio="xMidYMid meet"
+            role="img" aria-label="Courbes de remboursement par dette">
+            <!-- injecté par drawS3Chart() -->
+          </svg>
+          <div class="s3-estimation-note" id="s3-estimation-note" style="display:none;">
+            * Durée estimée d'après le type de crédit (non renseignée)
+          </div>
+        </div>
+
+        <!-- Économies d'intérêts (si TAEG connus) -->
+        <div class="s3-economies-card" id="s3-economies-card" style="display:none;">
+          <div class="s3-eco-icon">💚</div>
+          <div>
+            <div class="s3-eco-val" id="s3-eco-val">—</div>
+            <div class="s3-eco-label" id="s3-eco-label">économisés en intérêts avec la méthode Avalanche</div>
+          </div>
+        </div>
+
+        <!-- Tableau récap par dette -->
+        <div class="section-label">Détail par dette</div>
+        <div class="s3-dette-recap-list" id="s3-dette-recap-list">
+          <!-- injecté par buildS3DetteRecap() -->
+        </div>
+
+        <!-- CTA -->
+        <button class="btn-primary" id="btn-s3-next" onclick="onS3Next()" style="width:100%;">
+          <span id="btn-s3-label">Valider et continuer →</span>
+        </button>
+
       </div>
       <div class="nav-btns" style="padding:0 0.25rem;">
         <button class="btn-back" onclick="goToScreen(2)">← Retour</button>
-        <button class="btn-primary" onclick="goToScreen(4)">Continuer →</button>
       </div>
     </section>
 
@@ -1291,6 +1559,43 @@ const DETTE_CONFIG = {
 };
 
 /* ══════════════════════════════════════════════════════════════
+   DURÉE ESTIMÉE PAR TYPE (fallback si non renseigné)
+   Utilise le type de crédit + age_group du profil
+══════════════════════════════════════════════════════════════ */
+const DUREE_ESTIMEE_BASE = {
+  credit_immo:         240,  // 20 ans
+  pret_etudiant:        84,  // 7 ans
+  credit_conso:         48,  // 4 ans
+  credit_renouvelable:  24,  // 2 ans (priorité absolue)
+  decouvert_regulier:    6,  // 6 mois
+  paiement_fractionne:  12,  // 1 an
+  autre:                36   // 3 ans
+};
+
+function getDureeEstimee(type, ageGroup) {
+  // Durée de base selon le type
+  let base = DUREE_ESTIMEE_BASE[type] || 36;
+
+  // Ajustement pour crédit immo selon l'âge
+  // Plus l'user est âgé, plus la durée résiduelle est courte
+  if (type === 'credit_immo' && ageGroup) {
+    const ageMid = {
+      '18-25': 22, '26-35': 30, '36-45': 40,
+      '46-55': 50, '56-65': 60, '66+': 70
+    };
+    const age = ageMid[ageGroup] || 35;
+    if (age >= 60)      base = 60;   // 5 ans restants max
+    else if (age >= 55) base = 84;   // 7 ans
+    else if (age >= 50) base = 120;  // 10 ans
+    else if (age >= 45) base = 168;  // 14 ans
+    else if (age >= 40) base = 204;  // 17 ans
+    // Moins de 40 ans : durée base 240 inchangée
+  }
+
+  return base;
+}
+
+/* ══════════════════════════════════════════════════════════════
    ÉTAT LOCAL
 ══════════════════════════════════════════════════════════════ */
 let dettes = [];
@@ -1419,9 +1724,10 @@ function checkPrerequisitesAndStart() {
   const brickRaw = brickData?.data?.rawData || brickData?.data || brickData?.rawData || null;
   if (brickRaw?.dettes && Array.isArray(brickRaw.dettes) && brickRaw.dettes.length > 0) {
     prefillDettes = brickRaw.dettes.map(d => ({
-      type:       d.type || 'autre',
-      mensualite: d.montant_mensuel > 0 ? d.montant_mensuel : '',
-      taeg:       d.taeg  > 0 ? d.taeg : null
+      type:           d.type || 'autre',
+      mensualite:     d.montant_mensuel > 0 ? d.montant_mensuel : '',
+      taeg:           d.taeg  > 0 ? d.taeg : null,
+      duree_restante: parseInt(d.duree_restante) > 0 ? parseInt(d.duree_restante) : ''
     }));
     console.debug('[dettes] source 3a: brique reprise', prefillDettes);
   }
@@ -1431,9 +1737,10 @@ function checkPrerequisitesAndStart() {
     const budgetDettes = fbData.dettes;
     if (Array.isArray(budgetDettes) && budgetDettes.length > 0) {
       prefillDettes = budgetDettes.map(d => ({
-        type:       d.type || d.classification || 'credit_conso',
-        mensualite: d.montant_mensuel > 0 ? d.montant_mensuel : '',
-        taeg:       d.taeg > 0 ? d.taeg : null
+        type:           d.type || d.classification || 'credit_conso',
+        mensualite:     d.montant_mensuel > 0 ? d.montant_mensuel : '',
+        taeg:           d.taeg > 0 ? d.taeg : null,
+        duree_restante: parseInt(d.duree_restante) > 0 ? parseInt(d.duree_restante) : ''
       }));
       console.debug('[dettes] source 3b: budget rawData', prefillDettes);
     }
@@ -1444,9 +1751,10 @@ function checkPrerequisitesAndStart() {
     const profilDettes = Array.isArray(fp.dettes) ? fp.dettes : [];
     if (profilDettes.length > 0) {
       prefillDettes = profilDettes.map(d => ({
-        type:       d.type || d.classification || 'credit_conso',
-        mensualite: d.montant_mensuel > 0 ? d.montant_mensuel : '',
-        taeg:       d.taeg > 0 ? d.taeg : null
+        type:           d.type || d.classification || 'credit_conso',
+        mensualite:     d.montant_mensuel > 0 ? d.montant_mensuel : '',
+        taeg:           d.taeg > 0 ? d.taeg : null,
+        duree_restante: parseInt(d.duree_restante) > 0 ? parseInt(d.duree_restante) : ''
       }));
       console.debug('[dettes] source 3c: profil.dettes', prefillDettes);
     }
@@ -1535,7 +1843,13 @@ function confirmOnboarding(yes) {
 ══════════════════════════════════════════════════════════════ */
 function addDetteFromData(data) {
   const id = ++detteCounter;
-  const dette = { id, type: data.type, mensualite: data.mensualite || '', taeg: data.taeg || '' };
+  const dette = {
+    id,
+    type:           data.type || 'credit_conso',
+    mensualite:     data.mensualite     || '',
+    taeg:           data.taeg           || '',
+    duree_restante: data.duree_restante || ''
+  };
   dettes.push(dette);
   renderDette(dette, true);
   updateSpeedometer();
@@ -1543,7 +1857,7 @@ function addDetteFromData(data) {
 
 function addDette() {
   const id = ++detteCounter;
-  const dette = { id, type: 'credit_conso', mensualite: '', taeg: '' };
+  const dette = { id, type: 'credit_conso', mensualite: '', taeg: '', duree_restante: '' };
   dettes.push(dette);
   renderDette(dette, false);
   // Focus sur le premier input de la nouvelle ligne
@@ -1578,7 +1892,7 @@ function renderDette(dette, prefilled) {
       <div class="dette-input-wrap">
         <input type="number" class="dette-input ${dette.mensualite ? 'required-filled' : ''}"
           id="mens-${dette.id}"
-          placeholder="Mensualité (€)"
+          placeholder="Mensualité"
           value="${dette.mensualite || ''}"
           min="1" step="1"
           oninput="onMensChange(${dette.id})"
@@ -1588,11 +1902,20 @@ function renderDette(dette, prefilled) {
       <div class="dette-input-wrap">
         <input type="number" class="dette-input"
           id="taeg-${dette.id}"
-          placeholder="TAEG (optionnel)"
+          placeholder="TAEG"
           value="${dette.taeg || ''}"
           min="0" max="100" step="0.01"
           oninput="onTaegChange(${dette.id})" />
         <span class="dette-input-suffix">%</span>
+      </div>
+      <div class="dette-input-wrap">
+        <input type="number" class="dette-input ${dette.duree_restante ? 'optional-filled' : ''}"
+          id="duree-${dette.id}"
+          placeholder="Durée restante"
+          value="${dette.duree_restante || ''}"
+          min="1" max="480" step="1"
+          oninput="onDureeChange(${dette.id})" />
+        <span class="dette-input-suffix">mois</span>
       </div>
     </div>
     <div class="dette-classification" id="classif-${dette.id}">
@@ -1645,6 +1968,34 @@ function onTaegChange(id) {
   const val = parseFloat(input.value) || null;
   const dette = dettes.find(d => d.id === id);
   if (dette) dette.taeg = val;
+}
+
+function onDureeChange(id) {
+  const input = document.getElementById(`duree-${id}`);
+  const val = parseInt(input.value) || null;
+  const dette = dettes.find(d => d.id === id);
+  if (dette) dette.duree_restante = val;
+  // Feedback visuel : bord jaune si rempli, neutre si vide
+  if (val > 0) {
+    input.classList.add('optional-filled');
+  } else {
+    input.classList.remove('optional-filled');
+  }
+  // Pas d'impact sur le speedomètre — autosave via updateSpeedometer n'est pas appelé ici
+  // On force un autosave léger pour persister la durée
+  try {
+    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    existing.data = Object.assign({}, existing.data || {}, {
+      dettes: dettes.map(d => ({
+        type: d.type,
+        montant_mensuel: parseFloat(d.mensualite) || 0,
+        taeg: parseFloat(d.taeg) || null,
+        duree_restante: parseInt(d.duree_restante) || null
+      }))
+    });
+    existing.ts = Date.now();
+    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+  } catch(e) {}
 }
 
 function removeDette(id) {
@@ -1797,7 +2148,12 @@ function updateSpeedometer() {
   try {
     const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
     existing.data = Object.assign({}, existing.data || {}, {
-      dettes: dettes.map(d => ({ type: d.type, montant_mensuel: parseFloat(d.mensualite) || 0, taeg: parseFloat(d.taeg) || null })),
+      dettes: dettes.map(d => ({
+        type: d.type,
+        montant_mensuel: parseFloat(d.mensualite) || 0,
+        taeg: parseFloat(d.taeg) || null,
+        duree_restante: parseInt(d.duree_restante) || null
+      })),
       taux_endettement: taux,
       revenus_utilises: revenus
     });
@@ -1846,6 +2202,24 @@ function degreesFromTaux(taux, maxTaux) {
   // 0% → 180° (gauche), maxTaux% → 360° (droite)
   const pct = Math.min(taux / maxTaux, 1);
   return 180 + pct * 180;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HELPER — DURÉE EFFECTIVE (saisie ou estimée)
+   Utilisé par S2/S3 pour les simulations
+══════════════════════════════════════════════════════════════ */
+function getDetteWithDuree(d) {
+  // Retourne la dette enrichie avec:
+  // - duree_effective : durée saisie ou estimée selon type+âge
+  // - duree_estée    : true si estimation (pas de saisie)
+  const saisi = parseInt(d.duree_restante) || 0;
+  const ageGroup = (profil && profil.age_group) || null;
+  const dureeEffective = saisi > 0 ? saisi : getDureeEstimee(d.type, ageGroup);
+  return {
+    ...d,
+    duree_effective: dureeEffective,
+    duree_estimee:   saisi <= 0  // true = durée calculée, pas saisie
+  };
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -2107,7 +2481,8 @@ function autosaveS2() {
       mauvaises_dettes: s2MauvaisesDettes.map(d => ({
         type: d.type,
         montant_mensuel: parseFloat(d.mensualite) || 0,
-        taeg: parseFloat(d.taeg) || null
+        taeg: parseFloat(d.taeg) || null,
+        duree_restante: parseInt(d.duree_restante) || null
       }))
     });
     existing.screen = Math.max(existing.screen || 0, 2);
@@ -2129,6 +2504,519 @@ function onS2Next() {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   S3 — ÉTAT LOCAL
+══════════════════════════════════════════════════════════════ */
+let s3SurplusMensuel = 0;       // valeur courante du slider
+let s3SimResult = null;         // résultat caché de la simulation active
+let s3SimResultGhost = null;    // résultat de l'autre méthode (ghost curve)
+let s3SliderMax = 500;          // max dynamique selon capacité restante
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — MOTEUR DE SIMULATION (cascade de dettes)
+   Pour chaque méthode et surplus donné :
+   1. Trier les dettes selon la méthode (boule/avalanche)
+   2. Chaque mois :
+      a. Appliquer intérêts si TAEG connu
+      b. Appliquer mensualité + redistribution du surplus
+      c. Quand une dette atteint 0 : redistribuer sa mensualité sur la suivante
+   3. Retourner : courbes par dette + courbe total + mois liberté + économies
+══════════════════════════════════════════════════════════════ */
+function simulateDettes(dettesInput, surplus, methode) {
+  // Enrichir chaque dette avec la durée effective
+  const enriched = dettesInput.map(d => {
+    const dd = getDetteWithDuree(d);
+    const mens = parseFloat(d.mensualite) || 0;
+    const taeg = parseFloat(d.taeg) || null;
+    const duree = dd.duree_effective || 12;
+    // Capital initial approché :
+    // Si TAEG connu : capital = mensualité × [(1-(1+r)^-n)/r] formule de prêt
+    // Sinon : capital = mensualité × durée (approximation sans intérêts)
+    let capital;
+    if (taeg && taeg > 0 && mens > 0) {
+      const r = (taeg / 100) / 12;
+      if (r > 0) {
+        capital = mens * (1 - Math.pow(1 + r, -duree)) / r;
+      } else {
+        capital = mens * duree;
+      }
+    } else if (mens > 0) {
+      capital = mens * duree;
+    } else {
+      capital = 0;
+    }
+    return {
+      ...dd,
+      mensualite:     mens,
+      taeg:           taeg,
+      capital:        Math.max(0, capital),
+      duree_estimee:  dd.duree_estimee
+    };
+  }).filter(d => d.mensualite > 0 && d.capital > 0);
+
+  if (enriched.length === 0) return null;
+
+  // Trier selon la méthode
+  const sorted = [...enriched];
+  if (methode === 'boule_de_neige') {
+    // Plus petite mensualité en premier
+    sorted.sort((a, b) => a.mensualite - b.mensualite);
+  } else {
+    // TAEG le plus élevé en premier (avalanche)
+    sorted.sort((a, b) => {
+      const tA = a.taeg || (DETTE_CONFIG[a.type] || {}).taux || 0;
+      const tB = b.taeg || (DETTE_CONFIG[b.type] || {}).taux || 0;
+      return tB - tA;
+    });
+  }
+
+  // Simulation mois par mois
+  const MAX_MOIS = 600; // sécurité : max 50 ans
+  let capitaux = sorted.map(d => d.capital); // capital restant par dette
+  const hasTaeg = sorted.every(d => d.taeg && d.taeg > 0);
+  const courbes = sorted.map(() => []);      // courbe de capital par dette
+  const courbeTotal = [];                    // courbe total
+  const finishMois = sorted.map(() => null); // mois de fin par dette
+  let totalInterets = 0;
+  let surplusRestant = surplus;              // surplus disponible ce mois
+
+  for (let m = 0; m < MAX_MOIS; m++) {
+    // Calcul du total avant paiement
+    const total = capitaux.reduce((s, c) => s + c, 0);
+    if (total <= 0) break;
+
+    // Enregistrer les courbes AVANT remboursement (capital en début de mois)
+    courbes.forEach((c, i) => c.push(Math.max(0, capitaux[i])));
+    courbeTotal.push(Math.max(0, total));
+
+    // Redistribution du surplus : appliquer en priorité sur la 1re dette non soldée
+    let surplusPool = surplus;           // surplus mensuel à distribuer
+    let mensPool = 0;                    // mensualités récupérées des dettes soldées
+
+    for (let i = 0; i < sorted.length; i++) {
+      if (capitaux[i] <= 0) {
+        // Dette déjà soldée : récupérer sa mensualité comme bonus
+        mensPool += sorted[i].mensualite;
+        continue;
+      }
+
+      // Intérêts ce mois (si TAEG connu)
+      if (sorted[i].taeg && sorted[i].taeg > 0) {
+        const r = (sorted[i].taeg / 100) / 12;
+        const interets = capitaux[i] * r;
+        totalInterets += interets;
+        capitaux[i] += interets;
+      }
+
+      // Paiement : mensualité de base + bonus des dettes soldées + surplus
+      const paiement = sorted[i].mensualite + mensPool + surplusPool;
+      mensPool = 0;       // bonus utilisé
+      surplusPool = 0;    // surplus utilisé
+
+      const avant = capitaux[i];
+      capitaux[i] = Math.max(0, capitaux[i] - paiement);
+
+      // Si trop payé : reporter le surplus sur la prochaine dette
+      const tropPaye = paiement - avant;
+      if (tropPaye > 0) {
+        surplusPool = tropPaye; // reporter sur la dette suivante
+      }
+
+      if (capitaux[i] <= 0 && finishMois[i] === null) {
+        finishMois[i] = m + 1; // mois de fin (1-based)
+      }
+    }
+  }
+
+  // Enregistrer le dernier point (capital = 0 pour les dettes soldées)
+  courbes.forEach((c, i) => c.push(0));
+  courbeTotal.push(0);
+
+  const moisLiberte = Math.max(...finishMois.map(f => f || MAX_MOIS));
+
+  return {
+    sorted,
+    courbes,         // tableau de tableaux (capital par mois par dette)
+    courbeTotal,     // tableau (capital total par mois)
+    finishMois,      // tableau (mois de fin par dette)
+    moisLiberte,     // mois total pour tout solder
+    totalInterets,   // intérêts totaux payés (si TAEG connus)
+    hasTaeg          // true si toutes les dettes ont un TAEG
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — BUILD SCREEN
+══════════════════════════════════════════════════════════════ */
+function buildScreen3() {
+  // Les dettes à simuler = toutes les mauvaises dettes (depuis S2)
+  // Si s2MauvaisesDettes vide (cas Route A non applicable), on prend toutes les dettes
+  const dettesS3 = s2MauvaisesDettes.length > 0 ? s2MauvaisesDettes : dettes;
+
+  if (dettesS3.length === 0) {
+    // Cas vide : afficher un message
+    document.getElementById('s3-title').textContent = 'Aucune dette à simuler.';
+    document.getElementById('s3-subtitle').textContent = 'Retourne à l\'étape 1 pour saisir tes dettes.';
+    return;
+  }
+
+  // Capacité disponible : revenus × 35% - total mensualités (au moins 0)
+  const totalMens = dettesS3.reduce((s, d) => s + (parseFloat(d.mensualite) || 0), 0);
+  const capacite = profil.revenus ? Math.max(0, profil.revenus * 0.35 - totalMens) : 500;
+  s3SliderMax = Math.max(200, Math.round(capacite / 10) * 10); // arrondi à 10€, min 200
+
+  // Initialiser le slider
+  const slider = document.getElementById('s3-slider');
+  if (slider) {
+    slider.max = s3SliderMax;
+    slider.value = 0;
+    slider.step = Math.max(5, Math.round(s3SliderMax / 50));
+  }
+  s3SurplusMensuel = 0;
+
+  // Mettre à jour le hint du slider
+  const hintEl = document.getElementById('s3-slider-hint');
+  if (hintEl) {
+    if (profil.revenus) {
+      hintEl.textContent = `Capacité disponible : jusqu'à ${s3SliderMax} €/mois au-delà de tes mensualités actuelles.`;
+    } else {
+      hintEl.textContent = 'Chaque euro supplémentaire réduit la durée de remboursement.';
+    }
+  }
+
+  // Lancer la simulation pour la méthode choisie
+  s3SimResult = simulateDettes(dettesS3, 0, methodeChoisie || 'boule_de_neige');
+
+  // Simulation ghost = l'autre méthode (pour comparaison si TAEG connus)
+  const autreMethode = (methodeChoisie === 'avalanche') ? 'boule_de_neige' : 'avalanche';
+  s3SimResultGhost = simulateDettes(dettesS3, 0, autreMethode);
+
+  // Construire la légende
+  buildS3Legend();
+
+  // Dessiner le graphe
+  drawS3Chart(s3SimResult, s3SimResultGhost);
+
+  // Mettre à jour les blocs résultat
+  updateS3Results(s3SimResult, s3SimResultGhost);
+
+  // Construire le recap par dette
+  buildS3DetteRecap(s3SimResult);
+
+  // Autosave
+  autosaveS3();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — LÉGENDE
+══════════════════════════════════════════════════════════════ */
+function buildS3Legend() {
+  const dettesS3 = s2MauvaisesDettes.length > 0 ? s2MauvaisesDettes : dettes;
+  const legendEl = document.getElementById('s3-chart-legend');
+  if (!legendEl || !s3SimResult) return;
+
+  legendEl.innerHTML = '';
+
+  s3SimResult.sorted.forEach(d => {
+    const color = (DETTE_CONFIG[d.type] || DETTE_CONFIG.autre).color;
+    const label = (DETTE_CONFIG[d.type] || DETTE_CONFIG.autre).label;
+    const item = document.createElement('div');
+    item.className = 's3-legend-item';
+    item.innerHTML = `<div class="s3-legend-dot" style="background:${color};"></div><span>${label}</span>`;
+    legendEl.appendChild(item);
+  });
+
+  // Total (ligne épaisse)
+  const totalItem = document.createElement('div');
+  totalItem.className = 's3-legend-item';
+  totalItem.innerHTML = `<div class="s3-legend-dot total" style="background:var(--text-muted);"></div><span>Total</span>`;
+  legendEl.appendChild(totalItem);
+
+  // Ghost si TAEG connus
+  if (s3SimResult.hasTaeg && s3SimResultGhost) {
+    const ghostItem = document.createElement('div');
+    ghostItem.className = 's3-legend-item';
+    const autreLabel = (methodeChoisie === 'avalanche') ? 'Boule de neige' : 'Avalanche';
+    ghostItem.innerHTML = `<div class="s3-legend-dot" style="background:var(--text-faint); opacity:0.5;"></div><span style="color:var(--text-faint);">${autreLabel} (comparaison)</span>`;
+    legendEl.appendChild(ghostItem);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — DESSIN DU GRAPHE SVG
+   Axe Y : capital restant dû (descendant vers 0)
+   Axe X : mois
+   Courbes par dette (couleur DETTE_CONFIG) + total (gris épais)
+   Ghost (tireté) si l'autre méthode est disponible
+══════════════════════════════════════════════════════════════ */
+function drawS3Chart(simResult, simGhost) {
+  const svgEl = document.getElementById('s3-svg');
+  if (!svgEl || !simResult) return;
+
+  // Dimensions SVG (viewBox 0 0 380 220)
+  const W = 380, H = 220;
+  const PAD = { top: 12, right: 16, bottom: 28, left: 42 };
+  const CW = W - PAD.left - PAD.right;  // largeur utile
+  const CH = H - PAD.top - PAD.bottom;  // hauteur utile
+
+  // Bornes
+  const nMois = simResult.courbeTotal.length;
+  const maxCapital = Math.max(...simResult.courbeTotal.concat(
+    simGhost && simGhost.courbeTotal ? simGhost.courbeTotal : []
+  ), 1);
+
+  // Fonctions de projection
+  const xOf = i => PAD.left + (i / Math.max(nMois - 1, 1)) * CW;
+  const yOf = v => PAD.top + CH - (v / maxCapital) * CH;
+
+  // Construire les éléments SVG
+  let html = '';
+
+  // —— Grille horizontale (3 lignes) ——
+  [0.25, 0.5, 0.75, 1].forEach(f => {
+    const y = PAD.top + CH - f * CH;
+    const val = (maxCapital * f);
+    const label = val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val.toFixed(0);
+    html += `<line class="s3-grid" x1="${PAD.left}" y1="${y.toFixed(1)}" x2="${W - PAD.right}" y2="${y.toFixed(1)}"/>`;
+    html += `<text class="s3-lbl" x="${PAD.left - 3}" y="${y.toFixed(1)}" text-anchor="end" dominant-baseline="middle">${label}</text>`;
+  });
+
+  // —— Axes ——
+  html += `<line class="s3-axis" x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${PAD.top + CH}"/>`;
+  html += `<line class="s3-axis" x1="${PAD.left}" y1="${PAD.top + CH}" x2="${W - PAD.right}" y2="${PAD.top + CH}"/>`;
+
+  // —— Labels axe X (tous les ~12 mois) ——
+  const step = nMois <= 24 ? 6 : nMois <= 60 ? 12 : 24;
+  for (let i = 0; i <= nMois; i += step) {
+    if (i >= nMois) break;
+    const x = xOf(i);
+    html += `<text class="s3-lbl" x="${x.toFixed(1)}" y="${(PAD.top + CH + 9).toFixed(1)}" text-anchor="middle">${i === 0 ? 'J0' : 'M' + i}</text>`;
+  }
+
+  // —— Courbe ghost (l'autre méthode — total seulement) ——
+  if (simGhost && simGhost.courbeTotal && simResult.hasTaeg) {
+    const ghost = simGhost.courbeTotal;
+    const ghostN = ghost.length;
+    let path = '';
+    for (let i = 0; i < ghostN; i++) {
+      const x = PAD.left + (i / Math.max(ghostN - 1, 1)) * CW;
+      const y = yOf(ghost[i]);
+      path += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+    }
+    html += `<path class="s3-ghost" d="${path}"/>`;
+  }
+
+  // —— Courbes par dette (aire + ligne) ——
+  simResult.sorted.forEach((d, idx) => {
+    const color = (DETTE_CONFIG[d.type] || DETTE_CONFIG.autre).color;
+    const courbe = simResult.courbes[idx];
+    const n = courbe.length;
+    if (n === 0) return;
+
+    let path = '';
+    let areaPath = '';
+    for (let i = 0; i < n; i++) {
+      const x = xOf(i);
+      const y = yOf(courbe[i]);
+      path += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+      if (i === 0) areaPath = 'M' + x.toFixed(1) + ',' + (PAD.top + CH).toFixed(1);
+      areaPath += ' L' + x.toFixed(1) + ',' + y.toFixed(1);
+    }
+    areaPath += ' L' + xOf(n - 1).toFixed(1) + ',' + (PAD.top + CH).toFixed(1) + ' Z';
+
+    html += `<path class="s3-area" fill="${color}" d="${areaPath}"/>`;
+    html += `<path class="s3-curve" stroke="${color}" d="${path}"/>`;
+
+    // Dot final (quand la dette atteint 0)
+    const finM = simResult.finishMois[idx];
+    if (finM !== null && finM < n) {
+      const xf = xOf(finM);
+      const yf = yOf(0);
+      html += `<circle class="s3-dot" cx="${xf.toFixed(1)}" cy="${yf.toFixed(1)}" fill="${color}"/>`;
+    }
+  });
+
+  // —— Courbe total (ligne épaisse gris/violet) ——
+  const tl = simResult.courbeTotal;
+  let totalPath = '';
+  for (let i = 0; i < tl.length; i++) {
+    const x = xOf(i);
+    const y = yOf(tl[i]);
+    totalPath += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+  }
+  html += `<path class="s3-total" stroke="var(--text-muted)" d="${totalPath}"/>`;
+
+  svgEl.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — METTRE À JOUR LES BLOCS RÉSULTAT
+══════════════════════════════════════════════════════════════ */
+function updateS3Results(simResult, simGhost) {
+  if (!simResult) return;
+
+  // —— Bloc liberté ——
+  const liberteDateEl = document.getElementById('s3-liberte-date');
+  const liberteSubEl  = document.getElementById('s3-liberte-sub');
+  if (liberteDateEl) {
+    const dateLiberte = moisToDateLiberte(simResult.moisLiberte);
+    liberteDateEl.textContent = dateLiberte;
+  }
+  if (liberteSubEl) {
+    const annees = Math.floor(simResult.moisLiberte / 12);
+    const moisRest = simResult.moisLiberte % 12;
+    const dureeStr = annees > 0
+      ? annees + ' an' + (annees > 1 ? 's' : '') + (moisRest > 0 ? ' et ' + moisRest + ' mois' : '')
+      : simResult.moisLiberte + ' mois';
+    const surplusStr = s3SurplusMensuel > 0 ? ` avec +${s3SurplusMensuel}€/mois de surplus` : '';
+    liberteSubEl.textContent = `Remboursement complet en ${dureeStr}${surplusStr}.`;
+  }
+
+  // —— Pill économies (comparaison méthodes) ——
+  const pill = document.getElementById('s3-economies-pill');
+  const pillVal = document.getElementById('s3-economies-val');
+  if (pill && pillVal && simGhost && simResult.hasTaeg) {
+    const diff = simGhost.totalInterets - simResult.totalInterets;
+    if (diff > 0) {
+      pillVal.textContent = diff.toFixed(0) + ' €';
+      pill.style.display = 'inline-flex';
+    } else if (diff < 0) {
+      // La méthode ghost est meilleure
+      pillVal.textContent = (-diff).toFixed(0) + ' € de plus vs ' + (methodeChoisie === 'avalanche' ? 'Boule de neige' : 'Avalanche');
+      pill.style.display = 'inline-flex';
+    } else {
+      pill.style.display = 'none';
+    }
+  } else if (pill) {
+    pill.style.display = 'none';
+  }
+
+  // —— Card économies d'intérêts (si tous TAEG connus) ——
+  const ecoCard = document.getElementById('s3-economies-card');
+  const ecoVal  = document.getElementById('s3-eco-val');
+  const ecoLabel = document.getElementById('s3-eco-label');
+  if (ecoCard && ecoVal && simResult.hasTaeg && simGhost) {
+    const diffInt = simGhost.totalInterets - simResult.totalInterets;
+    if (diffInt > 0) {
+      // La méthode active est meilleure
+      ecoVal.textContent = diffInt.toFixed(0) + ' €';
+      const autreLabel = methodeChoisie === 'avalanche' ? 'Boule de neige' : 'Avalanche';
+      if (ecoLabel) ecoLabel.textContent = `économisés en intérêts par rapport à la méthode ${autreLabel}`;
+      ecoCard.style.display = 'flex';
+    } else if (diffInt < 0) {
+      // L'autre méthode est meilleure
+      ecoVal.textContent = (-diffInt).toFixed(0) + ' €';
+      const autreLabel = methodeChoisie === 'avalanche' ? 'Boule de neige' : 'Avalanche';
+      if (ecoLabel) ecoLabel.textContent = `économies supplémentaires possibles avec la méthode ${autreLabel}`;
+      ecoCard.style.display = 'flex';
+    } else {
+      ecoCard.style.display = 'none';
+    }
+  } else if (ecoCard) {
+    ecoCard.style.display = 'none';
+  }
+
+  // —— Note estimation ——
+  const noteEl = document.getElementById('s3-estimation-note');
+  if (noteEl) {
+    const hasEstimation = simResult.sorted.some(d => d.duree_estimee);
+    noteEl.style.display = hasEstimation ? 'block' : 'none';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — HELPER DATE DE LIBERTÉ
+══════════════════════════════════════════════════════════════ */
+function moisToDateLiberte(nMois) {
+  if (!nMois || nMois <= 0) return 'À renseigner';
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth() + nMois, 1);
+  const moisLabels = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  return moisLabels[target.getMonth()] + ' ' + target.getFullYear();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — TABLEAU RÉCAP PAR DETTE
+══════════════════════════════════════════════════════════════ */
+function buildS3DetteRecap(simResult) {
+  const recapEl = document.getElementById('s3-dette-recap-list');
+  if (!recapEl || !simResult) return;
+
+  recapEl.innerHTML = '';
+
+  simResult.sorted.forEach((d, idx) => {
+    const cfg = DETTE_CONFIG[d.type] || DETTE_CONFIG.autre;
+    const finM = simResult.finishMois[idx];
+    const dateStr = finM ? moisToDateLiberte(finM) : 'À renseigner';
+    const estNote = d.duree_estimee ? '<span class="s3-recap-est">durée estimée</span>' : '';
+    const mensStr = d.mensualite > 0 ? d.mensualite.toFixed(0) + ' €/mois' : 'à renseigner';
+
+    const row = document.createElement('div');
+    row.className = 's3-dette-recap-row';
+    row.innerHTML = `
+      <div class="s3-recap-dot" style="background:${cfg.color};"></div>
+      <div class="s3-recap-label">${cfg.label} <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">${mensStr}</span></div>
+      <div class="s3-recap-date">${dateStr}</div>
+      ${estNote}
+    `;
+    recapEl.appendChild(row);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — SLIDER INPUT
+══════════════════════════════════════════════════════════════ */
+function onS3SliderInput(val) {
+  const surplus = parseInt(val) || 0;
+  s3SurplusMensuel = surplus;
+
+  // Mettre à jour l'affichage
+  const dispEl = document.getElementById('s3-slider-display');
+  if (dispEl) dispEl.textContent = surplus > 0 ? '+' + surplus + ' €/mois' : '0 €/mois';
+  const chipEl = document.getElementById('s3-slider-chip');
+  if (chipEl) chipEl.textContent = surplus > 0 ? '+' + surplus + ' €' : '0 €';
+
+  // Re-simuler avec le nouveau surplus
+  const dettesS3 = s2MauvaisesDettes.length > 0 ? s2MauvaisesDettes : dettes;
+  s3SimResult = simulateDettes(dettesS3, surplus, methodeChoisie || 'boule_de_neige');
+  const autreMethode = (methodeChoisie === 'avalanche') ? 'boule_de_neige' : 'avalanche';
+  s3SimResultGhost = simulateDettes(dettesS3, surplus, autreMethode);
+
+  // Mettre à jour les affichages
+  drawS3Chart(s3SimResult, s3SimResultGhost);
+  updateS3Results(s3SimResult, s3SimResultGhost);
+  buildS3DetteRecap(s3SimResult);
+  autosaveS3();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — AUTOSAVE
+══════════════════════════════════════════════════════════════ */
+function autosaveS3() {
+  if (!s3SimResult) return;
+  try {
+    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    const dateLiberte = moisToDateLiberte(s3SimResult.moisLiberte);
+    existing.data = Object.assign({}, existing.data || {}, {
+      surplus_mensuel:   s3SurplusMensuel,
+      mois_liberte:      s3SimResult.moisLiberte,
+      date_liberte:      dateLiberte,
+      interets_totaux:   s3SimResult.hasTaeg ? s3SimResult.totalInterets : null
+    });
+    existing.screen = Math.max(existing.screen || 0, 3);
+    existing.ts = Date.now();
+    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+  } catch(e) {}
+}
+
+/* ══════════════════════════════════════════════════════════════
+   S3 — CTA SUIVANT
+══════════════════════════════════════════════════════════════ */
+function onS3Next() {
+  autosaveS3();
+  goToScreen(4);
+}
+
+/* ══════════════════════════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════════════════════════ */
 function goToScreen(n) {
@@ -2138,6 +3026,7 @@ function goToScreen(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Builders spécifiques par écran
   if (n === 2) buildScreen2();
+  if (n === 3) buildScreen3();
 }
 
 function updateProgressPanel(screenIdx) {
