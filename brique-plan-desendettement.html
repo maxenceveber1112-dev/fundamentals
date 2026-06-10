@@ -479,44 +479,114 @@
   }
   .dette-remove:hover { background:var(--red-soft); color:var(--red); }
 
+  /* ══════════════════════════════════════════════════════════════
+     MODE MONO-DETTE (S2)
+  ══════════════════════════════════════════════════════════════ */
+  .mono-info-pill {
+    display:inline-flex; align-items:center; gap:0.375rem;
+    font-size:0.75rem; color:var(--text-muted);
+    background:var(--surface-2);
+    border:1px solid var(--border-subtle);
+    border-radius:var(--r-full);
+    padding:0.3rem 0.75rem;
+    margin-bottom:1.25rem;
+  }
+  .mono-dette-card {
+    border:1.5px solid rgba(251,146,60,0.28);
+    border-radius:var(--r-xl);
+    padding:1.25rem 1.5rem;
+    margin-bottom:1.25rem;
+    display:flex; flex-direction:column; gap:0.625rem;
+  }
+  html.dark .mono-dette-card { background:rgba(249,115,22,0.08); }
+  html:not(.dark) .mono-dette-card { background:rgba(249,115,22,0.05); }
+  .mono-dette-kicker {
+    font-size:0.6875rem; font-weight:700;
+    letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--dette-orange);
+    margin-bottom:0.25rem;
+  }
+  .mono-dette-recap { display:flex; gap:1.5rem; flex-wrap:wrap; }
+  .mono-dette-recap-item { display:flex; flex-direction:column; gap:0.2rem; }
+  .mono-dette-recap-label {
+    font-size:0.72rem; color:var(--text-faint);
+    text-transform:uppercase; letter-spacing:0.08em; font-weight:600;
+  }
+  .mono-dette-recap-val { font-size:1rem; font-weight:700; color:var(--text); }
+
+  .s2-slider-section { margin-bottom:1.5rem; }
+  .s2-slider-label {
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:0.875rem; font-weight:600; color:var(--text);
+    margin-bottom:0.75rem;
+  }
+  .s2-slider-val {
+    font-family:'Fraunces',Georgia,serif; font-size:1.25rem; font-weight:400;
+    color:var(--accent-strong);
+  }
+  html.dark .s2-slider-val { color:#C4B5FD; }
+  .s2-slider {
+    width:100%;
+    -webkit-appearance:none; appearance:none;
+    height:6px; border-radius:9999px;
+    background:var(--track); outline:none; cursor:pointer;
+    accent-color:var(--accent-strong);
+    transition:background 0.2s;
+  }
+  .s2-slider::-webkit-slider-thumb {
+    -webkit-appearance:none;
+    width:20px; height:20px; border-radius:50%;
+    background:var(--accent-strong); cursor:pointer;
+    box-shadow:0 0 0 3px var(--accent-soft);
+    transition:transform 0.15s;
+  }
+  .s2-slider::-webkit-slider-thumb:hover { transform:scale(1.15); }
+  .s2-slider::-moz-range-thumb {
+    width:20px; height:20px; border-radius:50%;
+    background:var(--accent-strong); cursor:pointer; border:none;
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .s2-gain-bloc {
+    display:flex; align-items:center; gap:0.5rem;
+    margin-top:1rem;
+    font-size:0.8125rem; font-weight:600; color:var(--dette-vert);
+    background:var(--dette-vert-soft);
+    border-radius:var(--r-md);
+    padding:0.625rem 0.875rem;
+  }
+  html.dark .s2-gain-bloc { background:rgba(74,222,128,0.1); color:#4ade80; }
+
   /* Confirmation depuis onboarding */
-  /* ══ Bloc ctx questionnaire — pattern identique brique budget ══ */
-  .ctx-confirm-bloc {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--r-xl);
-    padding: 1.5rem 1.75rem;
-    margin-bottom: 2rem;
-    display: flex; flex-direction: column; gap: 1rem;
+  /* ══ Bloc ctx questionnaire : pattern identique brique budget (insight-card) ══ */
+  .insight-card {
+    background:var(--bg-elevated);
+    border:1px solid var(--border-subtle);
+    border-radius:1rem; padding:1.25rem 1.5rem;
+    box-shadow:var(--shadow-card);
+    transition:background 0.3s ease, border-color 0.3s ease;
   }
-  html.dark .ctx-confirm-bloc {
-    background: var(--bg-elevated);
-    border-color: var(--border-subtle);
+  html.dark .insight-card { backdrop-filter:blur(12px); }
+  .insight-kicker {
+    font-size:0.6875rem; font-weight:600;
+    letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--accent-strong); margin-bottom:0.625rem;
   }
-  .ctx-confirm-top { display: flex; flex-direction: column; gap: 0.375rem; }
-  .ctx-confirm-label {
-    font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--accent-strong);
+  html.dark .insight-kicker { color:#A78BFA; }
+  .insight-figure {
+    font-family:'Fraunces',serif;
+    font-size:1rem; font-weight:400; line-height:1.55;
+    color:var(--text);
   }
-  html.dark .ctx-confirm-label { color: #C4B5FD; }
-  .ctx-confirm-headline {
-    font-size: 1.125rem; font-weight: 700;
-    color: var(--text); line-height: 1.3;
-    letter-spacing: -0.01em;
-  }
-  .ctx-confirm-sub {
-    font-family: 'Fraunces', Georgia, serif;
-    font-style: italic; font-size: 1rem;
-    color: var(--text-secondary); line-height: 1.4;
-  }
-  .ctx-confirm-btns { display: flex; gap: 1rem; align-items: center; }
+  .insight-figure em { font-style:italic; font-weight:300; }
+  .insight-sub { font-size:0.8125rem; color:var(--text-muted); line-height:1.65; margin-top:0.5rem; }
+  .insight-btns { display:flex; gap:0.75rem; align-items:center; margin-top:1rem; }
   .btn-confirm-yes {
     display: inline-flex; align-items: center; justify-content: center;
     border-radius: 9999px;
     background: var(--accent-soft);
     color: var(--accent-strong);
-    padding: 0.7rem 1.75rem;
-    font-size: 0.9375rem; font-weight: 700;
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem; font-weight: 700;
     border: none; cursor: pointer;
     transition: background 0.2s, transform 0.15s;
   }
@@ -526,9 +596,9 @@
   }
   .btn-confirm-yes:hover { transform: translateY(-1px); filter: brightness(1.05); }
   .btn-confirm-no {
-    font-size: 0.9375rem; font-weight: 500;
+    font-size: 0.875rem; font-weight: 500;
     color: var(--text-muted); background: none; border: none;
-    cursor: pointer; padding: 0.5rem 0;
+    cursor: pointer; padding: 0.4rem 0;
     transition: color 0.15s;
   }
   .btn-confirm-no:hover { color: var(--text); }
@@ -1073,16 +1143,13 @@
       <div class="brick-card">
         <div class="brick-kicker">Étape 1 · Tes dettes</div>
         <h2 class="brick-title">Parlons de ce que tu dois.</h2>
-        <p class="brick-subtitle">Saisis chaque crédit en cours — on calcule ton taux en temps réel.</p>
+        <p class="brick-subtitle">Saisis chaque crédit en cours, on calcule ton taux en temps réel.</p>
 
         <!-- Bloc ctx questionnaire — pattern brique budget -->
-        <div class="ctx-confirm-bloc" id="ctx-confirm-bloc">
-          <div class="ctx-confirm-top">
-            <div class="ctx-confirm-label">Depuis ton profil</div>
-            <div class="ctx-confirm-headline" id="ctx-headline">On a détecté des dettes dans ton profil.</div>
-            <div class="ctx-confirm-sub">C'est bien ta situation actuelle ?</div>
-          </div>
-          <div class="ctx-confirm-btns" id="confirm-btns">
+        <div class="insight-card" id="ctx-confirm-bloc" style="margin-bottom:1.5rem;">
+          <div class="insight-kicker">Depuis ton profil</div>
+          <div class="insight-figure"><span id="ctx-headline">On a détecté des dettes dans ton profil.</span> <em id="ctx-sub">C'est bien ta situation actuelle ?</em></div>
+          <div class="insight-btns" id="confirm-btns">
             <button class="btn-confirm-yes" onclick="confirmOnboarding(true)">Oui, c'est ça</button>
             <button class="btn-confirm-no" onclick="confirmOnboarding(false)">Non, je modifie</button>
           </div>
@@ -1188,7 +1255,7 @@
         <div class="peda-card vert" id="peda-card">
           <div class="peda-icon" id="peda-icon">✅</div>
           <div class="peda-content">
-            <div class="peda-title" id="peda-title">La règle des 35% — Tu es dans les clous</div>
+            <div class="peda-title" id="peda-title">La règle des 35% : tu es dans les clous</div>
             <div class="peda-text" id="peda-text">
               Le taux d'endettement, c'est simple : <strong>mensualités crédit ÷ revenus nets</strong>.
               Les banques fixent la limite à <strong>35%</strong>. En dessous, tu es en zone verte.
@@ -1246,7 +1313,7 @@
       <div class="brick-card">
         <div class="brick-kicker" id="s2-kicker">Étape 2 · Stratégie</div>
         <h2 class="brick-title" id="s2-title">Voici l'ordre d'attaque.</h2>
-        <p class="brick-subtitle" id="s2-subtitle">Les dettes les plus coûteuses d'abord &mdash; on s'en débarrasse méthodiquement.</p>
+        <p class="brick-subtitle" id="s2-subtitle">Les dettes les plus coûteuses d'abord : on s'en débarrasse méthodiquement.</p>
 
         <!-- ═══ ROUTE A — Profil sain (toutes les dettes vertes/jaunes) ═══ -->
         <div id="s2-route-a" style="display:none;">
@@ -1321,7 +1388,7 @@
           </div>
 
           <!-- Titre liste ordonnée -->
-          <div class="section-label" id="s2-liste-label">Ordre d'attaque — Boule de neige</div>
+          <div class="section-label" id="s2-liste-label">Ordre d'attaque : Boule de neige</div>
 
           <!-- Liste ordonnée des mauvaises dettes -->
           <div class="mauvaises-list" id="s2-mauvaises-list">
@@ -1339,6 +1406,59 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- ═══ ROUTE MONO : un seul crédit coûteux ═══ -->
+        <div id="s2-route-mono" style="display:none;">
+
+          <!-- Pill info -->
+          <div class="mono-info-pill">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Pas besoin de choisir une méthode avec un seul crédit coûteux
+          </div>
+
+          <!-- Carte récap mono-dette -->
+          <div class="mono-dette-card" id="mono-dette-card">
+            <div class="mono-dette-kicker">Ton crédit coûteux</div>
+            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+              <span id="mono-dette-type" style="font-family:'Fraunces',serif; font-size:1.0625rem; color:var(--text);"></span>
+              <span class="dette-badge" id="mono-dette-badge"></span>
+            </div>
+            <div class="mono-dette-recap">
+              <div class="mono-dette-recap-item">
+                <div class="mono-dette-recap-label">Mensualité</div>
+                <div class="mono-dette-recap-val" id="mono-dette-mens">À renseigner</div>
+              </div>
+              <div class="mono-dette-recap-item">
+                <div class="mono-dette-recap-label">TAEG</div>
+                <div class="mono-dette-recap-val" id="mono-dette-taeg">À renseigner</div>
+              </div>
+              <div class="mono-dette-recap-item">
+                <div class="mono-dette-recap-label">Durée restante</div>
+                <div class="mono-dette-recap-val" id="mono-dette-duree">À renseigner</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slider surplus -->
+          <div class="s2-slider-section">
+            <div class="s2-slider-label">
+              <span>Surplus mensuel supplémentaire</span>
+              <span class="s2-slider-val" id="mono-slider-val">0 €/mois</span>
+            </div>
+            <input type="range" class="s2-slider" id="mono-slider" min="0" max="500" value="0"
+              oninput="onMonoSliderInput(this.value)">
+            <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-faint); margin-top:0.25rem;">
+              <span>0 €</span>
+              <span id="mono-slider-max">Capacité max : 500 €</span>
+            </div>
+            <div class="s2-gain-bloc" id="mono-gain-bloc" style="display:none;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span id="mono-gain-text"></span>
+            </div>
+          </div>
+
+          <button class="btn-methode" id="btn-mono-next" onclick="goToScreen(3)">Voir mon plan →</button>
         </div>
 
         <!-- ═══ CTA commun (Route A → S4, Route B → S3) ═══ -->
@@ -1373,7 +1493,7 @@
               oninput="onS3SliderInput(this.value)"
               aria-label="Surplus mensuel de remboursement" />
           </div>
-          <div class="s3-slider-hint" id="s3-slider-hint">En plus de tes mensualités actuelles — chaque euro supplémentaire réduit la durée.</div>
+          <div class="s3-slider-hint" id="s3-slider-hint">En plus de tes mensualités actuelles : chaque euro supplémentaire réduit la durée.</div>
         </div>
 
         <!-- Synthèse liberté -->
@@ -1437,7 +1557,7 @@
       <div class="brick-card">
         <div class="brick-kicker">Étape 4 · Engagement</div>
         <h2 class="brick-title">Ton engagement concret.</h2>
-        <p class="brick-subtitle">À venir — engagement + bridge cross-brique.</p>
+        <p class="brick-subtitle">À venir : engagement + bridge cross-brique.</p>
       </div>
       <div class="nav-btns" style="padding:0 0.25rem;">
         <button class="btn-back" onclick="goToScreen(3)">← Retour</button>
@@ -1534,7 +1654,7 @@ const DETTE_CONFIG = {
   },
   pret_etudiant: {
     label: 'Prêt étudiant', badge: 'jaune', badgeLabel: 'Contexte spécifique',
-    desc: 'Taux généralement faible — à surveiller.', color: '#FBBF24', taux: 1.5
+    desc: 'Taux généralement faible, à surveiller.', color: '#FBBF24', taux: 1.5
   },
   credit_conso: {
     label: 'Crédit conso', badge: 'orange', badgeLabel: 'Alerte',
@@ -1542,11 +1662,11 @@ const DETTE_CONFIG = {
   },
   decouvert_regulier: {
     label: 'Découvert régulier', badge: 'rouge', badgeLabel: 'Alerte forte',
-    desc: 'Frais élevés — à solder en priorité.', color: '#f87171', taux: 16
+    desc: 'Frais élevés, à solder en priorité.', color: '#f87171', taux: 16
   },
   credit_renouvelable: {
     label: 'Crédit renouvelable', badge: 'rouge', badgeLabel: 'Piège à intérêts',
-    desc: 'Taux très élevé — priorité absolue.', color: '#f87171', taux: 19.5
+    desc: 'Taux très élevé, priorité absolue.', color: '#f87171', taux: 19.5
   },
   paiement_fractionne: {
     label: 'Paiement fractionné (BNPL)', badge: 'orange', badgeLabel: 'Engagement court',
@@ -1643,7 +1763,7 @@ function checkPrerequisitesAndStart() {
           La brique <strong>${missing}</strong> n'est pas encore terminée.
         </div>
         <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
-          Certaines données manqueront — les résultats seront moins précis.
+          Certaines données manqueront, les résultats seront moins précis.
         </div>
         <div style="display:flex; flex-direction:column; gap:0.625rem;">
           <a href="${ctaHref}" style="display:block;padding:0.75rem 1rem;background:var(--accent-strong,#5B21B6);color:#fff;border-radius:9999px;font-weight:600;font-size:0.88rem;text-decoration:none;">
@@ -2104,7 +2224,7 @@ function updateSpeedometer() {
   const pillText = document.getElementById('speedo-pill-text');
   if (taux === null) {
     pill.className = 'speedo-status-pill vert';
-    pillText.textContent = 'Revenus non renseignés — taux non calculable';
+    pillText.textContent = 'Revenus non renseignés, taux non calculable';
   } else if (taux === 0) {
     pill.className = 'speedo-status-pill vert';
     pillText.textContent = 'En attente de saisie';
@@ -2175,24 +2295,24 @@ function updatePedaCard(taux, totalMens) {
   if (taux === null || taux === 0) {
     card.className = 'peda-card vert';
     icon.textContent = '💡';
-    title.textContent = 'La règle des 35% — Comment ça marche ?';
+    title.textContent = 'La règle des 35% : comment ça marche ?';
     text.innerHTML = `Le taux d'endettement = <strong>mensualités crédit ÷ revenus nets</strong>. La limite bancaire est fixée à <strong>35%</strong>.
       Saisis tes crédits en cours pour voir où tu en es.`;
   } else if (taux < 20) {
     card.className = 'peda-card vert';
     icon.textContent = '✅';
-    title.textContent = 'La règle des 35% — Tu es dans les clous';
+    title.textContent = 'La règle des 35% : tu es dans les clous';
     text.innerHTML = `Ton taux de <strong>${taux.toFixed(1)}%</strong> est bien en dessous de la limite des 35%.
       ${restCapacite !== null ? 'Il te reste <strong>' + restCapacite.toFixed(0) + ' €/mois</strong> de capacité d\'emprunt supplémentaire. Tu es en bonne position pour un projet immo si tu le souhaites.' : 'Tu es en bonne position. Renseigne tes revenus pour voir ta marge exacte.'}`;
   } else if (taux < 35) {
     card.className = 'peda-card orange';
     icon.textContent = '⚠️';
-    title.textContent = 'La règle des 35% — Attention à la limite';
-    text.innerHTML = `Ton taux est à <strong>${taux.toFixed(1)}%</strong> — ${restCapacite !== null ? 'il te reste seulement <strong>' + restCapacite.toFixed(0) + ' €/mois</strong> de marge avant la limite bancaire de 35%' : 'marge avant la limite à calculer (renseigne tes revenus)'}. Un nouveau crédit (prêt immo notamment) pourrait être difficile à obtenir.`;
+    title.textContent = 'La règle des 35% : attention à la limite';
+    text.innerHTML = `Ton taux est à <strong>${taux.toFixed(1)}%</strong>. ${restCapacite !== null ? 'il te reste seulement <strong>' + restCapacite.toFixed(0) + ' €/mois</strong> de marge avant la limite bancaire de 35%' : 'marge avant la limite à calculer (renseigne tes revenus)'}. Un nouveau crédit (prêt immo notamment) pourrait être difficile à obtenir.`;
   } else {
     card.className = 'peda-card rouge';
     icon.textContent = '🚨';
-    title.textContent = 'La règle des 35% — Tu es au-delà de la limite';
+    title.textContent = 'La règle des 35% : tu es au-delà de la limite';
     text.innerHTML = `Ton taux est à <strong>${taux.toFixed(1)}%</strong>, au-dessus de la limite bancaire des 35%.
       Dans cet état, obtenir un crédit supplémentaire est très difficile. On va construire un plan pour réduire ce taux.`;
   }
@@ -2228,6 +2348,7 @@ function getDetteWithDuree(d) {
 let methodeChoisie = null;   // 'boule_de_neige' | 'avalanche' | 'route_a'
 let s2Route = null;          // 'A' | 'B'
 let s2MauvaisesDettes = [];  // sous-ensemble des mauvaises dettes (orange/rouge)
+let s2SurplusMensuel = 0;    // surplus mensuel saisi en mode mono-dette
 
 /* ══════════════════════════════════════════════════════════════
    S2 — BUILD SCREEN
@@ -2244,13 +2365,107 @@ function buildScreen2() {
 
   // Bifurcation
   if (mauvaises.length === 0) {
-    // Route A — profil sain
+    // Route A : profil sain
     s2Route = 'A';
     buildScreen2RouteA();
+  } else if (mauvaises.length === 1) {
+    // Mode mono-dette : un seul crédit coûteux, pas de choix de méthode
+    s2Route = 'B'; // route B pour que le S3 reste accessible
+    buildScreen2MonoDette(mauvaises[0]);
   } else {
-    // Route B — mauvaises dettes
+    // Route B : plusieurs mauvaises dettes
     s2Route = 'B';
     buildScreen2RouteB(mauvaises);
+  }
+}
+
+/* ─── Mode mono-dette : un seul crédit coûteux ─── */
+function buildScreen2MonoDette(dette) {
+  document.getElementById('s2-route-a').style.display = 'none';
+  document.getElementById('s2-route-b').style.display = 'none';
+  document.getElementById('s2-route-mono').style.display = 'block';
+  document.getElementById('btn-s2-next').style.display = 'none'; // mono a son propre CTA
+
+  // Titre/sous-titre adaptés
+  document.getElementById('s2-title').textContent = 'Un seul crédit à attaquer.';
+  document.getElementById('s2-subtitle').textContent = 'Pas besoin de stratégie de tri : on se concentre sur ce crédit et l\'effort que tu peux y mettre.';
+
+  const cfg = DETTE_CONFIG[dette.type] || DETTE_CONFIG.autre;
+  const mens = parseFloat(dette.mensualite) || 0;
+  const taeg = parseFloat(dette.taeg) || null;
+  const duree = parseInt(dette.duree_restante) || null;
+
+  // Remplir le récap
+  document.getElementById('mono-dette-type').textContent = cfg.label;
+  document.getElementById('mono-dette-badge').className = 'dette-badge ' + cfg.badge;
+  document.getElementById('mono-dette-badge').textContent = cfg.badgeLabel;
+  document.getElementById('mono-dette-mens').textContent  = mens > 0 ? mens.toFixed(0) + ' €/mois' : 'À renseigner';
+  document.getElementById('mono-dette-taeg').textContent  = taeg ? taeg.toFixed(2) + '%' : 'À renseigner';
+  document.getElementById('mono-dette-duree').textContent = duree ? duree + ' mois' : 'À renseigner';
+
+  // Slider : max = surplus épargne disponible, sinon plafond raisonnable
+  const surplusEpargne = getSurplusEpargneDispo();
+  const sliderMax = Math.max(Math.round(surplusEpargne), 100);
+  const slider = document.getElementById('mono-slider');
+  slider.max = sliderMax;
+  slider.value = 0;
+  document.getElementById('mono-slider-val').textContent = '0 €/mois';
+  document.getElementById('mono-slider-max').textContent = 'Capacité max : ' + sliderMax + ' €';
+
+  // Une seule dette : la méthode importe peu
+  methodeChoisie = 'boule_de_neige';
+  s2SurplusMensuel = 0;
+  updateMonoGain();
+  autosaveS2();
+}
+
+/* ─── Surplus épargne disponible (au-delà du matelas) ─── */
+function getSurplusEpargneDispo() {
+  try {
+    const feRaw = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_fonds_urgence') : null)
+      || JSON.parse(localStorage.getItem('fund_brick_fonds_urgence') || 'null');
+    const feData = (feRaw && feRaw.data && typeof feRaw.data === 'object') ? feRaw.data : feRaw || {};
+    const epargneActuelle = parseFloat(feData.epargne_actuelle) || parseFloat(feData.montant_actuel) || 0;
+    const matelas         = parseFloat(feData.montant_cible)    || parseFloat(feData.objectif_total) || 0;
+    const surplus = epargneActuelle > 0 && matelas > 0 ? epargneActuelle - matelas : 0;
+    return surplus > 0 ? surplus : 0;
+  } catch(e) { return 0; }
+}
+
+/* ─── Slider mono-dette ─── */
+function onMonoSliderInput(val) {
+  s2SurplusMensuel = parseFloat(val) || 0;
+  document.getElementById('mono-slider-val').textContent =
+    (s2SurplusMensuel > 0 ? '+' : '') + s2SurplusMensuel.toFixed(0) + ' €/mois';
+  updateMonoGain();
+}
+
+function updateMonoGain() {
+  const gainBloc = document.getElementById('mono-gain-bloc');
+  const gainText = document.getElementById('mono-gain-text');
+  if (!gainBloc || !gainText) return;
+
+  const dette = s2MauvaisesDettes[0];
+  if (!dette || s2SurplusMensuel <= 0) {
+    gainBloc.style.display = 'none';
+    return;
+  }
+
+  const resBase = simulateDettes([dette], 0, 'boule_de_neige');
+  const resPlus = simulateDettes([dette], s2SurplusMensuel, 'boule_de_neige');
+  if (!resBase || !resPlus) { gainBloc.style.display = 'none'; return; }
+
+  const moisGagnes   = resBase.moisLiberte - resPlus.moisLiberte;
+  const econInterets = resBase.totalInterets - resPlus.totalInterets;
+
+  if (moisGagnes > 0 && econInterets > 0 && resBase.hasTaeg) {
+    gainBloc.style.display = 'flex';
+    gainText.textContent = `Tu rembourses ${moisGagnes} mois plus tôt et économises ${econInterets.toFixed(0)} € d'intérêts.`;
+  } else if (moisGagnes > 0) {
+    gainBloc.style.display = 'flex';
+    gainText.textContent = `Tu rembourses ${moisGagnes} mois plus tôt avec ce surplus.`;
+  } else {
+    gainBloc.style.display = 'none';
   }
 }
 
@@ -2262,6 +2477,8 @@ function buildScreen2RouteA() {
 
   document.getElementById('s2-route-a').style.display = 'block';
   document.getElementById('s2-route-b').style.display = 'none';
+  const monoA = document.getElementById('s2-route-mono'); if (monoA) monoA.style.display = 'none';
+  document.getElementById('btn-s2-next').style.display = '';
 
   // Texte rassurant avec totalité mensualités
   const totalMens = dettes.reduce((sum, d) => sum + (parseFloat(d.mensualite) || 0), 0);
@@ -2305,6 +2522,8 @@ function buildScreen2RouteA() {
 function buildScreen2RouteB(mauvaises) {
   document.getElementById('s2-route-a').style.display = 'none';
   document.getElementById('s2-route-b').style.display = 'block';
+  const monoB = document.getElementById('s2-route-mono'); if (monoB) monoB.style.display = 'none';
+  document.getElementById('btn-s2-next').style.display = '';
 
   // Vérifier si toutes les mauvaises dettes ont un TAEG renseigné
   const allHaveTaeg = mauvaises.every(d => parseFloat(d.taeg) > 0);
@@ -2320,7 +2539,7 @@ function buildScreen2RouteB(mauvaises) {
     document.getElementById('avalanche-avantage').textContent = 'Ordre partiel (TAEG incomplets)';
   } else {
     // Aucun TAEG : mention sur avalanche que les données sont insuffisantes
-    document.getElementById('avalanche-avantage').textContent = 'TAEG manquant — ordre approximatif';
+    document.getElementById('avalanche-avantage').textContent = 'TAEG manquant, ordre approximatif';
   }
 
   // Ctx narrative : surplus épargne ?
@@ -2345,7 +2564,7 @@ function renderMauvaisesList(methode) {
   if (methode === 'boule_de_neige') {
     // Tri par mensualité croissante (plus petite en premier)
     mauvaises.sort((a, b) => (parseFloat(a.mensualite) || 0) - (parseFloat(b.mensualite) || 0));
-    document.getElementById('s2-liste-label').textContent = 'Ordre d\'attaque — Boule de neige';
+    document.getElementById('s2-liste-label').textContent = 'Ordre d\'attaque : Boule de neige';
   } else {
     // Tri par TAEG décroissant (le plus élevé en premier)
     // Si TAEG manquant : on utilise le taux par défaut du DETTE_CONFIG (indicatif)
@@ -2354,7 +2573,7 @@ function renderMauvaisesList(methode) {
       const taegB = parseFloat(b.taeg) || (DETTE_CONFIG[b.type] || {}).taux || 0;
       return taegB - taegA;
     });
-    document.getElementById('s2-liste-label').textContent = 'Ordre d\'attaque — Avalanche';
+    document.getElementById('s2-liste-label').textContent = 'Ordre d\'attaque : Avalanche';
   }
 
   const list = document.getElementById('s2-mauvaises-list');
@@ -2372,9 +2591,9 @@ function renderMauvaisesList(methode) {
     // Détail selon méthode
     let detail;
     if (methode === 'boule_de_neige') {
-      detail = mens > 0 ? `${mens.toFixed(0)} €/mois — solder en premier` : 'Mensualité à renseigner';
+      detail = mens > 0 ? `${mens.toFixed(0)} €/mois, solder en premier` : 'Mensualité à renseigner';
     } else {
-      detail = taeg ? `TAEG ${taeg.toFixed(2)}% — le plus coûteux` : (DETTE_CONFIG[d.type] || {}).taux ? `TAEG indicatif ~${(DETTE_CONFIG[d.type] || {}).taux}%` : 'TAEG inconnu';
+      detail = taeg ? `TAEG ${taeg.toFixed(2)}%, le plus coûteux` : (DETTE_CONFIG[d.type] || {}).taux ? `TAEG indicatif ~${(DETTE_CONFIG[d.type] || {}).taux}%` : 'TAEG inconnu';
     }
 
     const row = document.createElement('div');
@@ -2460,7 +2679,7 @@ function checkSurplusEpargne() {
       const ctxCard = document.getElementById('s2-ctx-card');
       const ctxText = document.getElementById('s2-ctx-text');
       ctxCard.style.display = 'flex';
-      ctxText.innerHTML = `Épargne actuelle : <strong>${epargneActuelle.toFixed(0)} €</strong> &mdash; matelas cible : <strong>${matelas.toFixed(0)} €</strong>. Surplus disponible : <strong>${surplus.toFixed(0)} €</strong>.`;
+      ctxText.innerHTML = `Épargne actuelle : <strong>${epargneActuelle.toFixed(0)} €</strong>, matelas cible : <strong>${matelas.toFixed(0)} €</strong>. Surplus disponible : <strong>${surplus.toFixed(0)} €</strong>.`;
     } else {
       card.style.display = 'none';
       document.getElementById('s2-ctx-card').style.display = 'none';

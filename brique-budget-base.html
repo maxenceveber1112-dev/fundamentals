@@ -623,70 +623,85 @@
   html.dark .levier-cta { color:#A78BFA; }
   #leviers-kicker { font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:0.75rem; display:none; }
 
-  /* ── Screen 3 — Dettes ── */
+  /* ── Screen 3 — Dettes (design unifié avec brique dettes) ── */
   .dette-row {
-    display:flex; align-items:flex-start; gap:0.625rem;
-    padding:0.875rem 1rem;
     background:var(--surface-2);
     border:1px solid var(--border-subtle);
-    border-radius:0.875rem;
+    border-radius:var(--r-lg);
+    padding:1rem 1.125rem;
+    display:flex; flex-direction:column; gap:0.75rem;
     transition:border-color var(--t);
     animation:fadeSlideUp 0.3s var(--ease-out) both;
   }
   .dette-row:hover { border-color:var(--border-mid); }
-  .dette-row-icon { font-size:1.125rem; flex-shrink:0; line-height:1; margin-top:2px; }
-  .dette-row-body { flex:1; min-width:0; display:flex; flex-direction:column; gap:0.375rem; }
-  .dette-row-fields { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
-  @media(max-width:520px) { .dette-row-fields { grid-template-columns:1fr; } }
-  .dette-row-select {
-    padding:0.45rem 0.75rem;
-    background:var(--surface-3); border:1px solid var(--border-mid);
-    border-radius:var(--r-sm); color:var(--text);
-    font-size:0.85rem; font-family:inherit; cursor:pointer;
-    transition:border-color var(--t);
+  .dette-row-top { display:flex; gap:0.75rem; align-items:center; }
+  .dette-dot {
+    width:12px; height:12px; border-radius:50%; flex-shrink:0;
+    transition:background 0.3s;
   }
-  .dette-row-select:focus { outline:none; border-color:var(--accent-strong); }
-  .dette-row-input {
-    padding:0.45rem 0.75rem;
-    background:var(--surface-3); border:1px solid var(--border-mid);
-    border-radius:var(--r-sm); color:var(--text);
-    font-size:0.85rem; font-family:inherit;
-    transition:border-color var(--t);
+  .dette-dot.vert   { background:#22C55E; }
+  .dette-dot.jaune  { background:#FBBF24; }
+  .dette-dot.orange { background:#FB923C; }
+  .dette-dot.rouge  { background:#F87171; }
+  .dette-select {
+    flex:1;
+    background:var(--bg-elevated); border:1.5px solid var(--border-mid);
+    border-radius:var(--r-md); padding:0.625rem 0.875rem;
+    font-size:0.9rem; color:var(--text); font-family:inherit;
+    cursor:pointer; transition:border-color 0.15s, box-shadow 0.15s;
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 0.75rem center;
+    padding-right:2.25rem;
   }
-  .dette-row-input:focus { outline:none; border-color:var(--accent-strong); }
-  .dette-row-input::placeholder { color:var(--text-faint); }
+  html.dark .dette-select { background-color:var(--surface-2); }
+  .dette-select:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+
+  .dette-fields { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.625rem; }
+  @media(max-width:520px) {
+    .dette-fields { grid-template-columns:1fr 1fr; }
+    .dette-fields .dette-input-wrap:last-child { grid-column:1 / -1; }
+  }
+  .dette-input-wrap { position:relative; }
+  .dette-input {
+    width:100%;
+    background:var(--bg-elevated); border:1.5px solid var(--border-mid);
+    border-radius:var(--r-md); padding:0.625rem 2.5rem 0.625rem 0.875rem;
+    font-size:0.9rem; color:var(--text); font-family:inherit;
+    transition:border-color 0.15s, box-shadow 0.15s;
+  }
+  .dette-input::placeholder { color:var(--text-faint); }
+  .dette-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+  .dette-input-suffix {
+    position:absolute; right:0.75rem; top:50%; transform:translateY(-50%);
+    font-size:0.8rem; color:var(--text-faint); pointer-events:none;
+  }
+
+  .dette-classification {
+    display:flex; align-items:center; gap:0.5rem; margin-top:0.125rem;
+    min-height:1.5rem; transition:all 0.3s;
+  }
+  .dette-badge {
+    border-radius:9999px; font-size:0.7rem; font-weight:700;
+    padding:0.2rem 0.625rem;
+    transition:all 0.3s;
+  }
+  .dette-badge.vert   { background:rgba(34,197,94,0.10);  color:#22C55E; }
+  .dette-badge.jaune  { background:rgba(251,191,36,0.12); color:#92400E; }
+  html.dark .dette-badge.jaune { color:#FDE68A; }
+  .dette-badge.orange { background:rgba(251,146,60,0.12); color:#FB923C; }
+  .dette-badge.rouge  { background:rgba(248,113,113,0.12);color:#F87171; }
+  .dette-badge-text { font-size:0.78rem; color:var(--text-muted); font-style:italic; }
+
   .dette-row-delete {
-    font-size:1.25rem; color:var(--text-faint); padding:0.25rem;
-    border-radius:var(--r-sm); transition:color var(--t), background var(--t);
-    flex-shrink:0; align-self:center;
+    width:28px; height:28px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-faint); font-size:1rem; line-height:1;
+    transition:color var(--t), background var(--t);
+    background:transparent; border:none;
   }
   .dette-row-delete:hover { color:var(--red); background:rgba(248,113,113,0.08); }
-  .dette-classification {
-    display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;
-    padding-top:0.25rem;
-  }
-
-  /* Badges statut dette */
-  .badge-dette {
-    font-size:0.6875rem; font-weight:600; letter-spacing:0.06em;
-    border-radius:9999px; padding:0.2rem 0.5rem; white-space:nowrap;
-  }
-  .badge-dette.vert  { color:var(--green);   background:rgba(34,197,94,0.08); }
-  .badge-dette.jaune { color:#FBBF24;         background:rgba(251,191,36,0.10); }
-  .badge-dette.orange{ color:#FB923C;          background:rgba(251,146,60,0.12); }
-  .badge-dette.rouge { color:#F87171;           background:rgba(248,113,113,0.12); }
-
-  .dette-cta {
-    font-size:0.75rem; font-weight:600; color:var(--accent-strong);
-    padding:0.2rem 0.5rem; border-radius:9999px;
-    border:1px solid var(--accent-soft);
-    transition:background var(--t);
-    white-space:nowrap;
-  }
-  html.dark .dette-cta { color:#A78BFA; border-color:rgba(167,139,250,0.2); }
-  .dette-cta:hover { background:var(--accent-soft); }
-
-  .dette-msg { font-size:0.78rem; color:var(--text-muted); font-style:italic; }
 
   .add-dette-btn {
     display:flex; align-items:center; gap:0.5rem;
@@ -1050,7 +1065,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
           <div class="brick-card">
             <div class="brick-kicker">ÉTAPE 1 / 4 · CE QUI RENTRE ET CE QUI PART</div>
             <h2 class="brick-title">D'abord, posons les bases.</h2>
-            <p class="brick-subtitle">Commence par tes chiffres principaux — tu pourras affiner ensuite.</p>
+            <p class="brick-subtitle">Commence par tes chiffres principaux : tu pourras affiner ensuite.</p>
 
             <div style="display:flex;flex-direction:column;gap:1.25rem;" id="bloc-1">
 
@@ -1131,7 +1146,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                   oninput="checkEpargne()" />
                 <div class="nudge-epargne" id="nudge-epargne">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                  Pas encore — ce n'est pas grave.
+                  Pas encore, ce n'est pas grave.
                 </div>
               </div>
 
@@ -1232,7 +1247,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             <!-- Card "pas de dette" -->
             <div id="no-dette-card" style="display:none;" class="no-dette-card">
               <span style="font-size:1.25rem;">✅</span>
-              <span>Pas de dette — excellente base. Tu peux quand même ajouter si tu en as oublié une.</span>
+              <span>Pas de dette : excellente base. Tu peux quand même ajouter si tu en as oublié une.</span>
             </div>
 
             <!-- Info pour dettes oubliées dans l'onboarding -->
@@ -1241,7 +1256,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                 Tu as oublié quelque chose dans l'onboarding ?
               </button>
               <div class="dette-oublie-tip" id="dette-oublie-tip">
-                Pas de problème — le bouton ci-dessous te permet d'ajouter n'importe quel type de crédit ou engagement. Tout sera pris en compte dans l'analyse.
+                Pas de problème : le bouton ci-dessous te permet d'ajouter n'importe quel type de crédit ou engagement. Tout sera pris en compte dans l'analyse.
               </div>
             </div>
 
@@ -1326,7 +1341,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             <div>
               <div class="priorites-kicker" id="priorites-kicker"></div>
               <h3 style="font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;font-style:italic;color:var(--text);margin-bottom:0.25rem;">Tes 3 priorités pour ce mois.</h3>
-              <p style="font-size:0.8125rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.55;">Basées sur ta situation réelle — dans l'ordre qui fait le plus de différence.</p>
+              <p style="font-size:0.8125rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.55;">Basées sur ta situation réelle, dans l'ordre qui fait le plus de différence.</p>
               <div class="priorites-list" id="priorites-list"></div>
             </div>
 
@@ -2048,7 +2063,7 @@ function buildScreen2() {
     document.getElementById('dettes-confirm-bar').style.display = 'block';
     profilDettes.forEach(type => {
       if (!budgetData.dettes.find(d => d.type === type)) {
-        budgetData.dettes.push({ type, montant_mensuel: 0, taeg: null, classification: type, routing_cible: DETTE_CLASSIFICATION[type]?.cta || null });
+        budgetData.dettes.push({ type, montant_mensuel: 0, taeg: null, duree_mois: null, classification: type, routing_cible: DETTE_CLASSIFICATION[type]?.cta || null });
       }
     });
   }
@@ -2231,9 +2246,9 @@ function buildMsgCards() {
 
   const msgMap = {
     deficit:         { border:'var(--red)',              kicker:'⚠️ DÉFICIT',        text:"Tu dépenses plus que tu gagnes. Avant tout le reste, il faut retrouver l'équilibre." },
-    deficit_couvert: { border:'rgba(245,158,11,0.4)',    kicker:'⚠️ ATTENTION',      text:"Tes charges dépassent tes revenus hors épargne. C'est ton épargne qui équilibre — ce n'est pas tenable sur le long terme." },
+    deficit_couvert: { border:'rgba(245,158,11,0.4)',    kicker:'⚠️ ATTENTION',      text:"Tes charges dépassent tes revenus hors épargne. C'est ton épargne qui équilibre, ce n'est pas tenable sur le long terme." },
     tendu:           { border:'var(--dot-construction)', kicker:'BUDGET TENDU',      text:"Ton budget est peu flexible. La priorité : retrouver de l'air, pas encore investir." },
-    equilibre:   { border:'var(--dot-construction)', kicker:'BUDGET ÉQUILIBRÉ',  text:"Ton budget tient — l'objectif maintenant : consolider ton épargne." },
+    equilibre:   { border:'var(--dot-construction)', kicker:'BUDGET ÉQUILIBRÉ',  text:"Ton budget tient. L'objectif maintenant : consolider ton épargne." },
     aise:        { border:'var(--green)',            kicker:'✅ BONNE POSITION',  text:"Tu gères bien. Prochaine étape : faire travailler ton argent." },
     confortable: { border:'var(--green)',            kicker:'✅ BONNE POSITION',  text:"Tu es en bonne position. L'étape suivante : optimiser et faire travailler ton épargne." },
   };
@@ -2517,39 +2532,52 @@ function renderDettes() {
     const row = document.createElement('div');
     row.className = 'dette-row';
     row.innerHTML = `
-      <div class="dette-row-icon">${clf.emoji}</div>
-      <div class="dette-row-body">
-        <div class="dette-row-fields">
-          <select class="dette-row-select" onchange="updateDetteType(${idx},this.value)">
-            ${DETTE_TYPES.map(t => `<option value="${t.val}" ${t.val === d.type ? 'selected' : ''}>${t.label}</option>`).join('')}
-          </select>
-          <input type="number" class="dette-row-input" placeholder="Mensualité (€)" value="${d.montant_mensuel || ''}" min="0"
-            oninput="updateDetteMontant(${idx},this.value)" />
+      <div class="dette-row-top">
+        <div class="dette-dot ${clf.badge}"></div>
+        <select class="dette-select" onchange="updateDetteType(${idx},this.value)">
+          ${DETTE_TYPES.map(t => `<option value="${t.val}" ${t.val === d.type ? 'selected' : ''}>${t.label}</option>`).join('')}
+        </select>
+        <button class="dette-row-delete" onclick="removeDette(${idx})" aria-label="Supprimer">×</button>
+      </div>
+      <div class="dette-fields">
+        <div class="dette-input-wrap">
+          <input class="dette-input" type="number" placeholder="Mensualité" value="${d.montant_mensuel || ''}" min="0"
+            oninput="updateDetteMontant(${idx},this.value)">
+          <span class="dette-input-suffix">€/mois</span>
         </div>
-        <div class="dette-row-fields" style="margin-top:0.25rem;">
-          <input type="number" class="dette-row-input" placeholder="TAEG % (optionnel)" value="${d.taeg || ''}" step="0.1" min="0"
-            oninput="updateDetteTaeg(${idx},this.value)" style="grid-column:span 2;" />
+        <div class="dette-input-wrap">
+          <input class="dette-input" type="number" placeholder="TAEG" value="${d.taeg || ''}" step="0.1" min="0"
+            oninput="updateDetteTaeg(${idx},this.value)">
+          <span class="dette-input-suffix">%</span>
         </div>
-        <div class="dette-classification">
-          <span class="badge-dette ${clf.badge}">${clf.label}</span>
-          <span class="dette-msg">${clf.msg}</span>
-          ${clf.bientot ? `<span class="dette-cta" style="opacity:0.4;cursor:not-allowed;pointer-events:none;">Voir la brique (bientôt)</span>` : clf.cta ? `<a href="${clf.cta}" class="dette-cta">Voir la brique →</a>` : ''}
+        <div class="dette-input-wrap">
+          <input class="dette-input" type="number" placeholder="Durée" value="${d.duree_mois || ''}" min="0"
+            oninput="updateDetteDuree(${idx},this.value)">
+          <span class="dette-input-suffix">mois</span>
         </div>
       </div>
-      <button class="dette-row-delete" onclick="removeDette(${idx})" aria-label="Supprimer">×</button>
+      <div class="dette-classification">
+        <span class="dette-badge ${clf.badge}">${clf.label}</span>
+        <span class="dette-badge-text">${clf.msg}</span>
+      </div>
     `;
     list.appendChild(row);
   });
 }
 
+function saveDettesProgress() {
+  if (typeof autosaveBrickProgress === 'function') autosaveBrickProgress(BRICK_ID, currentScreen, budgetData);
+}
+
 function addDette() {
-  budgetData.dettes.push({ type:'autre', montant_mensuel:0, taeg:null, classification:'autre', routing_cible:null });
+  budgetData.dettes.push({ type:'autre', montant_mensuel:0, taeg:null, duree_mois:null, classification:'autre', routing_cible:null });
   renderDettes();
 }
 
 function removeDette(idx) {
   budgetData.dettes.splice(idx, 1);
   renderDettes();
+  saveDettesProgress();
 }
 
 function updateDetteType(idx, type) {
@@ -2557,14 +2585,22 @@ function updateDetteType(idx, type) {
   budgetData.dettes[idx].classification = type;
   budgetData.dettes[idx].routing_cible = DETTE_CLASSIFICATION[type]?.cta || null;
   renderDettes();
+  saveDettesProgress();
 }
 
 function updateDetteMontant(idx, val) {
   budgetData.dettes[idx].montant_mensuel = parseFloat(val) || 0;
+  saveDettesProgress();
 }
 
 function updateDetteTaeg(idx, val) {
   budgetData.dettes[idx].taeg = parseFloat(val) || null;
+  saveDettesProgress();
+}
+
+function updateDetteDuree(idx, val) {
+  budgetData.dettes[idx].duree_mois = parseInt(val) || null;
+  saveDettesProgress();
 }
 
 function resetDettes() {
@@ -2831,9 +2867,9 @@ function openModalFin() {
     if (situation === 'deficit_couvert')
       subEl.textContent = 'Ton épargne équilibre ton budget pour l\'instant. Objectif : rééquilibrer tes charges.';
     else if (reste < 0)
-      subEl.textContent = 'Déficit de ' + formatEuro(Math.abs(reste)) + '/mois identifié — la prochaine brique t\'aide à le résorber.';
+      subEl.textContent = 'Déficit de ' + formatEuro(Math.abs(reste)) + '/mois identifié : la prochaine brique t\'aide à le résorber.';
     else if (reste < totalRev * 0.10)
-      subEl.textContent = 'Budget serré mais cartographié. ' + formatEuro(reste) + '/mois de marge — on va l\'optimiser.';
+      subEl.textContent = 'Budget serré mais cartographié. ' + formatEuro(reste) + '/mois de marge : on va l\'optimiser.';
     else
       subEl.textContent = formatEuro(reste) + '/mois disponibles. Voici comment les orienter intelligemment.';
   }
@@ -2842,7 +2878,7 @@ function openModalFin() {
     const target = budgetData.brique_recommandee;
     const file   = target && typeof BRICK_FILES !== 'undefined' ? BRICK_FILES[target] : null;
     const whyMessages = {
-      'fonds_urgence':         'Tu as de la marge — c\'est le moment idéal pour construire ton épargne de précaution.',
+      'fonds_urgence':         'Tu as de la marge : c\'est le moment idéal pour construire ton épargne de précaution.',
       'gestion_decouvert':     'Tes crédits pèsent sur ton budget. Cette brique t\'aide à reprendre le contrôle.',
       'paiements_fractionnes': 'Les paiements fractionnés s\'accumulent silencieusement. Cette brique fait le point.',
       'premiers_pas_bancaires':'Optimiser tes frais bancaires libère 15–30€/mois sans effort.',
@@ -2880,7 +2916,7 @@ function imprimerBilan() {
   var prioritesHtml = (budgetData.priorites || []).map(function(p,i){
     return '<div class="pb-priorite"><div class="pb-priorite-num">Priorité '+(i+1)+'</div><div class="pb-priorite-titre">'+p.titre+'</div><div class="pb-priorite-horizon">'+p.horizon+'</div></div>';
   }).join('');
-  el.innerHTML = '<h1>Mon bilan budget</h1><div class="pb-date">Établi le '+now+' — Fundamental</div>'
+  el.innerHTML = '<h1>Mon bilan budget</h1><div class="pb-date">Établi le '+now+' · Fundamental</div>'
     +'<div class="pb-section"><div class="pb-section-title">Revenus</div>'
     +'<div class="pb-row"><span class="pb-row-label">Revenus nets</span><span class="pb-row-val">'+formatEuro(budgetData.revenus||0)+'/mois</span></div>'
     +(budgetData.aides>0?'<div class="pb-row"><span class="pb-row-label">Aides / allocations</span><span class="pb-row-val">'+formatEuro(budgetData.aides)+'/mois</span></div>':'')
