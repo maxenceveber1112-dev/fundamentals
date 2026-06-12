@@ -209,6 +209,122 @@
       color: var(--text-muted, #78716C);
     }
     html.dark .profil-feature em { color: var(--text-muted, #A1A1AA); }
+
+    /* ── Section données & confidentialité ── */
+    .profil-legal {
+      max-width: 520px;
+      margin: 2rem auto 0;
+    }
+    .profil-legal-title {
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-faint, #A8A29E);
+      margin-bottom: 1rem;
+    }
+    html.dark .profil-legal-title { color: var(--text-faint, #71717A); }
+
+    .profil-legal-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--surface-1, #FFFFFF);
+      border: 1px solid var(--border, rgba(28,25,23,.07));
+      border-radius: 12px;
+      margin-bottom: .625rem;
+      font-size: .875rem;
+    }
+    html.dark .profil-legal-row {
+      background: rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.06);
+    }
+    .profil-legal-row-label { font-weight: 500; color: var(--text); }
+    .profil-legal-row-sub { font-size: .78rem; color: var(--text-muted); margin-top: .1rem; }
+    .profil-legal-link {
+      font-size: .8125rem;
+      color: var(--accent-strong, #5B21B6);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .profil-legal-link:hover { text-decoration: underline; }
+
+    /* danger zone */
+    .profil-danger-zone {
+      max-width: 520px;
+      margin: 1.5rem auto 0;
+      border: 1px solid rgba(248,113,113,.25);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .profil-danger-title {
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--red, #f87171);
+      margin-bottom: .75rem;
+    }
+    .profil-danger-desc {
+      font-size: .8125rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      line-height: 1.55;
+    }
+    .btn-danger {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .5rem 1rem;
+      background: transparent;
+      border: 1px solid rgba(248,113,113,.45);
+      border-radius: 8px;
+      color: var(--red, #f87171);
+      font-size: .8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .btn-danger:hover { background: rgba(248,113,113,.08); border-color: rgba(248,113,113,.7); }
+    .btn-danger:disabled { opacity: .5; cursor: not-allowed; }
+
+    .profil-confirm-box {
+      display: none;
+      margin-top: .75rem;
+      padding: .875rem 1rem;
+      background: rgba(248,113,113,.07);
+      border: 1px solid rgba(248,113,113,.2);
+      border-radius: 8px;
+      font-size: .8125rem;
+      color: var(--text-muted);
+    }
+    .profil-confirm-box p { margin-bottom: .75rem; line-height: 1.5; }
+    .profil-confirm-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .btn-confirm-delete {
+      padding: .45rem .9rem;
+      background: #f87171;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .btn-confirm-delete:hover { opacity: .85; }
+    .btn-confirm-delete:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-cancel {
+      padding: .45rem .9rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      font-size: .8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .btn-cancel:hover { border-color: var(--border-hover); color: var(--text); }
   </style>
 </head>
 <body>
@@ -249,6 +365,56 @@
       </li>
     </ul>
   </div>
+
+  <!-- Section données & confidentialité -->
+  <div class="profil-legal">
+    <p class="profil-legal-title">Données &amp; confidentialité</p>
+
+    <div class="profil-legal-row">
+      <div>
+        <div class="profil-legal-row-label">Politique de confidentialité</div>
+        <div class="profil-legal-row-sub">Comment nous traitons tes données personnelles</div>
+      </div>
+      <a href="confidentialite.html" class="profil-legal-link">Consulter →</a>
+    </div>
+
+    <div class="profil-legal-row">
+      <div>
+        <div class="profil-legal-row-label">Conditions générales d'utilisation</div>
+        <div class="profil-legal-row-sub">Règles d'utilisation de la plateforme</div>
+      </div>
+      <a href="cgu.html" class="profil-legal-link">Consulter →</a>
+    </div>
+
+    <div class="profil-legal-row">
+      <div>
+        <div class="profil-legal-row-label">Demander mes données (portabilité)</div>
+        <div class="profil-legal-row-sub">Art. 20 RGPD — reçois une copie par e-mail</div>
+      </div>
+      <a href="mailto:hello@fundamental.app?subject=Demande%20de%20portabilit%C3%A9%20RGPD" class="profil-legal-link">Contacter →</a>
+    </div>
+  </div>
+
+  <!-- Zone de danger — suppression du compte -->
+  <div class="profil-danger-zone">
+    <p class="profil-danger-title">Zone de danger</p>
+    <p class="profil-danger-desc">
+      Supprimer mes données efface définitivement ton profil, ta progression et toutes tes simulations sauvegardées. Cette action est <strong>irréversible</strong>. Ton compte e-mail restera actif ; tu pourras te réinscrire.
+    </p>
+    <button class="btn-danger" id="btn-delete-init" onclick="showDeleteConfirm()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      Supprimer mes données
+    </button>
+
+    <div class="profil-confirm-box" id="delete-confirm-box">
+      <p>Es-tu sûr(e) ? Toutes tes briques, ton profil et ta progression seront supprimés. <strong>Impossible d'annuler.</strong></p>
+      <div class="profil-confirm-actions">
+        <button class="btn-confirm-delete" id="btn-delete-confirm" onclick="executeDeleteData()">Oui, supprimer définitivement</button>
+        <button class="btn-cancel" onclick="hideDeleteConfirm()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <!-- Scripts (ordre invariant) -->
@@ -266,6 +432,32 @@
       if (!user) return;
     }
   })();
+
+  function showDeleteConfirm() {
+    document.getElementById('delete-confirm-box').style.display = 'block';
+    document.getElementById('btn-delete-init').style.display = 'none';
+  }
+
+  function hideDeleteConfirm() {
+    document.getElementById('delete-confirm-box').style.display = 'none';
+    document.getElementById('btn-delete-init').style.display = 'inline-flex';
+  }
+
+  async function executeDeleteData() {
+    const btn = document.getElementById('btn-delete-confirm');
+    btn.disabled = true;
+    btn.textContent = 'Suppression en cours…';
+    try {
+      if (typeof resetUserData === 'function') {
+        await resetUserData();
+      }
+      window.location.href = 'auth.html';
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Oui, supprimer définitivement';
+      alert('Une erreur est survenue. Réessaie ou contacte hello@fundamental.app.');
+    }
+  }
 </script>
 </body>
 </html>

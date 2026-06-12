@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamental — Politique de confidentialité</title>
+  <script>
+  (function() {
+    var saved = localStorage.getItem('fund_theme');
+    if (saved === 'bright') document.documentElement.classList.add('theme-bright');
+  })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0f1a;
+      --bg-elevated: #1a1a2e;
+      --text: #F5F5F4;
+      --text-secondary: #D4D4D8;
+      --text-muted: #A1A1AA;
+      --accent: #8b5cf6;
+      --accent-strong: #A78BFA;
+      --border: rgba(255,255,255,0.06);
+      --surface: rgba(255,255,255,0.04);
+    }
+    .theme-bright {
+      --bg: #FAFAF9;
+      --bg-elevated: #FFFFFF;
+      --text: #1C1C1E;
+      --text-secondary: #3C3C43;
+      --text-muted: #6C6C70;
+      --border: rgba(0,0,0,0.08);
+      --surface: rgba(0,0,0,0.03);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem 4rem;
+    }
+    .page-wrap { max-width: 720px; margin: 0 auto; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 2.5rem;
+      transition: color 150ms;
+    }
+    .back-link:hover { color: var(--accent-strong); }
+    h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .meta { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2.5rem; }
+    h2 { font-size: 1.05rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.6rem; }
+    h3 { font-size: 0.95rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.4rem; color: var(--text-secondary); }
+    p, li { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.75rem; }
+    ul { padding-left: 1.4rem; margin-bottom: 0.75rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--accent-strong); text-decoration: underline; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      vertical-align: top;
+    }
+    th { font-weight: 600; color: var(--text); background: var(--surface); }
+    .badge {
+      display: inline-block;
+      background: rgba(139,92,246,0.14);
+      color: var(--accent-strong);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .rights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .right-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+    }
+    .right-card strong { display: block; font-size: 0.8rem; margin-bottom: 0.2rem; color: var(--text); }
+    .right-card span { color: var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <a href="auth.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Retour
+  </a>
+
+  <span class="badge">RGPD — Art. 13 & 14</span>
+  <h1>Politique de confidentialité</h1>
+  <p class="meta">Dernière mise à jour : juin 2025 &nbsp;·&nbsp; Applicable à tous les utilisateurs du Service</p>
+
+  <h2>1. Responsable de traitement</h2>
+  <p><strong>Fundamental SAS</strong><br>
+  Contact : <a href="mailto:hello@fundamental.app">hello@fundamental.app</a><br>
+  Hébergement des données : Supabase Inc. (base de données PostgreSQL, serveurs en UE) &amp; Netlify Inc. (hébergement statique, serveurs en UE).</p>
+
+  <h2>2. Données collectées et finalités</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Catégorie</th>
+        <th>Données</th>
+        <th>Finalité</th>
+        <th>Base légale</th>
+        <th>Durée</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Compte</td>
+        <td>Adresse e-mail, mot de passe (haché)</td>
+        <td>Authentification et sécurité du compte</td>
+        <td>Exécution du contrat</td>
+        <td>Durée du compte + 30 jours</td>
+      </tr>
+      <tr>
+        <td>Profil pédagogique</td>
+        <td>Tranche d'âge, situation professionnelle, revenus (fourchette), logement, objectifs, niveau de confort numérique</td>
+        <td>Personnalisation du parcours pédagogique</td>
+        <td>Exécution du contrat</td>
+        <td>Durée du compte</td>
+      </tr>
+      <tr>
+        <td>Données de simulation</td>
+        <td>Données saisies dans les briques (budget, emprunts, épargne…)</td>
+        <td>Affichage des simulations et suivi de progression</td>
+        <td>Exécution du contrat</td>
+        <td>Durée du compte</td>
+      </tr>
+      <tr>
+        <td>Feedback bêta</td>
+        <td>Note, message libre, page visitée, user-agent</td>
+        <td>Amélioration du Service</td>
+        <td>Intérêt légitime</td>
+        <td>24 mois</td>
+      </tr>
+      <tr>
+        <td>Logs techniques</td>
+        <td>Adresse IP (serveurs Netlify/Supabase), timestamps de connexion</td>
+        <td>Sécurité, débogage, lutte contre la fraude</td>
+        <td>Intérêt légitime / obligation légale</td>
+        <td>12 mois</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Aucune donnée financière précise n'est collectée</strong> (pas de IBAN, numéro de carte, solde bancaire réel). Les montants saisis dans les simulations sont des estimations déclaratives.</p>
+
+  <h2>3. Partage des données</h2>
+  <p>Vos données ne sont jamais vendues à des tiers. Elles peuvent être partagées avec :</p>
+  <ul>
+    <li><strong>Supabase Inc.</strong> — hébergement de la base de données (sous-traitant, DPA signé, serveurs UE)</li>
+    <li><strong>Netlify Inc.</strong> — hébergement des pages et fichiers statiques (sous-traitant, DPA signé, serveurs UE)</li>
+    <li><strong>Google LLC</strong> — polices de caractères chargées via Google Fonts (transfert d'IP lors du chargement des pages) — <em>à vérifier : envisager l'auto-hébergement des fontes pour supprimer ce transfert</em></li>
+    <li>Les autorités compétentes, sur réquisition judiciaire</li>
+  </ul>
+
+  <h2>4. Transferts hors UE</h2>
+  <p>Supabase et Netlify hébergent les données dans l'UE. Google Fonts peut entraîner un transfert de l'adresse IP vers les États-Unis lors du chargement des pages ; ce transfert est couvert par les Clauses Contractuelles Types (CCT) de la Commission européenne.</p>
+
+  <h2>5. Cookies et stockage local</h2>
+  <p>Le Service utilise le stockage local du navigateur (<code>localStorage</code> / <code>sessionStorage</code>) pour :</p>
+  <ul>
+    <li>Maintenir la session d'authentification (<code>fund_auth</code>)</li>
+    <li>Sauvegarder la préférence de thème (<code>fund_theme</code>)</li>
+    <li>Mémoriser l'affichage du tour de bienvenue</li>
+  </ul>
+  <p>Ces données restent sur votre appareil et ne sont pas transmises à des tiers. Aucun cookie de pistage ou de publicité n'est utilisé.</p>
+
+  <h2>6. Vos droits (RGPD art. 15–22)</h2>
+  <div class="rights-grid">
+    <div class="right-card"><strong>Accès (art. 15)</strong><span>Obtenir une copie de vos données</span></div>
+    <div class="right-card"><strong>Rectification (art. 16)</strong><span>Corriger des données inexactes</span></div>
+    <div class="right-card"><strong>Effacement (art. 17)</strong><span>Supprimer vos données</span></div>
+    <div class="right-card"><strong>Limitation (art. 18)</strong><span>Geler le traitement de vos données</span></div>
+    <div class="right-card"><strong>Portabilité (art. 20)</strong><span>Recevoir vos données dans un format lisible</span></div>
+    <div class="right-card"><strong>Opposition (art. 21)</strong><span>Vous opposer au traitement fondé sur intérêt légitime</span></div>
+  </div>
+  <p>Pour exercer ces droits, écrivez à <a href="mailto:hello@fundamental.app">hello@fundamental.app</a> en précisant votre demande. Vous pouvez également supprimer l'ensemble de vos données depuis votre profil (section « Supprimer mes données »). Nous répondons dans un délai d'un mois maximum.</p>
+  <p>En cas de réclamation non résolue, vous pouvez saisir la <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener">CNIL</a>.</p>
+
+  <h2>7. Sécurité</h2>
+  <p>Vos données sont protégées par :</p>
+  <ul>
+    <li>Chiffrement TLS en transit</li>
+    <li>Row Level Security (RLS) Supabase : chaque utilisateur ne peut accéder qu'à ses propres données</li>
+    <li>Mots de passe hachés par Supabase Auth (bcrypt)</li>
+    <li>Accès à la base de données limité à l'équipe Fundamental via des rôles restreints</li>
+  </ul>
+
+  <h2>8. Mineurs</h2>
+  <p>Le Service est accessible dès 15 ans. Pour les utilisateurs de 15 à 17 ans, l'accord d'un représentant légal est requis. Aucune donnée ne sera collectée sciemment auprès d'un enfant de moins de 15 ans ; tout compte identifié comme tel sera supprimé.</p>
+
+  <h2>9. Modifications</h2>
+  <p>Toute modification substantielle de cette politique sera notifiée par e-mail avant son entrée en vigueur. La version en vigueur est toujours accessible sur cette page.</p>
+
+  <hr>
+  <p style="font-size:0.8rem;color:var(--text-muted);">Contact DPO / données personnelles : <a href="mailto:hello@fundamental.app">hello@fundamental.app</a></p>
+
+</div>
+</body>
+</html>

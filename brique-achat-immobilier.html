@@ -4688,7 +4688,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
             <!-- BLOC 2 : 3 cards atteignables (avec bouton "Changer") -->
             <div class="s5-block">
               <div class="s5-block-header">
-                <div class="s5-block-kicker">● 3 typologies sur ta commune</div>
+                <div class="s5-block-kicker">● 3 typologies dans ce département</div>
                 <button type="button" class="s5-change-btn" id="s5-change-btn" onclick="s5OpenTypoModal()" aria-haspopup="dialog" aria-controls="s5-typo-modal">
                   <span id="s5-change-btn-label">Changer de typologie</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -5046,7 +5046,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="s7-revente-detail">
                   <span id="s7-revente-crd"><strong>Capital restant dû :</strong> —</span>
                   <span id="s7-revente-frais"><strong>Frais agence (5 %) :</strong> —</span>
-                  <span><strong>IRPP plus-value :</strong> exonéré (RP)</span>
+                  <span id="s7-revente-pv"><strong>IRPP plus-value :</strong> exonéré (RP)</span>
                 </div>
               </div>
 
@@ -7524,10 +7524,11 @@ function s7BuildProjection() {
   }
   if (emprunt <= 0) return; // Rien à afficher
 
-  var taux = n(S.taux) || 3.8;
+  var taux = n(S.taux) || 3.0;
   var duree = n(S.duree) || 25;
-  var assRate = 0.36; // assurance % du capital initial / an
-  // Si S.assurance définie en €/mois, on convertit
+  // Taux assurance par défaut selon la tranche d'âge (en % du capital / an)
+  var assRate = (ASSURANCE_RATES[S.ageGroup] || 0.0020) * 100;
+  // Si S.assurance saisie en €/mois, on l'utilise en priorité
   if (S.assurance && emprunt > 0) {
     var assMois = n(S.assurance);
     if (assMois > 0) assRate = (assMois * 12 / emprunt) * 100;
@@ -7676,6 +7677,26 @@ function s7UpdateRevente(year) {
   if (crdEl) crdEl.innerHTML = '<strong>Capital restant dû :</strong> ' + fmt(Math.round(crd));
   var fraisEl = document.getElementById('s7-revente-frais');
   if (fraisEl) fraisEl.innerHTML = '<strong>Frais agence (5 %) :</strong> –' + fmt(Math.round(frais));
+
+  // Fiscalité plus-value selon le type de projet (à vérifier avec un CGP)
+  var pvEl = document.getElementById('s7-revente-pv');
+  if (pvEl) {
+    var isLocatif = S.projectType === 'investissement_locatif' || S.usage === 'locatif';
+    var isSecondaire = S.projectType === 'residence_secondaire';
+    var pvText;
+    if (isLocatif || isSecondaire) {
+      if (year >= 30) {
+        pvText = 'exonéré IR + PS (>30 ans de détention)';
+      } else if (year >= 22) {
+        pvText = 'exonéré IR (>22 ans) · PS partiellement réduits';
+      } else {
+        pvText = 'taxable · 19 % IR + 17,2 % PS · abattements dès 6 ans';
+      }
+    } else {
+      pvText = 'exonéré (résidence principale)';
+    }
+    pvEl.innerHTML = '<strong>IRPP plus-value :</strong> ' + pvText;
+  }
 
   // Met à jour le gradient du slider
   var slider = document.getElementById('s7-revente-slider');

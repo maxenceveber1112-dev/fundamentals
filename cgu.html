@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fundamental — Conditions Générales d'Utilisation</title>
+  <script>
+  (function() {
+    var saved = localStorage.getItem('fund_theme');
+    if (saved === 'bright') document.documentElement.classList.add('theme-bright');
+  })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0f1a;
+      --bg-elevated: #1a1a2e;
+      --text: #F5F5F4;
+      --text-secondary: #D4D4D8;
+      --text-muted: #A1A1AA;
+      --accent: #8b5cf6;
+      --accent-strong: #A78BFA;
+      --border: rgba(255,255,255,0.06);
+      --surface: rgba(255,255,255,0.04);
+      --r-md: 0.875rem;
+    }
+    .theme-bright {
+      --bg: #FAFAF9;
+      --bg-elevated: #FFFFFF;
+      --text: #1C1C1E;
+      --text-secondary: #3C3C43;
+      --text-muted: #6C6C70;
+      --border: rgba(0,0,0,0.08);
+      --surface: rgba(0,0,0,0.03);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem 4rem;
+    }
+    .page-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 2.5rem;
+      transition: color 150ms;
+    }
+    .back-link:hover { color: var(--accent-strong); }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+    }
+    h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 2rem;
+      margin-bottom: 0.6rem;
+    }
+    p, li {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+    ul { padding-left: 1.4rem; margin-bottom: 0.75rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--accent-strong); text-decoration: underline; }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(139,92,246,0.14);
+      color: var(--accent-strong);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <a href="auth.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Retour
+  </a>
+
+  <span class="badge">Version bêta</span>
+  <h1>Conditions Générales d'Utilisation</h1>
+  <p class="meta">Dernière mise à jour : juin 2025 &nbsp;·&nbsp; Applicable dès l'inscription</p>
+
+  <h2>1. Présentation du service</h2>
+  <p>Fundamental (ci-après « le Service ») est une plateforme d'éducation financière accessible sur invitation dans le cadre d'un programme bêta fermé. Le Service est édité et exploité par Fundamental SAS (ci-après « l'Éditeur »). Pour toute question : <a href="mailto:hello@fundamental.app">hello@fundamental.app</a>.</p>
+
+  <h2>2. Acceptation des conditions</h2>
+  <p>En créant un compte ou en utilisant le Service, l'utilisateur (ci-après « vous ») accepte sans réserve les présentes CGU. Si vous n'acceptez pas ces conditions, vous ne devez pas accéder au Service.</p>
+  <p>Ces CGU peuvent être modifiées à tout moment. Toute modification substantielle sera notifiée par e-mail au moins 15 jours avant son entrée en vigueur. La poursuite de l'utilisation du Service vaut acceptation des nouvelles conditions.</p>
+
+  <h2>3. Accès et inscription</h2>
+  <p>L'accès au Service est réservé aux personnes physiques âgées d'au moins 15 ans. Les utilisateurs de 15 à 17 ans doivent avoir l'accord d'un représentant légal. L'Éditeur se réserve le droit de vérifier cet accord sur demande.</p>
+  <p>Vous vous engagez à fournir des informations exactes lors de l'inscription et à conserver la confidentialité de vos identifiants. Vous êtes responsable de toutes les actions effectuées depuis votre compte.</p>
+
+  <h2>4. Description du service</h2>
+  <p>Fundamental propose des modules pédagogiques interactifs (ci-après « briques ») visant à améliorer la culture financière personnelle, notamment sur les sujets suivants :</p>
+  <ul>
+    <li>Gestion du budget et de l'épargne</li>
+    <li>Gestion du crédit et du désendettement</li>
+    <li>Planification d'un achat immobilier</li>
+    <li>Compréhension des produits d'épargne et d'investissement</li>
+  </ul>
+
+  <h2>5. Nature pédagogique — absence de conseil financier</h2>
+  <p><strong>Les contenus et simulations proposés par Fundamental ont une vocation exclusivement pédagogique et informative.</strong> Ils ne constituent pas un conseil en investissement, en crédit ou en gestion de patrimoine au sens des articles L. 321-1 et suivants du Code monétaire et financier, ni une recommandation personnalisée.</p>
+  <p>Les résultats des simulations sont des estimations basées sur les données saisies et des hypothèses simplifiées. Ils ne sauraient en aucun cas se substituer à l'accompagnement d'un professionnel agréé (conseiller financier, notaire, expert-comptable, etc.).</p>
+  <p>L'Éditeur ne peut être tenu responsable des décisions financières prises par l'utilisateur sur la base des informations fournies par le Service.</p>
+
+  <h2>6. Propriété intellectuelle</h2>
+  <p>L'ensemble des contenus du Service (textes, modules, interfaces, illustrations, code source) est la propriété exclusive de l'Éditeur et est protégé par le droit de la propriété intellectuelle. Toute reproduction, représentation ou utilisation non autorisée est strictement interdite.</p>
+  <p>En utilisant le Service, vous concédez à l'Éditeur une licence non exclusive et gratuite sur vos retours et feedbacks soumis via la plateforme, aux fins d'amélioration du Service.</p>
+
+  <h2>7. Données personnelles</h2>
+  <p>Le traitement de vos données personnelles est décrit dans notre <a href="confidentialite.html">Politique de confidentialité</a>, qui fait partie intégrante des présentes CGU.</p>
+
+  <h2>8. Responsabilité</h2>
+  <p>Le Service est fourni « en l'état » dans le cadre d'une version bêta. L'Éditeur ne garantit pas l'absence d'interruption, d'erreur ou d'inexactitude. La responsabilité de l'Éditeur ne peut être engagée que pour des dommages directs résultant d'une faute prouvée, et ne saurait excéder le montant des sommes éventuellement versées par l'utilisateur au cours des 12 derniers mois.</p>
+  <p>L'Éditeur n'est pas responsable des contenus de sites tiers accessibles via des liens éventuellement présents dans le Service.</p>
+
+  <h2>9. Suspension et résiliation</h2>
+  <p>L'Éditeur peut suspendre ou supprimer un compte en cas de violation des présentes CGU, sans préavis ni indemnité. L'utilisateur peut demander la suppression de son compte à tout moment en écrivant à <a href="mailto:hello@fundamental.app">hello@fundamental.app</a> ou via la section « Mon profil » du Service.</p>
+
+  <h2>10. Droit applicable et juridiction</h2>
+  <p>Les présentes CGU sont régies par le droit français. Tout litige relatif à leur interprétation ou à leur exécution sera soumis, à défaut d'accord amiable, aux tribunaux compétents du ressort du siège social de l'Éditeur.</p>
+  <p>Conformément à l'article L. 612-1 du Code de la consommation, vous pouvez recourir à un médiateur de la consommation en cas de litige non résolu.</p>
+
+  <hr>
+  <p style="font-size:0.8rem;color:var(--text-muted);">Pour toute question relative aux présentes CGU, contactez-nous à <a href="mailto:hello@fundamental.app">hello@fundamental.app</a>.</p>
+
+</div>
+</body>
+</html>
