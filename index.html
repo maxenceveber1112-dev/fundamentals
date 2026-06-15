@@ -1232,6 +1232,7 @@ document.querySelectorAll('[data-q]').forEach(function(btn) {
       A[q] = val;
       clearErr(q); applyConditionals();
       if (q === 'q_revenu_sentiment') autoMapStress();
+      if (q === 'q_age_group') handleAgeSelection(val);
       updatePreview(); checkAutoAdvance();
 
     } else if (role === 'checkbox') {
@@ -1640,6 +1641,41 @@ function goToDashboard() {
   window.location.href = 'dashboard.html';
 }
 
+// ─── GATE MINEUR (15–17 ans) ──────────────────────────────────────
+function handleAgeSelection(val) {
+  if (val === '15_17' && !A._minorConsent) {
+    openAgeGate();
+  }
+}
+function openAgeGate() {
+  var ov = document.getElementById('age-gate-overlay');
+  if (!ov) return;
+  ov.classList.add('visible');
+  ov.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  var btn = document.getElementById('age-gate-confirm');
+  if (btn) setTimeout(function(){ btn.focus(); }, 50);
+}
+function closeAgeGate() {
+  var ov = document.getElementById('age-gate-overlay');
+  if (!ov) return;
+  ov.classList.remove('visible');
+  ov.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+function confirmAgeGate() {
+  A._minorConsent = true;
+  closeAgeGate();
+}
+function cancelAgeGate() {
+  // Désélectionne la tranche 15–17 et réinitialise le consentement
+  A._minorConsent = false;
+  resetQ('q_age_group');
+  A.q_age_group = null;
+  updatePreview();
+  closeAgeGate();
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────
 applyConditionals();
 updatePreview();
@@ -1653,6 +1689,65 @@ updatePreview();
   }
 })();
 </script>
+
+<!-- ═══ GATE MINEUR (15–17 ans) ═══ -->
+<style>
+  #age-gate-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    display: none; align-items: center; justify-content: center;
+    padding: 1.25rem;
+    background: rgba(10,10,20,0.66);
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  #age-gate-overlay.visible { display: flex; }
+  .age-gate-card {
+    width: 100%; max-width: 440px;
+    background: #1a1a2e; color: #F5F5F4;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 18px; padding: 1.75rem;
+    box-shadow: 0 12px 50px rgba(0,0,0,0.5);
+    font-family: 'Inter', system-ui, sans-serif;
+    animation: ageGateIn .28s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes ageGateIn { from { opacity:0; transform: translateY(14px) scale(.98); } to { opacity:1; transform:none; } }
+  .age-gate-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: rgba(139,92,246,0.16);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.1rem;
+  }
+  .age-gate-title { font-size: 1.15rem; font-weight: 700; margin: 0 0 .6rem; }
+  .age-gate-text { font-size: .875rem; line-height: 1.6; color: #C7C7D1; margin: 0 0 1.4rem; }
+  .age-gate-text strong { color: #F5F5F4; }
+  .age-gate-actions { display: flex; flex-direction: column; gap: .6rem; }
+  .age-gate-actions button {
+    font-family: inherit; font-size: .875rem; font-weight: 600;
+    padding: .7rem 1.1rem; border-radius: 10px; cursor: pointer;
+    border: 1px solid transparent; transition: opacity .15s, background .15s, border-color .15s;
+  }
+  .age-gate-confirm { background: linear-gradient(135deg,#8B5CF6,#3B82F6); color:#fff; }
+  .age-gate-confirm:hover { opacity: .9; }
+  .age-gate-cancel { background: transparent; color:#C7C7D1; border-color: rgba(255,255,255,0.18); }
+  .age-gate-cancel:hover { border-color: rgba(255,255,255,0.35); color:#F5F5F4; }
+</style>
+<div id="age-gate-overlay" role="dialog" aria-modal="true" aria-labelledby="age-gate-title" aria-hidden="true">
+  <div class="age-gate-card">
+    <div class="age-gate-icon" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <h2 class="age-gate-title" id="age-gate-title">Tu as entre 15 et 17 ans</h2>
+    <p class="age-gate-text">
+      Tu peux utiliser Fundamental, mais comme tu es <strong>mineur·e</strong>, tu dois avoir l&rsquo;accord d&rsquo;un de tes <strong>parents ou de ton représentant légal</strong> pour créer un compte et enregistrer tes données.<br><br>
+      Les contenus sont purement pédagogiques et ne constituent pas un conseil financier.
+    </p>
+    <div class="age-gate-actions">
+      <button type="button" class="age-gate-confirm" id="age-gate-confirm" onclick="confirmAgeGate()">J&rsquo;ai l&rsquo;accord de mon représentant légal</button>
+      <button type="button" class="age-gate-cancel" onclick="cancelAgeGate()">Choisir une autre tranche d&rsquo;âge</button>
+    </div>
+  </div>
+</div>
+
 <script src="feedback-widget.js"></script>
+<script src="cookie-banner.js"></script>
 </body>
 </html>
