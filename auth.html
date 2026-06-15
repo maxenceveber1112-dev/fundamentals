@@ -5,16 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fundamental — Connexion</title>
   <script>
-  /* Theme: apply saved preference immediately to avoid flash */
-  (function() {
-    var saved = localStorage.getItem('fund_theme');
-    if (saved === 'bright') {
-      document.documentElement.classList.add('theme-bright');
-    }
-    /* Legacy dark class for other pages — keep parity */
-    var legacySaved = localStorage.getItem('fundamental-theme');
-    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (legacySaved === 'dark' || (!legacySaved && prefersDark)) document.documentElement.classList.add('dark');
+  /* Thème unifié — anti-FOUC (clair par défaut, .dark pour sombre) */
+  (function(){
+    try{
+      var K='fundamental-theme', t=localStorage.getItem(K);
+      if(t!=='light'&&t!=='dark'){
+        var legacy=localStorage.getItem('fund_theme');
+        if(legacy==='dark')t='dark'; else if(legacy==='bright')t='light';
+        if(t==='light'||t==='dark')localStorage.setItem(K,t);
+      }
+      var dark=(t==='dark')||(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if(dark)document.documentElement.classList.add('dark');
+    }catch(e){}
   })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -123,7 +125,6 @@
       display:inline-flex; align-items:center; justify-content:center;
       font-family:'Fraunces',serif; font-style:italic; font-weight:500; font-size:14px;
     }
-    html.theme-bright .wordmark .mark { background: #C4B5FD; color: #2E1065; }
     .wordmark .name { font-size:15px; font-weight:600; letter-spacing:-.01em; color:var(--text); transition: color 0.3s ease; }
 
     /* ── LAYOUT ── */
@@ -166,10 +167,10 @@
     }
     .theme-toggle:hover { background: var(--toggle-hover); transform: scale(1.08); }
     .theme-toggle svg { width: 18px; height: 18px; transition: opacity 0.3s ease, transform 0.3s ease; }
-    .theme-toggle .icon-sun { display: none; }
-    .theme-toggle .icon-moon { display: block; }
-    html.theme-bright .theme-toggle .icon-sun { display: block; }
-    html.theme-bright .theme-toggle .icon-moon { display: none; }
+    .theme-toggle .icon-sun { display: block; }
+    .theme-toggle .icon-moon { display: none; }
+    html.dark .theme-toggle .icon-sun { display: none; }
+    html.dark .theme-toggle .icon-moon { display: block; }
 
     /* ── DIVIDER ── */
     .auth-divider-v {
@@ -240,7 +241,6 @@
       pointer-events:none;
       transition: color 0.3s ease;
     }
-    html.theme-bright .auth-quote::before { color:rgba(139,92,246,0.15); }
     .auth-quote-stars { color:#f59e0b; font-size:12px; letter-spacing:2px; margin-bottom:0.5rem; }
 
     /* ── CARD TITLE ── */
@@ -252,7 +252,6 @@
     .tab-underline { padding:10px 2px; font-size:14px; font-weight:500; color:var(--text-muted); cursor:pointer; position:relative; border:none; background:none; font-family:inherit; transition:color .2s; }
     .tab-underline.active { color:var(--text); }
     .tab-underline.active::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background: linear-gradient(90deg, #8B5CF6, #6366F1); border-radius:999px; }
-    html.theme-bright .tab-underline.active::after { background: #5B21B6; }
 
     /* ── SOCIAL BUTTONS ── */
     .social-btns { display:flex; flex-direction:column; gap:0.625rem; }
@@ -300,12 +299,11 @@
     .btn-primary {
       display:flex; align-items:center; justify-content:center; gap:0.5rem;
       padding:0.875rem; border-radius:var(--r-full);
-      background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%);
-      font-size:0.9rem; font-weight:600; color:#fff; border:none; cursor:pointer;
+      background: var(--accent-fill);
+      font-size:0.9rem; font-weight:600; color: var(--accent-pill-text); border:none; cursor:pointer;
       transition:transform 0.15s var(--ease-out), box-shadow var(--t);
       width:100%; font-family:inherit;
     }
-    html.theme-bright .btn-primary { background: #C4B5FD; color: #2E1065; }
     .btn-primary:hover { transform:translateY(-1px); box-shadow:var(--shadow-hover); }
     .btn-primary:active { transform:scale(0.98); }
     .btn-primary:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
@@ -333,6 +331,7 @@
       .theme-toggle { position:fixed; top:1rem; right:1rem; z-index:100; }
     }
   </style>
+  <link rel="stylesheet" href="theme.css">
 </head>
 <body>
 
@@ -494,17 +493,15 @@
   if (!toggle) return;
 
   toggle.addEventListener('click', function() {
-    var html = document.documentElement;
-    var isBright = html.classList.contains('theme-bright');
-
-    if (isBright) {
-      html.classList.remove('theme-bright');
-      localStorage.setItem('fund_theme', 'dark');
+    // Convention unifiée : .dark + clé 'fundamental-theme' (via theme.js)
+    if (window.toggleTheme) {
+      window.toggleTheme();
     } else {
-      html.classList.add('theme-bright');
-      localStorage.setItem('fund_theme', 'bright');
+      var html = document.documentElement;
+      var dark = !html.classList.contains('dark');
+      html.classList.toggle('dark', dark);
+      try { localStorage.setItem('fundamental-theme', dark ? 'dark' : 'light'); } catch(e) {}
     }
-
   });
 })();
 </script>
@@ -634,5 +631,6 @@
     }
   }
 </script>
+<script src="theme.js"></script>
 </body>
 </html>

@@ -5,36 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fundamental — Conditions Générales d'Utilisation</title>
   <script>
-  (function() {
-    var saved = localStorage.getItem('fund_theme');
-    if (saved === 'bright') document.documentElement.classList.add('theme-bright');
+  /* Thème unifié — anti-FOUC (clair par défaut, .dark pour sombre) */
+  (function(){
+    try{
+      var K='fundamental-theme', t=localStorage.getItem(K);
+      if(t!=='light'&&t!=='dark'){
+        var legacy=localStorage.getItem('fund_theme');
+        if(legacy==='dark')t='dark'; else if(legacy==='bright')t='light';
+        if(t==='light'||t==='dark')localStorage.setItem(K,t);
+      }
+      var dark=(t==='dark')||(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if(dark)document.documentElement.classList.add('dark');
+    }catch(e){}
   })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --bg: #0f0f1a;
-      --bg-elevated: #1a1a2e;
-      --text: #F5F5F4;
-      --text-secondary: #D4D4D8;
-      --text-muted: #A1A1AA;
-      --accent: #8b5cf6;
-      --accent-strong: #A78BFA;
-      --border: rgba(255,255,255,0.06);
-      --surface: rgba(255,255,255,0.04);
-      --r-md: 0.875rem;
-    }
-    .theme-bright {
-      --bg: #FAFAF9;
-      --bg-elevated: #FFFFFF;
-      --text: #1C1C1E;
-      --text-secondary: #3C3C43;
-      --text-muted: #6C6C70;
-      --border: rgba(0,0,0,0.08);
-      --surface: rgba(0,0,0,0.03);
-    }
+    /* Tokens fournis par theme.css (clair/sombre unifiés) */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 16px; }
     body {
@@ -103,6 +92,7 @@
       text-transform: uppercase;
     }
   </style>
+  <link rel="stylesheet" href="theme.css">
 </head>
 <body>
 <div class="page-wrap">
@@ -164,5 +154,6 @@
 
 </div>
 <script src="cookie-banner.js"></script>
+<script src="theme.js"></script>
 </body>
 </html>
