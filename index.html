@@ -1702,33 +1702,34 @@ updatePreview();
   #age-gate-overlay.visible { display: flex; }
   .age-gate-card {
     width: 100%; max-width: 440px;
-    background: #1a1a2e; color: #F5F5F4;
-    border: 1px solid rgba(255,255,255,0.10);
+    background: var(--bg-elevated); color: var(--text);
+    border: 1px solid var(--border-subtle);
     border-radius: 18px; padding: 1.75rem;
-    box-shadow: 0 12px 50px rgba(0,0,0,0.5);
+    box-shadow: var(--shadow-card, 0 12px 50px rgba(0,0,0,0.5));
     font-family: 'Inter', system-ui, sans-serif;
     animation: ageGateIn .28s cubic-bezier(0.16,1,0.3,1);
   }
   @keyframes ageGateIn { from { opacity:0; transform: translateY(14px) scale(.98); } to { opacity:1; transform:none; } }
   .age-gate-icon {
     width: 48px; height: 48px; border-radius: 12px;
-    background: rgba(139,92,246,0.16);
+    background: var(--accent-soft);
     display: flex; align-items: center; justify-content: center;
     margin-bottom: 1.1rem;
   }
-  .age-gate-title { font-size: 1.15rem; font-weight: 700; margin: 0 0 .6rem; }
-  .age-gate-text { font-size: .875rem; line-height: 1.6; color: #C7C7D1; margin: 0 0 1.4rem; }
-  .age-gate-text strong { color: #F5F5F4; }
+  .age-gate-icon svg { stroke: var(--accent-strong); }
+  .age-gate-title { font-size: 1.15rem; font-weight: 700; margin: 0 0 .6rem; color: var(--text); }
+  .age-gate-text { font-size: .875rem; line-height: 1.6; color: var(--text-muted); margin: 0 0 1.4rem; }
+  .age-gate-text strong { color: var(--text); }
   .age-gate-actions { display: flex; flex-direction: column; gap: .6rem; }
   .age-gate-actions button {
     font-family: inherit; font-size: .875rem; font-weight: 600;
     padding: .7rem 1.1rem; border-radius: 10px; cursor: pointer;
     border: 1px solid transparent; transition: opacity .15s, background .15s, border-color .15s;
   }
-  .age-gate-confirm { background: linear-gradient(135deg,#8B5CF6,#3B82F6); color:#fff; }
+  .age-gate-confirm { background: var(--accent-fill); color: var(--accent-pill-text); }
   .age-gate-confirm:hover { opacity: .9; }
-  .age-gate-cancel { background: transparent; color:#C7C7D1; border-color: rgba(255,255,255,0.18); }
-  .age-gate-cancel:hover { border-color: rgba(255,255,255,0.35); color:#F5F5F4; }
+  .age-gate-cancel { background: transparent; color: var(--text-muted); border-color: var(--border-mid); }
+  .age-gate-cancel:hover { border-color: var(--border-hover); color: var(--text); }
 </style>
 <div id="age-gate-overlay" role="dialog" aria-modal="true" aria-labelledby="age-gate-title" aria-hidden="true">
   <div class="age-gate-card">
