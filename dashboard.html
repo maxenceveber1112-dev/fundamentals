@@ -1701,6 +1701,24 @@
     });
     container.appendChild(pvImmo);
 
+    // 1bis. Investir dans le locatif
+    const locRawPv = loadFromStorage('fund_brick_immo_locatif');
+    const hasLoc = !!(locRawPv?.data || locRawPv);
+    const pvLocatif = makePvCard({
+      name: 'Investir dans le locatif',
+      sub: 'Rendement, cashflow et capacité d\'emprunt pour louer.',
+      steps: [
+        'Estimer sa capacité d\'emprunt',
+        'Calculer rendement & cashflow',
+        'Cibler la bonne zone & typologie',
+        'Préparer la mise en location',
+      ],
+      ctaLabel: hasLoc ? 'Reprendre mon projet →' : 'Commencer →',
+      ctaHref: 'brique-immo-locatif.html',
+      ctaDisabled: false,
+    });
+    container.appendChild(pvLocatif);
+
     // 2. Préparer sa retraite
     const pvRetraite = makePvCard({
       name: 'Préparer sa retraite',
@@ -1993,6 +2011,45 @@
         ],
         progress: null,
         cta: { href: 'brique-achat-immobilier.html', label: 'Revoir mon projet' }
+      });
+    }
+
+    // ── BRIQUE INVESTISSEMENT LOCATIF ───────────────────────
+    const locRaw  = loadFromStorage('fund_brick_immo_locatif');
+    const locData = locRaw?.data || locRaw || null;
+    if (locData && locData.investment && (locData.investment.expectedMonthlyRent > 0 || locData.investment.netYield > 0)) {
+      const inv      = locData.investment;
+      const loyer    = inv.expectedMonthlyRent || 0;
+      const rdtNet   = inv.netYield || 0;
+      const cashflow = Math.round(inv.monthlyCashflow || 0);
+      const capRes   = inv.residualBorrowingCapacity || 0;
+      const locScore = locData.scores?.locatifScore ?? locData.scores?.realEstateReadinessScore ?? 0;
+      const prixLoc  = locData.project?.propertyPrice || 0;
+      const locType  = inv.locationType === 'meublee' ? 'Meublée' : 'Nue';
+      const cfColor  = cashflow >= 0 ? 'green' : 'orange';
+      const cfLabel  = (cashflow >= 0 ? '+ ' : '– ') + formatEuro(Math.abs(cashflow)) + '/mois';
+
+      const profilL       = loadFromStorage('fund_profil') || {};
+      const briquesRecoL  = profilL.briques_recommandees || [];
+      const locIdx        = briquesRecoL.indexOf('immo_locatif');
+      const etapeLabelL   = locIdx >= 0 ? `Étape ${locIdx + 1} / ${briquesRecoL.length || 1} du parcours` : 'Brique complétée';
+
+      cards.push({
+        title: 'Investissement locatif',
+        brique: 'immo_locatif',
+        status: 'complet',
+        statusLabel: locType + (prixLoc ? ' · ' + formatEuro(prixLoc) : ''),
+        value: rdtNet ? (Math.round(rdtNet * 10) / 10).toString().replace('.', ',') + ' %' : '—',
+        valueLabel: 'rendement net',
+        rows: [
+          { label: 'Loyer estimé',        val: formatEuro(loyer) + '/mois', color: '' },
+          { label: 'Cashflow mensuel',    val: cfLabel,                     color: cfColor },
+          { label: 'Capacité résiduelle', val: formatEuro(capRes),          color: '' },
+          { label: 'Score locatif',       val: locScore + ' / 100',         color: locScore >= 60 ? 'green' : locScore >= 40 ? 'orange' : 'red' },
+          { label: 'Avancement parcours', val: etapeLabelL,                 color: '' },
+        ],
+        progress: null,
+        cta: { href: 'brique-immo-locatif.html', label: 'Revoir mon projet' }
       });
     }
 

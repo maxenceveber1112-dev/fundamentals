@@ -4021,13 +4021,13 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           <div class="hero-cream">
             <div class="hero-kicker">
               <span class="dot-cat"></span>
-              ACHAT IMMOBILIER
+              INVESTISSEMENT LOCATIF
             </div>
             <h1 class="hero-title">
-              Acheter un bien, c'est bien plus<br><em>que trouver un prix.</em>
+              Investir pour louer, c'est viser<br><em>le bon rendement.</em>
             </h1>
             <p class="hero-desc">
-              En moins de 15 minutes, on démêle budget, banque, notaire, frais et assurance — et tu sors avec un diagnostic chiffré personnalisé.
+              En moins de 15 minutes, on calcule ta capacité d'emprunt, ton rendement net, ton cashflow et ta capacité résiduelle — et tu sors avec un diagnostic locatif chiffré.
             </p>
             <div class="badge-rassurant">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
@@ -4045,80 +4045,32 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
         <!-- ═══ SCREEN 1 — Ton projet ═══ -->
         <div class="screen" id="screen-1">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 1 / 8 · TON PROJET</div>
-            <h2 class="brick-title">Quel achat tu prépares&nbsp;?</h2>
-            <p class="brick-subtitle">On adapte les calculs selon ton type de projet.</p>
+            <div class="brick-kicker">ÉTAPE 1 / 8 · TON INVESTISSEMENT</div>
+            <h2 class="brick-title">Ton projet d'investissement locatif.</h2>
+            <p class="brick-subtitle">On calcule ta rentabilité, ton cashflow et ta capacité d'emprunt pour louer.</p>
 
-            <!-- BLOC A — 3 cards premium illustrées de type de projet -->
-            <div class="project-type-grid" id="project-type-grid">
-              <!-- Résidence principale — violet/indigo -->
-              <div class="project-type-card" data-val="residence_principale" onclick="selectProjectCard(this)">
-                <span class="ptc-reco-badge">Le plus courant</span>
-                <div class="ptc-illustration">
-                  <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
-                    <rect x="14" y="34" width="44" height="28" rx="3" fill="rgba(139,92,246,0.15)" stroke="#8b5cf6" stroke-width="1.5"/>
-                    <path d="M8 36L36 14L64 36" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="rgba(139,92,246,0.08)"/>
-                    <rect x="28" y="46" width="16" height="16" rx="2" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
-                    <line x1="36" y1="46" x2="36" y2="62" stroke="#6366f1" stroke-width="0.75" opacity="0.5"/>
-                    <rect x="18" y="40" width="7" height="7" rx="1" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="0.75"/>
-                    <rect x="47" y="40" width="7" height="7" rx="1" fill="rgba(139,92,246,0.1)" stroke="#8b5cf6" stroke-width="0.75"/>
-                    <circle cx="55" cy="18" r="5" fill="rgba(253,224,71,0.15)" stroke="#fcd34d" stroke-width="1" opacity="0.6"/>
-                  </svg>
-                </div>
-                <div class="ptc-text">
-                  <div class="ptc-title">Résidence principale</div>
-                  <div class="ptc-sub">Pour y vivre au quotidien</div>
-                </div>
-              </div>
 
-              <!-- Résidence secondaire — teal -->
-              <div class="project-type-card" data-val="residence_secondaire" onclick="selectProjectCard(this)">
-                <div class="ptc-illustration">
-                  <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
-                    <path d="M4 52 C18 42, 30 48, 42 40 C50 35, 58 38, 68 32" stroke="#14b8a6" stroke-width="1.5" fill="none" opacity="0.4"/>
-                    <path d="M4 56 C20 48, 34 54, 48 46 C56 42, 62 44, 68 40" stroke="#14b8a6" stroke-width="1" fill="none" opacity="0.25"/>
-                    <rect x="18" y="30" width="28" height="22" rx="2" fill="rgba(20,184,166,0.12)" stroke="#14b8a6" stroke-width="1.5"/>
-                    <path d="M14 32L32 18L50 32" stroke="#14b8a6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="rgba(20,184,166,0.06)"/>
-                    <rect x="27" y="40" width="10" height="12" rx="1.5" fill="rgba(20,184,166,0.18)" stroke="#14b8a6" stroke-width="0.75"/>
-                    <circle cx="56" cy="16" r="7" fill="rgba(245,158,11,0.12)" stroke="#f59e0b" stroke-width="1"/>
-                    <line x1="56" y1="7" x2="56" y2="5" stroke="#f59e0b" stroke-width="1" stroke-linecap="round"/>
-                    <line x1="63" y1="16" x2="65" y2="16" stroke="#f59e0b" stroke-width="1" stroke-linecap="round"/>
-                    <line x1="61.5" y1="10.5" x2="63" y2="9" stroke="#f59e0b" stroke-width="1" stroke-linecap="round"/>
-                    <path d="M8 58C14 55 22 58 30 56C40 53 50 57 64 54" stroke="#14b8a6" stroke-width="1" fill="rgba(20,184,166,0.06)" opacity="0.5"/>
-                  </svg>
+            <!-- BLOC A — Sous-choix locatif (type de location + type de bien) -->
+            <div class="profil-section">
+              <span class="profil-section-label">Ton investissement</span>
+              <div class="profil-section-fields">
+                <div class="compact-question">
+                  <span class="compact-label">Type de location</span>
+                  <div class="pills-compact" id="pills-locationType">
+                    <span class="pill-sm selected" data-val="nue">Nue (vide)</span>
+                    <span class="pill-sm" data-val="meublee">Meublée</span>
+                  </div>
                 </div>
-                <div class="ptc-text">
-                  <div class="ptc-title">Résidence secondaire</div>
-                  <div class="ptc-sub">Vacances & patrimoine</div>
-                </div>
-              </div>
-
-              <!-- Investissement locatif — amber/orange -->
-              <div class="project-type-card" data-val="investissement_locatif" onclick="selectProjectCard(this)">
-                <div class="ptc-illustration">
-                  <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
-                    <rect x="20" y="18" width="32" height="44" rx="3" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
-                    <rect x="24" y="24" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
-                    <rect x="40" y="24" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
-                    <rect x="24" y="34" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
-                    <rect x="40" y="34" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
-                    <rect x="24" y="44" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
-                    <rect x="40" y="44" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
-                    <rect x="31" y="52" width="10" height="10" rx="1.5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1"/>
-                    <circle cx="12" cy="48" r="6" fill="none" stroke="#f59e0b" stroke-width="1" opacity="0.5"/>
-                    <text x="12" y="51" text-anchor="middle" font-size="8" font-weight="700" fill="#f59e0b" opacity="0.6">€</text>
-                    <polyline points="56,52 58,46 61,48 64,38 67,40" stroke="#4ade80" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
-                    <circle cx="67" cy="40" r="2" fill="#4ade80" opacity="0.5"/>
-                  </svg>
-                </div>
-                <div class="ptc-text">
-                  <div class="ptc-title">Investissement locatif</div>
-                  <div class="ptc-sub">Rendement & revenus</div>
+                <div class="compact-question">
+                  <span class="compact-label">Type de bien</span>
+                  <div class="pills-compact" id="pills-propertyType">
+                    <span class="pill-sm" data-val="neuf">Neuf</span>
+                    <span class="pill-sm selected" data-val="ancien">Ancien</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <!-- (Commit 3) Bouton «Je ne sais pas encore» supprimé — le parcours exige une sélection.
-                 selectProjectCard() conserve ses gardes défensives sur 'ne_sait_pas' (idempotent). -->
+            <p class="field-help" id="locationType-help" style="margin:0.4rem 0 0;">Location meublée&nbsp;: revenus en BIC, régime LMNP possible (fiscalité spécifique, estimée hors impôt ici).</p>
 
             <!-- Mode kicker pill — replaces the old grey mode-card -->
             <div class="mode-card" id="mode-card" style="display:none">
@@ -4126,8 +4078,8 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <div class="mode-card-text" id="mode-card-text"></div>
             </div>
 
-            <!-- BLOC B — questions compactes (visible après sélection) -->
-            <div id="bloc-b" style="display:none;">
+            <!-- BLOC B — questions compactes -->
+            <div id="bloc-b">
               <div style="display:flex;flex-direction:column;gap:0.875rem;margin-top:1.25rem;">
 
                 <!-- (Commit 3) Reorder option B : Profil AVANT Horizon — statut/primo conditionnent le calcul -->
@@ -4213,7 +4165,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           <div class="brick-card">
             <div class="brick-kicker">ÉTAPE 2 / 8 · CAPACITÉ MENSUELLE</div>
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
-            <p class="brick-subtitle">Tes données budget, modifiables en un clic. Le diagnostic se recalcule en temps réel.</p>
+            <p class="brick-subtitle">Tes revenus fixent ta mensualité. Les banques retiennent ~70 % des loyers futurs dans ta capacité — on l'intègre à l'étape rentabilité.</p>
 
             <!-- Bandeau import cross-brique (hydratation budget) -->
             <div class="cb-banner cb-banner--neutral" id="cb-banner-import" hidden role="status" aria-live="polite">
@@ -4651,7 +4603,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           <div class="brick-card" style="position:relative;overflow:hidden;">
             <div class="brick-kicker">ÉTAPE 5 / 8 · EMPLACEMENT &amp; TYPOLOGIE</div>
             <h2 class="brick-title">Confronte ton budget au marché local.</h2>
-            <p class="brick-sub">On part de ta commune et on calcule directement 3 typologies adaptées à ton budget. Tu peux en tester d’autres à tout moment.</p>
+            <p class="brick-sub">On part de ta commune et on calcule 3 typologies adaptées à ton budget. Vise une zone à forte demande locative pour limiter la vacance.</p>
             <div class="brick-budget-tag" id="s5-budget-tag" hidden>
               <span>Prix d'achat <span class="bbt-prix" id="s5-bbt-prix">—</span></span>
               <span class="bbt-sep">·</span>
@@ -4756,22 +4708,8 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               </svg>
             </div>
 
-            <!-- Toggle investissement locatif -->
-            <div class="invest-toggle-card" id="s6-toggle-card">
-              <div class="invest-toggle-header">
-                <span class="invest-toggle-label">Simuler la location de ton bien&nbsp;?</span>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="s6-toggle-invest" onchange="s6ToggleInvestment()"/>
-                  <span class="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-
-            <div id="s6-invest-minimal" class="invest-minimal" style="display:block;">
-              Section non applicable à ton projet. Tu peux quand même l'activer pour simuler.
-            </div>
-
-            <div id="s6-invest-full" style="display:none;">
+            <!-- Brique 100% locatif : l'analyse de rentabilité est toujours affichée (pas de toggle). -->
+            <div id="s6-invest-full">
 
               <!-- Bannière pédago : source du loyer pré-rempli (depuis S5) -->
               <div class="s6-suggest-banner" id="s6-suggest-banner" style="display:none;">
@@ -5128,18 +5066,18 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <div class="s8-score-desc" id="s8-score-desc">Analyse en cours…</div>
 
               <div class="s8-subscores" id="s8-subscores" role="group" aria-label="Détail des 4 sous-scores du diagnostic">
-                <div class="s8-subscore" data-key="faisabilite">
-                  <div class="s8-subscore-label">Faisabilité</div>
+                <div class="s8-subscore" data-key="rentabilite">
+                  <div class="s8-subscore-label">Rentabilité</div>
                   <div class="s8-subscore-bar"><div class="s8-subscore-bar-fill" style="width:0%"></div></div>
                   <div class="s8-subscore-val">--</div>
                 </div>
                 <div class="s8-subscore" data-key="effort">
-                  <div class="s8-subscore-label">Effort</div>
+                  <div class="s8-subscore-label">Financement</div>
                   <div class="s8-subscore-bar"><div class="s8-subscore-bar-fill" style="width:0%"></div></div>
                   <div class="s8-subscore-val">--</div>
                 </div>
-                <div class="s8-subscore" data-key="rentabilite">
-                  <div class="s8-subscore-label">Rentabilité</div>
+                <div class="s8-subscore" data-key="faisabilite">
+                  <div class="s8-subscore-label">Tension</div>
                   <div class="s8-subscore-bar"><div class="s8-subscore-bar-fill" style="width:0%"></div></div>
                   <div class="s8-subscore-val">--</div>
                 </div>
@@ -5216,7 +5154,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           <!-- ═══ 6. ACHETER VS LOUER (COLLAPSÉ PAR DÉFAUT) ═══ -->
           <div class="s8-vs-highlight" aria-hidden="true">
             <span class="s8-vs-highlight-dot"></span>
-            <span class="s8-vs-highlight-label">UNE DERNIÈRE QUESTION ESSENTIELLE</span>
+            <span class="s8-vs-highlight-label">LOCATIF OU PLACEMENT&nbsp;?</span>
             <span class="s8-vs-highlight-dot"></span>
           </div>
           <div class="s8-vs-teaser" id="s8-vs-teaser" role="button" tabindex="0"
@@ -5225,8 +5163,8 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
             <div class="s8-vs-teaser-head">
               <div class="s8-vs-icon" aria-hidden="true">⚖️</div>
               <div class="s8-vs-teaser-body">
-                <div class="s8-vs-teaser-title">Acheter ou continuer à louer ?</div>
-                <div class="s8-vs-teaser-hint" id="s8-vs-hint">Comparatif chiffré sur 10 ans</div>
+                <div class="s8-vs-teaser-title">Locatif ou placement financier ?</div>
+                <div class="s8-vs-teaser-hint" id="s8-vs-hint">Patrimoine créé sur 10 ans</div>
               </div>
               <svg class="s8-vs-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
@@ -5234,7 +5172,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <div class="s8-vs-content-inner">
                 <div class="s8-vs-grid">
                   <div class="s8-vs-col">
-                    <div class="s8-vs-col-title">🏠 Acheter <span id="s8-vs-buy-price"></span></div>
+                    <div class="s8-vs-col-title">🏘 Investir en locatif <span id="s8-vs-buy-price"></span></div>
                     <div class="s8-vs-col-section">Patrimoine créé à 10 ans</div>
                     <div class="s8-vs-col-line"><span>Valeur du bien</span><span id="s8-vs-buy-val">--</span></div>
                     <div class="s8-vs-col-line"><span>− Capital restant dû</span><span id="s8-vs-buy-crd">--</span></div>
@@ -5242,21 +5180,21 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                     <div class="s8-vs-col-line total"><span>Patrimoine net</span><span id="s8-vs-buy-total">--</span></div>
                     <div class="s8-vs-col-section muted">Dépenses cumulées 10 ans</div>
                     <div class="s8-vs-col-line muted"><span>Mensualités × 120</span><span id="s8-vs-buy-mens">--</span></div>
-                    <div class="s8-vs-col-line muted"><span>Charges + entretien</span><span id="s8-vs-buy-charges">--</span></div>
+                    <div class="s8-vs-col-line muted"><span>Charges locatives + entretien</span><span id="s8-vs-buy-charges">--</span></div>
                   </div>
                   <div class="s8-vs-col">
-                    <div class="s8-vs-col-title">🏘 Louer <span style="font-weight:400;color:var(--text-muted);font-size:.72rem;">(équivalent)</span></div>
+                    <div class="s8-vs-col-title">📈 Placer ton apport</div>
                     <div class="s8-vs-col-section">Patrimoine créé à 10 ans</div>
                     <div class="s8-vs-col-line"><span>Apport placé à 3 %/an</span><span id="s8-vs-rent-place">--</span></div>
-                    <div class="s8-vs-col-line" id="s8-vs-rent-diff-line"><span>Différentiel mensuel placé</span><span id="s8-vs-rent-diff">--</span></div>
+                    <div class="s8-vs-col-line" id="s8-vs-rent-diff-line"><span>Effort mensuel placé</span><span id="s8-vs-rent-diff">--</span></div>
                     <div class="s8-vs-col-line total"><span>Patrimoine net</span><span id="s8-vs-rent-solde">--</span></div>
                     <div class="s8-vs-col-section muted">Dépenses cumulées 10 ans</div>
-                    <div class="s8-vs-col-line muted"><span>Loyer initial</span><span id="s8-vs-rent-init">--</span></div>
-                    <div class="s8-vs-col-line muted"><span>Total loyers (IRL +1,5 %/an)</span><span id="s8-vs-rent-total">--</span></div>
+                    <div class="s8-vs-col-line muted"><span>Loyer encaissé</span><span id="s8-vs-rent-init">--</span></div>
+                    <div class="s8-vs-col-line muted"><span>Cashflow cumulé placé</span><span id="s8-vs-rent-total">--</span></div>
                   </div>
                 </div>
                 <div class="s8-vs-verdict" id="s8-vs-verdict">Calcul en cours…</div>
-                <div class="s8-vs-note">Comparatif simplifié. Hypothèses : valorisation bien +1 %/an, charges 1,5 % du prix/an, fiscalité non intégrée.</div>
+                <div class="s8-vs-note">Comparatif simplifié. Hypothèses : valorisation +1 %/an, placement à 3 %/an, charges 1,5 %/an. Hors fiscalité (IR/PS) et risque locatif.</div>
               </div>
             </div>
           </div>
@@ -5264,8 +5202,8 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           <div class="reco-cards">
             <div class="reco-card" data-glyph="🏠">
               <div class="reco-kicker">PARCOURS RECOMMANDÉ</div>
-              <h3 class="reco-title">Parcours Achat immobilier</h3>
-              <p class="reco-desc">On va construire ton dossier banque, comparer les scénarios et suivre les étapes jusqu'au notaire.</p>
+              <h3 class="reco-title">Parcours Investissement locatif</h3>
+              <p class="reco-desc">On va construire ton dossier banque, optimiser ton rendement et suivre les étapes jusqu'à la mise en location.</p>
               <span class="btn-hero-primary" style="align-self:flex-start;opacity:0.5;cursor:not-allowed;pointer-events:none;" title="Bientôt disponible">Lancer le parcours (bientôt)</span>
             </div>
             <div class="reco-card" id="reco-next-brick" data-glyph="→">
@@ -5518,7 +5456,9 @@ var DUREE_PAR_AGE = { '25_34': 25, '25-34': 25, '35_44': 20, '35-44': 20, '45_54
 /* ─── STATE ──────────────────────────────────────────────── */
 var S = {
   currentScreen: 0,
-  projectType: '', horizon: '3m', status: '', primo: '', propertyType: '',
+  // Brique 100% locatif : le type de projet est figé sur l'investissement locatif.
+  projectType: 'investissement_locatif', horizon: '3m', status: '', primo: '', propertyType: 'ancien',
+  locationType: 'nue', // 'nue' | 'meublee'
   codePostal: '', prixM2: 2500, deptName: '',
   communeNom: '', communeInsee: '', communeChoisie: false, typoChoisie: '', typosShortlist: [],
   revenus: 0, revenusCompl: 0, autresEntrees: 0, charges: 0, chargesFixes: 0, credits: 0, loyer: 0,
@@ -5576,7 +5516,13 @@ var GLOSSARY = [
     { t: 'Charges de copropriété', d: 'Les charges communes de l\'immeuble (entretien, gardien, ascenseur...).', ex: 'De 20 à 80 EUR/m2/an selon l\'immeuble.', w: 'Demande les 3 dernières années de charges et les travaux votés en AG.' },
     { t: 'Rendement brut', d: 'Loyers annuels divisés par le coût total du projet. Vision simplifiée de la rentabilité.', ex: '9 600 EUR de loyers / 200 000 EUR de coût total = 4.8% brut.', w: 'Le rendement brut ne prend pas en compte les charges ni la fiscalité.' },
     { t: 'Rendement net simplifié', d: 'Loyers annuels diminués des charges et taxes, divisés par le coût total du projet.', ex: '(9 600 - 2 400) / 200 000 = 3.6% net simplifié.', w: 'Plus réaliste que le brut, mais ne prend pas en compte l\'impôt sur le revenu.' },
-    { t: 'Cash-flow', d: 'Ce qui rentre moins ce qui sort chaque mois. Positif = le bien se finance seul.', ex: '800 EUR de loyer - 1 000 EUR de mensualité - 100 EUR de charges = -300 EUR de cash-flow.', w: 'Un cash-flow négatif n\'est pas forcément un problème, mais il faut pouvoir le supporter.' }
+    { t: 'Cash-flow', d: 'Ce qui rentre moins ce qui sort chaque mois. Positif = le bien se finance seul.', ex: '800 EUR de loyer - 1 000 EUR de mensualité - 100 EUR de charges = -300 EUR de cash-flow.', w: 'Un cash-flow négatif n\'est pas forcément un problème, mais il faut pouvoir le supporter.' },
+    { t: 'Vacance locative', d: 'Périodes pendant lesquelles le bien n\'est pas loué (entre deux locataires, travaux...). On la compte en mois/an.', ex: '0,5 mois/an de vacance ≈ 4 % de loyer en moins sur l\'année.', w: 'Une zone à forte demande locative limite la vacance. Prévois toujours une marge.' },
+    { t: 'PNO (propriétaire non occupant)', d: 'Assurance obligatoire pour un bien mis en location : elle couvre le logement quand aucun locataire n\'est assuré.', ex: 'Environ 10 à 20 EUR/mois selon le bien.', w: 'Distincte de l\'assurance habitation du locataire ; elle reste à ta charge.' },
+    { t: 'Capacité résiduelle (règle des 70 %)', d: 'Les banques ne retiennent qu\'environ 70 % des loyers futurs dans le calcul de ta capacité d\'emprunt (pour couvrir vacance et charges). Ce qu\'il te reste comme capacité après ce projet.', ex: '900 EUR de loyer → ~630 EUR pris en compte par la banque.', w: 'Le taux retenu varie selon les banques. Estimation indicative.' },
+    { t: 'LMNP (meublé)', d: 'Loueur en Meublé Non Professionnel : régime des locations meublées. Les loyers sont imposés en BIC, avec micro-BIC (abattement) ou régime réel (amortissement du bien).', ex: 'Un studio loué meublé relève souvent du LMNP.', w: 'Fiscalité spécifique non chiffrée dans cette brique — à valider avec un comptable.' },
+    { t: 'Déficit foncier (location nue)', d: 'En location nue au régime réel, les charges et travaux supérieurs aux loyers créent un déficit imputable sur ton revenu (sous conditions et plafonds).', ex: 'Gros travaux la 1re année → réduction d\'impôt étalée.', w: 'Mécanisme encadré (plafonds, durée de location) — à vérifier au cas par cas.' },
+    { t: 'IR + prélèvements sociaux', d: 'Les revenus locatifs sont soumis à l\'impôt sur le revenu (selon ta tranche) et aux prélèvements sociaux (17,2 %).', ex: 'L\'imposition réelle dépend de ta situation et du régime choisi.', w: 'Estimations de cette brique données HORS impôt — le net après impôt sera inférieur.' }
   ]},
   { cat: 'Autres', sub: '', terms: [
     { t: 'Primo-accédant', d: 'Personne qui achète sa résidence principale pour la première fois (ou qui n\'a pas été propriétaire de sa résidence principale au cours des 2 dernières années).', ex: 'Tu es locataire depuis 3 ans : tu es primo-accédant.', w: 'Donne accès à certaines aides (PTZ, exonérations locales).' }
@@ -5652,30 +5598,13 @@ function getAutoAssurance() {
 }
 
 function calculateRealEstateScore(st) {
-  var score = 0;
-  var effort = calculateDebtRatio(st.credits, getMensualiteCible() + n(st.assurance), getTotalRevenus());
-  if (getTotalRevenus() > 0) {
-    if (effort <= 0.30) score += 25;
-    else if (effort <= 0.35) score += 15;
-    else if (effort <= 0.45) score += 5;
-  }
-  var mob = getApportMobilisable();
-  var fees = estimateAcquisitionFees(st.prixBien, st.propertyType);
-  if (mob > 0) {
-    if (mob >= fees + 5000 && st.matelasActuel >= st.matelasCible) score += 20;
-    else if (mob >= fees) score += 10;
-    else score += 5;
-  }
-  if (st.prixBien > 0 && st.taxeFonciere > 0) score += 20;
-  else if (st.prixBien > 0) score += 10;
-  else score += 5;
-  var screensVisited = 0;
-  for (var i = 1; i <= 6; i++) { if (document.getElementById('screen-' + i)) screensVisited++; }
-  score += Math.min(15, Math.round(screensVisited / 6 * 15));
-  score += 10;
-  if (st.projectType && st.horizon && st.propertyType) score += 10;
-  else if (st.projectType) score += 5;
-  return Math.min(100, score);
+  // Score locatif global = moyenne pondérée des 4 sous-scores (rentabilité primaire).
+  var subs = s8CalcSubscores(st);
+  var score = subs.rentabilite * 0.35   // rendement net + cashflow
+            + subs.effort * 0.25        // financement (endettement, apport, capacité résiduelle)
+            + subs.faisabilite * 0.20   // tension / vacance
+            + subs.risque * 0.20;       // risque (réserve, reste à vivre)
+  return Math.round(Math.min(100, Math.max(0, score)));
 }
 
 function recommendNextBrick(st) {
@@ -5951,11 +5880,6 @@ function selectProjectCard(el) {
   el.classList.add('selected');
   S.projectType = val;
   updateModeCard();
-
-  if (val === 'investissement_locatif') {
-    var toggle = $('s6-toggle-invest');
-    if (toggle && !toggle.checked) { toggle.checked = true; s6ToggleInvestment(); }
-  }
 
   var blocB = $('bloc-b');
   if (blocB && blocB.style.display === 'none') {
@@ -6829,20 +6753,9 @@ function updateInvestment() {
 
 /* ─── ÉCRAN 6 : INVESTISSEMENT LOCATIF REFONTE ────────────── */
 function initScreen6() {
-  var isLocatif = S.projectType === 'investissement_locatif' || S.usage === 'locatif';
-  var toggle = $('s6-toggle-invest');
-  var toggleCard = $('s6-toggle-card');
-
-  if (isLocatif) {
-    // Auto-activate, hide toggle UI
-    if (toggle && !toggle.checked) toggle.checked = true;
-    if (toggleCard) toggleCard.style.display = 'none';
-    $('s6-invest-minimal').style.display = 'none';
-    $('s6-invest-full').style.display = 'block';
-  } else {
-    if (toggleCard) toggleCard.style.display = '';
-    s6ToggleInvestment();
-  }
+  // Brique 100% locatif : l'analyse de rentabilité est toujours affichée (plus de toggle).
+  var full = $('s6-invest-full');
+  if (full) full.style.display = 'block';
 
   // Prefill loyer :
   //  1) Si l'user a déjà saisi un loyer, on respecte sa valeur
@@ -6907,18 +6820,6 @@ function s6UpdateSuggestBanner() {
     typoEl.textContent = 'ton bien';
   }
   if (loyerEl) loyerEl.textContent = new Intl.NumberFormat('fr-FR').format(S.loyerSuggested) + '\u00a0€';
-}
-
-function s6ToggleInvestment() {
-  var checked = $('s6-toggle-invest').checked;
-  $('s6-invest-full').style.display = checked ? 'block' : 'none';
-  $('s6-invest-minimal').style.display = checked ? 'none' : 'block';
-  if (checked) {
-    recalcLocatif();
-  } else {
-    // Toggle OFF : on rafraîchit la sidebar pour masquer les rows locatif
-    if (typeof updateSynthesePanel === 'function') updateSynthesePanel();
-  }
 }
 
 function s6UpdateTaxeFonciere() {
@@ -7093,6 +6994,7 @@ function recalcLocatif() {
     var capaciteResiduelle = mensualiteMaxResiduelle > 0
       ? Math.round(mensualiteMaxResiduelle * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
       : 0;
+    S.capaciteResiduelle = capaciteResiduelle; // stocké pour le score, le diagnostic et le PDF
     if (capaciteResiduelle > 0) {
       capEl.textContent = Math.round(capaciteResiduelle).toLocaleString('fr-FR') + ' €';
       if (capBubble) capBubble.style.display = '';
@@ -7733,80 +7635,82 @@ function s7UpdateRevente(year) {
 
 /* ─── ÉCRAN FINAL 8 : DIAGNOSTIC (refonte commit 6b) ────────── */
 
-// Calcul des 4 sous-scores (chacun /100)
+// Calcul des 4 sous-scores locatif (chacun /100).
+// Clés legacy conservées pour ne pas casser l'affichage/leviers, mais remappées au
+// sens locatif : rentabilite = rendement net + cashflow ; effort = Financement ;
+// faisabilite = Tension/vacance ; risque = Risque.
 function s8CalcSubscores(st) {
   var mob = getApportMobilisable();
   var fees = estimateAcquisitionFees(st.prixBien, st.propertyType);
   var mensualite = getMensualiteCible();
+  var rdtNet = n(st.rendementNet);   // % — posé par recalcLocatif
+  var cashflow = n(st.cashFlow);     // €/mois
+  var vacance = n(st.vacance);       // mois/an
 
-  // FAISABILITÉ
-  var faisabilite = 30;
-  if (mob > 0) {
-    if (mob >= fees + 5000) faisabilite += 35;
-    else if (mob >= fees) faisabilite += 25;
-    else faisabilite += 10;
-  }
-  if (mensualite > 0) faisabilite += 20;
-  if (st.prixBien > 0) faisabilite += 15;
-  faisabilite = Math.min(100, faisabilite);
-
-  // EFFORT
-  var effort = calculateDebtRatio(st.credits, mensualite + n(st.assurance), getTotalRevenus());
-  var effortPct = effort * 100;
-  var effortScore;
-  if (effortPct <= 28) effortScore = 92;
-  else if (effortPct <= 33) effortScore = 75;
-  else if (effortPct <= 35) effortScore = 60;
-  else if (effortPct <= 40) effortScore = 45;
-  else if (effortPct <= 45) effortScore = 30;
-  else effortScore = 15;
-
-  // RENTABILITÉ
-  var prixBien = st.prixBien || (mob + calculateBorrowingCapacity(mensualite, st.taux, st.duree * 12));
-  var valeur10 = prixBien * Math.pow(1.01, 10);
-  var gainPotentiel = valeur10 - prixBien;
-  var rentabilite = 50;
-  if (gainPotentiel > 25000) rentabilite += 20;
-  else if (gainPotentiel > 15000) rentabilite += 12;
-  if (st.taux > 0 && st.taux <= 3.5) rentabilite += 15;
-  else if (st.taux > 0 && st.taux <= 4.2) rentabilite += 8;
-  if (st.loyerEstime > 0) {
-    var rdt = (st.loyerEstime * 12) / (prixBien || 1) * 100;
-    if (rdt > 5) rentabilite += 15;
-    else if (rdt > 4) rentabilite += 8;
-  }
+  // RENTABILITÉ (clé 'rentabilite') — rendement net + cashflow : le cœur du locatif
+  var rentabilite = 22;
+  if (rdtNet >= 6) rentabilite += 42;
+  else if (rdtNet >= 4.5) rentabilite += 30;
+  else if (rdtNet >= 3) rentabilite += 16;
+  else if (rdtNet > 0) rentabilite += 6;
+  if (cashflow >= 0) rentabilite += 36;          // bien autofinancé
+  else if (cashflow >= -150) rentabilite += 20;  // effort d'épargne léger
+  else if (cashflow >= -300) rentabilite += 8;
   rentabilite = Math.min(100, rentabilite);
 
-  // RISQUE
-  var risque = 30;
+  // FINANCEMENT (clé 'effort') — endettement, apport, capacité résiduelle
+  var effort = calculateDebtRatio(st.credits, mensualite + n(st.assurance), getTotalRevenus());
+  var effortPct = effort * 100;
+  var financement = 0;
+  if (effortPct <= 33) financement += 42;
+  else if (effortPct <= 38) financement += 28; // les banques tolèrent un peu plus avec les loyers
+  else if (effortPct <= 45) financement += 14;
+  else financement += 5;
+  if (mob >= fees + 5000) financement += 33;
+  else if (mob >= fees) financement += 20;
+  else if (mob > 0) financement += 10;
+  if (n(st.capaciteResiduelle) > 0) financement += 25; // capacité conservée pour un 2e projet
+  financement = Math.min(100, financement);
+
+  // TENSION (clé 'faisabilite') — hypothèse de vacance + zone renseignée
+  var tension = 35;
+  if (vacance <= 0.5) tension += 45;
+  else if (vacance <= 1) tension += 32;
+  else if (vacance <= 2) tension += 16;
+  if (st.codePostal && String(st.codePostal).length >= 2) tension += 20;
+  tension = Math.min(100, tension);
+
+  // RISQUE (clé 'risque') — réserve, reste à vivre, buffer de cashflow
+  var risque = 20;
   if (st.matelasActuel >= st.matelasCible) risque += 30;
   else if (st.matelasActuel >= st.matelasCible * 0.5) risque += 15;
   var rav = getTotalRevenus() - st.charges - st.credits - mensualite - n(st.assurance);
   if (rav > 1500) risque += 25;
   else if (rav > 800) risque += 15;
-  else if (rav > 400) risque += 5;
-  if (st.duree > 0 && st.duree <= 25) risque += 15;
-  else if (st.duree > 0 && st.duree <= 30) risque += 8;
+  else if (rav > 400) risque += 6;
+  if (cashflow >= 0) risque += 25;
+  else if (cashflow >= -200) risque += 12;
   risque = Math.min(100, risque);
 
   return {
-    faisabilite: Math.round(faisabilite),
-    effort: Math.round(effortScore),
+    faisabilite: Math.round(tension),   // affiché "Tension"
+    effort: Math.round(financement),    // affiché "Financement"
     rentabilite: Math.round(rentabilite),
     risque: Math.round(risque)
   };
 }
 
 function s8GetVerdict(score) {
-  if (score >= 80) return { v: 'Projet solide, prêt à lancer.', d: 'Ta capacité d\'emprunt, ton apport et ton effort sont alignés. Tu peux passer en mode prospection.' };
-  if (score >= 70) return { v: 'Projet solide à ajuster.',     d: 'Les fondamentaux sont là. Vois les leviers ci-dessous pour gagner en confort.' };
-  if (score >= 55) return { v: 'Projet à cadrer.',             d: 'Le cadre est jouable mais demande des ajustements. Concentre-toi sur le point d\'attention ci-dessous.' };
-  if (score >= 40) return { v: 'Projet à retravailler.',       d: 'Plusieurs paramètres tirent ton dossier vers le bas. Les leviers ci-dessous peuvent inverser la tendance.' };
-  return { v: 'Projet à reconsidérer.',                        d: 'En l\'état, le projet est fragile. Renforce ton apport et ton épargne de précaution avant d\'avancer.' };
+  if (score >= 80) return { v: 'Investissement solide, prêt à lancer.', d: 'Rendement, financement et risque sont alignés. Tu peux passer en prospection.' };
+  if (score >= 65) return { v: 'Bon potentiel à ajuster.',     d: 'Les fondamentaux locatifs sont là. Les leviers ci-dessous amélioreront ta rentabilité ou ton cashflow.' };
+  if (score >= 50) return { v: 'Projet locatif à cadrer.',     d: 'Jouable, mais un paramètre clé (rendement, cashflow ou financement) demande à être retravaillé.' };
+  if (score >= 35) return { v: 'Rentabilité à retravailler.',  d: 'Plusieurs paramètres pèsent sur le projet. Les leviers ci-dessous peuvent inverser la tendance.' };
+  return { v: 'Projet locatif fragile.',                       d: 'En l\'état, le rendement ou le cashflow ne tiennent pas. Renforce ton apport et vise un meilleur rendement avant d\'avancer.' };
 }
 
 function buildFinalScreen() {
   syncStateFromScreen(S.currentScreen);
+  if (typeof recalcLocatif === 'function') recalcLocatif(); // rafraîchit rendement/cashflow/capacité résiduelle avant le score
   S.score = calculateRealEstateScore(S);
   var status;
   if (S.score >= 80) status = 'Prêt à approfondir';
@@ -7842,7 +7746,7 @@ function buildFinalScreen() {
   if (vEl) vEl.textContent = verdict.v;
 
   var keys = ['faisabilite', 'effort', 'rentabilite', 'risque'];
-  var labels = { faisabilite: 'la faisabilité', effort: 'l\'effort financier', rentabilite: 'la rentabilité', risque: 'le risque' };
+  var labels = { faisabilite: 'la tension locative', effort: 'le financement', rentabilite: 'la rentabilité', risque: 'le risque' };
   var minKey = keys[0];
   keys.forEach(function(k) { if (subs[k] < subs[minKey]) minKey = k; });
   var hasWeakness = subs[minKey] < 65;
@@ -7856,7 +7760,7 @@ function buildFinalScreen() {
   }
 
   var subContainer = $('s8-subscores');
-  var subLabels = { faisabilite: 'Faisabilité', effort: 'Effort', rentabilite: 'Rentabilité', risque: 'Risque' };
+  var subLabels = { faisabilite: 'Tension', effort: 'Financement', rentabilite: 'Rentabilité', risque: 'Risque' };
   if (subContainer) {
     var subDivs = subContainer.querySelectorAll('.s8-subscore');
     subDivs.forEach(function(d) {
@@ -7955,11 +7859,13 @@ function buildFinalScreen() {
     subs: subs, minKey: minKey
   });
 
-  // ====== 6. ACHETER VS LOUER ======
+  // ====== 6. LOCATIF VS PLACEMENT ======
   s8BuildVsRent({
     prixBien: prixBien, mob: mob, mensualite: mensualite,
     borrowing: borrowing, duree: S.duree, taux: S.taux,
-    coutCredit: coutCredit, propertyType: S.propertyType || 'ancien'
+    coutCredit: coutCredit, propertyType: S.propertyType || 'ancien',
+    loyerEstime: S.loyerEstime, vacance: S.vacance, assurancePno: S.assurancePno,
+    gestionLoc: S.gestionLoc, taxeFonciere: S.taxeFonciere
   });
 
   // ====== 7. RECO CARDS ======
@@ -8022,11 +7928,11 @@ function s8BuildLeviers(ctx) {
     });
   }
 
-  // Levier rentabilité
+  // Levier rentabilité (rendement / cashflow)
   if (ctx.subs.rentabilite < 65 && leviers.length < 3) {
     leviers.push({
-      action: 'Envisager le <strong>locatif</strong> pour rentabiliser',
-      result: '→ Loyer net couvre une partie de la mensualité · cap. résiduelle pour 2e projet',
+      action: 'Viser un <strong>meilleur rendement</strong> : prix plus bas ou loyer plus élevé',
+      result: '→ Améliore ton rendement net et rapproche ton cashflow de l\'équilibre',
       onclick: "goToScreen(6)"
     });
   }
@@ -8034,8 +7940,8 @@ function s8BuildLeviers(ctx) {
   // Levier risque
   if (ctx.subs.risque < 60 && leviers.length < 3) {
     leviers.push({
-      action: 'Renforcer ton <strong>épargne de précaution</strong> avant d\'acheter',
-      result: '→ 3 mois de charges minimum · sécurise ton parcours bancaire',
+      action: 'Renforcer ton <strong>épargne de précaution</strong> avant d\'investir',
+      result: '→ 3 mois de charges minimum · absorbe la vacance et les imprévus locatifs',
       onclick: "goToNextBrick()"
     });
   }
@@ -8075,6 +7981,9 @@ function s8BuildLeviers(ctx) {
    - Louer : apport placé à 3 %/an + différentiel mensuel (mens + charges − loyer) placé mois par mois à 3 %/an.
    Patrimoine = stock final, comparable des deux côtés.
 */
+
+/* Compare, sur 10 ans, le patrimoine net créé en investissant dans ce bien locatif
+   vs en plaçant le même argent (apport + frais) sur un placement à ~3 %/an. */
 function s8BuildVsRent(ctx) {
   var prixBien = ctx.prixBien || 0;
   if (!prixBien) {
@@ -8086,69 +7995,46 @@ function s8BuildVsRent(ctx) {
   var YEARS = 10;
   var months = YEARS * 12;
   var apport = Math.max(0, ctx.mob || 0);
-  var taux = ctx.taux || 3.8;
-  var dureeAns = ctx.duree || 25;
-  var dureeMois = dureeAns * 12;
+  var taux = ctx.taux || 3.0;
+  var dureeMois = (ctx.duree || 25) * 12;
   var r = (taux / 12) / 100;
 
-  // Emprunt REÉL = prix du bien + frais notaire − apport (l'apport sert d'abord à réduire l'emprunt)
   var fraisNotaire = (typeof estimateAcquisitionFees === 'function') ? estimateAcquisitionFees(prixBien, ctx.propertyType || 'ancien') : Math.round(prixBien * 0.08);
-  var coutAcquisition = prixBien + fraisNotaire;
-  var empruntReel = Math.max(0, coutAcquisition - apport);
-  // Mensualité recalculée sur l'emprunt réel (à prix donné, mens ≠ mens cible si on n'emprunte pas le max)
-  var mensReelle;
-  if (r > 0 && empruntReel > 0) {
-    mensReelle = empruntReel * r / (1 - Math.pow(1 + r, -dureeMois));
-  } else {
-    mensReelle = empruntReel / dureeMois;
-  }
+  var capitalImmobilise = apport + fraisNotaire; // sortie cash one-shot
+  var empruntReel = Math.max(0, (prixBien + fraisNotaire) - apport);
+  var mensReelle = (r > 0 && empruntReel > 0) ? empruntReel * r / (1 - Math.pow(1 + r, -dureeMois)) : empruntReel / dureeMois;
 
-  // ===== ACHETER : patrimoine net à 10 ans =====
+  // ===== INVESTIR EN LOCATIF : patrimoine net à 10 ans =====
   var valeur10 = prixBien * Math.pow(1.01, YEARS);
   var crd;
   if (r > 0 && empruntReel > 0) {
     var facteur = Math.pow(1 + r, months);
-    crd = empruntReel * facteur - mensReelle * (facteur - 1) / r;
-    crd = Math.max(0, crd);
+    crd = Math.max(0, empruntReel * facteur - mensReelle * (facteur - 1) / r);
   } else {
     crd = Math.max(0, empruntReel - mensReelle * months);
   }
-  var capitalImmobilise = apport + fraisNotaire; // sortie cash one-shot, immobilisée dans le bien
-  var patrimoineAcheter = valeur10 - crd - capitalImmobilise;
 
-  // Flux info uniquement (dépenses cumulées 10 ans)
-  var totalMens = mensReelle * months;
-  var chargesMensuelles = (prixBien * 0.015) / 12;
-  var totalCharges = chargesMensuelles * months;
+  // Loyer réel saisi + charges récurrentes → cashflow mensuel (± ; négatif = effort d'épargne)
+  var loyer = n(ctx.loyerEstime) || Math.round(prixBien * 0.0040);
+  var loyerEffectif = loyer - (loyer * n(ctx.vacance) / 12);
+  var chargesLocMens = (prixBien * 0.015) / 12 + n(ctx.assurancePno) + n(ctx.gestionLoc) + (n(ctx.taxeFonciere) / 12);
+  var cashflowMois = loyerEffectif - mensReelle - chargesLocMens;
 
-  // ===== LOUER : patrimoine net à 10 ans =====
-  var loyerInit = prixBien * 0.0038; // ~4,56 %/an brut
-  // Apport placé à 3 %/an composé (et frais notaire aussi puisque le locataire n'a pas à les sortir)
-  var capitalPlace = capitalImmobilise * Math.pow(1.03, YEARS);
-
-  // Différentiel mensuel : (mens + charges_mens) − loyer_du_mois, placé mensuellement à 3 %/an
-  // taux mensuel placement
-  var rPlace = Math.pow(1.03, 1/12) - 1;
-  var totalLoyers = 0;
-  var diffPlace = 0; // valeur acquise du différentiel à 10 ans
-  for (var y = 0; y < YEARS; y++) {
-    var loyerAnnee = loyerInit * Math.pow(1.015, y); // mensuel cette année
-    // Équivalent pour l'acheteur = mens + charges (constantes année par année ici)
-    var fluxAcheteurMois = mensReelle + chargesMensuelles;
-    var diffMois = fluxAcheteurMois - loyerAnnee; // si positif, le locataire place ce diff
-    for (var m = 0; m < 12; m++) {
-      totalLoyers += loyerAnnee;
-      if (diffMois > 0) {
-        // capitalisation mensuelle jusqu'à la fin (months − ((y*12)+m+1) mois restants)
-        var moisRestants = months - (y * 12 + m + 1);
-        diffPlace += diffMois * Math.pow(1 + rPlace, moisRestants);
-      }
-    }
+  // Capitalisation mensuelle à 3 %/an : cashflow positif placé côté locatif ; effort placé côté placement
+  var rPlace = Math.pow(1.03, 1 / 12) - 1;
+  var cashflowCapitalise = 0, effortCapitalise = 0;
+  for (var m = 0; m < months; m++) {
+    var moisRestants = months - (m + 1);
+    if (cashflowMois >= 0) cashflowCapitalise += cashflowMois * Math.pow(1 + rPlace, moisRestants);
+    else effortCapitalise += (-cashflowMois) * Math.pow(1 + rPlace, moisRestants);
   }
-  var patrimoineLouer = capitalPlace + diffPlace;
+  var patrimoineLocatif = valeur10 - crd - capitalImmobilise + cashflowCapitalise;
 
-  // Note : le total "loyers" affiché est juste informatif (dépenses cumulées côté locataire)
-  var ecart = patrimoineAcheter - patrimoineLouer; // > 0 = acheter gagne
+  // ===== PLACER L'APPORT : patrimoine net à 10 ans =====
+  var capitalPlace = capitalImmobilise * Math.pow(1.03, YEARS);
+  var patrimoinePlacement = capitalPlace + effortCapitalise;
+
+  var ecart = patrimoineLocatif - patrimoinePlacement; // > 0 = le locatif gagne
 
   // ===== AFFICHAGE =====
   var set = function(id, txt) { var e = $(id); if (e) e.textContent = txt; };
@@ -8158,40 +8044,33 @@ function s8BuildVsRent(ctx) {
   set('s8-vs-buy-val', '+ ' + fmt(Math.round(valeur10)));
   set('s8-vs-buy-crd', '– ' + fmt(Math.round(crd)));
   set('s8-vs-buy-init', '– ' + fmt(Math.round(capitalImmobilise)));
-  set('s8-vs-buy-total', signed(patrimoineAcheter));
-  set('s8-vs-buy-mens', fmt(Math.round(totalMens)));
-  set('s8-vs-buy-charges', fmt(Math.round(totalCharges)));
+  set('s8-vs-buy-total', signed(patrimoineLocatif));
+  set('s8-vs-buy-mens', fmt(Math.round(mensReelle * months)));
+  set('s8-vs-buy-charges', fmt(Math.round(chargesLocMens * months)));
 
   set('s8-vs-rent-place', '+ ' + fmt(Math.round(capitalPlace)));
-  set('s8-vs-rent-diff', '+ ' + fmt(Math.round(diffPlace)));
-  set('s8-vs-rent-solde', signed(patrimoineLouer));
-  set('s8-vs-rent-init', fmt(Math.round(loyerInit)) + '/mois');
-  set('s8-vs-rent-total', fmt(Math.round(totalLoyers)));
+  set('s8-vs-rent-diff', '+ ' + fmt(Math.round(effortCapitalise)));
+  set('s8-vs-rent-solde', signed(patrimoinePlacement));
+  set('s8-vs-rent-init', fmt(Math.round(loyer)) + '/mois');
+  set('s8-vs-rent-total', fmt(Math.round(cashflowCapitalise)));
 
-  // Si différentiel négatif (locataire ne place rien supplémentaire), masque la ligne
   var diffLine = $('s8-vs-rent-diff-line');
-  if (diffLine) diffLine.style.display = (diffPlace > 0 ? '' : 'none');
+  if (diffLine) diffLine.style.display = (effortCapitalise > 0 ? '' : 'none');
 
   var hint = $('s8-vs-hint');
   var verdict = $('s8-vs-verdict');
   if (verdict) verdict.classList.remove('neg');
   if (hint) hint.classList.remove('neg');
   if (ecart >= 0) {
-    if (hint) hint.innerHTML = 'Comparatif sur 10 ans · gain estimé <strong>+ ' + fmt(Math.round(ecart)) + '</strong>';
-    if (verdict) verdict.innerHTML = 'Sur 10 ans, l\'achat te fait <strong>gagner ~' + fmt(Math.round(ecart)) + '</strong> de patrimoine par rapport à la location équivalente.';
+    if (hint) hint.innerHTML = 'Sur 10 ans · le locatif crée <strong>+ ' + fmt(Math.round(ecart)) + '</strong> de patrimoine';
+    if (verdict) verdict.innerHTML = 'Sur 10 ans, investir dans ce bien te crée <strong>~' + fmt(Math.round(ecart)) + '</strong> de patrimoine de plus qu\'un placement à 3 %/an (hors fiscalité et risque locatif).';
   } else {
-    if (hint) {
-      hint.classList.add('neg');
-      hint.innerHTML = 'Comparatif sur 10 ans · écart <strong>– ' + fmt(Math.abs(Math.round(ecart))) + '</strong>';
-    }
-    if (verdict) {
-      verdict.classList.add('neg');
-      verdict.innerHTML = 'Sur 10 ans, la location reste plus avantageuse de <strong>~' + fmt(Math.abs(Math.round(ecart))) + '</strong>. L\'achat devient généralement gagnant au-delà de 7–10 ans.';
-    }
+    if (hint) { hint.classList.add('neg'); hint.innerHTML = 'Sur 10 ans · écart <strong>– ' + fmt(Math.abs(Math.round(ecart))) + '</strong> vs un placement'; }
+    if (verdict) { verdict.classList.add('neg'); verdict.innerHTML = 'Sur 10 ans, un placement à 3 %/an resterait plus avantageux de <strong>~' + fmt(Math.abs(Math.round(ecart))) + '</strong>. Vise un meilleur rendement, un prix plus bas ou une détention plus longue.'; }
   }
 }
 
-/* ─── Toggle Acheter vs Louer (collapsable) ─── */
+/* ─── Toggle Locatif vs Placement (collapsable) ─── */
 function s8ToggleVs(el) {
   if (!el) return;
   var isOpen = el.classList.toggle('open');
@@ -8308,6 +8187,7 @@ function validerEtDashboard() {
       projectType: S.projectType,
       propertyUse: S.projectType === 'investissement_locatif' ? 'louer' : 'habiter',
       propertyType: S.propertyType,
+      locationType: S.locationType || 'nue',
       location: S.codePostal || '',
       prixM2: S.prixM2 || 2500,
       purchaseHorizon: S.horizon,
@@ -8329,12 +8209,21 @@ function validerEtDashboard() {
       remainingToLive: getTotalRevenus() - S.charges - S.credits - mensualite - n(S.assurance)
     },
     investment: {
-      enabled: S.investEnabled,
+      enabled: true,
+      locationType: S.locationType || 'nue',
       expectedMonthlyRent: S.loyerEstime,
-      vacancyRate: S.vacance
+      vacancyRate: S.vacance,
+      grossYield: n(S.rendementBrut),
+      netYield: n(S.rendementNet),
+      monthlyCashflow: Math.round(n(S.cashFlow)),
+      residualBorrowingCapacity: Math.round(n(S.capaciteResiduelle)),
+      pnoInsurance: S.assurancePno,
+      managementFees: S.gestionLoc
     },
     scores: {
-      realEstateReadinessScore: S.score
+      realEstateReadinessScore: S.score, // conservé pour compat dashboard
+      locatifScore: S.score,
+      subscores: S.subscores || null
     },
     dashboard: {
       status: S.scoreStatus,
@@ -8385,6 +8274,9 @@ function validerEtDashboard() {
 
   // Init panel progression
   updateProgressPanel(0);
+
+  // Brique 100% locatif : afficher le bandeau "mode" locatif d'emblée.
+  if (typeof updateModeCard === 'function') updateModeCard();
 
   (async function() {
     if (typeof requireAuth === 'function') {
