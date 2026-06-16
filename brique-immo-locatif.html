@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Fundamental — Achat immobilier</title>
+<title>Fundamental — Investissement locatif</title>
 
 <!-- Bootstrap theme (synchrone, avant render) -->
 <script>
@@ -832,6 +832,19 @@ html.dark .brick-kicker { color:#A5B4FC; }
   border-color:#14b8a6; background:linear-gradient(135deg, rgba(20,184,166,0.22) 0%, rgba(20,184,166,0.12) 100%);
   box-shadow:0 0 0 2px rgba(20,184,166,0.2), 0 4px 32px -4px rgba(20,184,166,0.35); transform:scale(1.02);
 }
+/* — Amber: Investissement locatif */
+.project-type-card[data-val="investissement_locatif"] {
+  background:linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.04) 100%);
+  border:1.5px solid rgba(245,158,11,0.25);
+}
+.project-type-card[data-val="investissement_locatif"]:hover {
+  border-color:rgba(245,158,11,0.55); background:linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(245,158,11,0.08) 100%);
+  box-shadow:0 4px 28px -4px rgba(245,158,11,0.25); transform:translateY(-3px) scale(1.015);
+}
+.project-type-card[data-val="investissement_locatif"].selected {
+  border-color:#f59e0b; background:linear-gradient(135deg, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0.12) 100%);
+  box-shadow:0 0 0 2px rgba(245,158,11,0.2), 0 4px 32px -4px rgba(245,158,11,0.35); transform:scale(1.02);
+}
 /* Card illustration SVG */
 .project-type-card .ptc-illustration {
   width:72px; height:72px; flex-shrink:0; margin-bottom:0.25rem;
@@ -1283,6 +1296,368 @@ html.dark .apport-hero-label { color:var(--v3-accent-strong); }
 .loyer-delta.negative { color:var(--green); }
 .loyer-delta.neutral { color:var(--text-faint); }
 
+/* ══════════════════════════════════════════════════════════════
+   TOGGLE SWITCH (investissement locatif)
+══════════════════════════════════════════════════════════════ */
+.invest-toggle-card {
+  padding:1rem 1.125rem; border-radius:0.875rem;
+  background:var(--surface-2); border:1px solid var(--border-subtle);
+  display:flex; flex-direction:column; gap:0.75rem;
+}
+.invest-toggle-header { display:flex; justify-content:space-between; align-items:center; }
+.invest-toggle-label { font-size:0.875rem; font-weight:600; color:var(--text); }
+.toggle-switch { position:relative; width:44px; height:24px; flex-shrink:0; }
+.toggle-switch input { opacity:0; width:0; height:0; }
+.toggle-slider { position:absolute; inset:0; border-radius:9999px; background:var(--track); cursor:pointer; transition:background 0.3s ease; }
+.toggle-slider::before { content:''; position:absolute; width:18px; height:18px; border-radius:50%; background:#fff; top:3px; left:3px; transition:transform 0.3s ease; box-shadow:0 1px 3px rgba(0,0,0,0.15); }
+.toggle-switch input:checked + .toggle-slider { background:var(--accent-strong); }
+html.dark .toggle-switch input:checked + .toggle-slider { background:var(--v3-accent-strong); }
+.toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); }
+.invest-minimal { font-size:0.82rem; color:var(--text-muted); font-style:italic; padding:0.5rem 0; }
+
+/* ══════════════════════════════════════════════════════════════
+   WARNING BOX
+══════════════════════════════════════════════════════════════ */
+.warning-box {
+  padding:0.75rem 1rem; border-radius:0.875rem;
+  background:var(--orange-soft); border:1px solid rgba(251,163,60,0.2);
+  font-size:0.8125rem; color:var(--text); display:flex; align-items:flex-start; gap:0.5rem;
+}
+.warning-box.red-warning { background:var(--red-soft); border-color:rgba(248,113,113,0.2); }
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN 6 — Investissement locatif refonte
+══════════════════════════════════════════════════════════════ */
+.s6-section { }
+
+/* Taxe foncière — faint inline */
+.s6-taxe-faint {
+  font-size:0.72rem; color:var(--text-faint); margin-top:0.5rem;
+}
+.s6-taxe-faint a {
+  color:var(--accent-strong); cursor:pointer; text-decoration:underline;
+  text-decoration-style:dotted; font-weight:600;
+}
+html.dark .s6-taxe-faint a { color:#a78bfa; }
+
+/* Hero loyer card */
+.s6-loyer-hero {
+  position:relative; overflow:hidden;
+  padding:1.25rem 1.125rem 1rem; border-radius:1rem;
+  background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.13);
+  margin-top:0.75rem;
+}
+html.dark .s6-loyer-hero { background:rgba(139,92,246,0.12); border-color:rgba(139,92,246,0.2); }
+.s6-loyer-hero .s6-hero-watermark {
+  position:absolute; right:-10px; bottom:-10px; width:100px; height:100px;
+  pointer-events:none; opacity:0.07; color:var(--text);
+}
+.s6-loyer-kicker {
+  font-size:0.68rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.06em; color:var(--accent-strong); margin-bottom:0.5rem;
+}
+html.dark .s6-loyer-kicker { color:#a78bfa; }
+.s6-loyer-value-wrap {
+  display:flex; align-items:baseline; gap:0.5rem;
+}
+.s6-loyer-value-wrap input {
+  font-family:var(--font-display); font-size:2rem; font-weight:400;
+  color:var(--text); background:transparent; border:none; border-bottom:2px dashed rgba(139,92,246,0.3);
+  width:140px; outline:none; padding:0 0 2px;
+}
+.s6-loyer-value-wrap input::placeholder { color:var(--text-faint); font-size:1.2rem; }
+.s6-loyer-value-wrap .s6-loyer-suffix { font-size:1.1rem; color:var(--text-muted); font-weight:500; }
+.s6-loyer-helper {
+  font-size:0.78rem; color:var(--text-faint); margin-top:0.35rem; font-style:italic;
+}
+
+/* Charges & Risques grouped card */
+.s6-charges-group {
+  padding:1rem 1.125rem; border-radius:1rem;
+  background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.12);
+  margin-top:0.75rem;
+}
+html.dark .s6-charges-group { background:rgba(139,92,246,0.09); border-color:rgba(139,92,246,0.18); }
+.s6-charges-kicker {
+  font-size:0.68rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.06em; color:#7c3aed; margin-bottom:0.75rem;
+}
+html.dark .s6-charges-kicker { color:#a78bfa; }
+
+/* Bannière pédago suggestion loyer (commit 5b) */
+.s6-suggest-banner {
+  display:flex; align-items:flex-start; gap:0.65rem;
+  padding:0.85rem 1rem; border-radius:0.875rem;
+  background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.15);
+  margin-bottom:0.9rem; font-size:0.85rem; line-height:1.45;
+  color:var(--text);
+}
+html.dark .s6-suggest-banner {
+  background:rgba(139,92,246,0.13); border-color:rgba(139,92,246,0.25);
+}
+.s6-suggest-icon { font-size:1.05rem; flex-shrink:0; margin-top:1px; }
+.s6-suggest-text strong {
+  color:#7c3aed; font-weight:700; white-space:nowrap;
+}
+html.dark .s6-suggest-text strong { color:#a78bfa; }
+.s6-charges-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem;
+}
+@media(max-width:600px) { .s6-charges-grid { grid-template-columns:1fr; } }
+.s6-charge-mini {
+  padding:0.7rem 0.65rem; border-radius:0.75rem;
+  background:var(--bg-elevated); border:1px solid var(--border-subtle);
+  text-align:center;
+}
+html.dark .s6-charge-mini { background:rgba(255,255,255,0.04); }
+.s6-charge-mini-label {
+  font-size:0.7rem; font-weight:600; color:var(--text-muted); margin-bottom:0.25rem;
+  display:flex; align-items:center; justify-content:center; gap:0.25rem;
+}
+.s6-badge-estime {
+  font-size:0.55rem; font-weight:700; padding:0.1rem 0.35rem;
+  border-radius:9999px; background:rgba(16,185,129,0.12); color:#10b981;
+  vertical-align:middle;
+}
+.s6-charge-mini input {
+  font-family:var(--font-display); font-size:1.1rem; font-weight:400;
+  color:var(--text); background:transparent; border:none;
+  border-bottom:1.5px dashed var(--border-mid); text-align:center;
+  width:70px; outline:none; padding:2px 0;
+}
+.s6-charge-mini .s6-charge-unit { font-size:0.72rem; color:var(--text-faint); }
+.s6-charge-mini .s6-charge-helper {
+  font-size:0.68rem; color:var(--text-faint); font-style:italic; margin-top:0.15rem;
+}
+
+/* Gestion locative — 2 choice cards */
+.s6-gestion-section { margin-top:1rem; }
+.s6-gestion-label { font-size:0.82rem; font-weight:600; color:var(--text); margin-bottom:0.5rem; }
+.s6-gestion-cards {
+  display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;
+}
+@media(max-width:600px) { .s6-gestion-cards { grid-template-columns:1fr; } }
+.s6-gestion-card {
+  position:relative; padding:0.875rem 0.75rem; border-radius:1rem;
+  background:var(--surface-2); border:2px solid transparent;
+  cursor:pointer; transition:all 0.2s ease; text-align:center;
+}
+html.dark .s6-gestion-card { background:rgba(255,255,255,0.04); }
+.s6-gestion-card:hover { border-color:rgba(139,92,246,0.3); }
+.s6-gestion-card.active {
+  background:rgba(139,92,246,0.08); border-color:rgba(139,92,246,0.5);
+}
+html.dark .s6-gestion-card.active { background:rgba(139,92,246,0.15); border-color:#a78bfa; }
+.s6-gestion-card .s6-gc-check {
+  position:absolute; top:0.5rem; right:0.5rem;
+  width:18px; height:18px; border-radius:50%;
+  background:rgba(139,92,246,0.15); color:#8b5cf6;
+  display:none; align-items:center; justify-content:center;
+  font-size:0.65rem; font-weight:700;
+}
+.s6-gestion-card.active .s6-gc-check { display:flex; }
+.s6-gestion-card .s6-gc-icon { font-size:1.5rem; margin-bottom:0.25rem; }
+.s6-gestion-card .s6-gc-title {
+  font-size:0.82rem; font-weight:600; color:var(--text);
+}
+.s6-gestion-card .s6-gc-desc {
+  font-size:0.72rem; color:var(--text-faint); margin-top:0.15rem;
+}
+.s6-gestion-input-wrap {
+  overflow:hidden; max-height:0; transition:max-height 0.25s ease;
+  margin-top:0.5rem;
+}
+.s6-gestion-input-wrap.open { max-height:120px; }
+.s6-gestion-input-inner {
+  padding:0.75rem 0.85rem; border-radius:0.75rem;
+  background:var(--surface-2); border:1px solid var(--border-subtle);
+}
+html.dark .s6-gestion-input-inner { background:rgba(255,255,255,0.04); }
+.s6-gestion-input-inner .field-label { font-size:0.78rem; }
+.s6-field-helper {
+  font-size:0.75rem; color:var(--text-faint); font-style:italic; margin-top:0.2rem;
+}
+
+/* Results header + badge */
+.results-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:0.75rem;
+}
+.results-title {
+  font-size:0.82rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.06em; color:var(--text-muted);
+}
+.pulse-badge {
+  font-size:0.7rem; font-weight:600; border-radius:9999px;
+  padding:3px 10px; animation:pulse-badge 2s infinite;
+}
+.badge-green { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); }
+.badge-orange { background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); }
+.badge-red { background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); }
+@keyframes pulse-badge {
+  0%, 100% { opacity:1; }
+  50% { opacity:0.7; }
+}
+
+/* Rendement unified card */
+.s6-rendement-card {
+  padding:1rem 1.125rem; border-radius:1rem;
+  background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.13);
+}
+html.dark .s6-rendement-card { background:rgba(139,92,246,0.12); border-color:rgba(139,92,246,0.2); }
+.s6-rendement-kicker {
+  font-size:0.68rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.06em; color:var(--accent-strong); margin-bottom:0.6rem;
+}
+html.dark .s6-rendement-kicker { color:#a78bfa; }
+.s6-rendement-cols {
+  display:flex; gap:1.5rem; align-items:flex-end;
+}
+.s6-rendement-col { flex:1; }
+.s6-rendement-col-label {
+  font-size:0.7rem; font-weight:600; color:var(--text-faint); text-transform:uppercase;
+  letter-spacing:0.04em; margin-bottom:0.15rem;
+  display:flex; align-items:center; gap:0.25rem;
+}
+.s6-rendement-col-value {
+  font-family:var(--font-display); font-size:1.6rem; font-weight:400;
+  color:var(--text); line-height:1.2;
+}
+.s6-rendement-bars {
+  display:flex; gap:4px; margin-top:0.6rem; height:8px;
+}
+.s6-rbar {
+  border-radius:9999px; height:100%; transition:width 0.4s ease;
+}
+.s6-rbar-brut { background:rgba(139,92,246,0.5); }
+.s6-rbar-net { background:rgba(99,102,241,0.5); }
+.s6-rendement-footer {
+  font-size:0.68rem; color:var(--text-faint); font-style:italic; margin-top:0.5rem;
+}
+
+/* Cash-flow card */
+.s6-cashflow-card {
+  padding:1rem 1.125rem; border-radius:1rem; text-align:center;
+  border:1px solid transparent; transition:background 0.3s ease, border-color 0.3s ease;
+}
+.s6-cashflow-pos { background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.15); }
+.s6-cashflow-neg { background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.15); }
+.s6-cashflow-value {
+  font-family:var(--font-display); font-size:1.5rem; font-weight:400;
+  line-height:1.2;
+}
+.s6-cashflow-label {
+  font-size:0.72rem; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.06em; color:var(--text-faint); margin-top:0.2rem;
+}
+.s6-cashflow-micro {
+  font-size:0.68rem; color:var(--text-faint); margin-top:0.1rem; font-style:italic;
+}
+.s6-cashflow-pill {
+  display:inline-block; margin-top:0.5rem;
+  padding:0.35rem 0.85rem; border-radius:9999px;
+  font-size:0.78rem; font-weight:600;
+}
+.s6-pill-green { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); }
+.s6-pill-amber { background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); }
+
+/* Capacité résiduelle bubble — lightweight border-left style */
+.s6-capacity-bubble {
+  display:flex; align-items:flex-start; gap:8px;
+  padding:8px 0; padding-left:12px;
+  border-left:2px solid rgba(139,92,246,0.4);
+  font-size:0.82rem; color:var(--text-faint);
+  margin:8px 0; background:transparent; border-radius:0;
+  line-height:1.5;
+}
+html.dark .s6-capacity-bubble { border-left-color:rgba(139,92,246,0.5); }
+.s6-capacity-bubble .s6-cap-icon { font-size:1.1rem; flex-shrink:0; margin-top:0.1rem; }
+.s6-capacity-bubble strong {
+  font-family:var(--font-display); font-weight:600; color:#8b5cf6;
+}
+html.dark .s6-capacity-bubble strong { color:#a78bfa; }
+
+/* Prix hint — conditional popup */
+.s6-prix-hint {
+  display:flex; gap:10px; align-items:flex-start;
+  padding:12px 16px;
+  background:rgba(245,158,11,0.07);
+  border-left:3px solid rgba(245,158,11,0.5);
+  border-radius:0 12px 12px 0;
+  font-size:0.8rem;
+  animation:fadeSlideUp 0.3s ease-out;
+  margin-top:12px;
+}
+.s6-prix-hint-icon { font-size:1rem; flex-shrink:0; }
+.s6-prix-hint-text { color:var(--text-faint); margin-bottom:6px; }
+.s6-prix-hint-btn {
+  background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.3);
+  border-radius:9999px; padding:4px 14px; font-size:0.75rem;
+  color:#f59e0b; cursor:pointer;
+}
+.s6-prix-hint-btn:hover { background:rgba(245,158,11,0.25); }
+
+/* Disclaimer fiscal — inline */
+.s6-disclaimer {
+  font-size:0.7rem; color:var(--text-faint); font-style:italic;
+  text-align:center; margin:16px 0 8px; opacity:0.6;
+}
+
+/* Result grid — now 2 cards (rendement + cashflow) */
+.s6-result-grid-v2 {
+  display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;
+}
+@media(max-width:600px) { .s6-result-grid-v2 { grid-template-columns:1fr; } }
+
+@keyframes s6CountUp {
+  from { opacity:0; transform:translateY(4px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.s6-count-up { animation:s6CountUp 0.3s ease-out forwards; }
+
+/* État vide */
+.locatif-empty-state {
+  text-align:center; padding:2rem 1rem; color:var(--text-faint); font-style:italic;
+  font-size:0.875rem;
+}
+
+/* Info card (warning fiscal restyled) */
+.s6-info-card {
+  padding:0.75rem 1rem; border-radius:0.875rem;
+  background:var(--surface-2); border:1px solid var(--border-subtle);
+  font-size:0.8125rem; color:var(--text-muted); display:flex; align-items:flex-start; gap:0.5rem;
+}
+html.dark .s6-info-card { background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.08); }
+
+/* Watermark parallax */
+.locatif-watermark {
+  position:absolute; right:-20px; bottom:-20px;
+  width:180px; height:180px; pointer-events:none;
+  transition:transform 0.1s ease-out; color:var(--text);
+}
+
+/* Glossary info tooltips (screen 6) */
+.s6-gi {
+  position:relative; display:inline-flex; align-items:center;
+  margin-left:0.2rem; cursor:help; vertical-align:middle;
+}
+.s6-gi .s6-gi-icon {
+  width:14px; height:14px; border-radius:50%;
+  background:var(--surface-3); color:var(--text-faint);
+  font-size:0.55rem; font-weight:700;
+  display:inline-flex; align-items:center; justify-content:center;
+  line-height:1;
+}
+.s6-gi .s6-gi-tip {
+  display:none; position:absolute; bottom:calc(100% + 6px); left:50%;
+  transform:translateX(-50%);
+  background:var(--text); color:var(--bg); padding:0.45rem 0.65rem;
+  border-radius:0.375rem; font-size:0.7rem; font-weight:400;
+  white-space:normal; min-width:180px; max-width:280px;
+  z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.15);
+  line-height:1.45; text-align:left; font-style:normal;
+}
+.s6-gi:hover .s6-gi-tip { display:block; }
 
 /* ══════════════════════════════════════════════════════════════
    TIMELINE (écran 7) — dark cards refonte
@@ -3302,6 +3677,26 @@ html.dark .s8-subscore.focus .s8-subscore-label { color: #FB923C; }
   font-size: 1.15rem; font-weight: 500; color: var(--text);
   line-height: 1.1;
 }
+.s8-bilan-locatif {
+  margin-top: .25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.s8-bilan-locatif-label {
+  font-size: .7rem; font-weight: 600; color: var(--text-muted);
+  margin-bottom: .65rem;
+  letter-spacing: .04em;
+}
+.s8-bilan-locatif-cell {
+  background: linear-gradient(135deg, rgba(167,139,250,.10), rgba(129,140,248,.06));
+  border: 1px solid rgba(167,139,250,.18);
+}
+.s8-bilan-locatif-cell .s8-bilan-cell-value {
+  color: var(--accent-strong);
+}
+html.dark .s8-bilan-locatif-cell .s8-bilan-cell-value { color: #C4B5FD; }
+.s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #c2410c; }
+html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
 
 /* ─── 4. Typologies sur la commune ─── */
 .s8-typo-section {
@@ -3650,7 +4045,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
         <!-- ═══ SCREEN 1 — Ton projet ═══ -->
         <div class="screen" id="screen-1">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 1 / 7 · TON PROJET</div>
+            <div class="brick-kicker">ÉTAPE 1 / 8 · TON PROJET</div>
             <h2 class="brick-title">Quel achat tu prépares&nbsp;?</h2>
             <p class="brick-subtitle">On adapte les calculs selon ton type de projet.</p>
 
@@ -3698,13 +4093,30 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 </div>
               </div>
 
+              <!-- Investissement locatif — amber/orange -->
+              <div class="project-type-card" data-val="investissement_locatif" onclick="selectProjectCard(this)">
+                <div class="ptc-illustration">
+                  <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="72">
+                    <rect x="20" y="18" width="32" height="44" rx="3" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
+                    <rect x="24" y="24" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="40" y="24" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="24" y="34" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="40" y="34" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="24" y="44" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="40" y="44" width="8" height="6" rx="1" fill="rgba(245,158,11,0.15)" stroke="#f59e0b" stroke-width="0.75"/>
+                    <rect x="31" y="52" width="10" height="10" rx="1.5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1"/>
+                    <circle cx="12" cy="48" r="6" fill="none" stroke="#f59e0b" stroke-width="1" opacity="0.5"/>
+                    <text x="12" y="51" text-anchor="middle" font-size="8" font-weight="700" fill="#f59e0b" opacity="0.6">€</text>
+                    <polyline points="56,52 58,46 61,48 64,38 67,40" stroke="#4ade80" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+                    <circle cx="67" cy="40" r="2" fill="#4ade80" opacity="0.5"/>
+                  </svg>
+                </div>
+                <div class="ptc-text">
+                  <div class="ptc-title">Investissement locatif</div>
+                  <div class="ptc-sub">Rendement & revenus</div>
+                </div>
+              </div>
             </div>
-
-            <!-- Redirection discrète vers la brique Investissement locatif -->
-            <p class="brick-subtitle" style="margin-top:0.85rem;font-size:0.85rem;">
-              Tu veux plutôt investir pour louer&nbsp;?
-              <a href="brique-immo-locatif.html" style="color:var(--accent-strong);font-weight:600;text-decoration:none;white-space:nowrap;">Découvrir la brique Investissement locatif →</a>
-            </p>
             <!-- (Commit 3) Bouton «Je ne sais pas encore» supprimé — le parcours exige une sélection.
                  selectProjectCard() conserve ses gardes défensives sur 'ne_sait_pas' (idempotent). -->
 
@@ -3799,7 +4211,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
         <!-- ═══ SCREEN 2 — Carte diagnostic live ═══ -->
         <div class="screen" id="screen-2">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 2 / 7 · CAPACITÉ MENSUELLE</div>
+            <div class="brick-kicker">ÉTAPE 2 / 8 · CAPACITÉ MENSUELLE</div>
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
             <p class="brick-subtitle">Tes données budget, modifiables en un clic. Le diagnostic se recalcule en temps réel.</p>
 
@@ -3984,7 +4396,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
         <!-- ═══ SCREEN 3 — Ton apport réel ═══ -->
         <div class="screen" id="screen-3">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 3 / 7 · APPORT</div>
+            <div class="brick-kicker">ÉTAPE 3 / 8 · APPORT</div>
             <h2 class="brick-title">Ton <button class="glossary-term" onclick="showGlossaryPopover(this,'Apport')" tabindex="0">apport</button> ne doit pas vider ta sécurité.</h2>
             <p class="brick-subtitle">L'apport utile est celui que tu peux mobiliser sans te mettre en tension.</p>
 
@@ -4075,7 +4487,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
         <!-- ═══ SCREEN 4 — Le vrai coût d'achat ═══ -->
         <div class="screen" id="screen-4">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 4 / 7 · COÛT RÉEL</div>
+            <div class="brick-kicker">ÉTAPE 4 / 8 · COÛT RÉEL</div>
             <h2 class="brick-title">Le prix affiché n'est pas le coût total.</h2>
             <p class="brick-subtitle">On additionne les coûts visibles et invisibles.</p>
 
@@ -4237,7 +4649,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
         <!-- ═══ SCREEN 5 — Emplacement & typologie (Commit 5a) ═══ -->
         <div class="screen" id="screen-5">
           <div class="brick-card" style="position:relative;overflow:hidden;">
-            <div class="brick-kicker">ÉTAPE 5 / 7 · EMPLACEMENT &amp; TYPOLOGIE</div>
+            <div class="brick-kicker">ÉTAPE 5 / 8 · EMPLACEMENT &amp; TYPOLOGIE</div>
             <h2 class="brick-title">Confronte ton budget au marché local.</h2>
             <p class="brick-sub">On part de ta commune et on calcule directement 3 typologies adaptées à ton budget. Tu peux en tester d’autres à tout moment.</p>
             <div class="brick-budget-tag" id="s5-budget-tag" hidden>
@@ -4326,10 +4738,226 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           </div>
         </div>
 
-        <!-- ═══ SCREEN 6 — Les étapes d'un achat ═══ -->
+        <!-- ═══ SCREEN 6 — Investissement locatif (refonte) ═══ -->
         <div class="screen" id="screen-6">
+          <div class="brick-card" style="position:relative;overflow:hidden;">
+            <div class="brick-kicker">ÉTAPE 6 / 8 · INVESTISSEMENT LOCATIF</div>
+            <h2 class="brick-title">Acheter pour louer&nbsp;: analyse de rentabilité.</h2>
+            <div class="brick-budget-tag" id="s6-budget-tag" hidden>
+              <span>Prix d'achat <span class="bbt-prix" id="s6-bbt-prix">—</span></span>
+              <span class="bbt-sep">·</span>
+              <span class="bbt-max">sur <span id="s6-bbt-max">—</span> max possibles</span>
+            </div>
+
+            <!-- Watermark SVG parallax -->
+            <div class="locatif-watermark" id="locatif-watermark">
+              <svg viewBox="0 0 24 24" fill="currentColor" opacity="0.04">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              </svg>
+            </div>
+
+            <!-- Toggle investissement locatif -->
+            <div class="invest-toggle-card" id="s6-toggle-card">
+              <div class="invest-toggle-header">
+                <span class="invest-toggle-label">Simuler la location de ton bien&nbsp;?</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="s6-toggle-invest" onchange="s6ToggleInvestment()"/>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div id="s6-invest-minimal" class="invest-minimal" style="display:block;">
+              Section non applicable à ton projet. Tu peux quand même l'activer pour simuler.
+            </div>
+
+            <div id="s6-invest-full" style="display:none;">
+
+              <!-- Bannière pédago : source du loyer pré-rempli (depuis S5) -->
+              <div class="s6-suggest-banner" id="s6-suggest-banner" style="display:none;">
+                <span class="s6-suggest-icon">✨</span>
+                <span class="s6-suggest-text">
+                  On a estimé le loyer à <strong id="s6-suggest-loyer">—</strong>
+                  pour <span id="s6-suggest-typo">ton bien</span> à <strong id="s6-suggest-commune">ta commune</strong>
+                  — ratio empirique de <strong>6 % brut annuel</strong>. Ajuste librement.
+                </span>
+              </div>
+
+              <!-- Hero loyer input -->
+              <div class="s6-loyer-hero">
+                <div class="s6-hero-watermark">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                </div>
+                <div class="s6-loyer-kicker">● Loyer mensuel estimé, charges comprises</div>
+                <div class="s6-loyer-value-wrap">
+                  <input type="number" id="input-loyer-estime-s6" placeholder="Saisis un loyer" min="0" inputmode="numeric" oninput="recalcLocatif()"/>
+                  <span class="s6-loyer-suffix">€/mois</span>
+                </div>
+                <div class="s6-loyer-helper" id="s6-loyer-helper">= 0 €/an de revenus locatifs</div>
+              </div>
+
+              <!-- Charges & Risques grouped -->
+              <div class="s6-charges-group">
+                <div class="s6-charges-kicker">● Charges &amp; risques</div>
+                <div class="s6-charges-grid">
+                  <!-- Assurance PNO -->
+                  <div class="s6-charge-mini">
+                    <div class="s6-charge-mini-label">
+                      Assurance PNO
+                      <span class="s6-badge-estime">Estimé</span>
+                      <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Assurance Propriétaire Non Occupant — obligatoire pour les biens loués.</span></span>
+                    </div>
+                    <div><input type="number" id="input-assurance-pno-s6" value="15" min="0" inputmode="numeric" oninput="recalcLocatif()"/></div>
+                    <div class="s6-charge-unit">€/mois</div>
+                  </div>
+                  <!-- Vacance locative -->
+                  <div class="s6-charge-mini">
+                    <div class="s6-charge-mini-label">
+                      Vacance loc.
+                      <span class="s6-badge-estime">Estimé</span>
+                      <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Période sans locataire. 0,5 mois/an ≈ 4% de vacance typique.</span></span>
+                    </div>
+                    <div><input type="number" id="input-vacance-s6" value="0.5" min="0" max="12" step="0.1" inputmode="numeric" oninput="recalcLocatif()"/></div>
+                    <div class="s6-charge-unit">mois/an</div>
+                    <div class="s6-charge-helper" id="s6-helper-vacance">= 4,2 % de perte</div>
+                  </div>
+                  <!-- Charges diverses -->
+                  <div class="s6-charge-mini">
+                    <div class="s6-charge-mini-label">
+                      Charges div.
+                      <span class="s6-badge-estime">Estimé</span>
+                      <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Petites réparations, frais divers non couverts par la copro.</span></span>
+                    </div>
+                    <div><input type="number" id="input-charges-loc-s6" value="20" min="0" inputmode="numeric" oninput="recalcLocatif()"/></div>
+                    <div class="s6-charge-unit">€/mois</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Taxe foncière — faint inline -->
+              <div class="s6-taxe-faint" id="s6-taxe-fonciere-line">
+                Taxe foncière : <span id="s6-taxe-fonciere-val">--</span>&thinsp;€/an · <a onclick="goToScreen(4)">Repris de l'étape 4</a>
+              </div>
+
+              <!-- Gestion locative — 2 choice cards -->
+              <div class="s6-gestion-section">
+                <div class="s6-gestion-label">
+                  Gestion locative
+                  <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Mandat de gestion confié à une agence immobilière (~6-8% du loyer).</span></span>
+                </div>
+                <div class="s6-gestion-cards">
+                  <div class="s6-gestion-card active" id="gestion-moi" onclick="setGestionMode('moi')">
+                    <div class="s6-gc-check">✓</div>
+                    <div class="s6-gc-icon">🙋</div>
+                    <div class="s6-gc-title">Je gère moi-même</div>
+                    <div class="s6-gc-desc">Aucun frais</div>
+                  </div>
+                  <div class="s6-gestion-card" id="gestion-agence" onclick="setGestionMode('agence')">
+                    <div class="s6-gc-check">✓</div>
+                    <div class="s6-gc-icon">🏢</div>
+                    <div class="s6-gc-title">Gestion déléguée</div>
+                    <div class="s6-gc-desc">≈ 7 % du loyer · Confort total</div>
+                  </div>
+                </div>
+                <div class="s6-gestion-input-wrap" id="field-gestion-loc">
+                  <div class="s6-gestion-input-inner">
+                    <label class="field-label" for="input-gestion-loc-s6">Frais de gestion locative</label>
+                    <div class="euro-wrap"><input type="number" id="input-gestion-loc-s6" class="field-input" value="0" min="0" inputmode="numeric" oninput="recalcLocatif()"/><span class="euro-suffix">€/mois</span></div>
+                    <span class="s6-field-helper" id="helper-gestion">≈ 7 % du loyer</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Résultats -->
+              <div class="s6-results-wrapper" style="margin-top:1.25rem;">
+                <div class="results-header">
+                  <span class="results-title">Analyse de rentabilité</span>
+                  <span class="pulse-badge badge-green" id="rentabilite-badge">Rentable</span>
+                </div>
+
+                <!-- État vide -->
+                <div class="locatif-empty-state" id="s6-empty-state" style="display:none;">
+                  <p>Saisis un loyer estimé pour voir la rentabilité de ce bien.</p>
+                </div>
+
+                <!-- Result cards v2 -->
+                <div class="s6-result-grid-v2" id="s6-result-grid">
+
+                  <!-- Rendement unified card -->
+                  <div class="s6-rendement-card" id="s6-rendement-card">
+                    <div class="s6-rendement-kicker">● Rendement</div>
+                    <div class="s6-rendement-cols">
+                      <div class="s6-rendement-col">
+                        <div class="s6-rendement-col-label">
+                          Brut
+                          <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Loyer annuel / Prix d'achat × 100, sans déduire les charges.</span></span>
+                        </div>
+                        <div class="s6-rendement-col-value s6-count-up" id="s6-rdt-brut">--</div>
+                      </div>
+                      <div class="s6-rendement-col">
+                        <div class="s6-rendement-col-label">
+                          Net <span style="font-weight:400;text-transform:none;letter-spacing:0">(après charges)</span>
+                          <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Rendement après déduction de toutes les charges annuelles.</span></span>
+                        </div>
+                        <div class="s6-rendement-col-value s6-count-up" id="s6-rdt-net">--</div>
+                      </div>
+                    </div>
+                    <div class="s6-rendement-bars">
+                      <div class="s6-rbar s6-rbar-brut" id="s6-rbar-brut" style="width:50%"></div>
+                      <div class="s6-rbar s6-rbar-net" id="s6-rbar-net" style="width:45%"></div>
+                    </div>
+                    <div class="s6-rendement-footer">Hors fiscalité IR/CSG</div>
+                  </div>
+
+                  <!-- Cash-flow card -->
+                  <div class="s6-cashflow-card s6-cashflow-pos" id="s6-card-cashflow">
+                    <div class="s6-cashflow-label">
+                      Cash-flow mensuel
+                      <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Différence entre les loyers perçus et toutes les dépenses mensuelles.</span></span>
+                    </div>
+                    <div class="s6-cashflow-value s6-count-up" id="s6-cashflow">--</div>
+                    <div class="s6-cashflow-micro">Mensualité crédit incluse</div>
+                    <div id="s6-cashflow-pill-wrap">
+                      <span class="s6-cashflow-pill s6-pill-green" id="s6-cashflow-pill">✓ Autofinancé</span>
+                    </div>
+                  </div>
+
+                  <!-- Prix hint — conditionnel cashflow<0 ou rendNet<5% -->
+                  <div class="s6-prix-hint" id="s6-prix-hint" style="display:none; grid-column:1/-1;">
+                    <span class="s6-prix-hint-icon">💡</span>
+                    <div>
+                      <div class="s6-prix-hint-text">Pour améliorer votre rentabilité ou votre cash-flow, essayez de négocier le prix&nbsp;!</div>
+                      <button class="s6-prix-hint-btn" onclick="goToScreen(4)">Ajuster le prix cible →</button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Capacité résiduelle bubble -->
+              <div class="s6-capacity-bubble" id="s6-capacity-bubble">
+                <span class="s6-cap-icon">💡</span>
+                <span>Grâce au loyer perçu, votre capacité d'emprunt résiduelle est de <strong id="s6-cap-residuelle">--</strong></span>
+              </div>
+
+              <!-- Disclaimer fiscal — inline -->
+              <p class="s6-disclaimer">Simulation simplifiée — la fiscalité (IR, CSG, LMNP…) peut modifier significativement le résultat net.</p>
+            </div>
+
+            <div class="nav-btns" style="margin-top:1.5rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(4)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(7)">
+                Continuer
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ SCREEN 7 — Les étapes d'un achat ═══ -->
+        <div class="screen" id="screen-7">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 6 / 7 · PROJECTION &amp; PROCESSUS</div>
+            <div class="brick-kicker">ÉTAPE 7 / 8 · PROJECTION &amp; PROCESSUS</div>
             <h2 class="brick-title">Visualise ton parcours, de l'offre aux clés.</h2>
             <p class="brick-subtitle">Projection patrimoniale à long terme et étapes administratives concrètes.</p>
             <div class="brick-budget-tag" id="s7-budget-tag" hidden>
@@ -4447,8 +5075,8 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
             </div><!-- /s7-vue-proc -->
 
             <div class="nav-btns" style="margin-top:1.5rem;">
-              <button class="btn-hero-secondary" onclick="goToScreen(5)">← Retour</button>
-              <button class="btn-hero-primary" onclick="goToScreen(7)">
+              <button class="btn-hero-secondary" onclick="goToScreen(6)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(8)">
                 Voir mon diagnostic
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
@@ -4456,8 +5084,8 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           </div>
         </div>
 
-        <!-- ═══ SCREEN 7 — Diagnostic final ═══ -->
-        <div class="screen" id="screen-7">
+        <!-- ═══ SCREEN 8 — Diagnostic final ═══ -->
+        <div class="screen" id="screen-8">
           <div class="diag-premium-section">
             <div class="diag-premium-header">
               <div class="diag-premium-kicker">DIAGNOSTIC IMMOBILIER</div>
@@ -4545,6 +5173,27 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="s8-bilan-cell-value" id="s8-bilan-mensualite">--</div>
               </div>
             </div>
+            <div class="s8-bilan-locatif" id="s8-bilan-locatif" hidden>
+              <div class="s8-bilan-locatif-label">SI TU LE METS EN LOCATION</div>
+              <div class="s8-bilan-row">
+                <div class="s8-bilan-cell s8-bilan-locatif-cell">
+                  <div class="s8-bilan-cell-label">Loyer estimé</div>
+                  <div class="s8-bilan-cell-value" id="s8-loc-loyer">--</div>
+                </div>
+                <div class="s8-bilan-cell s8-bilan-locatif-cell" id="s8-loc-cashflow-cell">
+                  <div class="s8-bilan-cell-label">Cashflow</div>
+                  <div class="s8-bilan-cell-value" id="s8-loc-cashflow">--</div>
+                </div>
+                <div class="s8-bilan-cell s8-bilan-locatif-cell">
+                  <div class="s8-bilan-cell-label">Rendement net</div>
+                  <div class="s8-bilan-cell-value" id="s8-loc-rendement">--</div>
+                </div>
+                <div class="s8-bilan-cell s8-bilan-locatif-cell">
+                  <div class="s8-bilan-cell-label">Cap résiduelle</div>
+                  <div class="s8-bilan-cell-value" id="s8-loc-cap-res">--</div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- ═══ 4. TYPOLOGIES SUR LA COMMUNE ═══ -->
@@ -4628,7 +5277,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           </div>
 
           <div class="nav-btns" style="margin-top:1rem;">
-            <button class="btn-hero-secondary" onclick="goToScreen(6)">← Retour</button>
+            <button class="btn-hero-secondary" onclick="goToScreen(7)">← Retour</button>
             <button class="btn-hero-primary" onclick="validerEtDashboard()">
               Ajouter au dashboard
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -4689,9 +5338,13 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               </div>
               <div class="sb2-node" data-step="6">
                 <div class="sb2-node-bullet">6</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Les étapes</div></div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Stratégie locatif</div></div>
               </div>
               <div class="sb2-node" data-step="7">
+                <div class="sb2-node-bullet">7</div>
+                <div class="sb2-node-content"><div class="sb2-node-label">Les étapes</div></div>
+              </div>
+              <div class="sb2-node" data-step="8">
                 <div class="sb2-node-bullet">★</div>
                 <div class="sb2-node-content"><div class="sb2-node-label">Diagnostic final</div></div>
               </div>
@@ -4729,6 +5382,21 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                   </span>
                   <span class="sb2-synth-row-value" id="m-apport">à l'étape 3</span>
                 </div>
+                <!-- Locatif rows (commit 5b) - cachées par défaut -->
+                <div class="sb2-synth-row" id="row-loyer" style="display:none;">
+                  <span class="sb2-synth-row-label">
+                    <span class="sb2-synth-row-dot"></span>
+                    Loyer estimé
+                  </span>
+                  <span class="sb2-synth-row-value" id="m-loyer">—</span>
+                </div>
+                <div class="sb2-synth-row" id="row-cap-residuelle" style="display:none;">
+                  <span class="sb2-synth-row-label">
+                    <span class="sb2-synth-row-dot"></span>
+                    Cap. résiduelle
+                  </span>
+                  <span class="sb2-synth-row-value" id="m-cap-residuelle">—</span>
+                </div>
               </div>
             </div>
           </div>
@@ -4755,8 +5423,12 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
 <!-- ═══════════════════════════════════════════════════════════ -->
 <script>
 /* ─── CONSTANTS ──────────────────────────────────────────── */
-var BRICK_ID = 'achat_immobilier';
-var TOTAL_SCREENS = 8; // 0-7
+// Brique "Investissement locatif" — copie de la brique habitation, écran
+// locatif (screen-6) conservé. TODO (fine-tuning phase 2) : verrouiller
+// projectType='investissement_locatif' + simplifier le sélecteur S1,
+// retravailler le scoring (rendement/cashflow), fiscalité LMNP/IR/IS, etc.
+var BRICK_ID = 'immo_locatif';
+var TOTAL_SCREENS = 9; // 0-8
 var EFFORT_MAX = 0.35;
 var NOTARY_RATE_LOW = 0.10;
 var NOTARY_RATE_ANCIEN = 0.07;
@@ -4859,6 +5531,9 @@ var S = {
   prixBien: 0, prixModifie: false, fraisNotaire: 0, fraisAgence: 0, fraisGarantie: 0, fraisDossier: 0,
   travauxAutres: 0,
   taxeFonciere: 0, chargesCopro: 0, assuranceHab: 0, entretien: 0,
+  investEnabled: false,
+  loyerEstime: 0, vacance: 1, chargesLoc: 0, taxeFoncLoc: 0,
+  assurancePno: 0, gestionLoc: 0,
   score: 0, scoreStatus: '', actions: [], nextBrick: null,
   ageGroup: '25_34',
   capaciteEmprunt: 0, apport: 0
@@ -5130,11 +5805,12 @@ function goToScreen(idx) {
     updateCost();
   }
   if (idx === 5) initScreen5();
-  if (idx === 6) { buildTimeline(); initTimelinePersonalization(); }
-  if (idx === 7) buildFinalScreen();
+  if (idx === 6) initScreen6();
+  if (idx === 7) { buildTimeline(); initTimelinePersonalization(); }
+  if (idx === 8) buildFinalScreen();
 
   // Met à jour les badges "Prix d'achat / budget max" sur S5/S6/S7
-  if (idx >= 5 && idx <= 6) updateBudgetTags();
+  if (idx >= 5 && idx <= 7) updateBudgetTags();
 
   if (typeof autosaveBrickProgress === 'function') {
     autosaveBrickProgress(BRICK_ID, idx, S);
@@ -5180,6 +5856,21 @@ function syncStateFromScreen(screenIdx) {
     S.assuranceHab = n(($('input-assurance-hab') || {}).value);
     S.entretien = n(($('input-entretien') || {}).value);
   }
+  if (screenIdx === 5) {
+    S.loyerEstime = n(($('input-loyer-estime') || {}).value);
+    S.vacance = n(($('input-vacance') || {}).value);
+    S.chargesLoc = n(($('input-charges-loc') || {}).value);
+    S.taxeFoncLoc = n(($('input-taxe-fonc-loc') || {}).value);
+    S.assurancePno = n(($('input-assurance-pno') || {}).value);
+    S.gestionLoc = n(($('input-gestion-loc') || {}).value);
+  }
+  if (screenIdx === 6) {
+    S.loyerEstime = n(($('input-loyer-estime-s6') || {}).value);
+    S.vacance = n(($('input-vacance-s6') || {}).value);
+    S.chargesLoc = n(($('input-charges-loc-s6') || {}).value);
+    S.assurancePno = n(($('input-assurance-pno-s6') || {}).value);
+    S.gestionLoc = n(($('input-gestion-loc-s6') || {}).value);
+  }
 }
 
 /* ─── PANEL PROGRESSION ──────────────────────────────────── */
@@ -5191,6 +5882,7 @@ var SB2_TITLES = [
   'Tu fixes ton apport.',
   'Tu intègres les vrais coûts.',
   'Tu confrontes au marché.',
+  'Tu valides ta stratégie.',
   'Tu connais le chemin.',
   'C’est noté.'
 ];
@@ -5218,7 +5910,7 @@ function updateProgressPanel(idx) {
       if (bullet) bullet.innerHTML = '<span class="sb2-node-check">✓</span>';
     } else {
       if (i === idx) node.classList.add('active');
-      var origNum = (i === 7) ? '★' : String(i);
+      var origNum = (i === 8) ? '★' : String(i);
       if (bullet) bullet.textContent = origNum;
     }
   });
@@ -5260,6 +5952,11 @@ function selectProjectCard(el) {
   S.projectType = val;
   updateModeCard();
 
+  if (val === 'investissement_locatif') {
+    var toggle = $('s6-toggle-invest');
+    if (toggle && !toggle.checked) { toggle.checked = true; s6ToggleInvestment(); }
+  }
+
   var blocB = $('bloc-b');
   if (blocB && blocB.style.display === 'none') {
     blocB.style.display = 'block';
@@ -5273,6 +5970,7 @@ function updateModeCard() {
   card.style.display = 'block';
   var kickers = {
     residence_principale: '\ud83d\udcb0 On optimise ta capacit\u00e9 d\u2019emprunt et ton reste \u00e0 vivre',
+    investissement_locatif: '\ud83d\udcc8 On simule ton rendement et ton cashflow',
     residence_secondaire: '\ud83c\udfd6\ufe0f On calcule le co\u00fbt r\u00e9el et les implications fiscales'
   };
   var msg = kickers[S.projectType] || 'Les calculs s\u2019adaptent \u00e0 ton projet';
@@ -5527,7 +6225,7 @@ function updateHypotheses() {
 function deduceDuration() {
   var usage = S.usage || S.projectType || '';
   var statut = S.statut || S.status || '';
-  if (usage === 'secondaire' || usage === 'residence_secondaire' || statut === 'proprietaire') return 20;
+  if (usage === 'locatif' || usage === 'investissement_locatif' || usage === 'secondaire' || usage === 'residence_secondaire' || statut === 'proprietaire') return 20;
   return 25;
 }
 
@@ -5759,6 +6457,31 @@ function updateSynthesePanel() {
     }
   }
 
+  // Lignes locatif (commit 5b) : visibles uniquement si step >= 6, toggle ON ET loyer renseigné
+  var rowLoyer = document.getElementById('row-loyer');
+  var rowCapRes = document.getElementById('row-cap-residuelle');
+  var loyerEl = document.getElementById('m-loyer');
+  var capResEl = document.getElementById('m-cap-residuelle');
+  var toggleInvest = document.getElementById('s6-toggle-invest');
+  var locatifActif = !toggleInvest || toggleInvest.checked === true;
+  var showLocatif = (currentIdx >= 6) && locatifActif && S.loyerEstime && S.loyerEstime > 0;
+  if (rowLoyer)  rowLoyer.style.display = showLocatif ? '' : 'none';
+  if (rowCapRes) rowCapRes.style.display = showLocatif ? '' : 'none';
+  if (showLocatif) {
+    // fmt() retourne déjà "X €", on ajoute juste /mois
+    if (loyerEl) loyerEl.textContent = fmt(Math.round(S.loyerEstime)) + '/mois';
+    // Recalcul capacité résiduelle = budget total avec 70 % du loyer réintégré
+    var loyerRetenu = S.loyerEstime * 0.70;
+    var mensualiteImmo = S.mensualiteCible || S.mensualiteMax || 0;
+    var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
+    var mensMaxRes = (revenusAvecLoyer * 0.35) - (S.credits || 0) - mensualiteImmo - (S.assuranceEmprunteur || 22);
+    var rCap = ((S.taux || 3.0) / 12) / 100;
+    var nCap = (S.duree || 25) * 12;
+    var capRes = mensMaxRes > 0
+      ? Math.round(mensMaxRes * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
+      : 0;
+    if (capResEl) capResEl.textContent = capRes > 0 ? fmt(capRes) : '—';
+  }
 }
 
 function updateDiagBadge(inputId, badgeId, prefillVal) {
@@ -6060,6 +6783,350 @@ function s4CloseField(input) {
   input.style.display = 'none';
   card.classList.remove('s4-editing');
   updateCost();
+}
+
+/* ─── ÉCRAN 5 : INVESTMENT ───────────────────────────────── */
+function initInvestment() {
+  var isLocatif = S.projectType === 'investissement_locatif';
+  var toggle = $('toggle-invest');
+  if (isLocatif && !toggle.checked) { toggle.checked = true; }
+  toggleInvestment();
+}
+
+function toggleInvestment() {
+  var checked = $('toggle-invest').checked;
+  S.investEnabled = checked;
+  $('invest-full').style.display = checked ? 'block' : 'none';
+  $('invest-minimal').style.display = checked ? 'none' : 'block';
+  if (checked) updateInvestment();
+}
+
+function updateInvestment() {
+  var loyerM = n(($('input-loyer-estime') || {}).value);
+  var vacance = n(($('input-vacance') || {}).value) || 1;
+  var chargesNR = n(($('input-charges-loc') || {}).value);
+  var taxeF = n(($('input-taxe-fonc-loc') || {}).value);
+  var pno = n(($('input-assurance-pno') || {}).value);
+  var gestion = n(($('input-gestion-loc') || {}).value);
+
+  var prixTotal = S.prixBien > 0 ? S.prixBien + estimateAcquisitionFees(S.prixBien, S.propertyType) : 0;
+  var loyerAnnuel = loyerM * 12;
+  var vacanceCost = loyerM * vacance;
+  var chargesAnnuelles = chargesNR * 12 + taxeF + pno * 12 + gestion * 12;
+
+  var rdtBrut = prixTotal > 0 ? loyerAnnuel / prixTotal : 0;
+  var rdtNet = prixTotal > 0 ? (loyerAnnuel - vacanceCost - chargesAnnuelles) / prixTotal : 0;
+
+  var mensCredit = getMensualiteCible();
+  var cashflow = loyerM * (1 - vacance / 12) - mensCredit - chargesNR - taxeF / 12 - pno - gestion;
+  var effortLoc = cashflow < 0 ? Math.abs(cashflow) : 0;
+
+  $('rc-rdt-brut').textContent = fmtPct(rdtBrut);
+  $('rc-rdt-net').textContent = fmtPct(rdtNet);
+  $('rc-cashflow').textContent = fmt(cashflow);
+  $('rc-effort-loc').textContent = effortLoc > 0 ? fmt(effortLoc) + '/mois' : 'Autofinancé';
+}
+
+/* ─── ÉCRAN 6 : INVESTISSEMENT LOCATIF REFONTE ────────────── */
+function initScreen6() {
+  var isLocatif = S.projectType === 'investissement_locatif' || S.usage === 'locatif';
+  var toggle = $('s6-toggle-invest');
+  var toggleCard = $('s6-toggle-card');
+
+  if (isLocatif) {
+    // Auto-activate, hide toggle UI
+    if (toggle && !toggle.checked) toggle.checked = true;
+    if (toggleCard) toggleCard.style.display = 'none';
+    $('s6-invest-minimal').style.display = 'none';
+    $('s6-invest-full').style.display = 'block';
+  } else {
+    if (toggleCard) toggleCard.style.display = '';
+    s6ToggleInvestment();
+  }
+
+  // Prefill loyer :
+  //  1) Si l'user a déjà saisi un loyer, on respecte sa valeur
+  //  2) Sinon, ratio empirique = prix du bien × 0.5 % / mois (≈6 % brut annuel typique en France)
+  var loyerInput = $('input-loyer-estime-s6');
+  if (loyerInput && !loyerInput.value) {
+    var loyerSugg = s6SuggestLoyer();
+    if (loyerSugg > 0) {
+      loyerInput.value = loyerSugg;
+      S.loyerEstime = loyerSugg;
+      S.loyerSuggested = loyerSugg;
+    } else if (S.loyerEstime > 0) {
+      loyerInput.value = S.loyerEstime;
+    }
+  }
+
+  // Bannière pédago : explique la source du loyer pré-rempli
+  s6UpdateSuggestBanner();
+
+  // Taxe foncière display
+  s6UpdateTaxeFonciere();
+
+  // Recalculate
+  recalcLocatif();
+
+  // Watermark parallax
+  s6InitWatermark();
+}
+
+// Ratio empirique : prix bien × 0.5 % mensuel ≈ 6 % brut annuel
+// Source S5 : si l'user a choisi une typologie, on prend l'estimé typo × prix m² commune.
+// Fallback : S.prixBien (saisi en S4) ou S.prixCible.
+function s6SuggestLoyer() {
+  var prix = 0;
+  // 1 : prix issu de la typo S5 choisie
+  if (typeof getTypoById === 'function' && S.typoChoisie && S.prixM2) {
+    var typo = getTypoById(S.typoChoisie);
+    if (typo) prix = estimateTypoPrice(typo, S.prixM2);
+  }
+  // 2 : fallback sur prix saisi en S4
+  if (!prix || prix <= 0) prix = n(S.prixBien) || n(S.prixCible) || 0;
+  if (!prix || prix <= 0) return 0;
+  return Math.round(prix * 0.005);
+}
+
+function s6UpdateSuggestBanner() {
+  var banner = $('s6-suggest-banner');
+  if (!banner) return;
+  if (!S.loyerSuggested || S.loyerSuggested <= 0) {
+    banner.style.display = 'none';
+    return;
+  }
+  banner.style.display = 'flex';
+  var nomEl = $('s6-suggest-commune');
+  var typoEl = $('s6-suggest-typo');
+  var loyerEl = $('s6-suggest-loyer');
+  if (nomEl)   nomEl.textContent   = S.communeNom || 'ta commune';
+  if (typoEl && typeof getTypoById === 'function') {
+    var t = getTypoById(S.typoChoisie);
+    typoEl.textContent = t ? t.label : 'ton bien';
+  } else if (typoEl) {
+    typoEl.textContent = 'ton bien';
+  }
+  if (loyerEl) loyerEl.textContent = new Intl.NumberFormat('fr-FR').format(S.loyerSuggested) + '\u00a0€';
+}
+
+function s6ToggleInvestment() {
+  var checked = $('s6-toggle-invest').checked;
+  $('s6-invest-full').style.display = checked ? 'block' : 'none';
+  $('s6-invest-minimal').style.display = checked ? 'none' : 'block';
+  if (checked) {
+    recalcLocatif();
+  } else {
+    // Toggle OFF : on rafraîchit la sidebar pour masquer les rows locatif
+    if (typeof updateSynthesePanel === 'function') updateSynthesePanel();
+  }
+}
+
+function s6UpdateTaxeFonciere() {
+  var val = n(S.taxeFonciere);
+  var el = $('s6-taxe-fonciere-val');
+  if (el) el.textContent = val > 0 ? Math.round(val).toLocaleString('fr-FR') : '--';
+}
+
+function setGestionMode(mode) {
+  var input = $('input-gestion-loc-s6');
+  var field = $('field-gestion-loc');
+  var cardMoi = $('gestion-moi');
+  var cardAgence = $('gestion-agence');
+  if (mode === 'moi') {
+    if (input) { input.value = 0; }
+    if (field) field.classList.remove('open');
+    if (cardMoi) cardMoi.classList.add('active');
+    if (cardAgence) cardAgence.classList.remove('active');
+  } else {
+    if (cardMoi) cardMoi.classList.remove('active');
+    if (cardAgence) cardAgence.classList.add('active');
+    var loyer = n(($('input-loyer-estime-s6') || {}).value) || n(S.loyerEstime);
+    if (input) input.value = Math.round(loyer * 0.07);
+    if (field) field.classList.add('open');
+    var helper2 = $('helper-gestion');
+    if (helper2) helper2.textContent = '\u2248 7 % du loyer';
+  }
+  recalcLocatif();
+}
+
+function s6AnimateValue(el, newVal) {
+  if (!el) return;
+  el.classList.remove('s6-count-up');
+  void el.offsetWidth;
+  el.textContent = newVal;
+  el.classList.add('s6-count-up');
+}
+
+function recalcLocatif() {
+  var loyer = n(($('input-loyer-estime-s6') || {}).value);
+  S.loyerEstime = loyer;
+
+  var emptyState = $('s6-empty-state');
+  var resultGrid = $('s6-result-grid');
+  var badgeEl = $('rentabilite-badge');
+  var capBubble = $('s6-capacity-bubble');
+
+  // Loyer helper — always update
+  var loyerHelper = $('s6-loyer-helper');
+  if (loyerHelper) {
+    loyerHelper.textContent = '= ' + (loyer > 0 ? Math.round(loyer * 12).toLocaleString('fr-FR') : '0') + ' €/an de revenus locatifs';
+  }
+
+  // Empty state
+  if (!loyer || loyer <= 0) {
+    if (emptyState) emptyState.style.display = 'block';
+    if (resultGrid) resultGrid.style.display = 'none';
+    if (badgeEl) badgeEl.style.display = 'none';
+    if (capBubble) capBubble.style.display = 'none';
+    return;
+  }
+  if (emptyState) emptyState.style.display = 'none';
+  if (resultGrid) resultGrid.style.display = '';
+  if (badgeEl) badgeEl.style.display = '';
+  if (capBubble) capBubble.style.display = '';
+
+  // Mensualité réelle basée sur le prix saisi en S4 (et non la capacité max).
+  // Fallback sur mensualiteCible si prixBien pas encore défini.
+  var mensReelle = getMensReelle();
+  var mensualite = mensReelle > 0 ? mensReelle : (n(S.mensualiteCible) || getMensualiteCible());
+  var assuranceEmpr = n(S.assuranceEmprunteur);
+  var assurancePNO = n(($('input-assurance-pno-s6') || {}).value) || 15;
+  var vacance = n(($('input-vacance-s6') || {}).value);
+  if (!vacance && vacance !== 0) vacance = 0.5;
+  var chargesLoc = n(($('input-charges-loc-s6') || {}).value) || 20;
+  var gestionLoc = n(($('input-gestion-loc-s6') || {}).value) || 0;
+  var taxeFoncMensuelle = n(S.taxeFonciere) / 12;
+
+  // Vacance helper
+  var vacHelper = $('s6-helper-vacance');
+  if (vacHelper) {
+    var vacPct = Math.round((vacance / 12) * 1000) / 10;
+    vacHelper.textContent = '= ' + vacPct.toString().replace('.', ',') + ' % de perte';
+  }
+
+  // Cash-flow
+  var loyerEffectif = loyer - (loyer * vacance / 12);
+  var charges = mensualite + assuranceEmpr + assurancePNO + chargesLoc + gestionLoc + taxeFoncMensuelle;
+  var cashFlow = loyerEffectif - charges;
+  S.cashFlow = cashFlow;
+
+  // Rendement brut
+  var prixBien = n(S.prixBien) || 1;
+  var rendBrut = (loyer * 12) / prixBien * 100;
+  S.rendementBrut = rendBrut;
+
+  // Rendement net
+  var chargesAnnuelles = (assurancePNO + chargesLoc + gestionLoc + taxeFoncMensuelle + assuranceEmpr) * 12;
+  var rendNet = ((loyer * 12) - chargesAnnuelles) / prixBien * 100;
+  S.rendementNet = rendNet;
+
+  // Animate rendement values
+  s6AnimateValue($('s6-rdt-brut'), rendBrut.toFixed(1).replace('.', ',') + ' %');
+  s6AnimateValue($('s6-rdt-net'), rendNet.toFixed(1).replace('.', ',') + ' %');
+
+  // Rendement comparison bars
+  var rbarBrut = $('s6-rbar-brut');
+  var rbarNet = $('s6-rbar-net');
+  if (rbarBrut && rbarNet && rendBrut > 0) {
+    rbarBrut.style.width = '50%';
+    var netRatio = Math.max(0, Math.min(1, rendNet / rendBrut));
+    rbarNet.style.width = (netRatio * 50).toFixed(1) + '%';
+  }
+
+  // Cash-flow card
+  s6AnimateValue($('s6-cashflow'), fmt(Math.round(cashFlow)));
+  var cardCF = $('s6-card-cashflow');
+  if (cardCF) {
+    cardCF.className = 's6-cashflow-card ' + (cashFlow >= 0 ? 's6-cashflow-pos' : 's6-cashflow-neg');
+  }
+  var cfValueEl = $('s6-cashflow');
+  if (cfValueEl) {
+    cfValueEl.style.color = cashFlow >= 0 ? '#10b981' : '#ef4444';
+  }
+
+  // Cash-flow pill (autofinancement / effort)
+  var cfPill = $('s6-cashflow-pill');
+  if (cfPill) {
+    if (cashFlow >= 0) {
+      cfPill.textContent = '✓ Autofinancé';
+      cfPill.className = 's6-cashflow-pill s6-pill-green';
+    } else {
+      cfPill.textContent = '↗ Effort d\'épargne : ' + fmt(Math.abs(Math.round(cashFlow))) + '/mois';
+      cfPill.className = 's6-cashflow-pill s6-pill-amber';
+    }
+  }
+
+  // Badge dynamique
+  if (badgeEl) {
+    if (cashFlow >= 0) {
+      badgeEl.textContent = 'Rentable';
+      badgeEl.className = 'pulse-badge badge-green';
+    } else if (cashFlow >= -200) {
+      badgeEl.textContent = 'Effort faible';
+      badgeEl.className = 'pulse-badge badge-orange';
+    } else {
+      badgeEl.textContent = 'Effort élevé';
+      badgeEl.className = 'pulse-badge badge-red';
+    }
+  }
+
+  // Prix hint — conditionnel
+  var prixHint = $('s6-prix-hint');
+  if (prixHint) {
+    var showHint = cashFlow < 0 || rendNet < 5;
+    prixHint.style.display = showHint ? 'flex' : 'none';
+  }
+
+  // Capacité résiduelle bubble — 70% des revenus locatifs retenus par les banques
+  var capEl = $('s6-cap-residuelle');
+  if (capEl) {
+    var loyerBrut = S.loyerEstime || 0;
+    var loyerRetenu = loyerBrut * 0.70;
+    var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
+    var mensualiteImmo = S.mensualiteCible || S.mensualiteMax || S.mensualiteMaxImmo || 0;
+    var mensualiteMaxResiduelle = (revenusAvecLoyer * 0.35)
+      - (S.credits || 0)
+      - mensualiteImmo
+      - (S.assuranceEmprunteur || 22);
+    var rCap = ((S.taux || 3.0) / 12) / 100;
+    var nCap = (S.duree || 25) * 12;
+    var capaciteResiduelle = mensualiteMaxResiduelle > 0
+      ? Math.round(mensualiteMaxResiduelle * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
+      : 0;
+    if (capaciteResiduelle > 0) {
+      capEl.textContent = Math.round(capaciteResiduelle).toLocaleString('fr-FR') + ' €';
+      if (capBubble) capBubble.style.display = '';
+    } else {
+      capEl.textContent = 'Tes crédits existants limitent ta capacité résiduelle.';
+      if (capBubble) capBubble.style.display = '';
+    }
+  }
+
+  // Sync state
+  S.vacance = vacance;
+  S.chargesLoc = chargesLoc;
+  S.assurancePno = assurancePNO;
+  S.gestionLoc = gestionLoc;
+
+  // Met à jour la sidebar v2 (loyer estimé + capacité résiduelle) en live
+  if (typeof updateSynthesePanel === 'function') updateSynthesePanel();
+}
+
+function s6InitWatermark() {
+  var brickCard = document.querySelector('#screen-6 .brick-card');
+  if (!brickCard) return;
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var el = $('locatif-watermark');
+        if (el) {
+          var ratio = 1 - entry.intersectionRatio;
+          el.style.transform = 'translateY(' + (ratio * 20) + 'px)';
+        }
+      }
+    });
+  }, { threshold: Array.from({length: 11}, function(_, i) { return i * 0.1; }) });
+  observer.observe(brickCard);
 }
 
 /* ─── ÉCRAN 7 : TIMELINE ─────────────────────────────────── */
@@ -6619,9 +7686,10 @@ function s7UpdateRevente(year) {
   // Fiscalité plus-value selon le type de projet (à vérifier avec un CGP)
   var pvEl = document.getElementById('s7-revente-pv');
   if (pvEl) {
+    var isLocatif = S.projectType === 'investissement_locatif' || S.usage === 'locatif';
     var isSecondaire = S.projectType === 'residence_secondaire';
     var pvText;
-    if (isSecondaire) {
+    if (isLocatif || isSecondaire) {
       if (year >= 30) {
         pvText = 'exonéré IR + PS (>30 ans de détention)';
       } else if (year >= 22) {
@@ -6702,6 +7770,11 @@ function s8CalcSubscores(st) {
   else if (gainPotentiel > 15000) rentabilite += 12;
   if (st.taux > 0 && st.taux <= 3.5) rentabilite += 15;
   else if (st.taux > 0 && st.taux <= 4.2) rentabilite += 8;
+  if (st.loyerEstime > 0) {
+    var rdt = (st.loyerEstime * 12) / (prixBien || 1) * 100;
+    if (rdt > 5) rentabilite += 15;
+    else if (rdt > 4) rentabilite += 8;
+  }
   rentabilite = Math.min(100, rentabilite);
 
   // RISQUE
@@ -6815,6 +7888,32 @@ function buildFinalScreen() {
   setVal('s8-bilan-budget', fmt(budgetTotal));
   setVal('s8-bilan-mensualite', fmt(mensualite) + '/mois');
 
+  // Bloc locatif conditionnel
+  var toggleInvest = $('s6-toggle-invest');
+  var locatifActif = !toggleInvest || toggleInvest.checked === true;
+  var showLocatif = locatifActif && S.loyerEstime && S.loyerEstime > 0;
+  var locBlock = $('s8-bilan-locatif');
+  if (locBlock) locBlock.hidden = !showLocatif;
+  if (showLocatif) {
+    var loyer = Math.round(S.loyerEstime);
+    var loyerRetenu = loyer * 0.70;
+    var chargesMens = (S.chargesCopro || 0) / 12 + (S.assuranceHab || 0) + (S.entretien || 0) / 12 + (S.taxeFonciere || 0) / 12;
+    var cashflow = loyerRetenu - mensualite - n(S.assurance) - chargesMens;
+    var rendementNet = ((loyerRetenu * 12) - chargesMens * 12) / (prixBien || 1) * 100;
+    var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
+    var mensMaxRes = (revenusAvecLoyer * 0.35) - (S.credits || 0) - mensualite - n(S.assurance);
+    var rCap = ((S.taux || 3.0) / 12) / 100;
+    var nCap = (S.duree || 25) * 12;
+    var capRes = mensMaxRes > 0
+      ? Math.round(mensMaxRes * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
+      : 0;
+    setVal('s8-loc-loyer', fmt(loyer) + '/mois');
+    setVal('s8-loc-cashflow', (cashflow >= 0 ? '+ ' : '– ') + fmt(Math.abs(Math.round(cashflow))) + '/mois');
+    var cfCell = $('s8-loc-cashflow-cell');
+    if (cfCell) { cfCell.classList.toggle('neg', cashflow < 0); }
+    setVal('s8-loc-rendement', (Math.round(rendementNet * 10) / 10).toFixed(1).replace('.', ',') + ' %');
+    setVal('s8-loc-cap-res', capRes > 0 ? fmt(capRes) : '—');
+  }
 
   // ====== 4. TYPOLOGIES SUR LA COMMUNE ======
   var prixM2 = S.prixM2 || 2500;
@@ -6923,6 +8022,14 @@ function s8BuildLeviers(ctx) {
     });
   }
 
+  // Levier rentabilité
+  if (ctx.subs.rentabilite < 65 && leviers.length < 3) {
+    leviers.push({
+      action: 'Envisager le <strong>locatif</strong> pour rentabiliser',
+      result: '→ Loyer net couvre une partie de la mensualité · cap. résiduelle pour 2e projet',
+      onclick: "goToScreen(6)"
+    });
+  }
 
   // Levier risque
   if (ctx.subs.risque < 60 && leviers.length < 3) {
@@ -7221,6 +8328,11 @@ function validerEtDashboard() {
       debtRatioAfterProject: effort,
       remainingToLive: getTotalRevenus() - S.charges - S.credits - mensualite - n(S.assurance)
     },
+    investment: {
+      enabled: S.investEnabled,
+      expectedMonthlyRent: S.loyerEstime,
+      vacancyRate: S.vacance
+    },
     scores: {
       realEstateReadinessScore: S.score
     },
@@ -7235,9 +8347,9 @@ function validerEtDashboard() {
   };
 
   var eng = {
-    id: 'eng_real_estate_project',
-    type: 'achat_immobilier',
-    label: 'Achat immobilier',
+    id: 'eng_locatif_project',
+    type: 'immo_locatif',
+    label: 'Investissement locatif',
     detail: 'Score ' + S.score + '/100 · ' + S.scoreStatus + (S.prixBien > 0 ? ' · Prix cible ' + fmt(prixCible) : ''),
     montant_actuel: S.score,
     montant_cible: 100,
@@ -7247,23 +8359,23 @@ function validerEtDashboard() {
 
   var insights = [];
   if (S.score < 40) {
-    insights.push({ id: 'ins_immo_fragile', type: 'alerte', titre: 'Projet immobilier fragile', contenu: 'Ton score de préparation est de ' + S.score + '/100. ' + (S.actions[0] || 'Consolide tes bases avant d\'acheter.') });
+    insights.push({ id: 'ins_locatif_fragile', type: 'alerte', titre: 'Projet locatif fragile', contenu: 'Ton score de préparation est de ' + S.score + '/100. ' + (S.actions[0] || 'Consolide tes bases avant d\'investir.') });
   } else if (S.score >= 60) {
-    insights.push({ id: 'ins_immo_ok', type: 'info', titre: 'Projet immobilier en bonne voie', contenu: 'Score ' + S.score + '/100. Capacité d\'emprunt estimée : ' + fmt(borrowing) + '.' });
+    insights.push({ id: 'ins_locatif_ok', type: 'info', titre: 'Projet locatif en bonne voie', contenu: 'Score ' + S.score + '/100. Capacité d\'emprunt estimée : ' + fmt(borrowing) + '.' });
   }
 
   if (typeof completeBrickFull === 'function') {
     completeBrickFull(BRICK_ID, {
-      profileFields: {
-        logement_projet: S.projectType === 'residence_principale' ? 'je_veux_acheter' : S.projectType
-      },
+      // Pas de write-back logement_projet : un projet locatif ne doit pas
+      // réécrire le projet d'habitation du profil.
+      profileFields: {},
       rawData: rawData,
       engagements: [eng],
       insights: insights
     });
   }
 
-  saveToStorage('fund_brick_achat_immobilier', rawData);
+  saveToStorage('fund_brick_immo_locatif', rawData);
   setTimeout(function() { goToDashboard(); }, 300);
 }
 
@@ -7408,7 +8520,7 @@ function initBannerImport(bData) {
   var banner = document.getElementById('cb-banner-import');
   if (!banner) return;
   var dismissed = false;
-  try { dismissed = localStorage.getItem('immo_banner_import_dismissed') === '1'; } catch (e) {}
+  try { dismissed = localStorage.getItem('immo_locatif_banner_import_dismissed') === '1'; } catch (e) {}
   if (dismissed) return;
 
   var hydrated = false;
@@ -7424,7 +8536,7 @@ function initBannerImport(bData) {
   if (btn) {
     btn.addEventListener('click', function() {
       banner.hidden = true;
-      try { localStorage.setItem('immo_banner_import_dismissed', '1'); } catch (e) {}
+      try { localStorage.setItem('immo_locatif_banner_import_dismissed', '1'); } catch (e) {}
     });
   }
 }
@@ -7507,6 +8619,11 @@ function attachLiveListeners() {
   // Mark prix as user-modified when they type in it
   var prixBienEl = $('input-prix-bien');
   if (prixBienEl) prixBienEl.addEventListener('input', function() { S.prixModifie = true; });
+  // Screen 6 inputs
+  ['input-loyer-estime', 'input-vacance', 'input-charges-loc', 'input-taxe-fonc-loc', 'input-assurance-pno', 'input-gestion-loc'].forEach(function(id) {
+    var el = $(id);
+    if (el) el.addEventListener('input', updateInvestment);
+  });
 }
 
 /* ── PDF Résumé ── */
@@ -7585,6 +8702,19 @@ function buildPDFContent(date) {
     ['Assurance emprunteur', (S.assuranceEmprunteur||22) + ' €/mois']
   ]);
 
+  // Section Locatif (conditionnelle)
+  if (S.projectType === 'investissement_locatif' || S.usage === 'locatif') {
+    var loyerRetenu = (S.loyerEstime||0) * 0.70;
+    html += pdfSection('ANALYSE LOCATIVE', [
+      ['Loyer mensuel estimé (CC)', fmt(S.loyerEstime) + '/mois'],
+      ['Rendement brut', (S.rendementBrut||0).toFixed(1) + '%'],
+      ['Rendement net', (S.rendementNet||0).toFixed(1) + '%'],
+      ['Cash-flow mensuel', ((S.cashFlow||0) >= 0 ? '+' : '') + fmt(S.cashFlow)],
+      ['Statut', (S.cashFlow||0) >= 0 ? 'Autofinancé' : 'Effort d\'épargne mensuel'],
+      ['Capacité d\'emprunt résiduelle', fmt(S.capaciteResiduelle||0), true]
+    ]);
+    html += '<div class="pdf-note">Les banques retiennent 70% des revenus locatifs dans le calcul de capacité. Avec ' + fmt(S.loyerEstime) + ' de loyer, ' + fmt(Math.round(loyerRetenu)) + ' supplémentaires sont retenus, ce qui porte la capacité résiduelle estimée à ' + fmt(S.capaciteResiduelle||0) + '.</div>';
+  }
 
   // ═══ PARTIE 2 : RÉSUMÉ DES ÉTAPES ═══
   html += '<div class="pdf-part-title" style="margin-top:24px">LES ÉTAPES DE TON PROJET</div>';
@@ -7663,7 +8793,11 @@ function buildPDFContent(date) {
 
   // Étape 10 — Emménager / Gérer
   var etape10Content = '';
+  if (S.usage === 'locatif' || S.projectType === 'investissement_locatif') {
+    etape10Content = '<p style="font-size:0.8rem;color:#555">Consulter la brique Investissement Locatif pour gérer votre bien.</p>';
+  } else {
     etape10Content = '<p style="font-size:0.8rem;color:#555">Consulter la brique Emménager / Déménager pour organiser votre installation.</p>';
+  }
   html += pdfStep('INSTALLATION', '09', 'Emménager ou mettre en location', 'Toi',
     etape10Content,
     'Sous-estimer les délais ou les coûts d\'installation.'

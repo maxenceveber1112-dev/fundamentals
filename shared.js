@@ -109,6 +109,16 @@ const BRIQUES_META = {
     tags: ['logement', 'crédit', 'notaire'],
     recommended: false
   },
+  immo_locatif: {
+    id: 'immo_locatif', nom: 'Investissement locatif',
+    tagline: 'Rendement, cashflow et fiscalité : évalue ton projet locatif.',
+    duree: '12 min', pack: 'Construction & projets', pack_color: '#60a5fa',
+    icon: '🏘️',
+    resume: 'Estime la rentabilité d\'un achat pour louer : loyer, charges, rendement net, cashflow et capacité d\'emprunt résiduelle.',
+    chapitres: ['Capacité & budget', 'Marché & typologie', 'Rendement & cashflow'],
+    tags: ['locatif', 'rendement', 'fiscalité'],
+    recommended: false
+  },
   treso_dirigeant: {
     id: 'treso_dirigeant', nom: 'Tréso du dirigeant',
     tagline: 'Gérer la frontière entre finances perso et pro.',
@@ -531,6 +541,7 @@ const BRICK_FILES = {
   budget_base:          'brique-budget-base.html',
   fonds_urgence:        'brique-fonds-urgence.html',
   achat_immobilier:     'brique-achat-immobilier.html',
+  immo_locatif:         'brique-immo-locatif.html',
   plan_desendettement:  'brique-plan-desendettement.html'
 };
 

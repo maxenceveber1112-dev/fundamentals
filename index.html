@@ -1440,6 +1440,7 @@ var BRIQUES = {
   emmenagement:             { title:'Pr\u00e9parer son emm\u00e9nagement' },
   plan_multi_objectifs:     { title:'Plan multi-objectifs' },
   projet_immo:              { title:'Projet immobilier' },
+  immo_locatif:             { title:'Investissement locatif' },
   treso_dirigeant:          { title:'Tr\u00e9sorerie du dirigeant' },
   structuration_patrimoine: { title:'Structuration patrimoniale' },
   investissement_long_terme:{ title:'Investissement long terme' },
@@ -1450,7 +1451,7 @@ var BRIQUES = {
   transmission:             { title:'Transmission du patrimoine' },
   clarification_contrats:   { title:'Clarifier ses contrats' }
 };
-var PRIORITY = ['budget_base','gestion_decouvert','paiements_fractionnes','fonds_urgence','droits_aides','plan_desendettement','dispositifs_bdf','anti_arnaques','premiers_pas_bancaires','emmenagement','plan_multi_objectifs','achat_immobilier','treso_dirigeant','structuration_patrimoine','investissement_long_terme','diversification_allocation','produits_complexes_vs_simples','fiscalite_epargne','retraite','transmission','clarification_contrats'];
+var PRIORITY = ['budget_base','gestion_decouvert','paiements_fractionnes','fonds_urgence','droits_aides','plan_desendettement','dispositifs_bdf','anti_arnaques','premiers_pas_bancaires','emmenagement','plan_multi_objectifs','achat_immobilier','immo_locatif','treso_dirigeant','structuration_patrimoine','investissement_long_terme','diversification_allocation','produits_complexes_vs_simples','fiscalite_epargne','retraite','transmission','clarification_contrats'];
 
 function computeBriques() {
   var age=A.q_age_group, rev=A.q_revenu_sentiment, stress=parseInt(A.q_stress_budget)||0,
@@ -1472,6 +1473,9 @@ function computeBriques() {
   if (lp==='je_veux_acheter') s.add('achat_immobilier');
   if (['financer_projet_court_terme','acheter_logement','preparer_retraite'].some(function(o){return obj.includes(o);})&&rev!=='difficile_fin_mois') s.add('plan_multi_objectifs');
   if (dettes.includes('credit_immo')) s.add('achat_immobilier');
+  // Brique investissement locatif : recommandée si l'utilisateur détient déjà du
+  // locatif (produit détenu 'immo_locatif', distinct du brick_id homonyme) ou vise l'investissement long terme.
+  if (produits.includes('immo_locatif') || obj.includes('investir_long_terme')) s.add('immo_locatif');
   if (status==='indep_tpe') s.add('treso_dirigeant');
   if (rev==='a_l_aise'||['assurance_vie','pea','per','immo_locatif'].some(function(p){return produits.includes(p);})) s.add('structuration_patrimoine');
   if (obj.includes('investir_long_terme')) { s.add('investissement_long_terme'); s.add('diversification_allocation'); if (['pea','assurance_vie','per'].some(function(p){return produits.includes(p);})) s.add('fiscalite_epargne'); }
