@@ -4096,14 +4096,6 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                         <span class="pill-sm" data-val="sci">SCI</span>
                       </div>
                     </div>
-                    <div class="compact-question">
-                      <span class="compact-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Primo-accédant')" tabindex="0">Primo-accédant</button></span>
-                      <div class="pills-compact" id="pills-primo">
-                        <span class="pill-sm" data-val="oui">Oui</span>
-                        <span class="pill-sm" data-val="non">Non</span>
-                        <span class="pill-sm" data-val="ne_sait_pas">Je ne sais pas</span>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
@@ -4391,7 +4383,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <div class="field-group">
                 <label class="field-label" for="input-aide-famille">Autres apports <span style="font-weight:400;color:var(--text-faint);font-size:0.72rem;">(facultatif)</span></label>
                 <div class="euro-wrap"><input type="number" id="input-aide-famille" class="field-input" placeholder="ex : don familial..." min="0" inputmode="numeric"/><span class="euro-suffix">€</span></div>
-                <div style="font-size:0.7rem;color:var(--text-faint);margin-top:0.35rem;">Don familial, héritage, PTZ — viendra s'ajouter à ton apport mobilisable.</div>
+                <div style="font-size:0.7rem;color:var(--text-faint);margin-top:0.35rem;">Don familial, héritage, aide à l'investissement — viendra s'ajouter à ton apport mobilisable.</div>
               </div>
             </div>
 
@@ -4579,7 +4571,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               </div>
               <div class="s4-result-card s4-result-card--mensuel">
                 <div class="s4-result-value" id="rc-cout-mensuel">--</div>
-                <div class="s4-result-label">Mensualité propriétaire</div>
+                <div class="s4-result-label">Mensualité du crédit</div>
                 <div class="s4-result-sub">hors mensualité crédit</div>
               </div>
             </div>
@@ -4726,7 +4718,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="s6-hero-watermark">
                   <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
                 </div>
-                <div class="s6-loyer-kicker">● Loyer mensuel estimé, charges comprises</div>
+                <div class="s6-loyer-kicker">● Loyer mensuel estimé (hors charges récupérables)</div>
                 <div class="s6-loyer-value-wrap">
                   <input type="number" id="input-loyer-estime-s6" placeholder="Saisis un loyer" min="0" inputmode="numeric" oninput="recalcLocatif()"/>
                   <span class="s6-loyer-suffix">€/mois</span>
@@ -4856,7 +4848,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                     <div class="s6-cashflow-value s6-count-up" id="s6-cashflow">--</div>
                     <div class="s6-cashflow-micro">Mensualité crédit incluse</div>
                     <div id="s6-cashflow-pill-wrap">
-                      <span class="s6-cashflow-pill s6-pill-green" id="s6-cashflow-pill">✓ Autofinancé</span>
+                      <span class="s6-cashflow-pill" id="s6-cashflow-pill">—</span>
                     </div>
                   </div>
 
@@ -4985,7 +4977,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="s7-revente-detail">
                   <span id="s7-revente-crd"><strong>Capital restant dû :</strong> —</span>
                   <span id="s7-revente-frais"><strong>Frais agence (5 %) :</strong> —</span>
-                  <span id="s7-revente-pv"><strong>IRPP plus-value :</strong> exonéré (RP)</span>
+                  <span id="s7-revente-pv"><strong>IRPP plus-value :</strong> calculé à la revente</span>
                 </div>
               </div>
 
@@ -5136,8 +5128,8 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
 
           <!-- ═══ 4. TYPOLOGIES SUR LA COMMUNE ═══ -->
           <div class="s8-typo-section">
-            <div class="s8-bilan-kicker" id="s8-typo-kicker">TYPOLOGIES SUR TA COMMUNE</div>
-            <p class="s8-typo-sub" id="s8-typo-sub">Croisement de ton budget avec les prix médians DVF.</p>
+            <div class="s8-bilan-kicker" id="s8-typo-kicker">TYPOLOGIES DANS TON DÉPARTEMENT</div>
+            <p class="s8-typo-sub" id="s8-typo-sub">Croisement de ton budget avec les prix moyens DVF (agrégé département).</p>
             <div class="s8-typo-grid" id="s8-typo-grid">
               <!-- généré par JS -->
             </div>
@@ -5651,7 +5643,7 @@ function getEmpruntReel() {
 function getMensReelle() {
   var emprunt = getEmpruntReel();
   if (emprunt <= 0) return 0;
-  var taux = n(S.taux) || 3.8;
+  var taux = n(S.taux) || 3.0;
   var duree = n(S.duree) || 25;
   var r = (taux / 100) / 12;
   var n_mois = duree * 12;
@@ -6709,47 +6701,6 @@ function s4CloseField(input) {
   updateCost();
 }
 
-/* ─── ÉCRAN 5 : INVESTMENT ───────────────────────────────── */
-function initInvestment() {
-  var isLocatif = S.projectType === 'investissement_locatif';
-  var toggle = $('toggle-invest');
-  if (isLocatif && !toggle.checked) { toggle.checked = true; }
-  toggleInvestment();
-}
-
-function toggleInvestment() {
-  var checked = $('toggle-invest').checked;
-  S.investEnabled = checked;
-  $('invest-full').style.display = checked ? 'block' : 'none';
-  $('invest-minimal').style.display = checked ? 'none' : 'block';
-  if (checked) updateInvestment();
-}
-
-function updateInvestment() {
-  var loyerM = n(($('input-loyer-estime') || {}).value);
-  var vacance = n(($('input-vacance') || {}).value) || 1;
-  var chargesNR = n(($('input-charges-loc') || {}).value);
-  var taxeF = n(($('input-taxe-fonc-loc') || {}).value);
-  var pno = n(($('input-assurance-pno') || {}).value);
-  var gestion = n(($('input-gestion-loc') || {}).value);
-
-  var prixTotal = S.prixBien > 0 ? S.prixBien + estimateAcquisitionFees(S.prixBien, S.propertyType) : 0;
-  var loyerAnnuel = loyerM * 12;
-  var vacanceCost = loyerM * vacance;
-  var chargesAnnuelles = chargesNR * 12 + taxeF + pno * 12 + gestion * 12;
-
-  var rdtBrut = prixTotal > 0 ? loyerAnnuel / prixTotal : 0;
-  var rdtNet = prixTotal > 0 ? (loyerAnnuel - vacanceCost - chargesAnnuelles) / prixTotal : 0;
-
-  var mensCredit = getMensualiteCible();
-  var cashflow = loyerM * (1 - vacance / 12) - mensCredit - chargesNR - taxeF / 12 - pno - gestion;
-  var effortLoc = cashflow < 0 ? Math.abs(cashflow) : 0;
-
-  $('rc-rdt-brut').textContent = fmtPct(rdtBrut);
-  $('rc-rdt-net').textContent = fmtPct(rdtNet);
-  $('rc-cashflow').textContent = fmt(cashflow);
-  $('rc-effort-loc').textContent = effortLoc > 0 ? fmt(effortLoc) + '/mois' : 'Autofinancé';
-}
 
 /* ─── ÉCRAN 6 : INVESTISSEMENT LOCATIF REFONTE ────────────── */
 function initScreen6() {
@@ -6905,20 +6856,27 @@ function recalcLocatif() {
     vacHelper.textContent = '= ' + vacPct.toString().replace('.', ',') + ' % de perte';
   }
 
-  // Cash-flow
+  var prixBien = n(S.prixBien) || 1;
+  // Entretien mensuel (repris de l'étape 4 ou estimé)
+  var entretienMens = (n(S.entretien) || (prixBien * ((S.propertyType === 'maison') ? 0.015 : 0.01))) / 12;
+  // Charges d'EXPLOITATION (indépendantes du financement) — un seul jeu réutilisé
+  var chargesExploitMens = assurancePNO + chargesLoc + gestionLoc + taxeFoncMensuelle + entretienMens;
+
+  // Cash-flow : loyer net de vacance − (mensualité + assurance emprunteur + charges d'exploitation)
   var loyerEffectif = loyer - (loyer * vacance / 12);
-  var charges = mensualite + assuranceEmpr + assurancePNO + chargesLoc + gestionLoc + taxeFoncMensuelle;
-  var cashFlow = loyerEffectif - charges;
+  var cashFlow = loyerEffectif - (mensualite + assuranceEmpr + chargesExploitMens);
   S.cashFlow = cashFlow;
 
-  // Rendement brut
-  var prixBien = n(S.prixBien) || 1;
+  // Rendement brut : loyer (hors charges) annuel / prix
   var rendBrut = (loyer * 12) / prixBien * 100;
   S.rendementBrut = rendBrut;
 
-  // Rendement net
-  var chargesAnnuelles = (assurancePNO + chargesLoc + gestionLoc + taxeFoncMensuelle + assuranceEmpr) * 12;
-  var rendNet = ((loyer * 12) - chargesAnnuelles) / prixBien * 100;
+  // Rendement net : (loyer − charges d'exploitation) annuel / COÛT TOTAL d'acquisition.
+  // Le rendement mesure la performance de l'actif → indépendant du financement
+  // (ni mensualité ni assurance emprunteur ici ; ils sont dans le cash-flow).
+  var fraisNotaireNet = n(S.fraisNotaire) || estimateAcquisitionFees(prixBien, S.propertyType);
+  var coutTotalNet = prixBien + fraisNotaireNet + n(S.fraisAgence) + n(S.fraisGarantie) + n(S.fraisDossier) + n(S.travauxAutres);
+  var rendNet = ((loyer * 12) - (chargesExploitMens * 12)) / (coutTotalNet || prixBien) * 100;
   S.rendementNet = rendNet;
 
   // Animate rendement values
@@ -7824,8 +7782,8 @@ function buildFinalScreen() {
   var villeName = S.commune && S.commune.nom ? S.commune.nom : (typeof S.commune === 'string' ? S.commune : 'ta commune');
   var typoKick = $('s8-typo-kicker');
   var typoSub = $('s8-typo-sub');
-  if (typoKick) typoKick.textContent = 'TYPOLOGIES SUR ' + String(villeName).toUpperCase();
-  if (typoSub) typoSub.textContent = 'Croisement de ton budget avec les prix médians DVF (' + fmt(prixM2) + '/m²).';
+  if (typoKick) typoKick.textContent = 'TYPOLOGIES DANS TON DÉPARTEMENT';
+  if (typoSub) typoSub.textContent = 'Croisement de ton budget avec les prix moyens DVF — agrégé département (' + fmt(prixM2) + '/m²).';
 
   var typoGrid = $('s8-typo-grid');
   if (typoGrid) {
@@ -8575,7 +8533,7 @@ function buildPDFContent(date) {
     ['Frais de dossier', fmt(S.fraisDossier)],
     S.travauxAutres > 0 ? ['Travaux & Installation', fmt(S.travauxAutres)] : null,
     ['Coût total acquisition', fmt(coutTotal), true],
-    ['Mensualité propriétaire', fmt((S.mensualiteMax||0) + (S.assuranceEmprunteur||22)) + '/mois', true]
+    ['Mensualité du crédit', fmt((S.mensualiteMax||0) + (S.assuranceEmprunteur||22)) + '/mois', true]
   ].filter(Boolean));
 
   // Section Charges récurrentes
