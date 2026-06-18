@@ -4116,23 +4116,6 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
             <div id="bloc-b">
               <div style="display:flex;flex-direction:column;gap:0.875rem;margin-top:1.25rem;">
 
-                <!-- (Commit 3) Reorder option B : Profil AVANT Horizon — statut/primo conditionnent le calcul -->
-                <!-- Section Votre profil -->
-                <div class="profil-section">
-                  <span class="profil-section-label">Votre profil</span>
-                  <div class="profil-section-fields">
-                    <div class="compact-question">
-                      <span class="compact-label">Statut</span>
-                      <div class="pills-compact" id="pills-status">
-                        <span class="pill-sm" data-val="seul">Seul</span>
-                        <span class="pill-sm" data-val="couple">Couple</span>
-                        <span class="pill-sm" data-val="co_emprunteur">Co-empr.</span>
-                        <span class="pill-sm" data-val="sci">SCI</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 <!-- Horizon slider timeline -->
                 <div class="compact-question">
                   <span class="compact-label">Horizon</span>
@@ -4211,6 +4194,17 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <span class="statut-banner-icon">💡</span>
               <span class="statut-banner-text">Pense à renseigner les revenus et dettes cumulés de tous les acheteurs.</span>
               <button class="statut-banner-close" onclick="this.parentElement.style.display='none'" aria-label="Fermer">×</button>
+            </div>
+
+            <!-- Statut emprunteur (déplacé de l'écran 1 — conditionne les revenus cumulés) -->
+            <div class="compact-question" style="margin-bottom:1rem;">
+              <span class="compact-label">Statut</span>
+              <div class="pills-compact" id="pills-status">
+                <span class="pill-sm" data-val="seul">Seul</span>
+                <span class="pill-sm" data-val="couple">Couple</span>
+                <span class="pill-sm" data-val="co_emprunteur">Co-empr.</span>
+                <span class="pill-sm" data-val="sci">SCI</span>
+              </div>
             </div>
 
             <!-- ═══ ZONE 1 — DONNÉES (2 grandes pills fusionnées) ═══ -->
@@ -4564,46 +4558,6 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               </div>
             </div>
 
-            <!-- GROUPE 4 — CHARGES RÉCURRENTES -->
-            <div class="s4-group s4-group--charges">
-              <div class="s4-group-watermark" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
-              </div>
-              <div class="s4-kicker s4-kicker--charges"><span class="s4-kicker-dot" style="background:#A78BFA"></span> CHARGES RÉCURRENTES</div>
-              <div class="s4-fields">
-                <div class="s4-field-card" data-input="input-taxe-fonciere" onclick="s4EditField(this)">
-                  <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Taxe foncière')" tabindex="0">Taxe foncière</button> / an</div>
-                  <div class="s4-field-value" id="s4-val-taxe">0 €</div>
-                  <input type="number" class="s4-field-input" id="input-taxe-fonciere" placeholder="ex : 1 200" min="0" inputmode="numeric"/>
-                </div>
-                <div class="s4-field-card" data-input="input-charges-copro" onclick="s4EditField(this)">
-                  <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Charges de copropriété')" tabindex="0">Charges copro</button> / an</div>
-                  <div class="s4-field-value" id="s4-val-copro">0 €</div>
-                  <input type="number" class="s4-field-input" id="input-charges-copro" placeholder="ex : 1 800" min="0" inputmode="numeric"/>
-                </div>
-                <div class="s4-field-card" data-input="input-assurance-hab" onclick="s4EditField(this)">
-                  <div class="s4-field-label">Assurance habitation / mois
-                    <span class="field-tooltip"><span class="tooltip-icon" onclick="event.stopPropagation()">?</span><span class="tooltip-text">Estimation basée sur le type de bien</span></span>
-                  </div>
-                  <div class="s4-field-value" id="s4-val-assurance">--</div>
-                  <input type="number" class="s4-field-input" id="input-assurance-hab" placeholder="auto" min="0" inputmode="numeric"/>
-                  <span class="s4-field-badge s4-badge-estime" id="s4-badge-assurance">Estimé</span>
-                </div>
-                <div class="s4-field-card" data-input="input-entretien" onclick="s4EditField(this)">
-                  <div class="s4-field-label">Entretien annuel / an
-                    <span class="field-tooltip"><span class="tooltip-icon" onclick="event.stopPropagation()">?</span><span class="tooltip-text">1% du prix pour un appartement, 1,5% pour une maison</span></span>
-                  </div>
-                  <div class="s4-field-value" id="s4-val-entretien">--</div>
-                  <input type="number" class="s4-field-input" id="input-entretien" placeholder="auto" min="0" inputmode="numeric"/>
-                  <span class="s4-field-badge s4-badge-estime" id="s4-badge-entretien">Estimé</span>
-                </div>
-              </div>
-              <div class="s4-subtotal">
-                <span>Total charges / mois</span>
-                <span class="s4-subtotal-value" id="s4-sub-charges">--</span>
-              </div>
-            </div>
-
             <!-- Stacked bar -->
             <div class="stacked-bar-wrap" id="cost-chart" style="margin-top:0.5rem;">
               <div class="slider-header"><span class="slider-label">Répartition du coût total</span><span class="slider-value" id="val-cout-total">--</span></div>
@@ -4815,10 +4769,35 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 </div>
               </div>
 
-              <!-- Taxe foncière — faint inline -->
-              <div class="s6-taxe-faint" id="s6-taxe-fonciere-line">
-                Taxe foncière : <span id="s6-taxe-fonciere-val">--</span>&thinsp;€/an · <a onclick="goToScreen(5)">Repris de l'étape 5</a>
+            <!-- Charges récurrentes du propriétaire (déplacées depuis l'écran Coût) -->
+            <!-- GROUPE 4 — CHARGES RÉCURRENTES -->
+            <div class="s4-group s4-group--charges">
+              <div class="s4-group-watermark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
               </div>
+              <div class="s4-kicker s4-kicker--charges"><span class="s4-kicker-dot" style="background:#A78BFA"></span> CHARGES RÉCURRENTES</div>
+              <div class="s4-fields">
+                <div class="s4-field-card" data-input="input-taxe-fonciere" onclick="s4EditField(this)">
+                  <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Taxe foncière')" tabindex="0">Taxe foncière</button> / an</div>
+                  <div class="s4-field-value" id="s4-val-taxe">0 €</div>
+                  <input type="number" class="s4-field-input" id="input-taxe-fonciere" placeholder="ex : 1 200" min="0" inputmode="numeric"/>
+                </div>
+                <div class="s4-field-card" data-input="input-charges-copro" onclick="s4EditField(this)">
+                  <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Charges de copropriété')" tabindex="0">Charges copro</button> / an</div>
+                  <div class="s4-field-value" id="s4-val-copro">0 €</div>
+                  <input type="number" class="s4-field-input" id="input-charges-copro" placeholder="ex : 1 800" min="0" inputmode="numeric"/>
+                </div>
+                <div class="s4-field-card" data-input="input-entretien" onclick="s4EditField(this)">
+                  <div class="s4-field-label">Entretien annuel / an
+                    <span class="field-tooltip"><span class="tooltip-icon" onclick="event.stopPropagation()">?</span><span class="tooltip-text">1% du prix pour un appartement, 1,5% pour une maison</span></span>
+                  </div>
+                  <div class="s4-field-value" id="s4-val-entretien">--</div>
+                  <input type="number" class="s4-field-input" id="input-entretien" placeholder="auto" min="0" inputmode="numeric"/>
+                  <span class="s4-field-badge s4-badge-estime" id="s4-badge-entretien">Estimé</span>
+                </div>
+              </div>
+            </div>
+
 
               <!-- Gestion locative — 2 choice cards -->
               <div class="s6-gestion-section">
@@ -6514,14 +6493,8 @@ function updateCost() {
   var taxeF = n(($('input-taxe-fonciere') || {}).value);
   var coproAn = n(($('input-charges-copro') || {}).value); // maintenant en /an
 
-  // Auto-estimate assurance habitation
-  var assHabInput = $('input-assurance-hab');
-  if (prix > 0 && !assHabInput.value) {
-    var estAssHab = estimateAssuranceHab(S.propertyType);
-    assHabInput.placeholder = estAssHab + ' €/mois';
-    S.assuranceHab = estAssHab;
-  }
-  var assHab = n(assHabInput.value) || S.assuranceHab || estimateAssuranceHab(S.propertyType);
+  // Assurance habitation retirée du flux locatif (doublon avec la PNO de l'écran 6)
+  var assHab = 0;
 
   // Auto-estimate entretien annuel
   var entretienInput = $('input-entretien');
@@ -6537,6 +6510,13 @@ function updateCost() {
   var coutTotal = coutAcq + travauxAutres;
   // Copro is now annual → divide by 12 for monthly
   var coutMensuelProprio = taxeF / 12 + coproAn / 12 + assHab + entretien / 12;
+
+  // Persiste les charges récurrentes dans l'état (saisies désormais à l'écran 6,
+  // lues par recalcLocatif pour le cashflow/rendement et par le PDF/rawData).
+  S.taxeFonciere = taxeF;
+  S.chargesCopro = coproAn;
+  S.assuranceHab = assHab;
+  S.entretien = entretien;
 
   // Update display values with flash transition
   s4FlashUpdate('s4-prix-display', fmt(prix));
@@ -6565,7 +6545,6 @@ function updateCost() {
   s4UpdateBadge('s4-badge-notaire', notaireInput);
   s4UpdateBadge('s4-badge-garantie', garantieInput);
   s4UpdateBadge('s4-badge-dossier', dossierInput);
-  s4UpdateBadge('s4-badge-assurance', assHabInput);
   s4UpdateBadge('s4-badge-entretien', entretienInput);
 
   // Help texts
@@ -6597,6 +6576,9 @@ function updateCost() {
   // === Budget max possible + warning si prix > budget ===
   S.prixBien = prix;
   s4UpdateBudgetWarning(prix);
+  // Les charges récurrentes (taxe, copro, entretien) alimentent la rentabilité
+  // → rafraîchir le cashflow/rendement de l'écran 6 quand elles changent.
+  if (typeof recalcLocatif === 'function') recalcLocatif();
 }
 
 /* Affiche le badge "Budget max possible" + warning si prix > budget max */
@@ -6866,7 +6848,8 @@ function recalcLocatif() {
   // Entretien mensuel (repris de l'étape 5 ou estimé)
   var entretienMens = (n(S.entretien) || (prixBien * ((S.propertyType === 'maison') ? 0.015 : 0.01))) / 12;
   // Charges d'EXPLOITATION (indépendantes du financement) — un seul jeu réutilisé
-  var chargesExploitMens = assurancePNO + chargesLoc + gestionLoc + taxeFoncMensuelle + entretienMens;
+  var coproMens = n(S.chargesCopro) / 12;  // copro non récupérable — déduite du cashflow
+  var chargesExploitMens = assurancePNO + chargesLoc + gestionLoc + taxeFoncMensuelle + entretienMens + coproMens;
 
   // Cash-flow : loyer net de vacance − (mensualité + assurance emprunteur + charges d'exploitation)
   var loyerEffectif = loyer - (loyer * vacance / 12);
@@ -8528,10 +8511,9 @@ function buildPDFContent(date) {
   ].filter(Boolean));
 
   // Section Charges récurrentes
-  var chargesAn = (S.chargesCopro||0) + ((S.assuranceHab||S.assuranceHabitation||0)*12) + (S.entretienAnnuel||0);
+  var chargesAn = (S.chargesCopro||0) + (S.entretienAnnuel||0);
   html += pdfSection('CHARGES RÉCURRENTES', [
     ['Charges copropriété', fmt(S.chargesCopro||0) + '/an'],
-    ['Assurance habitation', fmt(S.assuranceHab||S.assuranceHabitation||0) + '/mois'],
     ['Entretien annuel estimé', fmt(S.entretienAnnuel||0) + '/an'],
     ['Total charges récurrentes', fmt(chargesAn) + '/an', true]
   ]);
@@ -8648,7 +8630,6 @@ function buildPDFContent(date) {
   html += pdfStep('INSTALLATION', '10', 'Gérer son budget propriétaire', 'Toi',
     pdfDataTable([
       ['Charges copropriété', fmt(S.chargesCopro||0) + '/an'],
-      ['Assurance habitation', fmt(S.assuranceHab||S.assuranceHabitation||0) + '/mois'],
       ['Entretien annuel estimé', fmt(S.entretienAnnuel||0) + '/an']
     ]),
     'Sous-estimer les charges récurrentes après l\'achat.'
