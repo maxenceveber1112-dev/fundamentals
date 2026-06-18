@@ -1962,6 +1962,33 @@ html:not(.dark) .f-content {
 .z1-row--primary { grid-template-columns:1fr 1fr; }
 .z1-row--secondary { grid-template-columns:1fr 1fr; margin-top:0.5rem; }
 
+/* LOC-04 — champ loyer attendu (capacité rental-aware) */
+.z1-loyer-field { margin-top:0.75rem; }
+.z1-loyer-label {
+  display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;
+  font-size:0.86rem; font-weight:600; color:var(--text-secondary);
+  margin-bottom:0.45rem;
+}
+.z1-loyer-tag {
+  font-size:0.66rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+  color:var(--v3-accent-strong, var(--accent));
+  background:var(--bg-glass, rgba(127,127,127,0.10));
+  border:1px solid var(--border-subtle, rgba(127,127,127,0.18));
+  border-radius:999px; padding:0.08rem 0.5rem;
+}
+.z1-loyer-hint { margin:0.4rem 0 0; font-size:0.78rem; color:var(--text-faint); }
+
+/* Footer légal persistant (CROSS-03) */
+.brick-legal-footer {
+  max-width:760px; margin:2.5rem auto 1.5rem; padding:1rem 1.25rem 0;
+  border-top:1px solid var(--border-soft, rgba(127,127,127,0.12));
+  text-align:center;
+}
+.brick-legal-text { margin:0.85rem 0 0.55rem; font-size:0.74rem; line-height:1.5; color:var(--text-faint); }
+.brick-legal-links { display:flex; gap:0.5rem; justify-content:center; align-items:center; font-size:0.78rem; }
+.brick-legal-links a { color:var(--text-muted); text-decoration:none; }
+.brick-legal-links a:hover { text-decoration:underline; color:var(--text-secondary); }
+
 .z1-chip {
   position:relative; overflow:hidden;
   background:var(--surface-2); border:1.5px solid var(--border-mid);
@@ -3901,6 +3928,12 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   50%      { box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.06); transform: translateY(-1px); }
 }
 @media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
   .s8-vs-teaser:not(.open) { animation: none; }
 }
 .s8-vs-content {
@@ -3990,6 +4023,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
 <script src="nav-avatar.js"></script>
+<script src="immo-core.js"></script>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MAIN LAYOUT (sidebar.js injecte la sidebar à gauche)       -->
@@ -4105,7 +4139,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                   <div class="horizon-slider-wrap">
                     <div class="slider-chip-wrap">
                       <div class="slider-chip" id="horizon-chip" style="left:0%;">< 3 mois</div>
-                      <input type="range" id="slider-horizon" min="0" max="4" value="0" step="1" oninput="updateHorizonSlider()" style="width:100%;"/>
+                      <input type="range" id="slider-horizon" min="0" max="4" value="0" step="1" oninput="updateHorizonSlider()" style="width:100%;" aria-label="Horizon de l'investissement"/>
                     </div>
                     <div class="horizon-ticks" id="horizon-ticks">
                       <span class="horizon-tick passed"></span>
@@ -4157,7 +4191,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           <div class="brick-card">
             <div class="brick-kicker">ÉTAPE 2 / 8 · CAPACITÉ MENSUELLE</div>
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
-            <p class="brick-subtitle">Tes revenus fixent ta mensualité. Les banques retiennent ~70 % des loyers futurs dans ta capacité — on l'intègre à l'étape rentabilité.</p>
+            <p class="brick-subtitle">Tes revenus fixent ta mensualité. Les banques retiennent ~70 % des loyers attendus dans ta capacité — renseigne-les ci-dessous, on les intègre directement.</p>
 
             <!-- Bandeau import cross-brique (hydratation budget) -->
             <div class="cb-banner cb-banner--neutral" id="cb-banner-import" hidden role="status" aria-live="polite">
@@ -4226,6 +4260,20 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                   </div>
                 </div>
               </div>
+            </div>
+
+            <!-- LOC-04 : loyer attendu intégré à la capacité (règle des 70 %) -->
+            <div class="z1-loyer-field" id="loyer-attendu-field">
+              <label class="z1-loyer-label" for="input-loyer-attendu">
+                Loyer mensuel attendu
+                <span class="z1-loyer-tag">locatif</span>
+                <span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Loyer hors charges que tu espères percevoir. Les banques en retiennent ~70 % dans le calcul de ta capacité d'emprunt (pour couvrir vacance et charges).</span></span>
+              </label>
+              <div class="euro-wrap">
+                <input type="number" id="input-loyer-attendu" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric" oninput="S.loyerEstime=n(this.value);S.loyerSource='step2';updateCapacity();"/>
+                <span class="euro-suffix">€</span>
+              </div>
+              <p class="z1-loyer-hint" id="loyer-attendu-hint">Optionnel — retenu à 70 %, il augmente ta capacité ci-dessous.</p>
             </div>
 
             <!-- Hidden inputs preserved for compatibility -->
@@ -4313,11 +4361,11 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="hypotheses-popup-title">Modifier les hypothèses</div>
                 <div class="slider-group">
                   <div class="slider-header"><span class="slider-label">Durée du prêt</span><span class="slider-value" id="hyp-duree-val">25 ans</span></div>
-                  <input type="range" id="slider-duree" min="10" max="30" value="25" step="1" oninput="updateHypotheses()"/>
+                  <input type="range" id="slider-duree" min="10" max="30" value="25" step="1" oninput="updateHypotheses()" aria-label="Durée du prêt" aria-valuetext="25 ans"/>
                 </div>
                 <div class="slider-group">
                   <div class="slider-header"><span class="slider-label">Taux nominal</span><span class="slider-value" id="hyp-taux-val">3,0 %</span></div>
-                  <input type="range" id="slider-taux" min="1" max="8" value="3.0" step="0.1" oninput="updateHypotheses()"/>
+                  <input type="range" id="slider-taux" min="1" max="8" value="3.0" step="0.1" oninput="updateHypotheses()" aria-label="Taux nominal du prêt" aria-valuetext="3,0 %"/>
                 </div>
                 <div class="field-group">
                   <label class="field-label" for="input-assurance-mens" style="font-size:0.78rem;">Assurance / mois</label>
@@ -4706,10 +4754,13 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <!-- Bannière pédago : source du loyer pré-rempli (depuis S5) -->
               <div class="s6-suggest-banner" id="s6-suggest-banner" style="display:none;">
                 <span class="s6-suggest-icon">✨</span>
-                <span class="s6-suggest-text">
+                <span class="s6-suggest-text" id="s6-suggest-text-market">
                   On a estimé le loyer à <strong id="s6-suggest-loyer">—</strong>
                   pour <span id="s6-suggest-typo">ton bien</span> à <strong id="s6-suggest-commune">ta commune</strong>
                   — ratio empirique de <strong>6 % brut annuel</strong>. Ajuste librement.
+                </span>
+                <span class="s6-suggest-text" id="s6-suggest-text-step2" style="display:none;">
+                  Loyer <strong>repris de l'étape 2</strong> — ajuste-le ci-dessous si tu as une meilleure estimation.
                 </span>
               </div>
 
@@ -4864,10 +4915,10 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 </div>
               </div>
 
-              <!-- Capacité résiduelle bubble -->
+              <!-- Capacité d'emprunt (loyers attendus inclus à 70 %) -->
               <div class="s6-capacity-bubble" id="s6-capacity-bubble">
                 <span class="s6-cap-icon">💡</span>
-                <span>Grâce au loyer perçu, votre capacité d'emprunt résiduelle est de <strong id="s6-cap-residuelle">--</strong></span>
+                <span>En intégrant 70 % du loyer attendu, ta capacité d'emprunt atteint <strong id="s6-cap-residuelle">--</strong></span>
               </div>
 
               <!-- Disclaimer fiscal — inline -->
@@ -5119,7 +5170,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                   <div class="s8-bilan-cell-value" id="s8-loc-rendement">--</div>
                 </div>
                 <div class="s8-bilan-cell s8-bilan-locatif-cell">
-                  <div class="s8-bilan-cell-label">Cap résiduelle</div>
+                  <div class="s8-bilan-cell-label">Capacité (loyers incl.)</div>
                   <div class="s8-bilan-cell-value" id="s8-loc-cap-res">--</div>
                 </div>
               </div>
@@ -5323,7 +5374,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="sb2-synth-row" id="row-cap-residuelle" style="display:none;">
                   <span class="sb2-synth-row-label">
                     <span class="sb2-synth-row-dot"></span>
-                    Cap. résiduelle
+                    Loyer retenu (70 %)
                   </span>
                   <span class="sb2-synth-row-value" id="m-cap-residuelle">—</span>
                 </div>
@@ -5345,6 +5396,20 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
       </div><!-- /brique-progress-col -->
 
     </div><!-- /brique-layout -->
+
+    <!-- Footer légal persistant (CROSS-03) -->
+    <footer class="brick-legal-footer" role="contentinfo">
+      <p class="brick-legal-text">
+        Outil pédagogique — ne constitue pas un conseil en investissement financier ni en gestion
+        de patrimoine (art. L.321-1 et s. du Code monétaire et financier). Les estimations sont
+        indicatives, hors fiscalité, et ne valent pas recommandation personnalisée.
+      </p>
+      <nav class="brick-legal-links" aria-label="Liens légaux">
+        <a href="cgu.html">CGU</a>
+        <span aria-hidden="true">·</span>
+        <a href="confidentialite.html">Politique de confidentialité</a>
+      </nav>
+    </footer>
   </div><!-- /f-content -->
 </div><!-- /f-sidebar-shell -->
 
@@ -5359,91 +5424,6 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
 // retravailler le scoring (rendement/cashflow), fiscalité LMNP/IR/IS, etc.
 var BRICK_ID = 'immo_locatif';
 var TOTAL_SCREENS = 9; // 0-8
-var EFFORT_MAX = 0.35;
-var NOTARY_RATE_LOW = 0.10;
-var NOTARY_RATE_ANCIEN = 0.07;
-var NOTARY_RATE_NEUF = 0.025;
-var PRICE_THRESHOLD_LOW = 75000;
-
-/* ─── ASSURANCE AUTO PAR AGE ─────────────────────────────── */
-var ASSURANCE_RATES = {
-  '15_17': 0.0015, '18_24': 0.0015,
-  '25_34': 0.0020,
-  '35_54': 0.0030,
-  '55_64': 0.0045,
-  '65_plus': 0.0060
-};
-
-/* ─── PRIX M² PAR DÉPARTEMENT (DVF 2024 data.gouv + sources notaires Alsace-Moselle) ───── */
-var PRIX_M2 = {
-  '01':2900,'02':1400,'03':1400,'04':2400,'05':3000,'06':5200,'07':2100,'08':1300,
-  '09':1600,'10':1600,'11':2200,'12':1700,'13':3900,'14':3000,'15':1400,'16':1500,
-  '17':3200,'18':1300,'19':1600,'21':2400,'22':2200,'23':1100,'24':1700,'25':2100,
-  '26':2300,'27':2000,'28':2000,'29':2300,'2A':4500,'2B':3300,'30':2700,'31':2900,
-  '32':1700,'33':3700,'34':3400,'35':3000,'36':1200,'37':2400,'38':2800,'39':1800,
-  '40':3200,'41':1700,'42':1800,'43':1600,'44':3300,'45':2100,'46':1700,'47':1600,
-  '48':1800,'49':2300,'50':2100,'51':2200,'52':1100,'53':1600,'54':1900,'55':1200,
-  '56':3000,'57':2200,'58':1200,'59':2300,'60':2300,'61':1500,'62':2100,'63':2000,
-  '64':3600,'65':1900,'66':2600,'67':3000,'68':2400,'69':3800,'70':1300,'71':1600,
-  '72':1700,'73':4300,'74':4800,'75':9700,'76':2300,'77':3100,'78':4300,'79':1500,
-  '80':2000,'81':1800,'82':1900,'83':4400,'84':2800,'85':2800,'86':1700,'87':1600,
-  '88':1600,'89':1500,'90':1600,'91':3300,'92':6700,'93':4200,'94':5200,'95':3500,
-  '971':2400,'972':2500,'973':1900,'974':2900,'976':1800,
-  'default':2300
-};
-var DEPT_NAMES = {
-  '01':'Ain','02':'Aisne','03':'Allier','04':'Alpes-de-Haute-Provence','05':'Hautes-Alpes',
-  '06':'Alpes-Maritimes','07':'Ardèche','08':'Ardennes','09':'Ariège','10':'Aube',
-  '11':'Aude','12':'Aveyron','13':'Bouches-du-Rhône','14':'Calvados','15':'Cantal',
-  '16':'Charente','17':'Charente-Maritime','18':'Cher','19':'Corrèze','21':"Côte-d'Or",
-  '22':"Côtes-d'Armor",'23':'Creuse','24':'Dordogne','25':'Doubs','26':'Drôme',
-  '27':'Eure','28':'Eure-et-Loir','29':'Finistère','2A':'Corse-du-Sud','2B':'Haute-Corse',
-  '30':'Gard','31':'Haute-Garonne','32':'Gers','33':'Gironde','34':'Hérault',
-  '35':'Ille-et-Vilaine','36':'Indre','37':'Indre-et-Loire','38':'Isère','39':'Jura',
-  '40':'Landes','41':'Loir-et-Cher','42':'Loire','43':'Haute-Loire','44':'Loire-Atlantique',
-  '45':'Loiret','46':'Lot','47':'Lot-et-Garonne','48':'Lozère','49':'Maine-et-Loire',
-  '50':'Manche','51':'Marne','52':'Haute-Marne','53':'Mayenne','54':'Meurthe-et-Moselle',
-  '55':'Meuse','56':'Morbihan','57':'Moselle','58':'Nièvre','59':'Nord',
-  '60':'Oise','61':'Orne','62':'Pas-de-Calais','63':'Puy-de-Dôme','64':'Pyrénées-Atlantiques',
-  '65':'Hautes-Pyrénées','66':'Pyrénées-Orientales','67':'Bas-Rhin','68':'Haut-Rhin','69':'Rhône',
-  '70':'Haute-Saône','71':'Saône-et-Loire','72':'Sarthe','73':'Savoie','74':'Haute-Savoie',
-  '75':'Paris','76':'Seine-Maritime','77':'Seine-et-Marne','78':'Yvelines','79':'Deux-Sèvres',
-  '80':'Somme','81':'Tarn','82':'Tarn-et-Garonne','83':'Var','84':'Vaucluse',
-  '85':'Vendée','86':'Vienne','87':'Haute-Vienne','88':'Vosges','89':'Yonne',
-  '90':'Territoire de Belfort','91':'Essonne','92':'Hauts-de-Seine','93':'Seine-Saint-Denis','94':'Val-de-Marne',
-  '95':"Val-d'Oise",'971':'Guadeloupe','972':'Martinique','973':'Guyane','974':'La Réunion','976':'Mayotte'
-};
-function getDeptFromPostal(cp) {
-  if (!cp || cp.length < 2) return null;
-  if (['971','972','973','974','976'].includes(cp.substring(0,3))) return cp.substring(0,3);
-  return cp.substring(0,2);
-}
-function getPrixM2(cp) {
-  var dept = getDeptFromPostal(cp);
-  return PRIX_M2[dept] || PRIX_M2['default'];
-}
-
-/* ─── TYPOLOGIES (surface moyenne + multiplicateur prix/m²) ────────────── */
-/* Source : ordres de grandeur DVF 2024 + Notaires de France. */
-/* Multiplicateur appliqué au prix/m² départemental moyen. */
-var TYPOLOGIES = [
-  { id:'studio', label:'Studio',  surface:22, mult:1.15, icon:'🏙️',  short:'≤ 30 m², 1 pièce' },
-  { id:'t2',     label:'T2',      surface:42, mult:1.05, icon:'🏠',   short:'40–50 m², 2 pièces' },
-  { id:'t3',     label:'T3',      surface:62, mult:1.00, icon:'🏡',   short:'60–75 m², 3 pièces' },
-  { id:'t4',     label:'T4 +',    surface:85, mult:0.97, icon:'🏡',   short:'≥ 80 m², 4 pièces +' },
-  { id:'maison', label:'Maison',  surface:105,mult:0.93, icon:'🏡',   short:'Avec terrain' }
-];
-function getTypoById(id) { for (var i=0;i<TYPOLOGIES.length;i++){ if (TYPOLOGIES[i].id===id) return TYPOLOGIES[i]; } return TYPOLOGIES[2]; }
-function estimateTypoPrice(typo, prixM2Base) {
-  return Math.round(typo.surface * prixM2Base * typo.mult);
-}
-
-/* ─── HORIZON SLIDER DATA ───────────────────────────────── */
-var HORIZON_LABELS = ['< 3 mois', '3–6 mois', '6–12 mois', '> 1 an', 'Simple curiosité'];
-var HORIZON_VALUES = ['3m', '6m', '12m', '1y+', 'curiosite'];
-
-/* ─── DURATION BY AGE GROUP ─────────────────────────────── */
-var DUREE_PAR_AGE = { '25_34': 25, '25-34': 25, '35_44': 20, '35-44': 20, '45_54': 15, '45-54': 15, '55_plus': 10, '55+': 10 };
 
 /* ─── STATE ──────────────────────────────────────────────── */
 var S = {
@@ -5511,7 +5491,7 @@ var GLOSSARY = [
     { t: 'Cash-flow', d: 'Ce qui rentre moins ce qui sort chaque mois. Positif = le bien se finance seul.', ex: '800 EUR de loyer - 1 000 EUR de mensualité - 100 EUR de charges = -300 EUR de cash-flow.', w: 'Un cash-flow négatif n\'est pas forcément un problème, mais il faut pouvoir le supporter.' },
     { t: 'Vacance locative', d: 'Périodes pendant lesquelles le bien n\'est pas loué (entre deux locataires, travaux...). On la compte en mois/an.', ex: '0,5 mois/an de vacance ≈ 4 % de loyer en moins sur l\'année.', w: 'Une zone à forte demande locative limite la vacance. Prévois toujours une marge.' },
     { t: 'PNO (propriétaire non occupant)', d: 'Assurance obligatoire pour un bien mis en location : elle couvre le logement quand aucun locataire n\'est assuré.', ex: 'Environ 10 à 20 EUR/mois selon le bien.', w: 'Distincte de l\'assurance habitation du locataire ; elle reste à ta charge.' },
-    { t: 'Capacité résiduelle (règle des 70 %)', d: 'Les banques ne retiennent qu\'environ 70 % des loyers futurs dans le calcul de ta capacité d\'emprunt (pour couvrir vacance et charges). Ce qu\'il te reste comme capacité après ce projet.', ex: '900 EUR de loyer → ~630 EUR pris en compte par la banque.', w: 'Le taux retenu varie selon les banques. Estimation indicative.' },
+    { t: 'Capacité d\'emprunt (loyers inclus à 70 %)', d: 'Les banques ne retiennent qu\'environ 70 % des loyers attendus dans le calcul de ta capacité d\'emprunt (pour couvrir vacance et charges). Ces 70 % sont intégrés directement à ta capacité d\'emprunt dès l\'étape capacité.', ex: '900 EUR de loyer → ~630 EUR pris en compte par la banque.', w: 'Le taux retenu varie selon les banques. Estimation indicative.' },
     { t: 'LMNP (meublé)', d: 'Loueur en Meublé Non Professionnel : régime des locations meublées. Les loyers sont imposés en BIC, avec micro-BIC (abattement) ou régime réel (amortissement du bien).', ex: 'Un studio loué meublé relève souvent du LMNP.', w: 'Fiscalité spécifique non chiffrée dans cette brique — à valider avec un comptable.' },
     { t: 'Déficit foncier (location nue)', d: 'En location nue au régime réel, les charges et travaux supérieurs aux loyers créent un déficit imputable sur ton revenu (sous conditions et plafonds).', ex: 'Gros travaux la 1re année → réduction d\'impôt étalée.', w: 'Mécanisme encadré (plafonds, durée de location) — à vérifier au cas par cas.' },
     { t: 'IR + prélèvements sociaux', d: 'Les revenus locatifs sont soumis à l\'impôt sur le revenu (selon ta tranche) et aux prélèvements sociaux (17,2 %).', ex: 'L\'imposition réelle dépend de ta situation et du régime choisi.', w: 'Estimations de cette brique données HORS impôt — le net après impôt sera inférieur.' }
@@ -5551,37 +5531,6 @@ var TL_PRIMO_STEP = {
   glyph: '🎁'
 };
 
-/* ─── CALCULATION FUNCTIONS ──────────────────────────────── */
-function calculateMonthlyPayment(loanAmount, annualRate, months) {
-  if (!loanAmount || !months || months <= 0) return 0;
-  if (!annualRate || annualRate <= 0) return loanAmount / months;
-  var r = annualRate / 100 / 12;
-  return loanAmount * r / (1 - Math.pow(1 + r, -months));
-}
-
-function calculateBorrowingCapacity(monthlyPayment, annualRate, months) {
-  if (!monthlyPayment || !months || months <= 0) return 0;
-  if (!annualRate || annualRate <= 0) return monthlyPayment * months;
-  var r = annualRate / 100 / 12;
-  return monthlyPayment * (1 - Math.pow(1 + r, -months)) / r;
-}
-
-function calculateDebtRatio(existingCredits, futurePaymentWithInsurance, monthlyIncome) {
-  if (!monthlyIncome || monthlyIncome <= 0) return 0;
-  return (n(existingCredits) + n(futurePaymentWithInsurance)) / monthlyIncome;
-}
-
-function calculateMobilizableDownPayment(availableSavings, familyHelp, protectedEmergency, blockedSavings, minReserve) {
-  var result = n(availableSavings) + n(familyHelp) - n(protectedEmergency) - n(blockedSavings) - n(minReserve);
-  return Math.max(0, result);
-}
-
-function estimateAcquisitionFees(price, propertyType) {
-  if (!price || price <= 0) return 0;
-  if (price < PRICE_THRESHOLD_LOW) return Math.round(price * NOTARY_RATE_LOW);
-  if (propertyType === 'neuf' || propertyType === 'vefa') return Math.round(price * NOTARY_RATE_NEUF);
-  return Math.round(price * NOTARY_RATE_ANCIEN);
-}
 
 function getAutoAssurance() {
   var rate = ASSURANCE_RATES[S.ageGroup] || 0.0020;
@@ -5614,12 +5563,6 @@ function recommendNextBrick(st) {
 }
 
 /* ─── HELPERS ────────────────────────────────────────────── */
-function n(v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; }
-function fmt(v) {
-  if (v === null || v === undefined || isNaN(v)) return '--';
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(v);
-}
-function fmtPct(v) { return (Math.round(v * 1000) / 10) + ' %'; }
 function $(id) { return document.getElementById(id); }
 function getTotalRevenus() { return n(S.revenus) + n(S.revenusCompl) + n(S.autresEntrees); }
 
@@ -5896,11 +5839,20 @@ function updateModeCard() {
 /* ─── PILLS SELECTION (compact pills — bloc B) ───────────── */
 function initPills() {
   document.querySelectorAll('.pills-compact').forEach(function(group) {
+    var field = group.id.replace('pills-', '');
+    group.setAttribute('role', 'radiogroup');
     group.querySelectorAll('.pill-sm').forEach(function(pill) {
-      pill.addEventListener('click', function() {
-        group.querySelectorAll('.pill-sm').forEach(function(p) { p.classList.remove('selected'); });
+      // a11y : rendre chaque pill focusable et activable au clavier
+      pill.setAttribute('role', 'radio');
+      pill.setAttribute('tabindex', '0');
+      pill.setAttribute('aria-checked', pill.classList.contains('selected') ? 'true' : 'false');
+      function selectPill() {
+        group.querySelectorAll('.pill-sm').forEach(function(p) {
+          p.classList.remove('selected');
+          p.setAttribute('aria-checked', 'false');
+        });
         pill.classList.add('selected');
-        var field = group.id.replace('pills-', '');
+        pill.setAttribute('aria-checked', 'true');
         S[field] = pill.getAttribute('data-val');
         if (field === 'status' && S[field] === 'sci') {
           $('sci-warning').style.display = 'flex';
@@ -5908,6 +5860,13 @@ function initPills() {
           $('sci-warning').style.display = 'none';
         }
         if (field === 'status') updateStatutBanner();
+      }
+      pill.addEventListener('click', selectPill);
+      pill.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault();
+          selectPill();
+        }
       });
     });
   });
@@ -5926,6 +5885,7 @@ function updateHorizonSlider() {
   if (!slider) return;
   var idx = parseInt(slider.value);
   S.horizon = HORIZON_VALUES[idx];
+  slider.setAttribute('aria-valuetext', HORIZON_LABELS[idx]);
   var chip = $('horizon-chip');
   if (chip) {
     chip.textContent = HORIZON_LABELS[idx];
@@ -6015,6 +5975,8 @@ function showGlossaryPopover(el, termName) {
   if (!term) return;
   var pop = document.createElement('div');
   pop.className = 'glossary-popover';
+  pop.setAttribute('role', 'dialog');
+  pop.setAttribute('aria-label', 'Définition : ' + term.t);
   pop.innerHTML = '<button class="glossary-popover-close" onclick="closePopover()" aria-label="Fermer">&times;</button>' +
     '<h4>' + term.t + '</h4>' +
     '<p>' + term.d + '</p>' +
@@ -6128,6 +6090,10 @@ function updateHypotheses() {
   if (dureeVal) dureeVal.textContent = duree + ' ans';
   if (tauxVal) tauxVal.textContent = taux.toFixed(1).replace('.', ',') + ' %';
 
+  // a11y : annoncer la valeur courante aux lecteurs d'écran
+  var sd = $('slider-duree'); if (sd) sd.setAttribute('aria-valuetext', duree + ' ans');
+  var st = $('slider-taux'); if (st) st.setAttribute('aria-valuetext', taux.toFixed(1).replace('.', ',') + ' %');
+
   S.duree = duree; S.taux = taux;
 
   // Update slider track styling
@@ -6196,12 +6162,30 @@ function updateCapacity() {
     return;
   }
 
+  // ── LOC-04 : intégration des loyers attendus (les banques retiennent ~70 %) ──
+  var loyerAttendu = n(S.loyerEstime);
+  var loyerRetenu = RENT_WEIGHT * loyerAttendu;
+  var baseRevenus = totalRevenus + loyerRetenu;
+  S.loyerRetenu = loyerRetenu;
+  // garder le champ S2 synchronisé avec l'état (loyer saisi à l'écran 6 ou pré-rempli)
+  var loyerInputS2 = $('input-loyer-attendu');
+  if (loyerInputS2 && document.activeElement !== loyerInputS2) {
+    loyerInputS2.value = loyerAttendu > 0 ? Math.round(loyerAttendu) : '';
+  }
+  // libellé d'aide dynamique
+  var loyerHint = $('loyer-attendu-hint');
+  if (loyerHint) {
+    loyerHint.textContent = loyerRetenu > 0
+      ? '70 % retenus → + ' + fmt(Math.round(loyerRetenu)) + '/mois pris en compte dans ta capacité.'
+      : 'Optionnel — retenu à 70 %, il augmente ta capacité ci-dessous.';
+  }
+
   // État A — Sans crédit immo
-  var tauxEffortA = (creditsCours / totalRevenus) * 100;
+  var tauxEffortA = (creditsCours / baseRevenus) * 100;
   S.tauxEffortA = tauxEffortA;
 
-  // État B — Avec crédit immo (HCSF max)
-  var mensualiteMaxImmo = (totalRevenus * 0.35) - creditsCours - assurance;
+  // État B — Avec crédit immo (HCSF max), loyers attendus inclus
+  var mensualiteMaxImmo = (baseRevenus * 0.35) - creditsCours - assurance;
   var capitalEmpruntable = 0;
   var tauxEffortB = 0;
   var resteVivreB = 0;
@@ -6224,8 +6208,8 @@ function updateCapacity() {
     } else {
       capitalEmpruntable = mensualiteMaxImmo * nb;
     }
-    tauxEffortB = ((creditsCours + mensualiteMaxImmo + assurance) / totalRevenus) * 100;
-    resteVivreB = totalRevenus - chargesFixes - creditsCours - mensualiteMaxImmo - assurance;
+    tauxEffortB = ((creditsCours + mensualiteMaxImmo + assurance) / baseRevenus) * 100;
+    resteVivreB = baseRevenus - chargesFixes - creditsCours - mensualiteMaxImmo - assurance;
   }
 
   // Compat state
@@ -6235,6 +6219,8 @@ function updateCapacity() {
   S.resteAVivre = resteVivreB;
   S.resteVivreB = resteVivreB;
   S.capitalEmpruntable = capitalEmpruntable;
+  // LOC-04 : capacité unifiée loyers inclus — source unique pour sidebar / S6 / S8 / score / PDF
+  S.capaciteResiduelle = Math.round(capitalEmpruntable);
 
   // ─── Update ZONE 2 hero ───
   var capEl2 = $('z2-capital');
@@ -6243,11 +6229,11 @@ function updateCapacity() {
   var mensEl2 = $('z2-mensualite');
   if (mensEl2) mensEl2.innerHTML = 'Mensualité<span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Montant mensuel remboursé à la banque, capital + intérêts inclus.</span></span> : ' + (mensualiteMaxImmo > 0 ? fmt(Math.round(mensualiteMaxImmo)) + '/mois' : '--');
 
-  // ─── Premium bar segments ───
-  var pctCharges = Math.max(0, (chargesFixes + creditsCours) / totalRevenus * 100);
-  var pctMens = Math.max(0, mensualiteMaxImmo / totalRevenus * 100);
-  var pctAss = Math.max(0, assurance / totalRevenus * 100);
-  var pctRav = Math.max(0, resteVivreB / totalRevenus * 100);
+  // ─── Premium bar segments (base = revenus + 70 % loyers attendus) ───
+  var pctCharges = Math.max(0, (chargesFixes + creditsCours) / baseRevenus * 100);
+  var pctMens = Math.max(0, mensualiteMaxImmo / baseRevenus * 100);
+  var pctAss = Math.max(0, assurance / baseRevenus * 100);
+  var pctRav = Math.max(0, resteVivreB / baseRevenus * 100);
   // Ensure total doesn't exceed 100
   var total = pctCharges + pctMens + pctAss + pctRav;
   if (total > 100) { pctRav = Math.max(0, 100 - pctCharges - pctMens - pctAss); }
@@ -6386,17 +6372,10 @@ function updateSynthesePanel() {
   if (showLocatif) {
     // fmt() retourne déjà "X €", on ajoute juste /mois
     if (loyerEl) loyerEl.textContent = fmt(Math.round(S.loyerEstime)) + '/mois';
-    // Recalcul capacité résiduelle = budget total avec 70 % du loyer réintégré
-    var loyerRetenu = S.loyerEstime * 0.70;
-    var mensualiteImmo = S.mensualiteCible || S.mensualiteMax || 0;
-    var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
-    var mensMaxRes = (revenusAvecLoyer * 0.35) - (S.credits || 0) - mensualiteImmo - (S.assuranceEmprunteur || 22);
-    var rCap = ((S.taux || 3.0) / 12) / 100;
-    var nCap = (S.duree || 25) * 12;
-    var capRes = mensMaxRes > 0
-      ? Math.round(mensMaxRes * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
-      : 0;
-    if (capResEl) capResEl.textContent = capRes > 0 ? fmt(capRes) : '—';
+    // LOC-04 : la capacite (m-capacite) integre deja 70 % des loyers — ici on affiche
+    // la part de loyer retenue par les banques (non redondant avec la capacite).
+    var loyerRetenuSb = RENT_WEIGHT * (S.loyerEstime || 0);
+    if (capResEl) capResEl.textContent = loyerRetenuSb > 0 ? fmt(Math.round(loyerRetenuSb)) + '/mois' : '—';
   }
 }
 
@@ -6713,13 +6692,18 @@ function initScreen6() {
   //  2) Sinon, ratio empirique = prix du bien × 0.5 % / mois (≈6 % brut annuel typique en France)
   var loyerInput = $('input-loyer-estime-s6');
   if (loyerInput && !loyerInput.value) {
-    var loyerSugg = s6SuggestLoyer();
-    if (loyerSugg > 0) {
-      loyerInput.value = loyerSugg;
-      S.loyerEstime = loyerSugg;
-      S.loyerSuggested = loyerSugg;
-    } else if (S.loyerEstime > 0) {
-      loyerInput.value = S.loyerEstime;
+    if (S.loyerEstime > 0) {
+      // 1) Priorité absolue : un loyer déjà saisi (écran 2) ne doit jamais être écrasé
+      loyerInput.value = Math.round(S.loyerEstime);
+    } else {
+      // 2) Sinon, suggestion marché (prix × 0,5 %/mois ≈ 6 % brut annuel)
+      var loyerSugg = s6SuggestLoyer();
+      if (loyerSugg > 0) {
+        loyerInput.value = loyerSugg;
+        S.loyerEstime = loyerSugg;
+        S.loyerSuggested = loyerSugg;
+        S.loyerSource = 'market';
+      }
     }
   }
 
@@ -6755,6 +6739,17 @@ function s6SuggestLoyer() {
 function s6UpdateSuggestBanner() {
   var banner = $('s6-suggest-banner');
   if (!banner) return;
+  var elMarket = $('s6-suggest-text-market');
+  var elStep2 = $('s6-suggest-text-step2');
+  // Loyer repris de l'écran 2 : message dédié plutôt que la suggestion marché
+  if (S.loyerSource === 'step2' && S.loyerEstime > 0) {
+    banner.style.display = 'flex';
+    if (elMarket) elMarket.style.display = 'none';
+    if (elStep2) elStep2.style.display = '';
+    return;
+  }
+  if (elStep2) elStep2.style.display = 'none';
+  if (elMarket) elMarket.style.display = '';
   if (!S.loyerSuggested || S.loyerSuggested <= 0) {
     banner.style.display = 'none';
     return;
@@ -6810,8 +6805,11 @@ function s6AnimateValue(el, newVal) {
 }
 
 function recalcLocatif() {
-  var loyer = n(($('input-loyer-estime-s6') || {}).value);
+  // fallback : ne pas écraser un loyer saisi à l'écran 2 si le champ S6 est vide
+  var loyer = n(($('input-loyer-estime-s6') || {}).value) || n(S.loyerEstime);
   S.loyerEstime = loyer;
+  // LOC-04 : le loyer alimente la capacité → recalcul de la capacité (source unique)
+  if (typeof updateCapacity === 'function') updateCapacity();
 
   var emptyState = $('s6-empty-state');
   var resultGrid = $('s6-result-grid');
@@ -6936,30 +6934,14 @@ function recalcLocatif() {
     prixHint.style.display = showHint ? 'flex' : 'none';
   }
 
-  // Capacité résiduelle bubble — 70% des revenus locatifs retenus par les banques
+  // LOC-04 : la capacité d'emprunt intègre déjà 70 % des loyers attendus (calculée écran 2).
   var capEl = $('s6-cap-residuelle');
   if (capEl) {
-    var loyerBrut = S.loyerEstime || 0;
-    var loyerRetenu = loyerBrut * 0.70;
-    var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
-    var mensualiteImmo = S.mensualiteCible || S.mensualiteMax || S.mensualiteMaxImmo || 0;
-    var mensualiteMaxResiduelle = (revenusAvecLoyer * 0.35)
-      - (S.credits || 0)
-      - mensualiteImmo
-      - (S.assuranceEmprunteur || 22);
-    var rCap = ((S.taux || 3.0) / 12) / 100;
-    var nCap = (S.duree || 25) * 12;
-    var capaciteResiduelle = mensualiteMaxResiduelle > 0
-      ? Math.round(mensualiteMaxResiduelle * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
-      : 0;
-    S.capaciteResiduelle = capaciteResiduelle; // stocké pour le score, le diagnostic et le PDF
-    if (capaciteResiduelle > 0) {
-      capEl.textContent = Math.round(capaciteResiduelle).toLocaleString('fr-FR') + ' €';
-      if (capBubble) capBubble.style.display = '';
-    } else {
-      capEl.textContent = 'Tes crédits existants limitent ta capacité résiduelle.';
-      if (capBubble) capBubble.style.display = '';
-    }
+    var capUnifiee = Math.round(S.capitalEmpruntable || 0);
+    capEl.textContent = capUnifiee > 0
+      ? capUnifiee.toLocaleString('fr-FR') + ' €'
+      : 'à renseigner à l\'étape 2';
+    if (capBubble) capBubble.style.display = '';
   }
 
   // Sync state
@@ -7616,7 +7598,7 @@ function s8CalcSubscores(st) {
   else if (cashflow >= -300) rentabilite += 8;
   rentabilite = Math.min(100, rentabilite);
 
-  // FINANCEMENT (clé 'effort') — endettement, apport, capacité résiduelle
+  // FINANCEMENT (clé 'effort') — endettement, apport, couverture par les loyers
   var effort = calculateDebtRatio(st.credits, mensualite + n(st.assurance), getTotalRevenus());
   var effortPct = effort * 100;
   var financement = 0;
@@ -7627,7 +7609,12 @@ function s8CalcSubscores(st) {
   if (mob >= fees + 5000) financement += 33;
   else if (mob >= fees) financement += 20;
   else if (mob > 0) financement += 10;
-  if (n(st.capaciteResiduelle) > 0) financement += 25; // capacité conservée pour un 2e projet
+  // LOC-04 : part de la mensualité couverte par les loyers retenus (70 %)
+  var mensTotaleFin = mensualite + n(st.assurance);
+  var couvertureLoyer = mensTotaleFin > 0 ? (RENT_WEIGHT * n(st.loyerEstime)) / mensTotaleFin : 0;
+  if (couvertureLoyer >= 0.9) financement += 25;
+  else if (couvertureLoyer >= 0.6) financement += 16;
+  else if (couvertureLoyer > 0) financement += 8;
   financement = Math.min(100, financement);
 
   // TENSION (clé 'faisabilite') — hypothèse de vacance + zone renseignée
@@ -7757,18 +7744,14 @@ function buildFinalScreen() {
   var locBlock = $('s8-bilan-locatif');
   if (locBlock) locBlock.hidden = !showLocatif;
   if (showLocatif) {
+    // Source unique : on réutilise le cashflow & le rendement net calculés par
+    // recalcLocatif (écran 6) — plus de recalcul divergent (vacance réelle, pas la décote 70 %).
+    if (typeof recalcLocatif === 'function') recalcLocatif();
     var loyer = Math.round(S.loyerEstime);
-    var loyerRetenu = loyer * 0.70;
-    var chargesMens = (S.chargesCopro || 0) / 12 + (S.assuranceHab || 0) + (S.entretien || 0) / 12 + (S.taxeFonciere || 0) / 12;
-    var cashflow = loyerRetenu - mensualite - n(S.assurance) - chargesMens;
-    var rendementNet = ((loyerRetenu * 12) - chargesMens * 12) / (prixBien || 1) * 100;
-    var revenusAvecLoyer = (S.revenus || 0) + (S.autresEntrees || 0) + loyerRetenu;
-    var mensMaxRes = (revenusAvecLoyer * 0.35) - (S.credits || 0) - mensualite - n(S.assurance);
-    var rCap = ((S.taux || 3.0) / 12) / 100;
-    var nCap = (S.duree || 25) * 12;
-    var capRes = mensMaxRes > 0
-      ? Math.round(mensMaxRes * ((1 - Math.pow(1 + rCap, -nCap)) / rCap))
-      : 0;
+    var cashflow = Math.round(n(S.cashFlow));
+    var rendementNet = n(S.rendementNet);
+    // LOC-04 : capacité unifiée (loyers attendus déjà intégrés à 70 % dès l'écran 2)
+    var capRes = Math.round(S.capitalEmpruntable || n(S.capaciteResiduelle) || 0);
     setVal('s8-loc-loyer', fmt(loyer) + '/mois');
     setVal('s8-loc-cashflow', (cashflow >= 0 ? '+ ' : '– ') + fmt(Math.abs(Math.round(cashflow))) + '/mois');
     var cfCell = $('s8-loc-cashflow-cell');
@@ -8561,9 +8544,9 @@ function buildPDFContent(date) {
       ['Rendement net', (S.rendementNet||0).toFixed(1) + '%'],
       ['Cash-flow mensuel', ((S.cashFlow||0) >= 0 ? '+' : '') + fmt(S.cashFlow)],
       ['Statut', (S.cashFlow||0) >= 0 ? 'Autofinancé' : 'Effort d\'épargne mensuel'],
-      ['Capacité d\'emprunt résiduelle', fmt(S.capaciteResiduelle||0), true]
+      ['Capacité d\'emprunt (loyers inclus)', fmt(S.capaciteResiduelle||0), true]
     ]);
-    html += '<div class="pdf-note">Les banques retiennent 70% des revenus locatifs dans le calcul de capacité. Avec ' + fmt(S.loyerEstime) + ' de loyer, ' + fmt(Math.round(loyerRetenu)) + ' supplémentaires sont retenus, ce qui porte la capacité résiduelle estimée à ' + fmt(S.capaciteResiduelle||0) + '.</div>';
+    html += '<div class="pdf-note">Les banques retiennent 70% des revenus locatifs dans le calcul de capacité. Avec ' + fmt(S.loyerEstime) + ' de loyer, ' + fmt(Math.round(loyerRetenu)) + ' supplémentaires sont retenus, ce qui porte ta capacité d\'emprunt estimée à ' + fmt(S.capaciteResiduelle||0) + '.</div>';
   }
 
   // ═══ PARTIE 2 : RÉSUMÉ DES ÉTAPES ═══

@@ -2017,9 +2017,11 @@
     // ── BRIQUE INVESTISSEMENT LOCATIF ───────────────────────
     const locRaw  = loadFromStorage('fund_brick_immo_locatif');
     const locData = locRaw?.data || locRaw || null;
-    if (locData && locData.investment && (locData.investment.expectedMonthlyRent > 0 || locData.investment.netYield > 0)) {
+    // Brique terminée dès que le rawData (investment) est présent — même sans loyer saisi.
+    if (locData && locData.investment) {
       const inv      = locData.investment;
       const loyer    = inv.expectedMonthlyRent || 0;
+      const hasLoyer = loyer > 0;
       const rdtNet   = inv.netYield || 0;
       const cashflow = Math.round(inv.monthlyCashflow || 0);
       const capRes   = inv.residualBorrowingCapacity || 0;
@@ -2034,22 +2036,26 @@
       const locIdx        = briquesRecoL.indexOf('immo_locatif');
       const etapeLabelL   = locIdx >= 0 ? `Étape ${locIdx + 1} / ${briquesRecoL.length || 1} du parcours` : 'Brique complétée';
 
+      // Lignes : on n'affiche loyer/cashflow que s'ils ont un sens (loyer renseigné).
+      const locRows = [];
+      if (hasLoyer) {
+        locRows.push({ label: 'Loyer estimé',     val: formatEuro(loyer) + '/mois', color: '' });
+        locRows.push({ label: 'Cashflow mensuel', val: cfLabel,                     color: cfColor });
+      }
+      locRows.push({ label: hasLoyer ? 'Capacité (loyers inclus)' : 'Capacité d\'emprunt', val: formatEuro(capRes), color: '' });
+      locRows.push({ label: 'Score locatif',       val: locScore + ' / 100',        color: locScore >= 60 ? 'green' : locScore >= 40 ? 'orange' : 'red' });
+      locRows.push({ label: 'Avancement parcours', val: etapeLabelL,                 color: '' });
+
       cards.push({
         title: 'Investissement locatif',
         brique: 'immo_locatif',
         status: 'complet',
         statusLabel: locType + (prixLoc ? ' · ' + formatEuro(prixLoc) : ''),
-        value: rdtNet ? (Math.round(rdtNet * 10) / 10).toString().replace('.', ',') + ' %' : '—',
+        value: (hasLoyer && rdtNet) ? (Math.round(rdtNet * 10) / 10).toString().replace('.', ',') + ' %' : '—',
         valueLabel: 'rendement net',
-        rows: [
-          { label: 'Loyer estimé',        val: formatEuro(loyer) + '/mois', color: '' },
-          { label: 'Cashflow mensuel',    val: cfLabel,                     color: cfColor },
-          { label: 'Capacité résiduelle', val: formatEuro(capRes),          color: '' },
-          { label: 'Score locatif',       val: locScore + ' / 100',         color: locScore >= 60 ? 'green' : locScore >= 40 ? 'orange' : 'red' },
-          { label: 'Avancement parcours', val: etapeLabelL,                 color: '' },
-        ],
+        rows: locRows,
         progress: null,
-        cta: { href: 'brique-immo-locatif.html', label: 'Revoir mon projet' }
+        cta: { href: 'brique-immo-locatif.html', label: hasLoyer ? 'Revoir mon projet' : 'Compléter le loyer' }
       });
     }
 

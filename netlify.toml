@@ -15,3 +15,26 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://avnxkfthqgeehcjuxoej.supabase.co https://api-adresse.data.gouv.fr https://public.opendatasoft.com wss://avnxkfthqgeehcjuxoej.supabase.co; img-src 'self' data: blob:; frame-ancestors 'self'"
+
+# ── Cache-Control ──
+# Pas de hash dans les noms de fichiers → on revalide systématiquement
+# (ETag Netlify → 304 si inchangé) pour éviter de servir du code obsolète.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, must-revalidate"

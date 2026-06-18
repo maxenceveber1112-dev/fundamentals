@@ -28,7 +28,7 @@
   --text-primary: #1C1917;
   --text-secondary: #57534E;
   --text-muted: #78716C;
-  --text-faint: #A8A29E;
+  --text-faint: #756E67; /* AA 4.7:1 sur fond clair #FAF8F5 (était #A8A29E ~2.4:1) */
 
   /* ── Bordures ── */
   --border: rgba(28,25,23,0.07);
