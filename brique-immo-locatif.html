@@ -3123,6 +3123,11 @@ html.dark .s5-typo-pill.selected.suggested::after { color:#0B0B1A; }
   margin-bottom:1rem;
 }
 @media (max-width:780px){ .s5-cards-grid { grid-template-columns:1fr; } }
+.s5-card[role="button"] { cursor:pointer; }
+.s5-card.selected { border-color:var(--v3-accent-strong, var(--accent)); box-shadow:0 0 0 2px var(--v3-accent-strong, var(--accent)); }
+.s5-scn-rows { display:flex; flex-direction:column; gap:0.25rem; margin-top:0.35rem; padding-top:0.4rem; border-top:1px solid var(--border-subtle, rgba(127,127,127,0.15)); }
+.s5-scn-row { display:flex; justify-content:space-between; align-items:baseline; gap:0.5rem; font-size:0.78rem; color:var(--text-secondary); }
+.s5-scn-row strong { color:var(--text-primary); font-weight:600; }
 .s5-card {
   position:relative; padding:1.1rem 1rem 1rem;
   border-radius:12px; border:1.5px solid var(--v3-border-subtle);
@@ -4174,7 +4179,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
           <div class="brick-card">
             <div class="brick-kicker">ÉTAPE 2 / 8 · CAPACITÉ MENSUELLE</div>
             <h2 class="brick-title">Quelle mensualité ton budget peut supporter&nbsp;?</h2>
-            <p class="brick-subtitle">Tes revenus fixent ta mensualité. Les banques retiennent ~70 % des loyers attendus dans ta capacité — renseigne-les ci-dessous, on les intègre directement.</p>
+            <p class="brick-subtitle">Tes revenus fixent ta capacité d'emprunt de base. Les loyers attendus viendront l'augmenter à l'étape emplacement, une fois ta typologie cible définie.</p>
 
             <!-- Bandeau import cross-brique (hydratation budget) -->
             <div class="cb-banner cb-banner--neutral" id="cb-banner-import" hidden role="status" aria-live="polite">
@@ -4254,20 +4259,6 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                   </div>
                 </div>
               </div>
-            </div>
-
-            <!-- LOC-04 : loyer attendu intégré à la capacité (règle des 70 %) -->
-            <div class="z1-loyer-field" id="loyer-attendu-field">
-              <label class="z1-loyer-label" for="input-loyer-attendu">
-                Loyer mensuel attendu
-                <span class="z1-loyer-tag">locatif</span>
-                <span class="glossary-info"><span class="gi-icon">i</span><span class="gi-tip">Loyer hors charges que tu espères percevoir. Les banques en retiennent ~70 % dans le calcul de ta capacité d'emprunt (pour couvrir vacance et charges).</span></span>
-              </label>
-              <div class="euro-wrap">
-                <input type="number" id="input-loyer-attendu" class="field-input" placeholder="ex : 800" min="0" inputmode="numeric" oninput="S.loyerEstime=n(this.value);S.loyerSource='step2';updateCapacity();"/>
-                <span class="euro-suffix">€</span>
-              </div>
-              <p class="z1-loyer-hint" id="loyer-attendu-hint">Optionnel — retenu à 70 %, il augmente ta capacité ci-dessous.</p>
             </div>
 
             <!-- Hidden inputs preserved for compatibility -->
@@ -6154,18 +6145,6 @@ function updateCapacity() {
   var loyerRetenu = RENT_WEIGHT * loyerAttendu;
   var baseRevenus = totalRevenus + loyerRetenu;
   S.loyerRetenu = loyerRetenu;
-  // garder le champ S2 synchronisé avec l'état (loyer saisi à l'écran 6 ou pré-rempli)
-  var loyerInputS2 = $('input-loyer-attendu');
-  if (loyerInputS2 && document.activeElement !== loyerInputS2) {
-    loyerInputS2.value = loyerAttendu > 0 ? Math.round(loyerAttendu) : '';
-  }
-  // libellé d'aide dynamique
-  var loyerHint = $('loyer-attendu-hint');
-  if (loyerHint) {
-    loyerHint.textContent = loyerRetenu > 0
-      ? '70 % retenus → + ' + fmt(Math.round(loyerRetenu)) + '/mois pris en compte dans ta capacité.'
-      : 'Optionnel — retenu à 70 %, il augmente ta capacité ci-dessous.';
-  }
 
   // État A — Sans crédit immo
   var tauxEffortA = (creditsCours / baseRevenus) * 100;
@@ -8742,7 +8721,8 @@ function s5PickCommune(el) {
   S.prixM2 = getPrixM2(cp);
   S.deptName = DEPT_NAMES[dep] || dep;
   s5RenderInfo();
-  s5RenderCards();
+  s5RenderPills();
+  s5PickTypo(s5SuggestTypoId(s5GetBudget().total, S.prixM2));
 }
 
 function s5RenderInfo() {
@@ -8791,6 +8771,16 @@ function s5RenderPills() {
 
 function s5PickTypo(id) {
   S.typoChoisie = id;
+  // Scénario : prix et loyer du marché découlent de la typologie choisie → capacité rental-aware.
+  var t = (typeof getTypoById === 'function') ? getTypoById(id) : null;
+  if (t && S.prixM2 && typeof estimateTypoPrice === 'function') {
+    var price = estimateTypoPrice(t, S.prixM2);
+    S.prixBien = price;
+    S.prixModifie = false;
+    S.loyerEstime = loyerMarcheTypo(price);
+    S.loyerSource = 'market';
+    if (typeof updateCapacity === 'function') updateCapacity();
+  }
   s5RenderPills();
   s5RenderCards();
   // Fermeture auto de la modale si ouverte
@@ -8851,6 +8841,18 @@ function s5BuildShortlist() {
   return TYPOLOGIES.slice(start, start + 3);
 }
 
+function capaciteAvecLoyer(loyerMensuel) {
+  var totalRevenus = n(S.revenus) + n(S.revenusCompl) + n(S.autresEntrees);
+  if (totalRevenus <= 0) return 0;
+  var baseRevenus = totalRevenus + RENT_WEIGHT * n(loyerMensuel);
+  var assurance = n(S.assuranceEmprunteur) || n(S.assurance);
+  var mens = baseRevenus * EFFORT_MAX - n(S.credits) - assurance;
+  if (mens <= 0) return 0;
+  return Math.round(calculateBorrowingCapacity(mens, n(S.taux) || 3, (n(S.duree) || 25) * 12));
+}
+
+function loyerMarcheTypo(price) { return Math.round((price || 0) * 0.005); }
+
 function s5RenderCards() {
   var grid = $('s5-cards-grid');
   var budgetEl = $('s5-budget-val');
@@ -8875,18 +8877,31 @@ function s5RenderCards() {
   for (var i=0; i<shortlist.length; i++) {
     var t = shortlist[i];
     var price = estimateTypoPrice(t, S.prixM2);
-    var inBudget = (b.total > 0 && price <= b.total);
+    var loyer = loyerMarcheTypo(price);
+    var capLoyer = capaciteAvecLoyer(loyer);
+    var budgetLoyer = capLoyer + b.apport;
+    var inBudget = (budgetLoyer > 0 && price <= budgetLoyer);
+    var inBase = (b.total > 0 && price <= b.total);
     if (!inBudget) anyOut = true;
-    var cls = 's5-card ' + (inBudget ? 'in-budget' : 'out-budget');
-    html += '<div class="' + cls + '" data-typo="' + t.id + '">' +
+    var selected = (t.id === S.typoChoisie);
+    var cls = 's5-card ' + (inBudget ? 'in-budget' : 'out-budget') + (selected ? ' selected' : '');
+    var statut = inBudget ? (inBase ? '✓ Dans ton budget' : '↑ Atteignable grâce aux loyers') : '⚠ Au-delà, même avec les loyers';
+    var nf = new Intl.NumberFormat('fr-FR');
+    html += '<div class="' + cls + '" data-typo="' + t.id + '" role="button" tabindex="0"' +
+            ' onclick="s5PickTypo(\'' + t.id + '\')"' +
+            ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();s5PickTypo(\'' + t.id + '\');}">' +
             '<div class="s5-card-head">' +
               '<span class="s5-card-typo">' + t.label + '</span>' +
               '<span class="s5-card-icon" aria-hidden="true">' + t.icon + '</span>' +
             '</div>' +
             '<div class="s5-card-detail">' + t.short + '</div>' +
-            '<div class="s5-card-price">' + new Intl.NumberFormat('fr-FR').format(price) + ' €</div>' +
+            '<div class="s5-card-price">' + nf.format(price) + ' €</div>' +
             '<div class="s5-card-surface">~ ' + t.surface + ' m² · ' + Math.round(S.prixM2 * t.mult) + ' €/m²</div>' +
-            '<div class="s5-card-status">' + (inBudget ? '✓ Atteignable' : '⚠ Hors budget') + '</div>' +
+            '<div class="s5-scn-rows">' +
+              '<div class="s5-scn-row"><span>Loyer estimé</span><strong>' + nf.format(loyer) + ' €/mois</strong></div>' +
+              '<div class="s5-scn-row"><span>Capacité (loyers inclus)</span><strong>' + nf.format(capLoyer) + ' €</strong></div>' +
+            '</div>' +
+            '<div class="s5-card-status">' + statut + '</div>' +
             '</div>';
   }
   grid.innerHTML = html;
