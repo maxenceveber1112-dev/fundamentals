@@ -3742,15 +3742,6 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                   <span class="profil-section-label">Votre profil</span>
                   <div class="profil-section-fields">
                     <div class="compact-question">
-                      <span class="compact-label">Statut</span>
-                      <div class="pills-compact" id="pills-status">
-                        <span class="pill-sm" data-val="seul">Seul</span>
-                        <span class="pill-sm" data-val="couple">Couple</span>
-                        <span class="pill-sm" data-val="co_emprunteur">Co-empr.</span>
-                        <span class="pill-sm" data-val="sci">SCI</span>
-                      </div>
-                    </div>
-                    <div class="compact-question">
                       <span class="compact-label"><button class="glossary-term" onclick="showGlossaryPopover(this,'Primo-accédant')" tabindex="0">Primo-accédant</button></span>
                       <div class="pills-compact" id="pills-primo">
                         <span class="pill-sm" data-val="oui">Oui</span>
@@ -3839,6 +3830,17 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <span class="statut-banner-icon">💡</span>
               <span class="statut-banner-text">Pense à renseigner les revenus et dettes cumulés de tous les acheteurs.</span>
               <button class="statut-banner-close" onclick="this.parentElement.style.display='none'" aria-label="Fermer">×</button>
+            </div>
+
+            <!-- Statut emprunteur (déplacé de l'écran 1 — conditionne les revenus cumulés) -->
+            <div class="compact-question" style="margin-bottom:1rem;">
+              <span class="compact-label">Statut</span>
+              <div class="pills-compact" id="pills-status">
+                <span class="pill-sm" data-val="seul">Seul</span>
+                <span class="pill-sm" data-val="couple">Couple</span>
+                <span class="pill-sm" data-val="co_emprunteur">Co-empr.</span>
+                <span class="pill-sm" data-val="sci">SCI</span>
+              </div>
             </div>
 
             <!-- ═══ ZONE 1 — DONNÉES (2 grandes pills fusionnées) ═══ -->
