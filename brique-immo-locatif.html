@@ -3078,6 +3078,11 @@ html.dark .s5-change-btn:hover { color:#0B0B1A; }
 .s5-suggest-item .ssi-meta {
   color:var(--v3-text-muted); font-size:0.78rem; flex-shrink:0;
 }
+.s5-commune-detected { display:flex; align-items:center; gap:0.5rem; padding:0.55rem 0.75rem; border-radius:10px; background:var(--bg-glass, rgba(127,127,127,0.08)); border:1px solid var(--border-subtle, rgba(127,127,127,0.15)); }
+.s5-cd-pin { font-size:1rem; }
+.s5-cd-nom { font-weight:600; color:var(--text-primary); flex:1; }
+.s5-cd-edit { background:none; border:none; color:var(--v3-accent-strong, var(--accent)); font-size:0.8rem; font-weight:600; cursor:pointer; padding:0; }
+.s5-cd-edit:hover { text-decoration:underline; }
 .s5-commune-info {
   background:var(--v3-accent-soft); border-radius:10px;
   padding:0.85rem 1rem; display:flex; flex-direction:column; gap:0.35rem;
@@ -4608,7 +4613,12 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               <div class="s5-commune-row">
                 <div class="s5-input-wrap">
                   <label class="s5-input-label" for="input-commune-s5">Nom de la commune</label>
-                  <div class="s5-autocomplete">
+                  <div class="s5-commune-detected" id="s5-commune-detected" style="display:none;">
+                    <span class="s5-cd-pin" aria-hidden="true">📍</span>
+                    <span class="s5-cd-nom" id="s5-cd-nom">—</span>
+                    <button type="button" class="s5-cd-edit" onclick="s5EditCommune()">modifier</button>
+                  </div>
+                  <div class="s5-autocomplete" id="s5-autocomplete-wrap">
                     <input type="text" id="input-commune-s5" placeholder="Ex. Nancy, Lyon, Bordeaux…" autocomplete="off" oninput="s5OnCommuneInput()" onfocus="s5OnCommuneInput()" onblur="setTimeout(s5HideSuggest,200)"/>
                     <div class="s5-suggest" id="s5-suggest" role="listbox"></div>
                   </div>
@@ -8915,6 +8925,25 @@ function s5RenderCards() {
   s5UpdateChangeBtnLabel();
 }
 
+function s5ShowDetected(nom) {
+  var chip = $('s5-commune-detected');
+  var nomEl = $('s5-cd-nom');
+  var ac = $('s5-autocomplete-wrap');
+  if (!nom) { if (chip) chip.style.display='none'; if (ac) ac.style.display=''; return; }
+  if (nomEl) nomEl.textContent = nom;
+  if (chip) chip.style.display = 'flex';
+  if (ac) ac.style.display = 'none';
+}
+
+function s5EditCommune() {
+  var chip = $('s5-commune-detected');
+  var ac = $('s5-autocomplete-wrap');
+  if (chip) chip.style.display = 'none';
+  if (ac) ac.style.display = '';
+  var inp = $('input-commune-s5');
+  if (inp) inp.focus();
+}
+
 function initScreen5() {
   // Pré-remplissage depuis code postal S1 si pas encore choisi
   var input = $('input-commune-s5');
@@ -8933,11 +8962,13 @@ function initScreen5() {
             S.prixM2 = getPrixM2(S.codePostal);
             s5RenderInfo();
             s5RenderCards();
+            s5ShowDetected(c.nom);
           }
         }).catch(function(){});
     }
-  } else if (S.communeChoisie && input && !input.value) {
-    input.value = S.communeNom || '';
+  } else if (S.communeChoisie && input) {
+    if (!input.value) input.value = S.communeNom || '';
+    s5ShowDetected(S.communeNom || '');
   }
   s5RenderInfo();
   s5RenderPills();
@@ -8952,6 +8983,7 @@ window.s5PickTypo = s5PickTypo;
 window.s5OpenTypoModal = s5OpenTypoModal;
 window.s5CloseTypoModal = s5CloseTypoModal;
 window.s5CloseTypoModalIfOverlay = s5CloseTypoModalIfOverlay;
+window.s5EditCommune = s5EditCommune;
 window.initScreen5 = initScreen5;
 
 </script>
