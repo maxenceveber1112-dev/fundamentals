@@ -330,10 +330,56 @@
       .auth-card { max-width:100%; }
       .theme-toggle { position:fixed; top:1rem; right:1rem; z-index:100; }
     }
+
+    /* ═══ REFONTE AURORA + VERRE DÉPOLI (DA bright/dark) ═══ */
+    .aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+    .aurora span{position:absolute;border-radius:50%;filter:blur(72px);}
+    .aurora .a1{width:48vw;height:48vw;top:-12vw;left:-8vw;background:radial-gradient(circle,#8B5CF6,transparent 70%);animation:auroraDrift 24s ease-in-out infinite alternate;}
+    .aurora .a2{width:42vw;height:42vw;bottom:-14vw;right:-6vw;background:radial-gradient(circle,#3B82F6,transparent 70%);animation:auroraDrift 30s ease-in-out infinite alternate -8s;}
+    .aurora .a3{width:34vw;height:34vw;top:32%;left:42%;background:radial-gradient(circle,#14B8A6,transparent 70%);animation:auroraDrift 34s ease-in-out infinite alternate -15s;}
+    @keyframes auroraDrift{from{transform:translate(0,0) scale(1);}to{transform:translate(5vw,4vw) scale(1.18);}}
+    html.dark .aurora .a1{opacity:.50;} html.dark .aurora .a2{opacity:.45;} html.dark .aurora .a3{opacity:.30;}
+    html:not(.dark) .aurora .a1{opacity:.30;} html:not(.dark) .aurora .a2{opacity:.26;} html:not(.dark) .aurora .a3{opacity:.16;}
+    .auth-layout{position:relative;z-index:1;background:transparent;}
+    .auth-left{background-color:transparent;background-image:none;}
+    .auth-right{background:transparent;}
+    .auth-divider-v{opacity:.5;}
+    .auth-card{border-radius:26px;-webkit-backdrop-filter:blur(48px) saturate(1.7);backdrop-filter:blur(48px) saturate(1.7);}
+    html.dark .auth-card{background:rgba(22,22,40,.20);border:1px solid rgba(255,255,255,.10);box-shadow:0 20px 70px rgba(4,4,16,.55),inset 0 1px 0 rgba(255,255,255,.14);}
+    html:not(.dark) .auth-card{background:rgba(255,255,255,.32);border:1px solid rgba(255,255,255,.6);box-shadow:0 20px 60px rgba(80,70,160,.14),inset 0 1px 0 rgba(255,255,255,.75);}
+    html.dark input[type=email],html.dark input[type=password]{background:rgba(255,255,255,.04);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+    html:not(.dark) input[type=email],html:not(.dark) input[type=password]{background:rgba(255,255,255,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+    html.dark .btn-social:not(.btn-apple){background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+    html:not(.dark) .btn-social:not(.btn-apple){background:rgba(255,255,255,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+    input:focus{box-shadow:0 0 0 3px var(--accent-soft),0 0 20px rgba(139,92,246,.28);}
+    .wordmark .mark{width:40px;height:40px;background:none!important;box-shadow:none;border-radius:0;padding:0;font-size:0;}
+    .wordmark .mark svg{display:block;width:40px;height:40px;filter:drop-shadow(0 6px 16px rgba(90,100,170,.45));}
+    .mark-sq{fill:#8B93B8;} html.dark .mark-sq{fill:#17172e;}
+    .mark-f{fill:#fff;} html.dark .mark-f{fill:#8F8CD4;}
+    .wordmark .name{font-size:17px;}
+    .auth-features{position:relative;display:flex;flex-direction:column;gap:1.7rem;margin-top:2.25rem;}
+    .auth-features::before{content:'';position:absolute;left:5px;top:.6em;bottom:.6em;width:2px;border-radius:2px;background:linear-gradient(to bottom,#8B5CF6,#3B82F6,#14B8A6);opacity:.55;}
+    .auth-feat{position:relative;display:block!important;padding:0 0 0 28px!important;background:none!important;border:none!important;border-left:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;transition:none;}
+    .auth-feat:hover{transform:none;}
+    .auth-feat::before{content:'';position:absolute;left:0;top:.42em;width:12px;height:12px;border-radius:50%;box-shadow:0 2px 10px rgba(80,90,170,.5);}
+    .auth-feat:nth-child(1)::before{background:linear-gradient(135deg,#8B5CF6,#7C6FE8);}
+    .auth-feat:nth-child(2)::before{background:linear-gradient(135deg,#5B8DEF,#3B82F6);}
+    .auth-feat:nth-child(3)::before{background:linear-gradient(135deg,#14B8A6,#0EA5A0);}
+    .auth-feat-icon{display:none!important;}
+    .auth-feat strong{display:block;font-family:'Fraunces','Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;font-size:20px;line-height:1.25;color:var(--text);margin-bottom:4px;}
+    .auth-feat span{display:block;font-size:13.5px;line-height:1.5;color:var(--text-muted);}
+    .auth-quote{padding:1.15rem 1.25rem!important;border-radius:16px;border:1px solid rgba(255,255,255,.09)!important;background:rgba(255,255,255,.04);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);margin-top:2rem!important;}
+    html:not(.dark) .auth-quote{background:rgba(255,255,255,.4);border-color:rgba(255,255,255,.6)!important;}
+    .btn-primary{position:relative;overflow:hidden;}
+    .btn-primary::after{content:'';position:absolute;top:0;left:-60%;width:45%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);}
+    .btn-primary:hover::after{animation:sheen .85s ease;}
+    @keyframes sheen{to{left:130%;}}
+    @media(prefers-reduced-motion:reduce){.aurora span{animation:none;}}
   </style>
   <link rel="stylesheet" href="theme.css">
 </head>
 <body>
+<div class="aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
 
 <div class="auth-layout">
 
@@ -353,7 +399,7 @@
   <div class="auth-left">
     <div class="auth-left-content" style="height:100%;min-height:600px;">
       <a href="dashboard.html" class="wordmark" aria-label="Fundamental" style="margin-bottom:3rem;">
-        <span class="mark">f</span>
+        <span class="mark" aria-hidden="true"><svg viewBox="0 0 40 40"><rect class="mark-sq" x="0" y="0" width="40" height="40" rx="11"/><text class="mark-f" x="21" y="30" text-anchor="middle" font-family="Fraunces,serif" font-style="italic" font-weight="500" font-size="30">f</text></svg></span>
         <span class="name">Fundamental</span>
       </a>
 
@@ -363,44 +409,29 @@
           Comprends ton argent pour<br><span style="font-weight:300;font-style:italic;">mieux le vivre</span>
         </h1>
         <p class="auth-sub">
-          Un parcours personnalisé, brique par brique — adapté à ta situation réelle.
+          Un parcours qui part de ta réalité, pas d'un manuel.
         </p>
       </div>
 
       <div class="auth-features">
         <div class="auth-feat">
-          <div class="auth-feat-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12c0-4.97 4.03-9 9-9 4.97 0 9 4.03 9 9"/><path d="M21 12c0 4.97-4.03 9-9 9-4.97 0-9-4.03-9-9"/><circle cx="12" cy="12" r="3"/></svg>
-          </div>
-          <div class="auth-feat-text">
-            <strong>Ton parcours, pas un cours</strong>
-            <span>Calibré selon ta situation réelle — pas un contenu générique.</span>
-          </div>
+          <strong>Tes chiffres, pas une moyenne</strong>
+          <span>Revenus, dettes, projets — le parcours se calibre dessus.</span>
         </div>
-        <div class="auth-feat feat-teal">
-          <div class="auth-feat-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="9" width="6" height="11" rx="1"/><rect x="9" y="4" width="6" height="16" rx="1"/><rect x="15" y="13" width="6" height="7" rx="1"/></svg>
-          </div>
-          <div class="auth-feat-text">
-            <strong>Tout ce qu'il faut pour maîtriser ta finance</strong>
-            <span>De la survie budgétaire à l'investissement, dans un parcours guidé et personnalisé.</span>
-          </div>
+        <div class="auth-feat">
+          <strong>Du découvert au placement</strong>
+          <span>Une brique débloque la suivante. Tu montes.</span>
         </div>
-        <div class="auth-feat feat-amber">
-          <div class="auth-feat-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </div>
-          <div class="auth-feat-text">
-            <strong>Tu reprends où tu t'es arrêté</strong>
-            <span>Ta progression est sauvegardée, sur tous tes appareils.</span>
-          </div>
+        <div class="auth-feat">
+          <strong>Tu fermes, tu reprends</strong>
+          <span>Ta progression t'attend là où tu l'as laissée.</span>
         </div>
       </div>
 
       <div class="auth-quote" style="margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border-subtle);">
         <div class="auth-quote-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
         <p style="font-family:'Fraunces','Instrument Serif',Georgia,serif;font-style:italic;font-size:16px;color:var(--text-secondary);line-height:1.5;margin-bottom:0.75rem;">
-          &ldquo;Pour la première fois, j&rsquo;ai vraiment compris mes finances — et j&rsquo;ai pu appliquer les bases immédiatement. Le parcours guidé rend tout concret.&rdquo;
+          &ldquo;Pour la première fois, j&rsquo;ai vraiment compris mes finances — et j&rsquo;ai pu agir dès le lendemain.&rdquo;
         </p>
         <p style="font-size:12px;color:var(--text-faint);font-weight:500;">— Camille, 27 ans · Bêta testeur</p>
       </div>
