@@ -12,6 +12,17 @@
 
   const pageName = window.location.pathname.split('/').pop().replace('.html','') || 'index';
 
+  // Contexte précis au moment de l'envoi (page + écran de brique + thème + appareil)
+  function buildContext() {
+    let ctx = pageName;
+    if (window.S && typeof window.S.currentScreen === 'number') ctx += ' · écran ' + window.S.currentScreen;
+    else if (window.location.hash) ctx += ' ' + window.location.hash;
+    const theme = document.documentElement.classList.contains('dark') ? 'sombre' : 'clair';
+    const device = window.matchMedia && window.matchMedia('(max-width: 820px)').matches ? 'mobile' : 'desktop';
+    ctx += ' · ' + theme + ' · ' + device;
+    return ctx;
+  }
+
   // ── CSS (thème-aware via html.dark ; clair par défaut) ──
   const style = document.createElement('style');
   style.textContent = `
@@ -72,26 +83,16 @@
     html.dark #fb-panel h4 { color: #fff; }
     html.dark #fb-panel p  { color: #8b90b8; }
 
-    .fb-stars { display: flex; gap: 0.375rem; margin-bottom: 0.75rem; }
+    .fb-stars { display: flex; gap: 0.375rem; margin-bottom: 0.875rem; }
     .fb-star {
-      width: 36px; height: 36px; border-radius: 0.5rem;
+      width: 40px; height: 40px; border-radius: 0.6rem;
       background: #f4f2ef; border: 1px solid rgba(28,25,23,0.10);
-      font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
       transition: border-color 140ms, background 140ms, transform 120ms cubic-bezier(0.34,1.56,0.64,1);
     }
     html.dark .fb-star { background: #171a2e; border-color: #252845; }
-    .fb-star:hover, .fb-star.selected { border-color: rgba(129,140,248,0.6); background: rgba(139,92,246,0.14); transform: scale(1.12); }
-
-    .fb-cats { display: flex; gap: 0.4rem; margin-bottom: 0.875rem; }
-    .fb-cat {
-      flex: 1; padding: 0.4rem 0.3rem; border-radius: 0.6rem; font-size: 0.72rem; font-weight: 600;
-      background: #f4f2ef; border: 1px solid rgba(28,25,23,0.10); color: #57534e; cursor: pointer;
-      font-family: 'Inter', sans-serif; transition: border-color 140ms, background 140ms, color 140ms;
-    }
-    html.dark .fb-cat { background: #171a2e; border-color: #252845; color: #a8adc9; }
-    .fb-cat:hover { border-color: rgba(129,140,248,0.5); }
-    .fb-cat.selected { border-color: rgba(139,92,246,0.7); background: rgba(139,92,246,0.15); color: #6d28d9; }
-    html.dark .fb-cat.selected { color: #c4b5fd; }
+    .fb-star:hover { border-color: rgba(129,140,248,0.5); transform: scale(1.1); }
+    .fb-star.selected { border-color: rgba(139,92,246,0.85); background: rgba(139,92,246,0.16); transform: scale(1.14); box-shadow: 0 4px 14px rgba(139,92,246,0.25); }
 
     .fb-textarea {
       width: 100%; padding: 0.65rem 0.875rem; border-radius: 0.75rem;
@@ -141,17 +142,12 @@
   panel.innerHTML = `
     <h4>Comment tu trouves cette page ?</h4>
     <p>Page : <strong style="color:#a855f7;">${pageName}</strong> — ton retour nous aide énormément.</p>
-    <div class="fb-stars" role="group" aria-label="Note de 1 à 5">
-      <button class="fb-star" data-val="1" aria-label="1 étoile">😕</button>
-      <button class="fb-star" data-val="2" aria-label="2 étoiles">😐</button>
-      <button class="fb-star" data-val="3" aria-label="3 étoiles">🙂</button>
-      <button class="fb-star" data-val="4" aria-label="4 étoiles">😊</button>
-      <button class="fb-star" data-val="5" aria-label="5 étoiles">🤩</button>
-    </div>
-    <div class="fb-cats" role="group" aria-label="Type de retour">
-      <button class="fb-cat" data-cat="Bug">🐞 Bug</button>
-      <button class="fb-cat" data-cat="Idée">💡 Idée</button>
-      <button class="fb-cat" data-cat="Autre">💬 Autre</button>
+    <div class="fb-stars" role="radiogroup" aria-label="Note de 1 à 5">
+      <button class="fb-star" role="radio" aria-checked="false" data-val="1" aria-label="Décevant">😕</button>
+      <button class="fb-star" role="radio" aria-checked="false" data-val="2" aria-label="Bof">😐</button>
+      <button class="fb-star" role="radio" aria-checked="false" data-val="3" aria-label="Correct">🙂</button>
+      <button class="fb-star" role="radio" aria-checked="false" data-val="4" aria-label="Bien">😊</button>
+      <button class="fb-star" role="radio" aria-checked="false" data-val="5" aria-label="Génial">🤩</button>
     </div>
     <textarea class="fb-textarea" id="fb-text" placeholder="Un bug ? Une idée ? Quelque chose qui t'a bloqué ? (optionnel)"></textarea>
     <button class="fb-submit" id="fb-send">Envoyer</button>
@@ -162,7 +158,6 @@
   document.body.appendChild(panel);
 
   let selectedRating = 0;
-  let selectedCat = '';
   let panelOpen = false;
 
   function setOpen(open) {
@@ -179,34 +174,32 @@
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && panelOpen) setOpen(false); });
 
-  panel.querySelectorAll('.fb-star').forEach(btn => {
+  // Un seul smiley sélectionné à la fois
+  const stars = panel.querySelectorAll('.fb-star');
+  stars.forEach(btn => {
     btn.addEventListener('click', () => {
       selectedRating = parseInt(btn.dataset.val);
-      panel.querySelectorAll('.fb-star').forEach((b, i) => b.classList.toggle('selected', i < selectedRating));
-    });
-  });
-
-  panel.querySelectorAll('.fb-cat').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedCat = (selectedCat === btn.dataset.cat) ? '' : btn.dataset.cat;
-      panel.querySelectorAll('.fb-cat').forEach(b => b.classList.toggle('selected', b.dataset.cat === selectedCat));
+      stars.forEach(b => {
+        const on = b === btn;
+        b.classList.toggle('selected', on);
+        b.setAttribute('aria-checked', on ? 'true' : 'false');
+      });
     });
   });
 
   document.getElementById('fb-send').addEventListener('click', async () => {
     const message = document.getElementById('fb-text').value.trim();
-    if (!selectedRating && !selectedCat && !message) {
+    if (!selectedRating && !message) {
       document.getElementById('fb-text').focus();
       return;
     }
-    const fullMessage = (selectedCat ? '[' + selectedCat + '] ' : '') + message;
     const btn = document.getElementById('fb-send');
     btn.disabled = true;
     btn.innerHTML = '<div style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:fbSpin 0.7s linear infinite;"></div>';
 
     try {
       if (typeof submitFeedback === 'function') {
-        await submitFeedback(pageName, selectedRating || null, fullMessage || null);
+        await submitFeedback(buildContext(), selectedRating || null, message || null);
       }
     } catch(e) {}
 
@@ -215,9 +208,8 @@
     setTimeout(() => {
       setOpen(false);
       setTimeout(() => {
-        selectedRating = 0; selectedCat = '';
-        panel.querySelectorAll('.fb-star').forEach(b => b.classList.remove('selected'));
-        panel.querySelectorAll('.fb-cat').forEach(b => b.classList.remove('selected'));
+        selectedRating = 0;
+        stars.forEach(b => { b.classList.remove('selected'); b.setAttribute('aria-checked', 'false'); });
         document.getElementById('fb-text').value = '';
         document.getElementById('fb-success').style.display = 'none';
         btn.style.display = ''; btn.disabled = false; btn.textContent = 'Envoyer';
