@@ -144,15 +144,21 @@ async function loadBrickData(brickId) {
 
 // ─── FEEDBACK ──────────────────────────────────────────────────────
 
-async function submitFeedback(page, rating, message) {
+async function submitFeedback(page, rating, message, meta) {
   const sb = getClient(); if (!sb) return;
   const user = await getCurrentUser();
+  meta = meta || {};
   const { error } = await sb.from('feedbacks').insert({
     user_id: user?.id || null,
     page,
     rating,
     message,
-    user_agent: navigator.userAgent
+    user_agent: navigator.userAgent,
+    theme: meta.theme || null,
+    device: meta.device || null,
+    screen: meta.screen || null,
+    path: meta.path || null,
+    console_error: meta.consoleError || null
   });
   if (error) console.error('[Fund] submitFeedback error:', error.message);
   return { error: error?.message };

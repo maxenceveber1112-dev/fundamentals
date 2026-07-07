@@ -11,16 +11,30 @@
   if (!BETA_MODE) return;
 
   const pageName = window.location.pathname.split('/').pop().replace('.html','') || 'index';
+  const MAX_CHARS = 500;
 
-  // Contexte précis au moment de l'envoi (page + écran de brique + thème + appareil)
-  function buildContext() {
-    let ctx = pageName;
-    if (window.S && typeof window.S.currentScreen === 'number') ctx += ' · écran ' + window.S.currentScreen;
-    else if (window.location.hash) ctx += ' ' + window.location.hash;
-    const theme = document.documentElement.classList.contains('dark') ? 'sombre' : 'clair';
-    const device = window.matchMedia && window.matchMedia('(max-width: 820px)').matches ? 'mobile' : 'desktop';
-    ctx += ' · ' + theme + ' · ' + device;
-    return ctx;
+  // Capture de la dernière erreur technique (or pur en bêta)
+  let lastError = null;
+  window.addEventListener('error', function(e) {
+    if (e && e.message) lastError = e.message + (e.filename ? ' @ ' + e.filename.split('/').pop() + ':' + (e.lineno || '?') : '');
+  }, true);
+  window.addEventListener('unhandledrejection', function(e) {
+    const r = e && e.reason;
+    lastError = 'promesse rejetée : ' + String(r && r.message ? r.message : r).slice(0, 200);
+  });
+
+  // Contexte structuré (colonnes dédiées côté DB)
+  function buildMeta(includeError) {
+    let screen = null;
+    if (window.S && typeof window.S.currentScreen === 'number') screen = String(window.S.currentScreen);
+    else if (window.location.hash) screen = window.location.hash;
+    return {
+      theme: document.documentElement.classList.contains('dark') ? 'sombre' : 'clair',
+      device: (window.matchMedia && window.matchMedia('(max-width: 820px)').matches) ? 'mobile' : 'desktop',
+      screen: screen,
+      path: window.location.pathname + window.location.search + window.location.hash,
+      consoleError: (includeError && lastError) ? lastError.slice(0, 500) : null
+    };
   }
 
   // ── CSS (thème-aware via html.dark ; clair par défaut) ──
@@ -98,12 +112,25 @@
       width: 100%; padding: 0.65rem 0.875rem; border-radius: 0.75rem;
       background: #f9f8f6; border: 1px solid rgba(28,25,23,0.10); color: #1a1a2e;
       font-family: 'Inter', sans-serif; font-size: 0.82rem; resize: vertical; min-height: 76px;
-      outline: none; transition: border-color 140ms; margin-bottom: 0.875rem;
+      outline: none; transition: border-color 140ms; margin-bottom: 0.35rem;
     }
     html.dark .fb-textarea { background: #171a2e; border-color: #252845; color: #e2e4f0; }
     .fb-textarea:focus { border-color: rgba(139,92,246,0.5); }
     .fb-textarea::placeholder { color: #a8a29e; }
     html.dark .fb-textarea::placeholder { color: #565a7e; }
+
+    .fb-count { text-align: right; font-size: 0.68rem; color: #a8a29e; margin-bottom: 0.6rem; }
+    .fb-count.warn { color: #ea580c; }
+    html.dark .fb-count { color: #565a7e; }
+
+    .fb-bug {
+      display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.875rem;
+      padding: 0.55rem 0.7rem; border-radius: 0.7rem; cursor: pointer;
+      background: rgba(234,88,12,0.08); border: 1px solid rgba(234,88,12,0.22);
+      font-size: 0.74rem; font-weight: 500; color: #c2410c;
+    }
+    html.dark .fb-bug { background: rgba(251,146,60,0.10); border-color: rgba(251,146,60,0.28); color: #fdba74; }
+    .fb-bug input { accent-color: #ea580c; width: 15px; height: 15px; cursor: pointer; }
 
     .fb-submit {
       width: 100%; padding: 0.7rem; border-radius: 9999px;
@@ -117,8 +144,12 @@
     .fb-submit:active { transform: scale(0.98); }
     .fb-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    .fb-success { text-align: center; padding: 0.5rem 0; font-size: 0.82rem; font-weight: 600; color: #16a34a; display: none; }
-    html.dark .fb-success { color: #4ade80; }
+    .fb-success { text-align: center; padding: 0.75rem 0 0.25rem; display: none; }
+    .fb-success .fb-s-ico { font-size: 1.75rem; line-height: 1; margin-bottom: 0.4rem; }
+    .fb-success strong { display: block; font-size: 0.9rem; font-weight: 700; color: #16a34a; margin-bottom: 0.15rem; }
+    .fb-success span { display: block; font-size: 0.75rem; color: #78716c; }
+    html.dark .fb-success strong { color: #4ade80; }
+    html.dark .fb-success span { color: #8b90b8; }
   `;
   document.head.appendChild(style);
 
@@ -149,9 +180,18 @@
       <button class="fb-star" role="radio" aria-checked="false" data-val="4" aria-label="Bien">😊</button>
       <button class="fb-star" role="radio" aria-checked="false" data-val="5" aria-label="Génial">🤩</button>
     </div>
-    <textarea class="fb-textarea" id="fb-text" placeholder="Un bug ? Une idée ? Quelque chose qui t'a bloqué ? (optionnel)"></textarea>
+    <textarea class="fb-textarea" id="fb-text" maxlength="${MAX_CHARS}" placeholder="Un bug ? Une idée ? Quelque chose qui t'a bloqué ? (optionnel)"></textarea>
+    <div class="fb-count" id="fb-count">0 / ${MAX_CHARS}</div>
+    <label class="fb-bug" id="fb-bug" style="display:none;">
+      <input type="checkbox" id="fb-bug-check" checked>
+      <span>🐞 Joindre l'erreur technique détectée</span>
+    </label>
     <button class="fb-submit" id="fb-send">Envoyer</button>
-    <div class="fb-success" id="fb-success">Merci, c'est noté ! 🙏</div>
+    <div class="fb-success" id="fb-success">
+      <div class="fb-s-ico" aria-hidden="true">🙏</div>
+      <strong>Bien reçu, merci !</strong>
+      <span>On lit chaque retour — il façonne la suite.</span>
+    </div>
   `;
 
   document.body.appendChild(fab);
@@ -159,12 +199,17 @@
 
   let selectedRating = 0;
   let panelOpen = false;
+  const bugRow = document.getElementById('fb-bug');
+  const bugCheck = document.getElementById('fb-bug-check');
+  const textEl = document.getElementById('fb-text');
+  const countEl = document.getElementById('fb-count');
 
   function setOpen(open) {
     panelOpen = open;
     panel.classList.toggle('open', open);
     fab.classList.toggle('fb-active', open);
     fab.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) bugRow.style.display = lastError ? 'flex' : 'none';
   }
 
   fab.addEventListener('click', () => setOpen(!panelOpen));
@@ -173,6 +218,13 @@
     if (panelOpen && !panel.contains(e.target) && e.target !== fab && !fab.contains(e.target)) setOpen(false);
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && panelOpen) setOpen(false); });
+
+  // Compteur de caractères
+  textEl.addEventListener('input', () => {
+    const n = textEl.value.length;
+    countEl.textContent = n + ' / ' + MAX_CHARS;
+    countEl.classList.toggle('warn', n > MAX_CHARS - 60);
+  });
 
   // Un seul smiley sélectionné à la fois
   const stars = panel.querySelectorAll('.fb-star');
@@ -188,18 +240,16 @@
   });
 
   document.getElementById('fb-send').addEventListener('click', async () => {
-    const message = document.getElementById('fb-text').value.trim();
-    if (!selectedRating && !message) {
-      document.getElementById('fb-text').focus();
-      return;
-    }
+    const message = textEl.value.trim();
+    if (!selectedRating && !message) { textEl.focus(); return; }
     const btn = document.getElementById('fb-send');
     btn.disabled = true;
     btn.innerHTML = '<div style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:fbSpin 0.7s linear infinite;"></div>';
 
+    const includeError = lastError && bugRow.style.display !== 'none' && bugCheck.checked;
     try {
       if (typeof submitFeedback === 'function') {
-        await submitFeedback(buildContext(), selectedRating || null, message || null);
+        await submitFeedback(pageName, selectedRating || null, message || null, buildMeta(includeError));
       }
     } catch(e) {}
 
@@ -210,7 +260,7 @@
       setTimeout(() => {
         selectedRating = 0;
         stars.forEach(b => { b.classList.remove('selected'); b.setAttribute('aria-checked', 'false'); });
-        document.getElementById('fb-text').value = '';
+        textEl.value = ''; countEl.textContent = '0 / ' + MAX_CHARS; countEl.classList.remove('warn');
         document.getElementById('fb-success').style.display = 'none';
         btn.style.display = ''; btn.disabled = false; btn.textContent = 'Envoyer';
       }, 400);
