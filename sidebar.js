@@ -81,19 +81,20 @@
     }
     .f-sb-mark {
       width: 32px; height: 32px; flex-shrink: 0;
-      border-radius: 8px;
-      background: var(--accent-soft, rgba(196,181,253,.22));
-      border: 1px solid var(--border-subtle, rgba(28,25,23,.07));
+      border-radius: 9px;
+      background: #8B93B8;
+      border: none;
       display: flex; align-items: center; justify-content: center;
-      color: var(--accent-strong, #5B21B6);
+      color: #ffffff;
       font-family: 'Fraunces', serif;
-      font-style: italic; font-weight: 500; font-size: 18px;
+      font-style: italic; font-weight: 500; font-size: 19px;
       line-height: 1;
+      box-shadow: 0 4px 14px rgba(90,100,170,.35);
     }
     html.dark .f-sb-mark {
-      background: rgba(167,139,250,.14);
-      color: #C4B5FD;
-      border-color: rgba(255,255,255,.08);
+      background: #17172e;
+      color: #8F8CD4;
+      border: none;
     }
     .f-sb-wordmark {
       margin-left: 12px;
