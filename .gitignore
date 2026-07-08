@@ -5,3 +5,14 @@ node_modules/
 .env.local
 *.bak
 
+# Notes d'audit internes (ne pas publier — publish="." sert tout le repo)
+AUDIT*.md
+
+# Fichiers de travail temporaires
+_*.txt
+_*.py
+__*.html
+
+# Config locale de l'outil de preview
+.claude/
+
