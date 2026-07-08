@@ -985,11 +985,32 @@
     color: #fff;
     pointer-events: none;
   }
+
+    /* ═══ REFONTE PREMIUM AURORA + VERRE (coherent auth/onboarding) ═══ */
+    .db-aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+    .db-aurora span{position:absolute;border-radius:50%;filter:blur(85px);}
+    .db-aurora .a1{width:44vw;height:44vw;top:-12vw;left:-8vw;background:radial-gradient(circle,#8B5CF6,transparent 70%);animation:dbAur 28s ease-in-out infinite alternate;}
+    .db-aurora .a2{width:40vw;height:40vw;bottom:-14vw;right:-6vw;background:radial-gradient(circle,#3B82F6,transparent 70%);animation:dbAur 34s ease-in-out infinite alternate -10s;}
+    .db-aurora .a3{width:30vw;height:30vw;top:42%;left:52%;background:radial-gradient(circle,#14B8A6,transparent 70%);animation:dbAur 38s ease-in-out infinite alternate -18s;}
+    @keyframes dbAur{from{transform:translate(0,0) scale(1);}to{transform:translate(4vw,4vw) scale(1.14);}}
+    html.dark .db-aurora .a1{opacity:.42;} html.dark .db-aurora .a2{opacity:.34;} html.dark .db-aurora .a3{opacity:.26;}
+    html:not(.dark) .db-aurora .a1{opacity:.22;} html:not(.dark) .db-aurora .a2{opacity:.18;} html:not(.dark) .db-aurora .a3{opacity:.12;}
+    @media(prefers-reduced-motion:reduce){.db-aurora span{animation:none;}}
+    main{position:relative;z-index:1;}
+    /* Panneaux principaux en verre depoli (mode clair aussi) */
+    html:not(.dark) .hero-cream{background:linear-gradient(160deg,rgba(246,241,232,.80),rgba(239,231,216,.66))!important;-webkit-backdrop-filter:blur(28px) saturate(1.4);backdrop-filter:blur(28px) saturate(1.4);border-color:rgba(255,255,255,.6)!important;}
+    html:not(.dark) .insight-card{background:rgba(255,255,255,.55)!important;-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);border-color:rgba(255,255,255,.7)!important;}
+    html:not(.dark) .bq-card{background:rgba(255,255,255,.52)!important;-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);}
+    html:not(.dark) .mb-card{background:rgba(255,255,255,.55)!important;-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);}
+    /* Renforce le verre existant cote sombre */
+    html.dark .hero-cream{background:rgba(22,22,42,.34)!important;border-color:rgba(255,255,255,.09)!important;-webkit-backdrop-filter:blur(28px) saturate(1.4);backdrop-filter:blur(28px) saturate(1.4);}
+    html.dark .insight-card{background:rgba(22,22,42,.34)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);}
   </style>
   <link rel="stylesheet" href="theme.css">
 </head>
 <body>
 <canvas id="bg-canvas"></canvas>
+<div class="db-aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
 
 <!-- NAV supprimée V3 — remplacée par sidebar.js (sidebar + ctx-header) -->
 
