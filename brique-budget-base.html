@@ -1022,6 +1022,21 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
   .detail-poste-toggle:hover { color:var(--text); }
   .detail-poste-chevron { color:var(--text-muted); flex-shrink:0; transition:transform var(--t); }
   .detail-poste-toggle[aria-expanded="true"] .detail-poste-chevron { transform:rotate(180deg); }
+  /* ── Sections de formulaire (refonte écran 1) ── */
+  .form-section { display:flex; flex-direction:column; gap:1.125rem; }
+  .form-section + .form-section { margin-top:1.75rem; }
+  .form-section-head { display:flex; align-items:center; gap:0.5rem; font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:-0.125rem; }
+  .form-section-head .fsh-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .form-section-head.in    .fsh-dot { background:var(--green); }
+  .form-section-head.fixed .fsh-dot { background:var(--accent-strong); }
+  .form-section-head.var   .fsh-dot { background:#6366F1; }
+  .form-section-head .fsh-hint { margin-left:auto; font-size:0.68rem; font-weight:500; letter-spacing:0; text-transform:none; color:var(--text-faint); }
+  .field-hint { font-size:0.72rem; color:var(--text-faint); line-height:1.45; margin-top:0.35rem; margin-bottom:0; }
+  #screen-1 .brick-card { padding-bottom:28px; }
+  #screen-1 .sticky-bar { margin-top:0.625rem; margin-bottom:0; }
+  .sticky-bar { background:var(--bg-elevated); }
+  html:not(.dark) .sticky-bar { background:#FFFFFF; }
+  .sticky-bar .btn-hero-primary:disabled { opacity:0.4; cursor:not-allowed; filter:grayscale(0.35); box-shadow:none; }
   </style>
   <link rel="stylesheet" href="theme.css">
 </head>
@@ -1083,9 +1098,10 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             <h2 class="brick-title">D'abord, posons les bases.</h2>
             <p class="brick-subtitle">Commence par tes chiffres principaux : tu pourras affiner ensuite.</p>
 
-            <div style="display:flex;flex-direction:column;gap:1.25rem;" id="bloc-1">
+            <!-- ═══ SECTION 1 · Ce qui rentre ═══ -->
+            <div class="form-section">
+              <div class="form-section-head in"><span class="fsh-dot"></span>Ce qui rentre</div>
 
-              <!-- Revenus -->
               <div class="field-group">
                 <label class="field-label" for="f-revenus">
                   Revenus mensuels nets (€)
@@ -1094,7 +1110,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                 <input type="number" id="f-revenus" class="field-input" placeholder="1 800" min="0" inputmode="numeric" />
                 <button class="fourchette-link" id="fourchette-toggle" onclick="toggleFourchette()">Je préfère donner une fourchette</button>
                 <div class="fourchette-chips" id="fourchette-chips">
-                  <button class="chip-fourchette" data-val="250"  onclick="selectFourchette(this,'< 500 €',250)">  &lt; 500 €</button>
+                  <button class="chip-fourchette" data-val="250"  onclick="selectFourchette(this,'< 500 €',250)">&lt; 500 €</button>
                   <button class="chip-fourchette" data-val="750"  onclick="selectFourchette(this,'500–1 000 €',750)">500–1 000 €</button>
                   <button class="chip-fourchette" data-val="1250" onclick="selectFourchette(this,'1 000–1 500 €',1250)">1 000–1 500 €</button>
                   <button class="chip-fourchette" data-val="2000" onclick="selectFourchette(this,'1 500–2 500 €',2000)">1 500–2 500 €</button>
@@ -1102,13 +1118,16 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                 </div>
               </div>
 
-              <!-- Aides -->
               <div class="field-group">
                 <label class="field-label" for="f-aides">Aides / autres entrées (€)</label>
                 <input type="number" id="f-aides" class="field-input" placeholder="APL, soutien familial, jobs…" min="0" inputmode="numeric" />
               </div>
+            </div>
 
-              <!-- Loyer -->
+            <!-- ═══ SECTION 2 · Charges fixes ═══ -->
+            <div class="form-section">
+              <div class="form-section-head fixed"><span class="fsh-dot"></span>Tes charges fixes<span class="fsh-hint">chaque mois, quasi identiques</span></div>
+
               <div class="field-group" id="loyer-group">
                 <label class="field-label" for="f-loyer">
                   Loyer / logement (€)
@@ -1118,66 +1137,50 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                 <button class="fourchette-link" id="loyer-ajouter-link" style="display:none;font-size:0.75rem;color:var(--text-faint);" onclick="showLoyerField()">Ajouter quand même</button>
               </div>
 
-              <!-- Courses -->
               <div class="field-group">
-                <label class="field-label" for="f-courses">Courses alimentaires (€)</label>
-                <input type="number" id="f-courses" class="field-input" placeholder="300" min="0" inputmode="numeric" />
+                <label class="field-label" for="f-assurances">Assurances (€)</label>
+                <input type="number" id="f-assurances" class="field-input" placeholder="Auto, habitation, mutuelle…" min="0" inputmode="numeric" />
+                <p class="field-hint">Habitation, auto / moto, mutuelle santé, prévoyance.</p>
               </div>
 
-              <!-- Transport -->
-              <div class="field-group">
-                <label class="field-label" for="f-transport">Transport (€)</label>
-                <input type="number" id="f-transport" class="field-input" placeholder="Abonnement, carburant…" min="0" inputmode="numeric" />
-              </div>
-
-
-              <!-- Épargne (remontée : signal clé) -->
-              <div class="field-group">
-                <label class="field-label" for="f-epargne">Épargne mensuelle (€)</label>
-                <input type="number" id="f-epargne" class="field-input" placeholder="Virement automatique, livret…" min="0" inputmode="numeric" oninput="checkEpargne()" />
-                <div class="nudge-epargne" id="nudge-epargne">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                  Pas encore, ce n'est pas grave.
-                </div>
-              </div>
-            </div><!-- /bloc-1 -->
-
-            <!-- Séparateur -->
-            <div class="section-sep" id="sep-bloc2" style="display:none;margin-top:1.25rem;">
-              <div class="section-sep-line"></div>
-              <span class="section-sep-label">Et du côté des dépenses courantes ?</span>
-              <div class="section-sep-line"></div>
-            </div>
-
-            <!-- BLOC 2 — révélé à ≥ 3 champs remplis -->
-            <div class="bloc-revele" id="bloc-2" style="margin-top:0;">
-
-              <!-- Abonnements -->
               <div class="field-group">
                 <label class="field-label" for="f-abonnements">Abonnements (€)</label>
-                <input type="number" id="f-abonnements" class="field-input" placeholder="Netflix, Spotify, salle de sport…" min="0" inputmode="numeric"
-                  onfocus="maybeOpenPopupAbo()" />
+                <input type="number" id="f-abonnements" class="field-input" placeholder="Netflix, Spotify, téléphone, sport…" min="0" inputmode="numeric" onfocus="maybeOpenPopupAbo()" />
               </div>
 
-              <!-- Sorties -->
               <div class="field-group">
-                <label class="field-label" for="f-sorties">Sorties / loisirs (€)</label>
-                <input type="number" id="f-sorties" class="field-input" placeholder="Resto, ciné, bar…" min="0" inputmode="numeric" />
+                <label class="field-label" for="f-transport">Transport (€)</label>
+                <input type="number" id="f-transport" class="field-input" placeholder="Bus, train, essence…" min="0" inputmode="numeric" />
+                <p class="field-hint">Abonnement transport, carburant, péages. Pas le crédit auto ni l'assurance (→ ci-dessus).</p>
+              </div>
+            </div>
+
+            <!-- ═══ SECTION 3 · Vie courante ═══ -->
+            <div class="form-section">
+              <div class="form-section-head var"><span class="fsh-dot"></span>Ta vie courante<span class="fsh-hint">variable, ajustable</span></div>
+
+              <div class="field-group">
+                <label class="field-label" for="f-courses">Courses alimentaires (€)</label>
+                <input type="number" id="f-courses" class="field-input" placeholder="Supermarché, marché…" min="0" inputmode="numeric" />
               </div>
 
+              <div class="field-group">
+                <label class="field-label" for="f-repas">Restos, cafés & midi (€)</label>
+                <input type="number" id="f-repas" class="field-input" placeholder="Déjeuners dehors, cafés, livraison…" min="0" inputmode="numeric" />
+              </div>
 
-              <!-- Affiner bloc 3 -->
+              <div class="field-group">
+                <label class="field-label" for="f-sorties">Sorties & loisirs (€)</label>
+                <input type="number" id="f-sorties" class="field-input" placeholder="Ciné, bar, concerts, sport…" min="0" inputmode="numeric" />
+              </div>
+
               <div style="margin-top:0.25rem;">
                 <button class="affiner-btn" onclick="toggleAffiner()">
                   <span class="affiner-btn-label">🔍 Affiner mon budget</span>
-                  <span class="affiner-btn-sub">Santé, repas, shopping… pour une analyse plus précise</span>
+                  <span class="affiner-btn-sub">Shopping, santé… pour une analyse plus précise</span>
                 </button>
                 <div class="bloc-affine" id="bloc-3">
                   <div class="fields-grid">
-                    <div class="field-group">
-                      <label class="field-label" for="f-repas">Repas / cafés (€)</label>
-                      <input type="number" id="f-repas" class="field-input" placeholder="0" min="0" inputmode="numeric" />
-                    </div>
                     <div class="field-group">
                       <label class="field-label" for="f-shopping">Shopping / vêtements (€)</label>
                       <input type="number" id="f-shopping" class="field-input" placeholder="0" min="0" inputmode="numeric" />
@@ -1185,10 +1188,6 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                     <div class="field-group">
                       <label class="field-label" for="f-sante">Santé / pharmacie (€)</label>
                       <input type="number" id="f-sante" class="field-input" placeholder="0" min="0" inputmode="numeric" />
-                    </div>
-                    <div class="field-group">
-                      <label class="field-label" for="f-transport-var" id="label-transport-var">Transport variable (€)</label>
-                      <input type="number" id="f-transport-var" class="field-input" placeholder="0" min="0" inputmode="numeric" />
                     </div>
                     <div class="field-group">
                       <label class="field-label" for="f-pro">Dépenses professionnelles (€)</label>
@@ -1201,11 +1200,23 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                   </div>
                 </div>
               </div>
+            </div>
 
-            </div><!-- /bloc-2 -->
+            <!-- ═══ SECTION 4 · Épargne ═══ -->
+            <div class="form-section">
+              <div class="form-section-head in"><span class="fsh-dot"></span>Ce que tu mets de côté</div>
+              <div class="field-group">
+                <label class="field-label" for="f-epargne">Épargne mensuelle (€)</label>
+                <input type="number" id="f-epargne" class="field-input" placeholder="Virement automatique, livret…" min="0" inputmode="numeric" oninput="checkEpargne()" />
+                <div class="nudge-epargne" id="nudge-epargne">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  Pas encore, ce n'est pas grave.
+                </div>
+              </div>
+            </div>
 
             <!-- Sticky bar -->
-            <div class="sticky-bar" id="sticky-bar" style="display:none;">
+            <div class="sticky-bar" id="sticky-bar">
               <div class="sticky-bar-amounts">
                 <div class="sticky-bar-item">
                   <span class="sticky-bar-val" id="sticky-revenus" style="color:var(--green);">0 €</span>
@@ -1460,12 +1471,6 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
     <h2 class="popup-title" id="popup-abo-title">Voyons tes abonnements en détail</h2>
 
     <div class="abo-list" id="abo-list">
-      <div class="abo-item" data-id="assurance" onclick="toggleAbo(this)">
-        <div class="abo-item-check"></div>
-        <span class="abo-item-emoji">🛡️</span>
-        <span class="abo-item-name">Assurances (habitation, auto, prévoyance, etc.)</span>
-        <input type="number" class="abo-item-montant" placeholder="50" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
-      </div>
       <div class="abo-item" data-id="netflix" onclick="toggleAbo(this)">
         <div class="abo-item-check"></div>
         <span class="abo-item-emoji">🎬</span>
@@ -1582,7 +1587,7 @@ let aboPopupOpened = false;
 const budgetData = {
   revenus:0, aides:0, revenu_fourchette:null,
   loyer:0, courses:0, transport:0,
-  abonnements_total:0, abonnements_detail:{}, abonnements_economies:0,
+  assurances:0, abonnements_total:0, abonnements_detail:{}, abonnements_economies:0,
   sorties:0, epargne:0,
   repas:0, shopping:0, sante:0, transport_variable:0, depenses_pro:0, autres:0,
   total_besoins:0, total_envies:0, total_depenses:0, reste_a_vivre:0,
@@ -1725,19 +1730,13 @@ function toggleAffiner() {
   const bloc = document.getElementById('bloc-3');
   if (!bloc) return;
   bloc.classList.toggle('visible');
-  // Masquer transport-variable si transport fixe > 0
-  if (bloc.classList.contains('visible')) {
-    const tFixe = parseFloat(document.getElementById('f-transport')?.value) || 0;
-    const tvLabel = document.getElementById('label-transport-var');
-    if (tFixe === 0 && tvLabel) tvLabel.closest('.field-group').style.display = 'none';
-  }
 }
 
 // ── Sticky bar ────────────────────────────────────────────────
 function initStickyListeners() {
   const fieldIds = [
     'f-revenus','f-aides','f-loyer','f-courses','f-transport',
-    'f-abonnements','f-sorties','f-epargne',
+    'f-abonnements','f-sorties','f-epargne','f-assurances',
     'f-repas','f-shopping','f-sante','f-transport-var','f-pro','f-autres'
   ];
   fieldIds.forEach(id => {
@@ -1765,7 +1764,7 @@ function updateStickyBar() {
   const aid = parseFloat(document.getElementById('f-aides')?.value)   || 0;
   const totalRev = rev + aid;
 
-  const depFields = ['f-loyer','f-courses','f-transport','f-abonnements','f-sorties','f-epargne',
+  const depFields = ['f-loyer','f-courses','f-transport','f-abonnements','f-sorties','f-epargne','f-assurances',
     'f-repas','f-shopping','f-sante','f-transport-var','f-pro','f-autres'];
   let totalDep = 0;
   depFields.forEach(id => { totalDep += parseFloat(document.getElementById(id)?.value) || 0; });
@@ -1773,9 +1772,9 @@ function updateStickyBar() {
   const ral = totalRev - totalDep;
 
   const stickyBar = document.getElementById('sticky-bar');
-  if (totalRev > 0 || totalDep > 0) {
-    if (stickyBar) stickyBar.style.display = 'flex';
-  }
+  if (stickyBar) stickyBar.style.display = 'flex';
+  const btnNext = document.getElementById('btn-suivant-1');
+  if (btnNext) btnNext.disabled = !(totalRev > 0);
 
   const revEl  = document.getElementById('sticky-revenus');
   const depEl  = document.getElementById('sticky-depenses');
@@ -1804,11 +1803,12 @@ function collectBudgetData() {
   budgetData.transport_variable = parseFloat(document.getElementById('f-transport-var')?.value) || 0;
   budgetData.depenses_pro = parseFloat(document.getElementById('f-pro')?.value)         || 0;
   budgetData.autres     = parseFloat(document.getElementById('f-autres')?.value)        || 0;
+  budgetData.assurances = parseFloat(document.getElementById('f-assurances')?.value) || 0;
 
   const totalRev = budgetData.revenus + budgetData.aides;
 
   // Calcul besoins / envies / investissement
-  budgetData.total_besoins   = budgetData.loyer + budgetData.courses + budgetData.transport + budgetData.sante + budgetData.depenses_pro;
+  budgetData.total_besoins   = budgetData.loyer + budgetData.courses + budgetData.transport + budgetData.sante + budgetData.depenses_pro + budgetData.assurances;
   budgetData.total_envies    = budgetData.abonnements_total + budgetData.sorties + budgetData.repas + budgetData.shopping + budgetData.transport_variable + budgetData.autres;
   budgetData.total_depenses  = budgetData.total_besoins + budgetData.total_envies + budgetData.epargne;
   budgetData.reste_a_vivre   = totalRev - budgetData.total_depenses;
@@ -1841,6 +1841,7 @@ function goToScreen(n) {
   if (typeof screenViewed === 'function') screenViewed(BRICK_ID, n);
   if (typeof autosaveBrickProgress === 'function') autosaveBrickProgress(BRICK_ID, currentScreen, budgetData);
 
+  if (n === 1 && typeof updateStickyBar === 'function') updateStickyBar();
   if (n === 2) buildScreen2();
   if (n === 3) buildScreen3();
 
@@ -2186,6 +2187,7 @@ function buildSankeyBars() {
     { name:'Loyer / logement',    val: budgetData.loyer,              color:'var(--accent-strong)' },
     { name:'Courses',             val: budgetData.courses,            color:'var(--accent-strong)' },
     { name:'Transport',           val: budgetData.transport,          color:'var(--accent-strong)' },
+    { name:'Assurances',          val: budgetData.assurances,         color:'var(--accent-strong)' },
     { name:'Abonnements',         val: budgetData.abonnements_total,  color:'var(--purple)' },
     { name:'Sorties / loisirs',   val: budgetData.sorties,            color:'var(--purple)' },
     { name:'Épargne',             val: budgetData.epargne,            color:'var(--green)' },
