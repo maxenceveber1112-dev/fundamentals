@@ -1011,6 +1011,17 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
   #print-bilan .pb-footer{margin-top:2rem;font-size:0.72rem;color:#A8A29E;text-align:center;}
 }
 
+  /* ── Sankey héros + détail replié (refonte analyse) ── */
+  #sankey-wrap { margin:0.25rem 0 1.25rem; padding:1.25rem 1.25rem 1rem; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:1rem; box-shadow:var(--shadow-card); }
+  .sankey-head { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.875rem; }
+  #sankey-wrap .sankey-title { margin-bottom:0; }
+  .sankey-dl-btn { display:inline-flex; align-items:center; gap:0.375rem; font-size:0.75rem; font-weight:600; color:var(--text-secondary); background:transparent; border:1px solid var(--border-subtle); border-radius:9999px; padding:0.35rem 0.8rem; cursor:pointer; transition:color var(--t),border-color var(--t),background var(--t); }
+  .sankey-dl-btn:hover { color:var(--text); border-color:var(--border-mid); background:rgba(0,0,0,0.03); }
+  html.dark .sankey-dl-btn:hover { background:rgba(255,255,255,0.06); }
+  .detail-poste-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; padding:0.8rem 1rem; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:0.875rem; box-shadow:var(--shadow-card); cursor:pointer; font-size:0.85rem; font-weight:600; color:var(--text-secondary); transition:color var(--t); }
+  .detail-poste-toggle:hover { color:var(--text); }
+  .detail-poste-chevron { color:var(--text-muted); flex-shrink:0; transition:transform var(--t); }
+  .detail-poste-toggle[aria-expanded="true"] .detail-poste-chevron { transform:rotate(180deg); }
   </style>
   <link rel="stylesheet" href="theme.css">
 </head>
@@ -1119,6 +1130,16 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                 <input type="number" id="f-transport" class="field-input" placeholder="Abonnement, carburant…" min="0" inputmode="numeric" />
               </div>
 
+
+              <!-- Épargne (remontée : signal clé) -->
+              <div class="field-group">
+                <label class="field-label" for="f-epargne">Épargne mensuelle (€)</label>
+                <input type="number" id="f-epargne" class="field-input" placeholder="Virement automatique, livret…" min="0" inputmode="numeric" oninput="checkEpargne()" />
+                <div class="nudge-epargne" id="nudge-epargne">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  Pas encore, ce n'est pas grave.
+                </div>
+              </div>
             </div><!-- /bloc-1 -->
 
             <!-- Séparateur -->
@@ -1144,16 +1165,6 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                 <input type="number" id="f-sorties" class="field-input" placeholder="Resto, ciné, bar…" min="0" inputmode="numeric" />
               </div>
 
-              <!-- Épargne -->
-              <div class="field-group">
-                <label class="field-label" for="f-epargne">Épargne mensuelle (€)</label>
-                <input type="number" id="f-epargne" class="field-input" placeholder="Virement automatique, livret…" min="0" inputmode="numeric"
-                  oninput="checkEpargne()" />
-                <div class="nudge-epargne" id="nudge-epargne">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                  Pas encore, ce n'est pas grave.
-                </div>
-              </div>
 
               <!-- Affiner bloc 3 -->
               <div style="margin-top:0.25rem;">
@@ -1290,21 +1301,33 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             <div class="brick-kicker">ÉTAPE 3 / 4 · TON ARGENT EN CLAIR</div>
             <h2 class="brick-title">Voilà où part ton argent.</h2>
 
-            <!-- Double donut SVG -->
+            <!-- ═══ SANKEY — flux (héros) ═══ -->
+            <div class="sankey-wrap" id="sankey-wrap">
+              <div class="sankey-head">
+                <div class="sankey-title">Où va ton argent</div>
+                <button class="sankey-dl-btn" id="sankey-dl-btn" type="button" onclick="downloadBudgetImage()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Télécharger
+                </button>
+              </div>
+              <svg id="sankey-svg" class="sankey-svg" viewBox="0 0 460 300" role="img" aria-label="Flux de ton budget : revenus, charges et disponible"></svg>
+              <div class="sankey-legend" id="sankey-legend"></div>
+            </div>
+
+            <!-- Repère 50/30/20 -->
             <div class="donuts-wrap" id="donuts-wrap">
               <!-- Généré par JS -->
             </div>
 
-            <!-- Barres proportionnelles (remplace Sankey D3) -->
-            <div class="sankey-block" id="sankey-block" style="margin-top:1rem;">
-              <!-- Généré par JS -->
-            </div>
-
-            <!-- Mini Sankey flow SVG -->
-            <div class="sankey-wrap">
-              <div class="sankey-title">Où va ton argent</div>
-              <svg id="sankey-svg" class="sankey-svg" viewBox="0 0 420 160" aria-hidden="true"></svg>
-              <div class="sankey-legend" id="sankey-legend"></div>
+            <!-- Détail par poste (replié) -->
+            <div class="detail-poste" style="margin-top:1.25rem;">
+              <button class="detail-poste-toggle" id="detail-poste-toggle" type="button" aria-expanded="false" onclick="toggleDetailPoste()">
+                <span class="detail-poste-label">Voir le détail par poste</span>
+                <svg class="detail-poste-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div class="sankey-block" id="sankey-block" style="display:none;margin-top:0.875rem;">
+                <!-- Généré par JS -->
+              </div>
             </div>
 
             <!-- Messages contextuels -->
@@ -1821,7 +1844,7 @@ function goToScreen(n) {
   if (n === 2) buildScreen2();
   if (n === 3) buildScreen3();
 
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
 // ── Progress bar dots ─────────────────────────────────────────
@@ -2370,107 +2393,87 @@ function _renderSankeyHTML(budgetData) {
   const epargne = Math.min(budgetData.epargne       || 0, totalRev - besoins - envies);
   const reste   = Math.max(0, totalRev - besoins - envies - epargne);
 
-  const rB = besoins / totalRev;
-  const rE = envies  / totalRev;
-  const rS = epargne / totalRev;
-  const rR = reste   / totalRev;
+  const rB = besoins/totalRev, rE = envies/totalRev, rS = epargne/totalRev, rR = reste/totalRev;
 
-  // Espace logique fixe en X — le SVG scale proportionnellement en CSS
-  const W = 420, barW = 28, gap = 8;
-  const x1 = 20, x2 = W / 2 - barW / 2, x3 = W - 20 - barW;
+  const W = 460, barW = 42, gap = 9;
+  const x1 = 30, x2 = W/2 - barW/2, x3 = W - 30 - barW;
 
   const isDark = document.documentElement.classList.contains('dark');
-  const cB = '#8B5CF6';
-  const cE = '#6366F1';
-  const cS = '#22C55E';
-  const cR = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.07)';
-  const lc = isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.38)';
-  const vc = isDark ? 'rgba(255,255,255,0.82)' : 'rgba(0,0,0,0.72)';
+  const cB = '#8B5CF6', cE = '#6366F1', cS = '#22C55E';
+  const cR = isDark ? 'rgba(255,255,255,0.13)' : 'rgba(0,0,0,0.08)';
+  const tc = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.45)';
+  const restTxt = isDark ? 'rgba(255,255,255,0.82)' : 'rgba(0,0,0,0.66)';
 
-  // ── Calcul vertical ───────────────────────────────────────
-  const H_BASE = 160;
-  const h2B = rB * H_BASE;
-  const y2E = h2B + gap;
-  const h2E = rE * H_BASE;
-  const h3S = rS * H_BASE;
-  const h3R = rR * H_BASE;
+  const H_BASE = 214;
+  const h2B = rB*H_BASE, h2E = rE*H_BASE, h3S = rS*H_BASE, h3R = rR*H_BASE;
+  const y2E = h2B + (h2E > 2 ? gap : 0);
   const y2_bottom = h2B + (h2E > 2 ? gap + h2E : 0);
-  const y3_start  = y2_bottom + gap;
+  const y3_start = y2_bottom + gap;
   const y3S = y3_start;
   const y3R_pos = y3_start + h3S + (h3S > 2 ? gap : 0);
 
-  // Hauteur totale réelle du contenu (col3 peut dépasser H_BASE)
-  const contentBottom = Math.max(
-    H_BASE,
-    (h3R > 4 ? y3R_pos + h3R : 0),
-    (h3S > 2 ? y3S + h3S : 0)
-  );
-  // Marge haute (pour les labels au-dessus) + marge basse
-  const TOP_PAD = 18, BOT_PAD = 4;
+  const contentBottom = Math.max(H_BASE, (h3R > 4 ? y3R_pos + h3R : 0), (h3S > 2 ? y3S + h3S : 0));
+  const TOP_PAD = 32, BOT_PAD = 14;
   const H = contentBottom + BOT_PAD;
-  // Décaler tous les éléments vers le bas de TOP_PAD
   const dy = TOP_PAD;
 
-  function r(v) { return Math.round(v * 10) / 10; }
-  function fK(v) { return v >= 1000 ? (Math.round(v/100)/10)+'k€' : Math.round(v)+'€'; }
-  function lbl(x, y, t, isVal, anchor) {
-    return `<text x="${r(x)}" y="${r(y)}" text-anchor="${anchor||'middle'}" font-size="9" font-family="Inter,system-ui,sans-serif" font-weight="${isVal?'600':'400'}" fill="${isVal?vc:lc}">${t}</text>`;
+  function r(v){ return Math.round(v*10)/10; }
+  function fmtK(v){ return v >= 1000 ? (v/1000).toFixed(1).replace('.',',')+' k€' : Math.round(v)+' €'; }
+  function title(x, t){ return '<text x="'+r(x)+'" y="'+r(dy-11)+'" text-anchor="middle" font-size="12" font-family="Inter,system-ui,sans-serif" font-weight="700" letter-spacing="0.05em" fill="'+tc+'">'+t+'</text>'; }
+  function onBar(x, ySeg, hSeg, val, pct, txtColor){
+    if (hSeg < 22) return '';
+    const cx = x + barW/2, cy = dy + ySeg + hSeg/2;
+    const c = txtColor || '#ffffff';
+    let out = '<text x="'+r(cx)+'" y="'+r(cy + (hSeg>=40 ? -3 : 4))+'" text-anchor="middle" font-size="13" font-weight="700" font-family="Inter,system-ui,sans-serif" fill="'+c+'">'+fmtK(val)+'</text>';
+    if (hSeg >= 40) out += '<text x="'+r(cx)+'" y="'+r(cy+13)+'" text-anchor="middle" font-size="10" font-family="Inter,system-ui,sans-serif" fill="'+(txtColor||'rgba(255,255,255,0.78)')+'">'+pct+'%</text>';
+    return out;
   }
 
-  let html = `<defs>
-    <linearGradient id="grad-rev" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="${cB}" stop-opacity="0.6"/>
-      <stop offset="100%" stop-color="${cE}" stop-opacity="0.3"/>
-    </linearGradient>
-  </defs>`;
+  let html = '<defs><linearGradient id="grad-rev" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+cB+'"/><stop offset="100%" stop-color="'+cE+'"/></linearGradient></defs>';
 
-  // ── Col 1 — revenus ───────────────────────────────────────
-  html += `<rect x="${r(x1)}" y="${r(dy)}" width="${barW}" height="${r(H_BASE)}" rx="4" fill="url(#grad-rev)"/>`;
-  html += lbl(x1+barW/2, dy-5, 'REVENUS', false);
-  html += lbl(x1+barW/2, dy+H_BASE/2+4, fK(totalRev), true);
-
-  // ── Col 2 — charges ───────────────────────────────────────
-  html += `<rect x="${r(x2)}" y="${r(dy)}" width="${barW}" height="${r(h2B)}" rx="4" fill="${cB}"/>`;
-  if (h2E > 2) html += `<rect x="${r(x2)}" y="${r(dy+y2E)}" width="${barW}" height="${r(h2E)}" rx="4" fill="${cE}"/>`;
-  html += lbl(x2+barW/2, dy-5, 'CHARGES', false);
-  if (h2B > 16) html += lbl(x2+barW/2, dy+h2B/2+4, fK(besoins), true);
-  if (h2E > 16) html += lbl(x2+barW/2, dy+y2E+h2E/2+4, fK(envies), true);
-
-  // ── Col 3 — disponible ────────────────────────────────────
-  if (h3S > 2) html += `<rect x="${r(x3)}" y="${r(dy+y3S)}" width="${barW}" height="${r(h3S)}" rx="4" fill="${cS}"/>`;
-  if (h3R > 4) html += `<rect x="${r(x3)}" y="${r(dy+y3R_pos)}" width="${barW}" height="${r(h3R)}" rx="4" fill="${cR}"/>`;
-  html += lbl(x3+barW/2, dy-5, 'DISPONIBLE', false);
-  if (h3S > 16) html += lbl(x3+barW/2, dy+y3S+h3S/2+4, fK(epargne), true);
-  if (h3R > 16) html += lbl(x3+barW/2, dy+y3R_pos+h3R/2+4, fK(reste), true);
-
-  // ── Bézier col1 → col2 ────────────────────────────────────
-  const lx1 = x1 + barW, rx2 = x2, mx1 = (lx1+rx2)/2;
-  html += `<path d="M${r(lx1)},${r(dy)} C${r(mx1)},${r(dy)} ${r(mx1)},${r(dy)} ${r(rx2)},${r(dy)} L${r(rx2)},${r(dy+h2B)} C${r(mx1)},${r(dy+h2B)} ${r(mx1)},${r(dy+rB*H_BASE)} ${r(lx1)},${r(dy+rB*H_BASE)} Z" fill="${cB}" opacity="0.18"/>`;
-  if (h2E > 2) {
+  // ── Rubans (derriere les barres) ──
+  const lx1 = x1+barW, rx2 = x2, mx1 = (lx1+rx2)/2;
+  html += '<path d="M'+r(lx1)+','+r(dy)+' C'+r(mx1)+','+r(dy)+' '+r(mx1)+','+r(dy)+' '+r(rx2)+','+r(dy)+' L'+r(rx2)+','+r(dy+h2B)+' C'+r(mx1)+','+r(dy+h2B)+' '+r(mx1)+','+r(dy+rB*H_BASE)+' '+r(lx1)+','+r(dy+rB*H_BASE)+' Z" fill="'+cB+'" opacity="0.16"/>';
+  if (h2E > 2){
     const lyt = dy+rB*H_BASE, lyb = dy+(rB+rE)*H_BASE;
-    html += `<path d="M${r(lx1)},${r(lyt)} C${r(mx1)},${r(lyt)} ${r(mx1)},${r(dy+y2E)} ${r(rx2)},${r(dy+y2E)} L${r(rx2)},${r(dy+y2E+h2E)} C${r(mx1)},${r(dy+y2E+h2E)} ${r(mx1)},${r(lyb)} ${r(lx1)},${r(lyb)} Z" fill="${cE}" opacity="0.15"/>`;
+    html += '<path d="M'+r(lx1)+','+r(lyt)+' C'+r(mx1)+','+r(lyt)+' '+r(mx1)+','+r(dy+y2E)+' '+r(rx2)+','+r(dy+y2E)+' L'+r(rx2)+','+r(dy+y2E+h2E)+' C'+r(mx1)+','+r(dy+y2E+h2E)+' '+r(mx1)+','+r(lyb)+' '+r(lx1)+','+r(lyb)+' Z" fill="'+cE+'" opacity="0.14"/>';
   }
-
-  // ── Bézier col2 → col3 ────────────────────────────────────
-  // Épargne et Reste partent de col2 empilés sous les charges :
-  //   source Épargne = [y2_bottom, y2_bottom + h3S]
-  //   source Reste   = [y2_bottom + h3S, y2_bottom + h3S + h3R]
-  const lx2 = x2 + barW, rx3 = x3, mx2 = (lx2+rx3)/2;
-  if (h3S > 2) {
+  const lx2 = x2+barW, rx3 = x3, mx2 = (lx2+rx3)/2;
+  if (h3S > 2){
     const stTop = dy+y2_bottom, stBot = dy+y2_bottom+h3S;
-    html += `<path d="M${r(lx2)},${r(stTop)} C${r(mx2)},${r(stTop)} ${r(mx2)},${r(dy+y3S)} ${r(rx3)},${r(dy+y3S)} L${r(rx3)},${r(dy+y3S+h3S)} C${r(mx2)},${r(dy+y3S+h3S)} ${r(mx2)},${r(stBot)} ${r(lx2)},${r(stBot)} Z" fill="${cS}" opacity="0.20"/>`;
+    html += '<path d="M'+r(lx2)+','+r(stTop)+' C'+r(mx2)+','+r(stTop)+' '+r(mx2)+','+r(dy+y3S)+' '+r(rx3)+','+r(dy+y3S)+' L'+r(rx3)+','+r(dy+y3S+h3S)+' C'+r(mx2)+','+r(dy+y3S+h3S)+' '+r(mx2)+','+r(stBot)+' '+r(lx2)+','+r(stBot)+' Z" fill="'+cS+'" opacity="0.18"/>';
   }
-  if (h3R > 4) {
+  if (h3R > 4){
     const rtTop = dy+y2_bottom+h3S, rtBot = dy+y2_bottom+h3S+h3R;
-    html += `<path d="M${r(lx2)},${r(rtTop)} C${r(mx2)},${r(rtTop)} ${r(mx2)},${r(dy+y3R_pos)} ${r(rx3)},${r(dy+y3R_pos)} L${r(rx3)},${r(dy+y3R_pos+h3R)} C${r(mx2)},${r(dy+y3R_pos+h3R)} ${r(mx2)},${r(rtBot)} ${r(lx2)},${r(rtBot)} Z" fill="${cR}" opacity="0.14"/>`;
+    html += '<path d="M'+r(lx2)+','+r(rtTop)+' C'+r(mx2)+','+r(rtTop)+' '+r(mx2)+','+r(dy+y3R_pos)+' '+r(rx3)+','+r(dy+y3R_pos)+' L'+r(rx3)+','+r(dy+y3R_pos+h3R)+' C'+r(mx2)+','+r(dy+y3R_pos+h3R)+' '+r(mx2)+','+r(rtBot)+' '+r(lx2)+','+r(rtBot)+' Z" fill="'+cR+'" opacity="0.85"/>';
   }
 
-  return { html, viewBox: `0 0 ${W} ${r(H+dy)}`,
+  // ── Col 1 : revenus ──
+  html += '<rect x="'+r(x1)+'" y="'+r(dy)+'" width="'+barW+'" height="'+r(H_BASE)+'" rx="6" fill="url(#grad-rev)"/>';
+  html += title(x1+barW/2, 'REVENUS');
+  html += '<text x="'+r(x1+barW/2)+'" y="'+r(dy+H_BASE/2-1)+'" text-anchor="middle" font-size="14" font-weight="700" font-family="Inter,system-ui,sans-serif" fill="#fff">'+fmtK(totalRev)+'</text>';
+  html += '<text x="'+r(x1+barW/2)+'" y="'+r(dy+H_BASE/2+13)+'" text-anchor="middle" font-size="10" font-family="Inter,system-ui,sans-serif" fill="rgba(255,255,255,0.8)">/ mois</text>';
+
+  // ── Col 2 : charges ──
+  html += '<rect x="'+r(x2)+'" y="'+r(dy)+'" width="'+barW+'" height="'+r(h2B)+'" rx="6" fill="'+cB+'"/>';
+  if (h2E > 2) html += '<rect x="'+r(x2)+'" y="'+r(dy+y2E)+'" width="'+barW+'" height="'+r(h2E)+'" rx="6" fill="'+cE+'"/>';
+  html += title(x2+barW/2, 'CHARGES');
+  html += onBar(x2, 0, h2B, besoins, Math.round(rB*100));
+  if (h2E > 2) html += onBar(x2, y2E, h2E, envies, Math.round(rE*100));
+
+  // ── Col 3 : disponible ──
+  if (h3S > 2) html += '<rect x="'+r(x3)+'" y="'+r(dy+y3S)+'" width="'+barW+'" height="'+r(h3S)+'" rx="6" fill="'+cS+'"/>';
+  if (h3R > 4) html += '<rect x="'+r(x3)+'" y="'+r(dy+y3R_pos)+'" width="'+barW+'" height="'+r(h3R)+'" rx="6" fill="'+cR+'"/>';
+  html += title(x3+barW/2, 'DISPONIBLE');
+  if (h3S > 2) html += onBar(x3, y3S, h3S, epargne, Math.round(rS*100));
+  if (h3R > 4) html += onBar(x3, y3R_pos, h3R, reste, Math.round(rR*100), restTxt);
+
+  return { html, viewBox: '0 0 '+W+' '+r(dy+H),
     legendItems: [
-      { color:cB, label:`Charges fixes · ${Math.round(rB*100)}%` },
-      { color:cE, label:`Dépenses var. · ${Math.round(rE*100)}%` },
-      ...(rS > 0.005 ? [{ color:cS, label:`Épargne · ${Math.round(rS*100)}%` }] : []),
-      ...(rR > 0.01  ? [{ color: isDark ? 'rgba(255,255,255,0.35)':'rgba(0,0,0,0.25)', label:`Reste · ${Math.round(rR*100)}%` }] : []),
+      { color:cB, label:'Charges fixes · '+formatEuro(besoins)+' · '+Math.round(rB*100)+'%' },
+      { color:cE, label:'Dépenses variables · '+formatEuro(envies)+' · '+Math.round(rE*100)+'%' },
+      ...(rS > 0.005 ? [{ color:cS, label:'Épargne · '+formatEuro(epargne)+' · '+Math.round(rS*100)+'%' }] : []),
+      ...(rR > 0.01  ? [{ color: isDark?'rgba(255,255,255,0.4)':'rgba(0,0,0,0.28)', label:'Reste à vivre · '+formatEuro(reste)+' · '+Math.round(rR*100)+'%' }] : []),
     ]
   };
 }
@@ -2500,6 +2503,68 @@ function buildSankeyFlow() {
 // ══════════════════════════════════════════════════════════════
 // DETTES — Types & Classification
 // ══════════════════════════════════════════════════════════════
+// ── Detail par poste : repli / ouverture ──
+function toggleDetailPoste() {
+  const block = document.getElementById('sankey-block');
+  const btn = document.getElementById('detail-poste-toggle');
+  if (!block) return;
+  const open = block.style.display === 'none';
+  block.style.display = open ? 'flex' : 'none';
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) {
+    block.querySelectorAll('.sankey-bar-fill').forEach(f => {
+      const t = f.dataset.target;
+      f.style.width = '0%';
+      requestAnimationFrame(() => requestAnimationFrame(() => { f.style.width = t + '%'; }));
+    });
+  }
+}
+
+// ── Export PNG du Sankey ──
+function downloadBudgetImage() {
+  const svg = document.getElementById('sankey-svg');
+  if (!svg) return;
+  const vb = (svg.getAttribute('viewBox') || '0 0 460 300').split(/\s+/).map(Number);
+  const W = vb[2], H = vb[3];
+  const isDark = document.documentElement.classList.contains('dark');
+  const bg  = isDark ? '#12121f' : '#ffffff';
+  const fg  = isDark ? '#f5f5fa' : '#1a1a2e';
+  const sub = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)';
+  const pad = 28, headerH = 54, footerH = 34, scale = 2;
+  const outW = W + pad*2;
+  const outH = H + pad*2 + headerH + footerH;
+  const inner = svg.innerHTML;
+  const wrap =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="'+outW+'" height="'+outH+'" viewBox="0 0 '+outW+' '+outH+'">'+
+    '<rect width="'+outW+'" height="'+outH+'" fill="'+bg+'"/>'+
+    '<text x="'+pad+'" y="'+(pad+16)+'" font-family="Georgia,serif" font-style="italic" font-size="22" fill="'+fg+'">Où va mon argent</text>'+
+    '<text x="'+(outW-pad)+'" y="'+(pad+15)+'" text-anchor="end" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="'+sub+'">Fundamental</text>'+
+    '<g transform="translate('+pad+','+(pad+headerH)+')">'+inner+'</g>'+
+    '<text x="'+pad+'" y="'+(outH-pad+2)+'" font-family="Inter,sans-serif" font-size="11" fill="'+sub+'">Budget mensuel · fundamentals-beta.netlify.app</text>'+
+    '</svg>';
+  const svgBlob = new Blob([wrap], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+  const img = new Image();
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = outW*scale; canvas.height = outH*scale;
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    ctx.drawImage(img, 0, 0);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(function(png) {
+      if (!png) return;
+      const a = document.createElement('a');
+      const dlUrl = URL.createObjectURL(png);
+      a.href = dlUrl; a.download = 'mon-budget.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(dlUrl), 1500);
+    }, 'image/png');
+  };
+  img.onerror = function() { URL.revokeObjectURL(url); };
+  img.src = url;
+}
+
 const DETTE_TYPES = [
   { val:'credit_immo',           label:'Crédit immobilier' },
   { val:'pret_etudiant',         label:'Prêt étudiant' },
