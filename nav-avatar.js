@@ -11,6 +11,7 @@
   const isDashboard = page === 'dashboard.html';
   const isBrique    = page.startsWith('brique-');
   const isPlan      = page === 'plan.html';
+  const isSimulateur = page === 'simulateur-emprunt.html';
 
   // ── Trouver ou créer le slot nav-right ────────────────────────
   let navRight = document.querySelector('.nav-right, #nav-right-slot');
@@ -225,8 +226,8 @@
     }
   } catch(e) {}
 
-  // ── Bouton retour dashboard (briques + plan) ──────────────────
-  if (isBrique || isPlan) {
+  // ── Bouton retour dashboard (briques + plan + simulateur) ─────
+  if (isBrique || isPlan || isSimulateur) {
     const backBtn = document.createElement('a');
     backBtn.href = 'dashboard.html';
     backBtn.className = 'nav-back-dashboard';
