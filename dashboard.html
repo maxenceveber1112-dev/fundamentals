@@ -1575,8 +1575,8 @@
       id: 'sim_emprunt',
       icon: iconSVG('home'),
       colorClass: 'violet',
-      name: 'Capacité d\'emprunt',
-      sub: 'Montant empruntable selon tes revenus',
+      name: 'Capacité d\'emprunt ou mensualité',
+      sub: 'Simule ta mensualité ou ton montant empruntable',
       value: borrowing ? formatEuro(borrowing) : null,
       valueLabel: borrowing ? 'capacité estimée' : null,
       rows: borrowing ? [
@@ -1584,9 +1584,9 @@
         { label: 'Apport disponible', val: formatEuro(apport) },
         { label: 'Budget total', val: formatEuro((borrowing||0) + (apport||0)) },
       ] : [],
-      ctaLabel: 'Bientôt disponible',
-      ctaHref: null,
-      ctaDisabled: true,
+      ctaLabel: 'Ouvrir le simulateur',
+      ctaHref: 'simulateur-emprunt.html',
+      ctaDisabled: false,
     });
     container.appendChild(simEmprunt);
 

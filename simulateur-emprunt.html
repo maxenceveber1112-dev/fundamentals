@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Fundamental — Capacité d'emprunt ou mensualité</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <script>(function(){var s=localStorage.getItem('fundamental-theme');var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');})()</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
+  <link rel="stylesheet" href="theme.css" />
+  <style>
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100dvh; background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+
+    /* ── Top bar ── */
+    .sim-topbar { position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0.75rem 1.25rem; background:color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-bottom:1px solid var(--border-subtle); }
+    .sim-brand { display:inline-flex; align-items:center; gap:0.55rem; text-decoration:none; color:var(--text); font-weight:600; font-size:0.95rem; }
+    .sim-mark { width:26px; height:26px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; background:#8B93B8; color:#fff; font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:1.05rem; line-height:1; }
+    html.dark .sim-mark { background:#17172e; color:#8F8CD4; }
+    .sim-topbar-right { display:flex; align-items:center; gap:0.75rem; }
+    .sim-back { text-decoration:none; color:var(--text-muted); font-size:0.85rem; font-weight:500; padding:0.4rem 0.7rem; border-radius:9999px; transition:color .2s, background .2s; }
+    .sim-back:hover { color:var(--text); background:var(--surface-2); }
+    .sim-toggle { width:34px; height:34px; border-radius:9999px; border:1px solid var(--border-mid); background:var(--surface-1); color:var(--text-muted); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:color .2s, border-color .2s; }
+    .sim-toggle:hover { color:var(--text); border-color:var(--border-hover); }
+
+    /* ── Layout ── */
+    .sim-wrap { max-width:560px; margin:0 auto; padding:2.5rem 1.25rem 4rem; }
+    .sim-kicker { font-size:0.7rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-strong); }
+    html.dark .sim-kicker { color:var(--accent-strong); }
+    .sim-title { font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:2rem; line-height:1.1; margin:0.5rem 0 0.5rem; }
+    .sim-sub { font-size:0.9rem; color:var(--text-muted); line-height:1.55; margin:0 0 1.75rem; max-width:44ch; }
+
+    .sim-card { background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:1.25rem; padding:1.5rem 1.5rem 1.75rem; box-shadow:0 1px 3px rgba(20,20,30,0.04), 0 10px 30px rgba(20,20,30,0.05); }
+    html.dark .sim-card { box-shadow:0 10px 30px rgba(0,0,0,0.35); }
+
+    /* ── Tabs ── */
+    .sim-tabs { display:flex; gap:0.25rem; padding:0.25rem; background:var(--surface-2); border-radius:9999px; margin-bottom:1.5rem; }
+    .sim-tab { flex:1; font-size:0.82rem; font-weight:600; color:var(--text-muted); background:transparent; border:none; border-radius:9999px; padding:0.55rem 0.5rem; cursor:pointer; transition:color .2s, background .2s; }
+    .sim-tab.active { background:var(--bg-elevated); color:var(--text); box-shadow:0 1px 3px rgba(20,20,30,0.10); }
+    html.dark .sim-tab.active { background:rgba(255,255,255,0.12); color:#fff; }
+
+    /* ── Fields ── */
+    .sim-field { margin-bottom:1.35rem; }
+    .sim-field-row { display:flex; align-items:center; justify-content:space-between; gap:0.5rem; margin-bottom:0.5rem; }
+    .sim-label { font-size:0.82rem; font-weight:600; color:var(--text); }
+    .sim-label-sub { display:block; font-size:0.72rem; font-weight:400; color:var(--text-muted); margin-top:0.1rem; }
+
+    /* Types */
+    .sim-types { display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:0.5rem; margin-top:0.5rem; }
+    .sim-type { display:flex; flex-direction:column; gap:0.15rem; text-align:left; padding:0.6rem 0.7rem; border-radius:0.8rem; border:1px solid var(--border-mid); background:var(--surface-1); cursor:pointer; transition:border-color .15s, background .15s; }
+    .sim-type:hover { border-color:var(--border-hover); }
+    .sim-type.active { border-color:var(--accent-strong); background:var(--accent-soft); }
+    .sim-type-name { font-size:0.8rem; font-weight:600; color:var(--text); }
+    .sim-type-sub { font-size:0.66rem; color:var(--text-muted); line-height:1.25; }
+
+    /* Amount input */
+    .sim-input-wrap { position:relative; display:flex; align-items:center; }
+    .sim-input { width:100%; font-family:'Inter',sans-serif; font-size:1.35rem; font-weight:700; color:var(--text); background:var(--surface-1); border:1px solid var(--border-mid); border-radius:0.8rem; padding:0.75rem 2.2rem 0.75rem 0.9rem; outline:none; transition:border-color .15s; -moz-appearance:textfield; }
+    .sim-input::-webkit-outer-spin-button, .sim-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+    .sim-input:focus { border-color:var(--accent-strong); }
+    .sim-input-suffix { position:absolute; right:0.95rem; font-size:1.05rem; font-weight:600; color:var(--text-muted); pointer-events:none; }
+
+    /* Slider */
+    .sim-slider { -webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:9999px; background:var(--surface-3); outline:none; margin:0.35rem 0; }
+    .sim-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%; background:#fff; border:2px solid var(--accent-strong); box-shadow:0 1px 4px rgba(20,20,30,0.2); cursor:pointer; }
+    .sim-slider::-moz-range-thumb { width:20px; height:20px; border-radius:50%; background:#fff; border:2px solid var(--accent-strong); cursor:pointer; }
+    .sim-slider-bounds { display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-faint); }
+    .sim-duree-val { font-family:'Fraunces',serif; font-style:italic; font-size:1.05rem; color:var(--text); }
+
+    /* Taux */
+    .sim-taux-badge { display:inline-block; font-size:0.62rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent-strong); background:var(--accent-soft); padding:0.1rem 0.4rem; border-radius:9999px; margin-left:0.35rem; vertical-align:middle; }
+    .sim-taux-edit { font-size:0.76rem; font-weight:600; color:var(--accent-strong); background:none; border:none; cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:0.3rem; }
+    html.dark .sim-taux-edit { color:var(--accent-strong); }
+    .sim-taux-edit:hover { text-decoration:underline; }
+    .sim-taux-display { font-size:1.05rem; font-weight:700; color:var(--text); }
+    .sim-taux-note { font-size:0.78rem; font-weight:500; color:var(--text-muted); margin-left:0.4rem; }
+    .sim-taux-panel { margin-top:0.75rem; padding:0.9rem 1rem; background:var(--surface-2); border-radius:0.8rem; display:flex; flex-direction:column; gap:0.7rem; }
+    .sim-taux-panel[hidden] { display:none; }
+    .sim-taux-input-row { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; }
+    .sim-taux-input-row label { font-size:0.8rem; color:var(--text-secondary,var(--text-muted)); }
+    .sim-taux-small { width:96px; font-size:0.95rem; font-weight:600; text-align:right; padding:0.45rem 0.6rem; border-radius:0.6rem; border:1px solid var(--border-mid); background:var(--bg-elevated); color:var(--text); outline:none; -moz-appearance:textfield; }
+    .sim-taux-small::-webkit-outer-spin-button, .sim-taux-small::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+    .sim-taux-small:focus { border-color:var(--accent-strong); }
+    .sim-taux-reset { align-self:flex-start; font-size:0.75rem; font-weight:600; color:var(--text-muted); background:none; border:none; cursor:pointer; padding:0; }
+    .sim-taux-reset:hover { color:var(--text); text-decoration:underline; }
+
+    /* ── Result (mise en évidence) ── */
+    .sim-result { margin-top:1.5rem; padding:1.6rem 1.25rem 1.4rem; border-radius:1rem; text-align:center; background:linear-gradient(160deg, var(--accent-soft), color-mix(in srgb, var(--accent-soft) 30%, transparent)); border:1px solid var(--accent-soft); }
+    .sim-result-label { font-size:0.78rem; font-weight:600; color:var(--accent-strong); letter-spacing:0.02em; }
+    .sim-result-value { font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:3rem; line-height:1.05; color:var(--text); margin:0.35rem 0 0.15rem; letter-spacing:-0.01em; }
+    .sim-result-value .unit { font-size:1.4rem; font-weight:500; color:var(--text-muted); font-family:'Inter',sans-serif; }
+    .sim-result-sub { font-size:0.82rem; color:var(--text-muted); }
+    .sim-result-rows { margin-top:1.15rem; padding-top:1.05rem; border-top:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:0.5rem; text-align:left; }
+    .sim-rrow { display:flex; align-items:center; justify-content:space-between; font-size:0.82rem; }
+    .sim-rrow-label { color:var(--text-muted); }
+    .sim-rrow-val { font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; }
+
+    .sim-disclaimer { max-width:44ch; margin:1.5rem auto 0; font-size:0.72rem; color:var(--text-faint); text-align:center; line-height:1.5; }
+
+    @media (max-width:520px) {
+      .sim-title { font-size:1.6rem; }
+      .sim-result-value { font-size:2.4rem; }
+      .sim-types { grid-template-columns:repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+  <header class="sim-topbar">
+    <a href="dashboard.html" class="sim-brand" aria-label="Retour au dashboard">
+      <span class="sim-mark">f</span>
+      <span>Fundamental</span>
+    </a>
+    <div class="sim-topbar-right">
+      <button class="sim-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Basculer le thème">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="dashboard.html" class="sim-back">← Dashboard</a>
+    </div>
+  </header>
+
+  <main class="sim-wrap">
+    <div class="sim-kicker">SIMULATEUR</div>
+    <h1 class="sim-title">Capacité d'emprunt ou mensualité</h1>
+    <p class="sim-sub">Pars d'un montant pour estimer ta mensualité, ou d'une mensualité pour connaître ta capacité d'emprunt.</p>
+
+    <div class="sim-card">
+      <div class="sim-tabs" role="tablist" aria-label="Sens de calcul">
+        <button class="sim-tab active" id="tab-montant" type="button" onclick="setMode('montant')" role="tab">Montant → mensualité</button>
+        <button class="sim-tab" id="tab-mensualite" type="button" onclick="setMode('mensualite')" role="tab">Mensualité → montant</button>
+      </div>
+
+      <div class="sim-field">
+        <span class="sim-label">Type d'achat</span>
+        <div class="sim-types" id="sim-types"></div>
+      </div>
+
+      <div class="sim-field">
+        <label class="sim-label" id="sim-input-label" for="sim-amount">Montant emprunté</label>
+        <div class="sim-input-wrap">
+          <input type="number" id="sim-amount" class="sim-input" min="0" inputmode="numeric" />
+          <span class="sim-input-suffix" id="sim-input-suffix">€</span>
+        </div>
+      </div>
+
+      <div class="sim-field">
+        <div class="sim-field-row">
+          <span class="sim-label">Durée</span>
+          <span class="sim-duree-val" id="sim-duree-val">20 ans</span>
+        </div>
+        <input type="range" id="sim-duree" class="sim-slider" min="1" max="25" step="1" value="20" />
+        <div class="sim-slider-bounds"><span id="sim-duree-min">1 an</span><span id="sim-duree-max">25 ans</span></div>
+      </div>
+
+      <div class="sim-field">
+        <div class="sim-field-row">
+          <span class="sim-label">Taux <span class="sim-taux-badge" id="sim-taux-badge">auto</span></span>
+          <button class="sim-taux-edit" id="sim-taux-edit" type="button" onclick="toggleTauxEdit()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Personnaliser
+          </button>
+        </div>
+        <div class="sim-taux-display" id="sim-taux-display">—</div>
+        <div class="sim-taux-panel" id="sim-taux-panel" hidden>
+          <div class="sim-taux-input-row">
+            <label for="sim-taux">Taux du crédit (% / an)</label>
+            <input type="number" step="0.01" min="0" id="sim-taux" class="sim-taux-small" />
+          </div>
+          <div class="sim-taux-input-row">
+            <label for="sim-taux-ass">Taux assurance (% / an)</label>
+            <input type="number" step="0.01" min="0" id="sim-taux-ass" class="sim-taux-small" />
+          </div>
+          <button class="sim-taux-reset" type="button" onclick="resetTaux()">Rétablir les taux automatiques</button>
+        </div>
+      </div>
+
+      <div class="sim-result">
+        <div class="sim-result-label" id="sim-result-label">Ta mensualité</div>
+        <div class="sim-result-value" id="sim-result-value">—</div>
+        <div class="sim-result-sub" id="sim-result-sub"></div>
+        <div class="sim-result-rows" id="sim-result-rows"></div>
+      </div>
+    </div>
+
+    <p class="sim-disclaimer">Estimation indicative à taux fixe, à partir de taux moyens de marché — hors frais de dossier, garanties et modularité. Ne constitue pas une offre de prêt.</p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="shared.js"></script>
+  <script src="supabase.js"></script>
+  <script src="immo-core.js"></script>
+  <script>
+  (function(){
+    'use strict';
+
+    var SIM_TYPES = [
+      { id:'rp',        name:'Immobilier',    sub:'Résidence principale',     dureeMax:25, dureeDef:20, taux:3.30, ass:0.34, defMontant:220000, defMens:1000 },
+      { id:'locatif',   name:'Locatif / RS',  sub:'Invest. / rés. secondaire',dureeMax:20, dureeDef:20, taux:3.60, ass:0.34, defMontant:160000, defMens:800 },
+      { id:'auto',      name:'Auto',          sub:'Thermique',                dureeMax:6,  dureeDef:5,  taux:5.50, ass:0.15, defMontant:22000,  defMens:350 },
+      { id:'auto_elec', name:'Auto élec.',    sub:'Prêt vert',                dureeMax:7,  dureeDef:5,  taux:1.00, ass:0.15, defMontant:32000,  defMens:450 },
+      { id:'conso',     name:'Conso',         sub:'Crédit conso',             dureeMax:10, dureeDef:4,  taux:6.50, ass:0.20, defMontant:10000,  defMens:250 }
+    ];
+
+    var mode = 'montant';       // 'montant' | 'mensualite'
+    var typeId = 'rp';
+    var tauxCustom = false;
+
+    function T(){ for (var i=0;i<SIM_TYPES.length;i++){ if (SIM_TYPES[i].id===typeId) return SIM_TYPES[i]; } return SIM_TYPES[0]; }
+    function el(id){ return document.getElementById(id); }
+    function n(v){ v = parseFloat(v); return isFinite(v) ? v : 0; }
+    function euro(v){ return Math.round(v).toLocaleString('fr-FR') + ' €'; }
+    function euro0(v){ return Math.round(v).toLocaleString('fr-FR'); }
+
+    function rate(){ return tauxCustom ? n(el('sim-taux').value) : T().taux; }
+    function assRate(){ return tauxCustom ? n(el('sim-taux-ass').value) : T().ass; }
+
+    // ── Rendu des types ──
+    function renderTypes(){
+      var c = el('sim-types'); c.innerHTML = '';
+      SIM_TYPES.forEach(function(t){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'sim-type' + (t.id===typeId ? ' active' : '');
+        b.setAttribute('aria-pressed', String(t.id===typeId));
+        b.innerHTML = '<span class="sim-type-name">'+t.name+'</span><span class="sim-type-sub">'+t.sub+'</span>';
+        b.onclick = function(){ setType(t.id); };
+        c.appendChild(b);
+      });
+    }
+
+    function setType(id){
+      typeId = id;
+      var t = T();
+      renderTypes();
+      // durée : bornes + valeur par défaut
+      var d = el('sim-duree');
+      d.max = t.dureeMax;
+      if (n(d.value) > t.dureeMax) d.value = t.dureeMax;
+      el('sim-duree-max').textContent = t.dureeMax + ' ans';
+      // montant par défaut si champ vide
+      var amt = el('sim-amount');
+      if (!n(amt.value)) amt.value = (mode==='montant') ? t.defMontant : t.defMens;
+      // taux auto (si pas personnalisé)
+      if (!tauxCustom){ el('sim-taux').value = t.taux; el('sim-taux-ass').value = t.ass; }
+      updateSlider(); recalc();
+    }
+
+    function setMode(m){
+      mode = m;
+      el('tab-montant').classList.toggle('active', m==='montant');
+      el('tab-mensualite').classList.toggle('active', m==='mensualite');
+      var t = T();
+      if (m==='montant'){
+        el('sim-input-label').textContent = 'Montant emprunté';
+        el('sim-input-suffix').textContent = '€';
+        el('sim-amount').value = t.defMontant;
+      } else {
+        el('sim-input-label').textContent = 'Mensualité (assurance comprise)';
+        el('sim-input-suffix').textContent = '€/mois';
+        el('sim-amount').value = t.defMens;
+      }
+      recalc();
+    }
+
+    function toggleTauxEdit(){
+      var p = el('sim-taux-panel');
+      var open = p.hasAttribute('hidden');
+      if (open){ p.removeAttribute('hidden'); } else { p.setAttribute('hidden',''); }
+    }
+    function resetTaux(){
+      tauxCustom = false;
+      var t = T();
+      el('sim-taux').value = t.taux; el('sim-taux-ass').value = t.ass;
+      el('sim-taux-badge').style.display = '';
+      recalc();
+    }
+
+    function updateSlider(){
+      var d = el('sim-duree');
+      var pct = (n(d.value) - n(d.min)) / (n(d.max) - n(d.min)) * 100;
+      d.style.background = 'linear-gradient(to right, var(--accent-strong) 0%, var(--accent-strong) '+pct+'%, var(--surface-3) '+pct+'%, var(--surface-3) 100%)';
+      var y = n(d.value);
+      el('sim-duree-val').textContent = y + (y>1 ? ' ans' : ' an');
+    }
+
+    function recalc(){
+      var t = T();
+      var months = n(el('sim-duree').value) * 12;
+      var r = rate(), ar = assRate();
+      var display = el('sim-taux-display');
+      display.innerHTML = r.toString().replace('.',',') + ' %<span class="sim-taux-note">+ assurance ' + ar.toString().replace('.',',') + ' %</span>';
+
+      var val = el('sim-result-value'), sub = el('sim-result-sub'), rows = el('sim-result-rows'), label = el('sim-result-label');
+      var input = n(el('sim-amount').value);
+      if (input <= 0 || months <= 0){ val.textContent = '—'; sub.textContent = ''; rows.innerHTML = ''; return; }
+
+      var years = months/12;
+      if (mode==='montant'){
+        var capital = input;
+        var mCredit = calculateMonthlyPayment(capital, r, months);
+        var mAss = capital * ar/100/12;
+        var mTot = mCredit + mAss;
+        label.textContent = 'Ta mensualité';
+        val.innerHTML = euro0(mTot) + ' <span class="unit">€/mois</span>';
+        sub.textContent = 'dont ' + euro(mCredit) + ' de crédit + ' + euro(mAss) + ' d’assurance';
+        var interets = mCredit*months - capital;
+        var coutAss = mAss*months;
+        rows.innerHTML =
+          row('Coût du crédit (intérêts)', euro(interets)) +
+          row('Coût de l’assurance', euro(coutAss)) +
+          row('Total remboursé sur ' + years + ' ans', euro(mTot*months));
+      } else {
+        var target = input; // mensualité totale
+        var payFactor = calculateMonthlyPayment(1, r, months); // part crédit par € de capital
+        var denom = payFactor + ar/100/12;
+        var cap = denom > 0 ? target / denom : 0;
+        var mC = calculateMonthlyPayment(cap, r, months);
+        var mA = cap * ar/100/12;
+        label.textContent = 'Montant empruntable';
+        val.innerHTML = euro0(cap) + ' <span class="unit">€</span>';
+        sub.textContent = 'pour ' + euro(target) + '/mois pendant ' + years + ' ans';
+        var inter = mC*months - cap;
+        rows.innerHTML =
+          row('Mensualité de crédit', euro(mC) + '/mois') +
+          row('dont assurance', euro(mA) + '/mois') +
+          row('Coût du crédit (intérêts)', euro(inter)) +
+          row('Total remboursé sur ' + years + ' ans', euro(target*months));
+      }
+    }
+    function row(l, v){ return '<div class="sim-rrow"><span class="sim-rrow-label">'+l+'</span><span class="sim-rrow-val">'+v+'</span></div>'; }
+
+    function initSim(){
+      renderTypes();
+      var t = T();
+      el('sim-duree').max = t.dureeMax;
+      el('sim-duree').value = t.dureeDef;
+      el('sim-duree-max').textContent = t.dureeMax + ' ans';
+      el('sim-amount').value = t.defMontant;
+      el('sim-taux').value = t.taux; el('sim-taux-ass').value = t.ass;
+
+      el('sim-amount').addEventListener('input', recalc);
+      el('sim-duree').addEventListener('input', function(){ updateSlider(); recalc(); });
+      el('sim-taux').addEventListener('input', function(){ tauxCustom = true; el('sim-taux-badge').style.display='none'; recalc(); });
+      el('sim-taux-ass').addEventListener('input', function(){ tauxCustom = true; el('sim-taux-badge').style.display='none'; recalc(); });
+
+      updateSlider(); recalc();
+    }
+    window.setMode = setMode;
+    window.toggleTauxEdit = toggleTauxEdit;
+    window.resetTaux = resetTaux;
+
+    document.addEventListener('DOMContentLoaded', async function(){
+      try { if (typeof requireAuth === 'function'){ var u = await requireAuth(); if (!u) return; } } catch(e){}
+      initSim();
+    });
+  })();
+  </script>
+  <script src="feedback-widget.js"></script>
+  <script src="cookie-banner.js"></script>
+  <script src="theme.js"></script>
+</body>
+</html>
