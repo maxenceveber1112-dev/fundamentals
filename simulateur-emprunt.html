@@ -17,17 +17,6 @@
     * { box-sizing:border-box; }
     body { margin:0; min-height:100dvh; background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
 
-    /* ── Top bar ── */
-    .sim-topbar { position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:0.75rem 1.5rem; background:color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); border-bottom:1px solid var(--border-subtle); }
-    .sim-brand { display:inline-flex; align-items:center; gap:0.55rem; text-decoration:none; color:var(--text); font-weight:600; font-size:0.95rem; }
-    .sim-mark { width:26px; height:26px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; background:#8B93B8; color:#fff; font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-size:1.05rem; line-height:1; }
-    html.dark .sim-mark { background:#17172e; color:#8F8CD4; }
-    .sim-topbar-right { display:flex; align-items:center; gap:0.75rem; }
-    .sim-back { text-decoration:none; color:var(--text-muted); font-size:0.85rem; font-weight:500; padding:0.4rem 0.7rem; border-radius:9999px; transition:color .2s, background .2s; }
-    .sim-back:hover { color:var(--text); background:var(--surface-2); }
-    .sim-toggle { width:34px; height:34px; border-radius:9999px; border:1px solid var(--border-mid); background:var(--surface-1); color:var(--text-muted); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:color .2s, border-color .2s; }
-    .sim-toggle:hover { color:var(--text); border-color:var(--border-hover); }
-
     /* ── Layout ── */
     .sim-wrap { max-width:940px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
     .sim-kicker { font-size:0.7rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-strong); }
@@ -152,19 +141,6 @@
   </style>
 </head>
 <body>
-  <header class="sim-topbar">
-    <a href="dashboard.html" class="sim-brand" aria-label="Retour au dashboard">
-      <span class="sim-mark">f</span>
-      <span>Fundamental</span>
-    </a>
-    <div class="sim-topbar-right">
-      <button class="sim-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Basculer le thème">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-      <a href="dashboard.html" class="sim-back">← Dashboard</a>
-    </div>
-  </header>
-
   <main class="sim-wrap">
     <div class="sim-kicker">SIMULATEUR</div>
     <h1 class="sim-title">Capacité d'emprunt ou mensualité</h1>
@@ -253,9 +229,11 @@
     <p class="sim-disclaimer">Estimation indicative à taux fixe, à partir de taux moyens de marché — hors frais de dossier, garanties et modularité. Ne constitue pas une offre de prêt.</p>
   </main>
 
+  <script src="sidebar.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="shared.js"></script>
   <script src="supabase.js"></script>
+  <script src="nav-avatar.js"></script>
   <script src="immo-core.js"></script>
   <script>
   (function(){
