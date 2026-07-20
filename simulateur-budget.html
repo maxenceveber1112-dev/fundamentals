@@ -17,66 +17,76 @@
     * { box-sizing:border-box; }
     body { margin:0; min-height:100dvh; background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
 
-    .sb-wrap { max-width:1040px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
+    .sb-wrap { max-width:1280px; margin:0 auto; padding:2.25rem 1.5rem 4rem; }
     .sb-kicker { font-size:0.7rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-strong); }
     .sb-title { font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:2.15rem; line-height:1.1; margin:0.5rem 0 0.5rem; }
     .sb-sub { font-size:0.92rem; color:var(--text-muted); line-height:1.55; margin:0 0 1.5rem; max-width:56ch; }
 
-    /* Tabs */
     .sb-tabs { display:inline-flex; gap:0.25rem; padding:0.25rem; background:var(--surface-2); border-radius:9999px; margin-bottom:1.5rem; }
     .sb-tab { font-size:0.82rem; font-weight:600; color:var(--text-muted); background:transparent; border:none; border-radius:9999px; padding:0.5rem 1.1rem; cursor:pointer; transition:color .2s, background .2s; }
     .sb-tab.active { background:var(--bg-elevated); color:var(--text); box-shadow:0 1px 3px rgba(20,20,30,0.10); }
     html.dark .sb-tab.active { background:rgba(255,255,255,0.12); color:#fff; }
 
-    /* Budget banner (mise en évidence) */
-    .sb-banner { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; padding:1.25rem 1.5rem; border-radius:1.1rem; background:linear-gradient(160deg, var(--accent-soft), color-mix(in srgb, var(--accent-soft) 28%, transparent)); border:1px solid var(--accent-soft); margin-bottom:1.5rem; }
+    /* Deux colonnes : saisie à gauche, résultat sticky à droite */
+    .sb-cols { display:grid; grid-template-columns:360px minmax(0,1fr); gap:1.5rem; align-items:start; }
+    .sb-right { position:sticky; top:72px; }
+    @media (max-width:900px) { .sb-cols { grid-template-columns:1fr; } .sb-right { position:static; } }
+
+    /* Bannière budget + taux d'épargne */
+    .sb-banner { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; padding:1.15rem 1.4rem; border-radius:1.1rem; background:linear-gradient(160deg, var(--accent-soft), color-mix(in srgb, var(--accent-soft) 28%, transparent)); border:1px solid var(--accent-soft); margin-bottom:1.25rem; }
     .sb-banner-label { font-size:0.75rem; font-weight:600; color:var(--accent-strong); letter-spacing:0.02em; }
-    .sb-banner-value { font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:2.6rem; line-height:1.02; color:var(--text); }
-    .sb-banner-value .unit { font-size:1.15rem; font-weight:500; color:var(--text-muted); font-family:'Inter',sans-serif; }
-    .sb-banner-meta { text-align:right; font-size:0.82rem; color:var(--text-muted); line-height:1.5; }
-    .sb-banner-meta b { color:var(--text); font-weight:600; }
+    .sb-banner-value { font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:2.5rem; line-height:1.02; color:var(--text); }
+    .sb-banner-value .unit { font-size:1.1rem; font-weight:500; color:var(--text-muted); font-family:'Inter',sans-serif; }
+    .sb-banner-meta { text-align:right; font-size:0.95rem; color:var(--text-muted); line-height:1.5; }
+    .sb-banner-meta b { color:var(--text); font-weight:700; }
+    .sb-meta-sm { font-size:0.8rem; }
+    .sb-meta-sm2 { font-size:0.74rem; color:var(--text-faint); }
     @media(max-width:560px){ .sb-banner-meta { text-align:left; } }
 
-    /* Panels */
-    .sb-panel { background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:1.25rem; padding:1.5rem; box-shadow:0 1px 3px rgba(20,20,30,0.04), 0 10px 30px rgba(20,20,30,0.05); margin-bottom:1.5rem; }
+    .sb-panel { background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:1.25rem; padding:1.4rem; box-shadow:0 1px 3px rgba(20,20,30,0.04), 0 10px 30px rgba(20,20,30,0.05); }
     html.dark .sb-panel { box-shadow:0 10px 30px rgba(0,0,0,0.35); }
     .sb-mode { display:none; }
     .sb-mode.active { display:block; }
 
-    .sb-section { margin-bottom:1.5rem; }
+    .sb-section { margin-bottom:1rem; padding:0.9rem 1rem 1rem; border-radius:0.9rem; border:1px solid var(--border-subtle); }
     .sb-section:last-child { margin-bottom:0; }
+    .sb-section.in   { background:rgba(22,163,74,0.05); border-color:rgba(22,163,74,0.18); }
+    .sb-section.fix  { background:rgba(139,92,246,0.05); border-color:rgba(139,92,246,0.18); }
+    .sb-section.var  { background:rgba(99,102,241,0.05); border-color:rgba(99,102,241,0.18); }
+    .sb-section.debt { background:rgba(249,115,22,0.05); border-color:rgba(249,115,22,0.18); }
+    .sb-section.save { background:rgba(20,184,166,0.05); border-color:rgba(20,184,166,0.18); }
     .sb-section-head { display:flex; align-items:center; gap:0.5rem; font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.75rem; }
     .sb-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-    .sb-dot.in { background:var(--green); } .sb-dot.fix { background:#8B5CF6; } .sb-dot.var { background:#6366F1; } .sb-dot.debt { background:#F97316; } .sb-dot.save { background:var(--green); }
-    .sb-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.75rem; }
-    .sb-field { display:flex; flex-direction:column; gap:0.3rem; }
-    .sb-flabel { font-size:0.78rem; font-weight:500; color:var(--text-secondary,var(--text-muted)); }
+    .sb-dot.in { background:#16A34A; } .sb-dot.fix { background:#8B5CF6; } .sb-dot.var { background:#6366F1; } .sb-dot.debt { background:#F97316; } .sb-dot.save { background:#14B8A6; }
+    .sb-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
+    .sb-field { display:flex; flex-direction:column; gap:0.25rem; }
+    .sb-flabel { font-size:0.75rem; font-weight:500; color:var(--text-secondary,var(--text-muted)); }
     .sb-inp-wrap { position:relative; display:flex; align-items:center; }
-    .sb-inp { width:100%; font-size:0.95rem; font-weight:600; color:var(--text); background:var(--surface-1); border:1px solid var(--border-mid); border-radius:0.6rem; padding:0.5rem 1.8rem 0.5rem 0.7rem; outline:none; transition:border-color .15s; -moz-appearance:textfield; }
+    .sb-inp { width:100%; font-size:0.92rem; font-weight:600; color:var(--text); background:var(--surface-1); border:1px solid var(--border-mid); border-radius:0.55rem; padding:0.45rem 1.7rem 0.45rem 0.6rem; outline:none; transition:border-color .15s; -moz-appearance:textfield; }
     .sb-inp::-webkit-outer-spin-button,.sb-inp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
     .sb-inp:focus { border-color:var(--accent-strong); }
-    .sb-inp-suffix { position:absolute; right:0.6rem; font-size:0.82rem; color:var(--text-faint); pointer-events:none; }
-    .sb-inp.name { font-weight:500; padding-right:0.7rem; }
+    .sb-inp-suffix { position:absolute; right:0.55rem; font-size:0.78rem; color:var(--text-faint); pointer-events:none; }
+    .sb-inp.name { font-weight:500; padding-right:0.6rem; }
 
-    /* Dynamic rows */
-    .sb-row { display:flex; gap:0.5rem; align-items:center; margin-bottom:0.5rem; }
+    .sb-row { display:flex; gap:0.4rem; align-items:center; margin-bottom:0.4rem; }
     .sb-row .sb-inp.name { flex:1 1 auto; min-width:0; }
-    .sb-row .sb-inp.amt { width:96px; flex:0 0 auto; }
-    .sb-row .sb-type { width:130px; flex:0 0 auto; font-size:0.85rem; padding:0.5rem 0.5rem; border:1px solid var(--border-mid); border-radius:0.6rem; background:var(--surface-1); color:var(--text); }
-    .sb-del { flex:0 0 auto; width:30px; height:30px; border-radius:0.55rem; border:1px solid var(--border-subtle); background:var(--bg-elevated); color:var(--text-muted); font-size:1.1rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .sb-row .sb-inp.amt { width:82px; flex:0 0 auto; }
+    .sb-row .sb-type { width:118px; flex:0 0 auto; font-size:0.82rem; padding:0.45rem 0.4rem; border:1px solid var(--border-mid); border-radius:0.55rem; background:var(--surface-1); color:var(--text); }
+    .sb-del { flex:0 0 auto; width:28px; height:28px; border-radius:0.5rem; border:1px solid var(--border-subtle); background:var(--bg-elevated); color:var(--text-muted); font-size:1.05rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
     .sb-del:hover { color:var(--red); border-color:var(--red); }
-    .sb-add { display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; width:100%; margin-top:0.35rem; font-size:0.8rem; font-weight:600; color:var(--accent-strong); background:none; border:1px dashed var(--border-mid); border-radius:0.7rem; padding:0.55rem 0.9rem; cursor:pointer; transition:background .15s, border-color .15s; }
+    .sb-add { display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; width:100%; margin-top:0.3rem; font-size:0.78rem; font-weight:600; color:var(--accent-strong); background:none; border:1px dashed var(--border-mid); border-radius:0.6rem; padding:0.5rem 0.9rem; cursor:pointer; transition:background .15s, border-color .15s; }
     .sb-add:hover { background:var(--surface); border-color:var(--accent-strong); }
     html.dark .sb-add { color:#A78BFA; }
 
-    /* Free : bloc catégorie */
-    .sb-cat { border:1px solid var(--border-subtle); border-radius:0.9rem; padding:0.9rem; margin-bottom:0.75rem; background:var(--surface-1); }
-    .sb-cat-head { display:flex; gap:0.5rem; align-items:center; margin-bottom:0.6rem; }
+    /* Libre : blocs catégories colorés */
+    .sb-cat { border:1px solid var(--border-subtle); border-left:3px solid var(--border-mid); border-radius:0.8rem; padding:0.8rem; margin-bottom:0.65rem; background:var(--surface-1); transition:background .2s, border-color .2s; }
+    .sb-cat-head { display:flex; gap:0.4rem; align-items:center; margin-bottom:0.55rem; }
     .sb-cat-head .sb-inp.name { flex:1; font-weight:600; }
-    .sb-subs { display:flex; flex-direction:column; gap:0.4rem; padding-left:0.5rem; border-left:2px solid var(--border-subtle); margin-left:0.2rem; }
+    .sb-ep-check { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.72rem; font-weight:600; color:var(--text-muted); cursor:pointer; white-space:nowrap; flex-shrink:0; padding:0 0.3rem; }
+    .sb-ep-check input { accent-color:#16A34A; cursor:pointer; }
+    .sb-subs { display:flex; flex-direction:column; gap:0.35rem; padding-left:0.5rem; border-left:2px solid var(--border-subtle); margin-left:0.15rem; }
 
-    /* Sankey result */
-    .sb-result-head { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.875rem; }
+    .sb-result-head { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.75rem; }
     .sb-result-title { font-size:0.75rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); }
     .sb-dl-btn { display:inline-flex; align-items:center; gap:0.375rem; font-size:0.78rem; font-weight:600; color:var(--text-secondary); background:transparent; border:1px solid var(--border-subtle); border-radius:9999px; padding:0.4rem 0.85rem; cursor:pointer; transition:all .15s; }
     .sb-dl-btn:hover { color:var(--text); border-color:var(--border-mid); background:rgba(0,0,0,0.03); }
@@ -84,11 +94,11 @@
     .sb-scroll { overflow-x:auto; overflow-y:hidden; margin:0 -0.25rem; -webkit-overflow-scrolling:touch; }
     .sb-scroll::-webkit-scrollbar { height:6px; }
     .sb-scroll::-webkit-scrollbar-thumb { background:var(--border-mid); border-radius:9999px; }
-    #sb-svg { width:100%; height:auto; display:block; min-width:640px; }
+    #sb-svg { width:100%; height:auto; display:block; }
     .sb-empty { padding:2.5rem 1rem; text-align:center; color:var(--text-faint); font-size:0.9rem; }
 
-    .sb-disclaimer { max-width:60ch; margin:1.5rem auto 0; font-size:0.72rem; color:var(--text-faint); text-align:center; line-height:1.5; }
-    @media (max-width:520px){ .sb-title{font-size:1.7rem;} .sb-banner-value{font-size:2.1rem;} }
+    .sb-disclaimer { margin:1.5rem 0 0; font-size:0.72rem; color:var(--text-faint); line-height:1.5; }
+    @media (max-width:520px){ .sb-title{font-size:1.7rem;} .sb-banner-value{font-size:2rem;} }
   </style>
 </head>
 <body>
@@ -102,98 +112,104 @@
       <button class="sb-tab" id="tab-libre" type="button" role="tab" onclick="setMode('libre')">Libre</button>
     </div>
 
-    <div class="sb-banner">
-      <div>
-        <div class="sb-banner-label">Budget mensuel</div>
-        <div class="sb-banner-value" id="sb-total">—</div>
-      </div>
-      <div class="sb-banner-meta" id="sb-meta"></div>
-    </div>
-
-    <!-- ═══ MODE GUIDÉ ═══ -->
-    <div class="sb-mode active" id="mode-guide">
-      <div class="sb-panel">
-        <div class="sb-section">
-          <div class="sb-section-head"><span class="sb-dot in"></span>Ce qui rentre</div>
-          <div class="sb-grid">
-            <div class="sb-field"><label class="sb-flabel">Revenus nets</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-revenus" min="0" inputmode="numeric" value="2200"><span class="sb-inp-suffix">€</span></div></div>
-            <div class="sb-field"><label class="sb-flabel">Aides / autres</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-aides" min="0" inputmode="numeric" value="150"><span class="sb-inp-suffix">€</span></div></div>
+    <div class="sb-cols">
+      <!-- COLONNE GAUCHE : saisie -->
+      <div class="sb-left">
+        <!-- GUIDÉ -->
+        <div class="sb-mode active" id="mode-guide">
+          <div class="sb-panel">
+            <div class="sb-section in">
+              <div class="sb-section-head"><span class="sb-dot in"></span>Ce qui rentre</div>
+              <div class="sb-grid">
+                <div class="sb-field"><label class="sb-flabel">Revenus nets</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-revenus" min="0" inputmode="numeric" value="2200"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel">Aides / autres</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-aides" min="0" inputmode="numeric" value="150"><span class="sb-inp-suffix">€</span></div></div>
+              </div>
+            </div>
+            <div class="sb-section fix">
+              <div class="sb-section-head"><span class="sb-dot fix"></span>Charges fixes</div>
+              <div class="sb-grid">
+                <div class="sb-field"><label class="sb-flabel">Loyer / logement</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-loyer" min="0" inputmode="numeric" value="700"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel">Assurances</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-assurances" min="0" inputmode="numeric" value="90"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel">Abonnements</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-abonnements" min="0" inputmode="numeric" value="45"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel">Transport</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-transport" min="0" inputmode="numeric" value="110"><span class="sb-inp-suffix">€</span></div></div>
+              </div>
+            </div>
+            <div class="sb-section var">
+              <div class="sb-section-head"><span class="sb-dot var"></span>Vie courante</div>
+              <div class="sb-grid">
+                <div class="sb-field"><label class="sb-flabel">Courses</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-courses" min="0" inputmode="numeric" value="320"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel">Restos, cafés</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-repas" min="0" inputmode="numeric" value="120"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel">Sorties & loisirs</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-sorties" min="0" inputmode="numeric" value="90"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel">Shopping</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-shopping" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel">Santé</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-sante" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel">Autres</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-autres" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
+              </div>
+            </div>
+            <div class="sb-section debt">
+              <div class="sb-section-head"><span class="sb-dot debt"></span>Dettes & crédits</div>
+              <div id="g-dettes-list"></div>
+              <button class="sb-add" type="button" onclick="addGDette()">+ Ajouter une dette</button>
+            </div>
+            <div class="sb-section save">
+              <div class="sb-section-head"><span class="sb-dot save"></span>Épargne & catégories perso</div>
+              <div class="sb-grid" style="margin-bottom:0.5rem;">
+                <div class="sb-field"><label class="sb-flabel">Épargne mensuelle</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-epargne" min="0" inputmode="numeric" value="200"><span class="sb-inp-suffix">€</span></div></div>
+              </div>
+              <div id="g-custom-list"></div>
+              <button class="sb-add" type="button" onclick="addGCustom()">+ Ajouter une catégorie perso</button>
+            </div>
           </div>
         </div>
-        <div class="sb-section">
-          <div class="sb-section-head"><span class="sb-dot fix"></span>Charges fixes</div>
-          <div class="sb-grid">
-            <div class="sb-field"><label class="sb-flabel">Loyer / logement</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-loyer" min="0" inputmode="numeric" value="700"><span class="sb-inp-suffix">€</span></div></div>
-            <div class="sb-field"><label class="sb-flabel">Assurances</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-assurances" min="0" inputmode="numeric" value="90"><span class="sb-inp-suffix">€</span></div></div>
-            <div class="sb-field"><label class="sb-flabel">Abonnements</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-abonnements" min="0" inputmode="numeric" value="45"><span class="sb-inp-suffix">€</span></div></div>
-            <div class="sb-field"><label class="sb-flabel">Transport</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-transport" min="0" inputmode="numeric" value="110"><span class="sb-inp-suffix">€</span></div></div>
+
+        <!-- LIBRE -->
+        <div class="sb-mode" id="mode-libre">
+          <div class="sb-panel">
+            <div class="sb-section in">
+              <div class="sb-section-head"><span class="sb-dot in"></span>Tes sources de revenus</div>
+              <div id="f-income-list"></div>
+              <button class="sb-add" type="button" onclick="addFIncome()">+ Ajouter une source</button>
+            </div>
+            <div class="sb-section var">
+              <div class="sb-section-head"><span class="sb-dot var"></span>Tes catégories de dépenses</div>
+              <div id="f-cats-list"></div>
+              <button class="sb-add" type="button" onclick="addFCat()">+ Ajouter une catégorie</button>
+            </div>
           </div>
         </div>
-        <div class="sb-section">
-          <div class="sb-section-head"><span class="sb-dot var"></span>Vie courante</div>
-          <div class="sb-grid">
-            <div class="sb-field"><label class="sb-flabel">Courses</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-courses" min="0" inputmode="numeric" value="320"><span class="sb-inp-suffix">€</span></div></div>
-            <div class="sb-field"><label class="sb-flabel">Restos, cafés</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-repas" min="0" inputmode="numeric" value="120"><span class="sb-inp-suffix">€</span></div></div>
-            <div class="sb-field"><label class="sb-flabel">Sorties & loisirs</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-sorties" min="0" inputmode="numeric" value="90"><span class="sb-inp-suffix">€</span></div></div>
-            <div class="sb-field"><label class="sb-flabel">Shopping</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-shopping" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
-            <div class="sb-field"><label class="sb-flabel">Santé</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-sante" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
-            <div class="sb-field"><label class="sb-flabel">Autres</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-autres" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
+
+        <p class="sb-disclaimer">Outil de visualisation — les montants ne sont pas enregistrés. En mode libre, coche « Épargne » sur les catégories que tu mets de côté pour calculer ton taux d'épargne.</p>
+      </div>
+
+      <!-- COLONNE DROITE : résultat (sticky) -->
+      <div class="sb-right">
+        <div class="sb-banner">
+          <div>
+            <div class="sb-banner-label">Budget mensuel</div>
+            <div class="sb-banner-value" id="sb-total">—</div>
           </div>
+          <div class="sb-banner-meta" id="sb-meta"></div>
         </div>
-        <div class="sb-section">
-          <div class="sb-section-head"><span class="sb-dot debt"></span>Dettes & crédits</div>
-          <div id="g-dettes-list"></div>
-          <button class="sb-add" type="button" onclick="addGDette()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Ajouter une dette</button>
-        </div>
-        <div class="sb-section">
-          <div class="sb-section-head"><span class="sb-dot save"></span>Épargne & catégories perso</div>
-          <div class="sb-grid" style="margin-bottom:0.6rem;">
-            <div class="sb-field"><label class="sb-flabel">Épargne mensuelle</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-epargne" min="0" inputmode="numeric" value="200"><span class="sb-inp-suffix">€</span></div></div>
+        <div class="sb-panel">
+          <div class="sb-result-head">
+            <div class="sb-result-title">Où va ton budget</div>
+            <button class="sb-dl-btn" id="sb-dl" type="button" onclick="dlSankey()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Télécharger
+            </button>
           </div>
-          <div id="g-custom-list"></div>
-          <button class="sb-add" type="button" onclick="addGCustom()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Ajouter une catégorie perso</button>
+          <div class="sb-scroll"><svg id="sb-svg" viewBox="0 0 640 300" role="img" aria-label="Sankey de ton budget"></svg></div>
+          <div class="sb-empty" id="sb-empty" style="display:none;">Saisis au moins un revenu pour voir ton Sankey.</div>
         </div>
       </div>
     </div>
-
-    <!-- ═══ MODE LIBRE ═══ -->
-    <div class="sb-mode" id="mode-libre">
-      <div class="sb-panel">
-        <div class="sb-section">
-          <div class="sb-section-head"><span class="sb-dot in"></span>Tes sources de revenus</div>
-          <div id="f-income-list"></div>
-          <button class="sb-add" type="button" onclick="addFIncome()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Ajouter une source</button>
-        </div>
-        <div class="sb-section">
-          <div class="sb-section-head"><span class="sb-dot var"></span>Tes catégories de dépenses</div>
-          <div id="f-cats-list"></div>
-          <button class="sb-add" type="button" onclick="addFCat()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Ajouter une catégorie</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ═══ RÉSULTAT ═══ -->
-    <div class="sb-panel">
-      <div class="sb-result-head">
-        <div class="sb-result-title">Où va ton budget</div>
-        <button class="sb-dl-btn" id="sb-dl" type="button" onclick="dlSankey()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Télécharger
-        </button>
-      </div>
-      <div class="sb-scroll"><svg id="sb-svg" viewBox="0 0 640 300" role="img" aria-label="Sankey de ton budget"></svg></div>
-      <div class="sb-empty" id="sb-empty" style="display:none;">Saisis au moins un revenu pour voir ton Sankey.</div>
-    </div>
-
-    <p class="sb-disclaimer">Outil de visualisation — les montants ne sont pas enregistrés. Pense à répartir l'ensemble de tes revenus : le solde non affecté apparaît en « Non réparti ».</p>
   </main>
 
-  <script src="sidebar.js?v=budget1"></script>
+  <script src="sidebar.js?v=budget2"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="shared.js"></script>
   <script src="supabase.js"></script>
-  <script src="nav-avatar.js?v=budget1"></script>
-  <script src="budget-sankey.js"></script>
+  <script src="nav-avatar.js?v=budget2"></script>
+  <script src="budget-sankey.js?v=aer1"></script>
   <script>
   (function(){
     'use strict';
@@ -206,6 +222,12 @@
     var indigoP=['#6366F1','#818CF8','#4F46E5','#4338CA','#A5B4FC'];
     var detteP=['#F97316','#FB923C','#EF4444','#DC2626'];
     var tealP=['#14B8A6','#0D9488','#2DD4BF'];
+    var GREEN='#16A34A';
+    // Options de rendu (P3 — blocs colorés, aéré)
+    var RENDER_OPTS = { catGap:14, barW:30, H_BASE:380, innerGap:165, bands:true };
+
+    function catColorForIndex(i){ return (i%2===0) ? violetP[i%violetP.length] : indigoP[i%indigoP.length]; }
+    function hexA(hex, a){ var h=hex.replace('#',''); if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; var n=parseInt(h,16); return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
 
     function setMode(m){
       mode=m;
@@ -217,7 +239,7 @@
     }
     window.setMode=setMode;
 
-    // ── GUIDÉ : dettes & custom dynamiques ──
+    // ── GUIDÉ ──
     function addGDette(name, val){
       var list=el('g-dettes-list'); var row=document.createElement('div'); row.className='sb-row';
       row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Crédit conso" oninput="render()">'
@@ -245,7 +267,7 @@
       var besoins=[
         {name:'Loyer', val:num('g-loyer')}, {name:'Assurances', val:num('g-assurances')},
         {name:'Transport', val:num('g-transport')}, {name:'Courses', val:num('g-courses')},
-        {name:'Santé', val:num('g-sante')}, {name:'Dép. pro', val:0}
+        {name:'Santé', val:num('g-sante')}
       ].filter(function(x){return x.val>0;}).map(function(x,i){x.color=violetP[i%violetP.length];return x;});
       var envies=[
         {name:'Abonnements', val:num('g-abonnements')}, {name:'Restos', val:num('g-repas')},
@@ -261,11 +283,11 @@
       var reste=Math.max(0, totalInc-sumOut);
       var outflows=outNormal.slice();
       if(epargne>0) outflows.push({name:'Épargne', val:epargne, kind:'epargne'});
-      if(reste>0.5) outflows.push({name:'Reste à vivre', val:reste, kind:'reste'});
-      return {income:income, outflows:outflows};
+      if(resteSignif(reste,totalInc)) outflows.push({name:'Reste à vivre', val:reste, kind:'reste'});
+      return {income:income, outflows:outflows, epargne:epargne, reste:reste, totalInc:totalInc};
     }
 
-    // ── LIBRE : sources & catégories ──
+    // ── LIBRE ──
     function addFIncome(name,val){
       var list=el('f-income-list'); var row=document.createElement('div'); row.className='sb-row';
       row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Salaire" oninput="render()">'
@@ -278,9 +300,10 @@
     function addFCat(name){
       var list=el('f-cats-list'); var cat=document.createElement('div'); cat.className='sb-cat';
       cat.innerHTML='<div class="sb-cat-head"><input type="text" class="sb-inp name" placeholder="Ex. Logement" oninput="render()">'
+        +'<label class="sb-ep-check"><input type="checkbox" class="sb-cat-ep" onchange="render()"> Épargne</label>'
         +'<button class="sb-del" type="button" aria-label="Supprimer la catégorie" onclick="this.closest(\'.sb-cat\').remove(); render();">×</button></div>'
         +'<div class="sb-subs"></div>'
-        +'<button class="sb-add" type="button" style="margin-top:0.5rem;" onclick="addFSub(this.closest(\'.sb-cat\').querySelector(\'.sb-subs\'))">+ Ajouter un poste</button>';
+        +'<button class="sb-add" type="button" style="margin-top:0.4rem;" onclick="addFSub(this.closest(\'.sb-cat\').querySelector(\'.sb-subs\'))">+ Ajouter un poste</button>';
       list.appendChild(cat);
       if(name) cat.querySelector('.name').value=name;
       addFSub(cat.querySelector('.sb-subs'));
@@ -297,41 +320,60 @@
     }
     window.addFIncome=addFIncome; window.addFCat=addFCat; window.addFSub=addFSub;
 
+    function colorizeCats(){
+      var cats=el('f-cats-list').querySelectorAll('.sb-cat');
+      cats.forEach(function(cat,i){
+        var isEp=cat.querySelector('.sb-cat-ep').checked;
+        var c=isEp?GREEN:catColorForIndex(i);
+        cat.style.borderLeftColor=c;
+        cat.style.background=hexA(c,0.05);
+      });
+    }
+
     function buildFree(){
       var income=[]; el('f-income-list').querySelectorAll('.sb-row').forEach(function(row){ var v=parseFloat(row.querySelector('.amt').value)||0; if(v>0) income.push({name:(row.querySelector('.name').value||'Revenu').trim(), val:v}); });
-      var cats=[];
-      el('f-cats-list').querySelectorAll('.sb-cat').forEach(function(cat){
+      var cats=[], epargne=0;
+      el('f-cats-list').querySelectorAll('.sb-cat').forEach(function(cat,i){
         var cname=(cat.querySelector('.sb-cat-head .name').value||'Catégorie').trim();
+        var isEp=cat.querySelector('.sb-cat-ep').checked;
         var children=[];
         cat.querySelectorAll('.sb-subs .sb-row').forEach(function(row){ var v=parseFloat(row.querySelector('.amt').value)||0; if(v>0) children.push({name:(row.querySelector('.name').value||'Poste').trim(), val:v}); });
-        if(children.length) cats.push({name:cname, children:children});
+        if(children.length){ var tot=children.reduce(function(a,b){return a+b.val;},0); if(isEp) epargne+=tot; cats.push({name:cname, children:children, color:isEp?GREEN:catColorForIndex(i)}); }
       });
       var totalInc=income.reduce(function(s,x){return s+x.val;},0);
       var sumCat=cats.reduce(function(s,c){return s+c.children.reduce(function(a,b){return a+b.val;},0);},0);
       var reste=Math.max(0, totalInc-sumCat);
       var outflows=cats.slice();
-      if(reste>0.5) outflows.push({name:'Non réparti', val:reste, kind:'reste'});
-      return {income:income, outflows:outflows};
+      if(resteSignif(reste,totalInc)) outflows.push({name:'Non réparti', val:reste, kind:'reste'});
+      return {income:income, outflows:outflows, epargne:epargne, reste:reste, totalInc:totalInc};
     }
+
+    function resteSignif(reste, totalInc){ return reste >= Math.max(20, totalInc*0.02); }
 
     function currentModel(){ return mode==='guide' ? buildGuided() : buildFree(); }
 
     function render(){
+      if(mode==='libre') colorizeCats();
       var model=currentModel();
-      var totalInc=model.income.reduce(function(s,x){return s+x.val;},0);
+      var totalInc=model.totalInc||0;
       var isDark=document.documentElement.classList.contains('dark');
       var svg=el('sb-svg'), empty=el('sb-empty');
-      // banner
-      el('sb-total').innerHTML = totalInc>0 ? euro(totalInc).replace(' €','')+' <span class="unit">€/mois</span>' : '—';
-      var sumOut=model.outflows.filter(function(o){return o.kind!=='reste';}).reduce(function(s,o){return s+(o.children?o.children.reduce(function(a,b){return a+b.val;},0):o.val);},0);
-      var reste=Math.max(0, totalInc-sumOut);
-      el('sb-meta').innerHTML = totalInc>0 ? ('Réparti : <b>'+euro(sumOut)+'</b><br>Non affecté : <b>'+euro(reste)+'</b>') : '';
-      // sankey
-      var res = (typeof renderBudgetSankey==='function') ? renderBudgetSankey(model, isDark) : null;
+      // Bannière
+      el('sb-total').innerHTML = totalInc>0 ? (Math.round(totalInc).toLocaleString('fr-FR'))+' <span class="unit">€/mois</span>' : '—';
+      if(totalInc>0){
+        var ep=model.epargne||0, reste=model.reste||0;
+        var pct=function(v){ return Math.round(v/totalInc*100); };
+        var meta='Taux d’épargne · <b>'+pct(ep)+' %</b>'
+          +'<br><span class="sb-meta-sm">'+euro(ep)+' épargnés / '+euro(totalInc)+' gagnés</span>';
+        if(resteSignif(reste,totalInc)) meta+='<br><span class="sb-meta-sm2">Épargne possible : '+pct(ep+reste)+' % (avec le non-dépensé)</span>';
+        el('sb-meta').innerHTML=meta;
+      } else { el('sb-meta').innerHTML=''; }
+      // Sankey
+      var res = (typeof renderBudgetSankey==='function') ? renderBudgetSankey(model, isDark, RENDER_OPTS) : null;
       if(!res){ svg.style.display='none'; empty.style.display='block'; return; }
       svg.style.display='block'; empty.style.display='none';
       svg.setAttribute('viewBox', res.viewBox);
-      svg.style.minWidth = Math.min(res.W, 900) + 'px';
+      svg.style.minWidth = Math.min(res.W, 760) + 'px';
       svg.innerHTML = res.html;
     }
     window.render=render;
@@ -342,11 +384,9 @@
     window.dlSankey=dlSankey;
 
     function init(){
-      // Guidé : une dette + rien de custom par défaut
       addGDette('Crédit conso', 180);
-      // Libre : exemple minimal
       addFIncome('Salaire', 2400); addFIncome('Aides', 200);
-      addFCat('Logement'); // crée 1 sous-poste vide
+      addFCat('Logement');
       render();
     }
 
