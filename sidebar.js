@@ -333,6 +333,15 @@
       .f-sidebar { display: none; }
       body.f-has-sidebar { padding-left: 0 !important; }
     }
+
+    /* Fond discret : filigrane "f" + voile de couleur (hors dashboard) */
+    .f-bg-fx { position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
+      background:radial-gradient(72vw 58vh at 88% -6%, rgba(139,92,246,0.05), transparent 60%); }
+    html.dark .f-bg-fx { background:radial-gradient(72vw 58vh at 88% -6%, rgba(139,92,246,0.12), transparent 60%); }
+    .f-bg-fx::after { content:'f'; position:absolute; right:3vw; bottom:-8vh;
+      font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-weight:400;
+      font-size:60vh; line-height:1; color:rgba(139,147,184,0.05); }
+    html.dark .f-bg-fx::after { color:rgba(143,140,212,0.075); }
   `;
   document.head.appendChild(style);
 
@@ -406,6 +415,14 @@
 
   // Marquer le body
   document.body.classList.add('f-has-sidebar');
+
+  // Fond discret (filigrane) — pas sur le dashboard (qui a déjà son aurora)
+  if (!isDashboard && !document.querySelector('.f-bg-fx')) {
+    var fx = document.createElement('div');
+    fx.className = 'f-bg-fx';
+    fx.setAttribute('aria-hidden', 'true');
+    document.body.insertBefore(fx, document.body.firstChild);
+  }
 
   // ── Explorer smooth scroll (si déjà sur dashboard) ────────────
   if (isDashboard) {
