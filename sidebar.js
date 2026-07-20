@@ -11,7 +11,7 @@
   const isPlan      = page === 'plan.html';
   const isBrique    = page.startsWith('brique-');
   const isProfil    = page === 'profil.html';
-  const isSimulateur = page === 'simulateur-emprunt.html';
+  const isSimulateur = page.indexOf('simulateur-') === 0;
 
   // Guard : sidebar uniquement sur les pages post-auth
   // index.html = onboarding pré-auth, auth.html = connexion → pas de sidebar
@@ -22,7 +22,7 @@
     if (isDashboard) return { title: 'Dashboard', crumb: '' };
     if (isPlan)      return { title: 'Mon plan', crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>Mon plan</b>' };
     if (isProfil)    return { title: 'Profil', crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>Profil</b>' };
-    if (isSimulateur) return { title: 'Simulateur', crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>Simulateur d\'emprunt</b>' };
+    if (isSimulateur) { var st = page === 'simulateur-budget.html' ? 'Simulateur de budget' : "Simulateur d'emprunt"; return { title: 'Simulateur', crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>' + st + '</b>' }; }
     if (isBrique) {
       // Priorité 1 : attribut data-brick-name sur le <body>
       const bodyName = document.body.getAttribute('data-brick-name');

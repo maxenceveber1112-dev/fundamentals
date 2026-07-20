@@ -11,7 +11,7 @@
   const isDashboard = page === 'dashboard.html';
   const isBrique    = page.startsWith('brique-');
   const isPlan      = page === 'plan.html';
-  const isSimulateur = page === 'simulateur-emprunt.html';
+  const isSimulateur = page.indexOf('simulateur-') === 0;
 
   // ── Trouver ou créer le slot nav-right ────────────────────────
   let navRight = document.querySelector('.nav-right, #nav-right-slot');

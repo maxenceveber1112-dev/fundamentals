@@ -1590,6 +1590,22 @@
     });
     container.appendChild(simEmprunt);
 
+    // 1bis. Simulateur de budget
+    const simBudget = makeSimCard({
+      id: 'sim_budget',
+      icon: iconSVG('chart'),
+      colorClass: 'teal',
+      name: 'Simulateur de budget',
+      sub: 'Visualise ton budget en Sankey (guidé ou libre)',
+      value: null,
+      valueLabel: null,
+      rows: [],
+      ctaLabel: 'Ouvrir le simulateur',
+      ctaHref: 'simulateur-budget.html',
+      ctaDisabled: false,
+    });
+    container.appendChild(simBudget);
+
     // 2. Visualiser mes dettes
     const dettesSimData = loadFromStorage('fund_brick_plan_desendettement');
     const dettesSimRaw = dettesSimData?.data || dettesSimData || null;
