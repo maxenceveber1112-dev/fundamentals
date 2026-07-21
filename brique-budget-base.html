@@ -1044,6 +1044,16 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
   .sankey-tab:hover { color:var(--text-secondary); }
   .sankey-tab.active { background:var(--bg-elevated); color:var(--text); box-shadow:0 1px 3px rgba(20,20,30,0.10); }
   html.dark .sankey-tab.active { background:rgba(255,255,255,0.14); color:#fff; }
+  .sankey-tabs-row { display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap; margin-bottom:0.875rem; }
+  .sankey-tabs-row .sankey-tabs { margin-bottom:0; }
+  .sankey-hint { position:relative; display:inline-flex; align-items:center; gap:0.4rem; background:#6D28D9; color:#fff; font-size:0.72rem; font-weight:600; line-height:1.2; padding:0.35rem 0.5rem 0.35rem 0.65rem; border-radius:0.55rem; box-shadow:0 4px 14px rgba(91,33,182,0.32); animation:sankeyHintIn 0.45s ease both, sankeyHintNudge 1.8s ease-in-out 0.5s infinite; }
+  html.dark .sankey-hint { background:#7C3AED; box-shadow:0 4px 14px rgba(0,0,0,0.5); }
+  .sankey-hint::before { content:''; position:absolute; left:-5px; top:50%; width:10px; height:10px; margin-top:-5px; background:inherit; transform:rotate(45deg); border-radius:2px; }
+  .sankey-hint.hidden { display:none; }
+  .sankey-hint-x { background:rgba(255,255,255,0.22); border:none; color:#fff; width:16px; height:16px; min-width:16px; border-radius:50%; font-size:0.85rem; line-height:1; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; padding:0; transition:background var(--t); }
+  .sankey-hint-x:hover { background:rgba(255,255,255,0.42); }
+  @keyframes sankeyHintIn { from { opacity:0; transform:translateX(-6px); } to { opacity:1; transform:translateX(0); } }
+  @keyframes sankeyHintNudge { 0%,100% { transform:translateX(0); } 50% { transform:translateX(3px); } }
   .sankey-scroll { overflow-x:auto; overflow-y:hidden; margin:0 -0.25rem; -webkit-overflow-scrolling:touch; }
   .sankey-scroll::-webkit-scrollbar { height:6px; }
   .sankey-scroll::-webkit-scrollbar-thumb { background:var(--border-mid); border-radius:9999px; }
@@ -1348,9 +1358,15 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                   Télécharger
                 </button>
               </div>
-              <div class="sankey-tabs" role="tablist" aria-label="Niveau de détail">
-                <button class="sankey-tab active" id="sankey-tab-simple" type="button" onclick="setSankeyMode('simple')">Simplifié</button>
-                <button class="sankey-tab" id="sankey-tab-detail" type="button" onclick="setSankeyMode('detail')">Détaillé</button>
+              <div class="sankey-tabs-row">
+                <div class="sankey-tabs" role="tablist" aria-label="Niveau de détail">
+                  <button class="sankey-tab active" id="sankey-tab-simple" type="button" onclick="setSankeyMode('simple')">Simplifié</button>
+                  <button class="sankey-tab" id="sankey-tab-detail" type="button" onclick="setSankeyMode('detail')">Détaillé</button>
+                </div>
+                <div class="sankey-hint hidden" id="sankey-hint" role="status">
+                  <span class="sankey-hint-txt">👈 Le détail, poste par poste</span>
+                  <button class="sankey-hint-x" type="button" onclick="dismissSankeyHint()" aria-label="Fermer l'indice">×</button>
+                </div>
               </div>
               <div class="sankey-scroll">
               <svg id="sankey-svg" class="sankey-svg" viewBox="0 0 460 300" role="img" aria-label="Flux de ton budget : revenus, charges et disponible"></svg>
@@ -1604,6 +1620,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
 <script src="nav-avatar.js"></script>
+<script src="budget-sankey.js?v=aer1"></script>
 <script>
 // ══════════════════════════════════════════════════════════════
 // FUNDAMENTALS — brique-budget-base.js (inline)
@@ -2524,135 +2541,64 @@ function _renderSankeyHTML(budgetData) {
 let sankeyMode = 'simple';
 function setSankeyMode(m) {
   sankeyMode = m;
+  if (m === 'detail') dismissSankeyHint();
   buildSankeyFlow();
 }
 
-// ── Sankey détaillé : même architecture, tous les postes ──
+function dismissSankeyHint() {
+  const h = document.getElementById('sankey-hint');
+  if (h) h.classList.add('hidden');
+  try { localStorage.setItem('fund-sankey-hint-seen', '1'); } catch (e) {}
+}
+window.dismissSankeyHint = dismissSankeyHint;
+
+// ── Sankey détaillé : moteur budget-sankey.js (design aéré, blocs colorés) ──
 function _renderSankeyDetailedHTML(budgetData) {
   const revenus=budgetData.revenus||0, aides=budgetData.aides||0;
   const totalRev=revenus+aides;
   if(totalRev<=0) return null;
+  if(typeof renderBudgetSankey!=='function') return null;
 
-  const isDark=document.documentElement.classList.contains('dark');
   const violetP=['#7C3AED','#8B5CF6','#A78BFA','#9333EA','#A855F7','#C084FC'];
   const detteP=['#F97316','#FB923C','#EF4444','#DC2626'];
   const indigoP=['#6366F1','#818CF8','#4F46E5','#4338CA','#A5B4FC'];
   const tealP=['#14B8A6','#0D9488','#2DD4BF'];
-  const greenP=['#16A34A','#4ADE80'];
 
   const detteList=(budgetData.dettes||[]).filter(d=>(d.montant_mensuel||0)>0);
   const customFixe=(budgetData.customCats||[]).filter(c=>c.type==='fixe'&&(c.montant||0)>0);
   const customCour=(budgetData.customCats||[]).filter(c=>c.type==='courante'&&(c.montant||0)>0);
 
-  const biBase=[
-    {name:'Loyer',val:budgetData.loyer||0},
-    {name:'Assurances',val:budgetData.assurances||0},
-    {name:'Transport',val:budgetData.transport||0},
-    {name:'Courses',val:budgetData.courses||0},
-    {name:'Santé',val:budgetData.sante||0},
-    {name:'Dép. pro',val:budgetData.depenses_pro||0},
-  ].filter(i=>i.val>0).map((it,i)=>Object.assign(it,{color:violetP[i%violetP.length]}));
-  const bd=detteList.map((d,i)=>({name:(DETTE_TYPES.find(t=>t.val===d.type)||{}).label||'Crédit',val:d.montant_mensuel,color:detteP[i%detteP.length]}));
-  const cf=customFixe.map((c,i)=>({name:c.name,val:c.montant,color:tealP[i%tealP.length]}));
-  const besoinsItems=biBase.concat(bd).concat(cf);
-  const enviesBase=[
-    {name:'Abonnements',val:budgetData.abonnements_total||0},
-    {name:'Restos',val:budgetData.repas||0},
-    {name:'Sorties',val:budgetData.sorties||0},
-    {name:'Shopping',val:budgetData.shopping||0},
-    {name:'Autres',val:budgetData.autres||0},
-  ].filter(i=>i.val>0).map((it,i)=>Object.assign(it,{color:indigoP[i%indigoP.length]}));
-  const cc=customCour.map((c,i)=>({name:c.name,val:c.montant,color:tealP[(i+1)%tealP.length]}));
-  const enviesItems=enviesBase.concat(cc);
-  const revenusItems=[{name:'Revenus',val:revenus},{name:'Aides',val:aides}].filter(i=>i.val>0).map((it,i)=>Object.assign(it,{color:greenP[i%greenP.length]}));
+  const income=[];
+  if(revenus>0) income.push({name:'Revenus', val:revenus, color:'#16A34A'});
+  if(aides>0)   income.push({name:'Aides', val:aides, color:'#4ADE80'});
 
-  const besoinsTot=besoinsItems.reduce((s,i)=>s+i.val,0);
-  const enviesTot=enviesItems.reduce((s,i)=>s+i.val,0);
-  const besoins=Math.min(besoinsTot,totalRev);
-  const envies=Math.min(enviesTot,totalRev-besoins);
-  const epargne=Math.min(budgetData.epargne||0,totalRev-besoins-envies);
-  const reste=Math.max(0,totalRev-besoins-envies-epargne);
+  const besoins=[
+    {name:'Loyer',val:budgetData.loyer||0},{name:'Assurances',val:budgetData.assurances||0},
+    {name:'Transport',val:budgetData.transport||0},{name:'Courses',val:budgetData.courses||0},
+    {name:'Santé',val:budgetData.sante||0},{name:'Dép. pro',val:budgetData.depenses_pro||0}
+  ].filter(x=>x.val>0).map((x,i)=>{x.color=violetP[i%violetP.length];return x;});
+  const envies=[
+    {name:'Abonnements',val:budgetData.abonnements_total||0},{name:'Restos',val:budgetData.repas||0},
+    {name:'Sorties',val:budgetData.sorties||0},{name:'Shopping',val:budgetData.shopping||0},
+    {name:'Autres',val:budgetData.autres||0}
+  ].filter(x=>x.val>0).map((x,i)=>{x.color=indigoP[i%indigoP.length];return x;});
+  const dettes=detteList.map((d,i)=>({name:(DETTE_TYPES.find(t=>t.val===d.type)||{}).label||'Crédit', val:d.montant_mensuel, color:detteP[i%detteP.length]}));
+  const cf=customFixe.map((c,i)=>({name:c.name, val:c.montant, color:tealP[i%tealP.length]}));
+  const cc=customCour.map((c,i)=>({name:c.name, val:c.montant, color:tealP[(i+1)%tealP.length]}));
 
-  const W=790, barW=26, budW=28;
-  const x1=140, x2=362, x3=600;
-  const cEp='#22C55E';
-  const cReste=isDark?'rgba(255,255,255,0.13)':'rgba(0,0,0,0.08)';
-  const cResteDot=isDark?'rgba(255,255,255,0.4)':'rgba(0,0,0,0.32)';
-  const cBudget='#8B93B8';
-  const sep=isDark?'#161824':'#ffffff';
-  const tc=isDark?'rgba(255,255,255,0.55)':'rgba(0,0,0,0.45)';
-  const pillBg=isDark?'rgba(28,28,46,0.97)':'#ffffff';
-  const pillBd=isDark?'rgba(255,255,255,0.14)':'rgba(0,0,0,0.10)';
-  const pillTx=isDark?'rgba(255,255,255,0.90)':'rgba(0,0,0,0.80)';
-  const lead=isDark?'rgba(255,255,255,0.30)':'rgba(0,0,0,0.22)';
+  const epargne=budgetData.epargne||0;
+  const outNormal=besoins.concat(cf).concat(dettes).concat(envies).concat(cc);
+  const sumOut=outNormal.reduce((s,x)=>s+x.val,0)+epargne;
+  const reste=Math.max(0, totalRev-sumOut);
+  const outflows=outNormal.slice();
+  if(epargne>0) outflows.push({name:'Épargne', val:epargne, kind:'epargne'});
+  if(reste>=Math.max(20, totalRev*0.02)) outflows.push({name:'Reste à vivre', val:reste, kind:'reste'});
 
-  const H_BASE=300, gapCol=20, TOP_PAD=30, BOT_PAD=18, dy=TOP_PAD;
-  const H=H_BASE+gapCol;
-
-  function r(v){ return Math.round(v*10)/10; }
-  function fmtK(v){ return v>=1000?(v/1000).toFixed(1).replace('.',',')+' k€':Math.round(v)+' €'; }
-  function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
-  function title(x,t){ return '<text x="'+r(x)+'" y="'+r(dy-12)+'" text-anchor="middle" font-size="12" font-family="Inter,system-ui,sans-serif" font-weight="700" letter-spacing="0.05em" fill="'+tc+'">'+t+'</text>'; }
-  function ribbon(xa,y0t,y0b,xb,y1t,y1b,fill,op){ const mx=(xa+xb)/2; return '<path d="M'+r(xa)+','+r(y0t)+' C'+r(mx)+','+r(y0t)+' '+r(mx)+','+r(y1t)+' '+r(xb)+','+r(y1t)+' L'+r(xb)+','+r(y1b)+' C'+r(mx)+','+r(y1b)+' '+r(mx)+','+r(y0b)+' '+r(xa)+','+r(y0b)+' Z" fill="'+fill+'" opacity="'+op+'"/>'; }
-  function pill(cx, ly, label, color, anchorLeft){
-    const w=Math.round(label.length*5.95+26);
-    const pillL = anchorLeft;
-    return '<rect x="'+r(pillL)+'" y="'+r(ly-8.5)+'" width="'+w+'" height="17" rx="8.5" fill="'+pillBg+'" stroke="'+pillBd+'" stroke-width="1"/>'
-      +'<circle cx="'+r(pillL+10)+'" cy="'+r(ly)+'" r="3.2" fill="'+color+'"/>'
-      +'<text x="'+r(pillL+19)+'" y="'+r(ly+3.6)+'" text-anchor="start" font-size="11" font-family="Inter,system-ui,sans-serif" font-weight="500" fill="'+pillTx+'">'+label+'</text>';
-  }
-  function pillW(label){ return Math.round(label.length*5.95+26); }
-  function labels(items, edgeX, anchorX, side){
-    const minGap=19, top=dy+2, bot=dy+H-9;
-    const a=items.map(z=>Object.assign({}, z, { ly:z.yc }));
-    a.sort((u,v)=>u.yc-v.yc);
-    for (let i=1;i<a.length;i++){ if (a[i].ly-a[i-1].ly<minGap) a[i].ly=a[i-1].ly+minGap; }
-    if (a.length && a[a.length-1].ly>bot){ a[a.length-1].ly=bot; for (let i=a.length-2;i>=0;i--){ if (a[i].ly>a[i+1].ly-minGap) a[i].ly=a[i+1].ly-minGap; } }
-    if (a.length && a[0].ly<top){ a[0].ly=top; for (let i=1;i<a.length;i++){ if (a[i].ly<a[i-1].ly+minGap) a[i].ly=a[i-1].ly+minGap; } }
-    const right=side==='right'; let out='';
-    a.forEach(z=>{
-      const label=esc(z.name)+' : '+fmtK(z.val);
-      const w=pillW(label);
-      const pillL = right ? anchorX : anchorX - w;
-      const leadEnd = right ? pillL-4 : pillL+w+4;
-      out += '<path d="M'+r(edgeX)+','+r(z.yc)+' L'+r(leadEnd)+','+r(z.ly)+'" fill="none" stroke="'+lead+'" stroke-width="0.75"/>';
-      out += pill(0, z.ly, label, z.color, pillL);
-    });
-    return out;
-  }
-
-  const chargesItems=besoinsItems.concat(enviesItems);
-  const dispoItems=[];
-  if(epargne>0.5) dispoItems.push({name:'Épargne',val:epargne,color:cEp,dot:cEp});
-  if(reste>1)     dispoItems.push({name:'Reste',val:reste,color:cReste,dot:cResteDot});
-
-  let y=dy; const srcPos=[];
-  revenusItems.forEach(sc=>{ const h=sc.val/totalRev*H_BASE; srcPos.push({sc,y0:y,y1:y+h}); y+=h; });
-  y=dy; const outPos=[];
-  chargesItems.forEach(o=>{ const h=o.val/totalRev*H_BASE; outPos.push({o,y0:y,y1:y+h}); y+=h; });
-  y+=gapCol;
-  dispoItems.forEach(o=>{ const h=o.val/totalRev*H_BASE; outPos.push({o,y0:y,y1:y+h}); y+=h; });
-
-  let html='';
-  let bl=dy;
-  srcPos.forEach(sp=>{ const h=sp.y1-sp.y0; html+=ribbon(x1+barW, sp.y0, sp.y1, x2, bl, bl+h, sp.sc.color, 0.12); bl+=h; });
-  let br=dy;
-  outPos.forEach(op=>{ const h=op.o.val/totalRev*H_BASE; html+=ribbon(x2+budW, br, br+h, x3, op.y0, op.y1, op.o.color, 0.12); br+=h; });
-
-  srcPos.forEach(sp=>{ html+='<rect x="'+r(x1)+'" y="'+r(sp.y0)+'" width="'+barW+'" height="'+r(sp.y1-sp.y0)+'" rx="2" fill="'+sp.sc.color+'" stroke="'+sep+'" stroke-width="0.75"/>'; });
-  html+='<rect x="'+r(x2)+'" y="'+r(dy)+'" width="'+budW+'" height="'+r(H_BASE)+'" rx="4" fill="'+cBudget+'"/>';
-  outPos.forEach(op=>{ html+='<rect x="'+r(x3)+'" y="'+r(op.y0)+'" width="'+barW+'" height="'+r(op.y1-op.y0)+'" rx="2" fill="'+op.o.color+'" stroke="'+sep+'" stroke-width="0.75"/>'; });
-
-  html+=title(x1+barW/2,'REVENUS')+title(x2+budW/2,'BUDGET')+title(x3+barW/2,'RÉPARTITION');
-
-  html+=labels(srcPos.map(sp=>({yc:(sp.y0+sp.y1)/2,name:sp.sc.name,val:sp.sc.val,color:sp.sc.color})), x1, x1-16, 'left');
-  html+=labels(outPos.map(op=>({yc:(op.y0+op.y1)/2,name:op.o.name,val:op.o.val,color:op.o.dot||op.o.color})), x3+barW, x3+barW+16, 'right');
-  // Pastille Budget centrée sur le nœud
-  (function(){ const label='Budget : '+fmtK(totalRev); const w=pillW(label); html+=pill(0, dy+H_BASE/2, label, cBudget, x2+budW/2 - w/2); })();
-
-  return { html, viewBox:'0 0 '+W+' '+r(dy+H+BOT_PAD), legendItems: [] };
+  const isDark=document.documentElement.classList.contains('dark');
+  const res=renderBudgetSankey({income:income, outflows:outflows}, isDark, { catGap:14, barW:30, H_BASE:380, innerGap:165, bands:true });
+  if(!res) return null;
+  return { html:res.html, viewBox:res.viewBox, W:res.W, legendItems:[] };
 }
-
 function buildSankeyFlow() {
   const svg = document.getElementById('sankey-svg');
   const legend = document.getElementById('sankey-legend');
@@ -2661,21 +2607,30 @@ function buildSankeyFlow() {
   const tS = document.getElementById('sankey-tab-simple'), tD = document.getElementById('sankey-tab-detail');
   if (tS) tS.classList.toggle('active', sankeyMode !== 'detail');
   if (tD) tD.classList.toggle('active', sankeyMode === 'detail');
+  const wrap = svg.closest('.sankey-wrap');
   const result = (sankeyMode === 'detail' ? _renderSankeyDetailedHTML : _renderSankeyHTML)(budgetData);
   if (!result) {
-    const wrap = svg.closest('.sankey-wrap');
     if (wrap) wrap.style.display = 'none';
     return;
   }
+  if (wrap) wrap.style.display = '';
 
   svg.setAttribute('viewBox', result.viewBox);
-  svg.style.minWidth = (sankeyMode === 'detail') ? '700px' : '';
+  svg.style.minWidth = (sankeyMode === 'detail' && result.W) ? (Math.min(result.W, 760) + 'px') : '';
   svg.innerHTML = result.html;
 
   if (legend) {
-    legend.innerHTML = result.legendItems.map(i =>
+    legend.innerHTML = (result.legendItems || []).map(i =>
       `<div class="sankey-leg-item"><div class="sankey-leg-dot" style="background:${i.color};"></div><span>${i.label}</span></div>`
     ).join('');
+  }
+
+  // Indice « Détaillé » (une seule fois, mode simplifié uniquement)
+  const hint = document.getElementById('sankey-hint');
+  if (hint) {
+    let seen = false;
+    try { seen = localStorage.getItem('fund-sankey-hint-seen') === '1'; } catch (e) {}
+    hint.classList.toggle('hidden', seen || sankeyMode === 'detail');
   }
 }
 
@@ -2703,6 +2658,11 @@ function toggleDetailPoste() {
 function downloadBudgetImage() {
   const svg = document.getElementById('sankey-svg');
   if (!svg) return;
+  // Mode détaillé → export via le moteur budget-sankey.js (même rendu que le simulateur)
+  if (sankeyMode === 'detail' && typeof downloadBudgetSankeyPNG === 'function') {
+    downloadBudgetSankeyPNG(svg, { isDark: document.documentElement.classList.contains('dark'), title: 'Où va mon argent' });
+    return;
+  }
   const vb = (svg.getAttribute('viewBox') || '0 0 460 300').split(/\s+/).map(Number);
   const W = vb[2], H = vb[3];
   const isDark = document.documentElement.classList.contains('dark');
