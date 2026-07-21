@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fundamental — Budget de base</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
 
@@ -193,7 +194,7 @@
   ══════════════════════════════════════════════════════════════ */
   .brique-layout {
     display:grid;
-    grid-template-columns:1fr 320px;
+    grid-template-columns:minmax(0,1fr) 320px;
     gap:2rem;
     max-width:1080px;
     margin:0 auto;
@@ -201,7 +202,7 @@
     align-items:start;
   }
   @media(max-width:768px) {
-    .brique-layout { grid-template-columns:1fr; padding:1rem 1rem 5rem; }
+    .brique-layout { grid-template-columns:minmax(0,1fr); padding:1rem 1rem 5rem; }
     .brique-progress-col { display:none; }
   }
 
@@ -2468,74 +2469,34 @@ function buildLeviers() {
   });
 }
 
-// ── Mini Sankey flow ───────────────────────────────────────
-// Rendu entièrement dans un espace logique W×H (420×H dynamique).
-// Le SVG utilise viewBox="0 0 420 H" avec preserveAspectRatio par défaut
-// (xMidYMid meet) → pas de déformation, responsive natif.
+// Options de rendu communes aux deux onglets (design aéré P3)
+const SANKEY_OPTS = { catGap:14, barW:30, H_BASE:380, innerGap:165, bands:true };
+
+// ── Sankey simplifié : moteur budget-sankey.js (postes regroupés) ──
 function _renderSankeyHTML(budgetData) {
   const revenus = budgetData.revenus||0, aides = budgetData.aides||0;
   const totalRev = revenus + aides;
   if (totalRev <= 0) return null;
+  if (typeof renderBudgetSankey !== 'function') return null;
 
   const besoins = Math.min(budgetData.total_besoins||0, totalRev);
-  const envies  = Math.min(budgetData.total_envies||0, totalRev-besoins);
-  const epargne = Math.min(budgetData.epargne||0, totalRev-besoins-envies);
+  const envies  = Math.min(budgetData.total_envies||0, Math.max(0, totalRev-besoins));
+  const epargne = Math.min(budgetData.epargne||0, Math.max(0, totalRev-besoins-envies));
   const reste   = Math.max(0, totalRev-besoins-envies-epargne);
 
+  const income = [];
+  if (revenus>0) income.push({name:'Revenus', val:revenus, color:'#16A34A'});
+  if (aides>0)   income.push({name:'Aides', val:aides, color:'#4ADE80'});
+  const outflows = [];
+  if (besoins>0) outflows.push({name:'Charges fixes', val:besoins, color:'#8B5CF6'});
+  if (envies>0)  outflows.push({name:'Dépenses variables', val:envies, color:'#6366F1'});
+  if (epargne>0) outflows.push({name:'Épargne', val:epargne, kind:'epargne'});
+  if (reste>=Math.max(20, totalRev*0.02)) outflows.push({name:'Reste à vivre', val:reste, kind:'reste'});
+
   const isDark = document.documentElement.classList.contains('dark');
-  const cBesoin='#8B5CF6', cEnvie='#6366F1', cEp='#22C55E';
-  const cReste = isDark?'rgba(255,255,255,0.13)':'rgba(0,0,0,0.08)';
-  const cResteDot = isDark?'rgba(255,255,255,0.4)':'rgba(0,0,0,0.28)';
-  const cBudget='#8B93B8', cRevenu='#16A34A', cAide='#4ADE80';
-  const tc = isDark?'rgba(255,255,255,0.55)':'rgba(0,0,0,0.45)';
-  const restTxt = isDark?'rgba(255,255,255,0.82)':'rgba(0,0,0,0.66)';
-
-  const W=520, barW=34, gapCol=16;
-  const x1=28, x2=W/2-barW/2, x3=W-28-barW;
-  const H_BASE=214, TOP_PAD=30, BOT_PAD=14, dy=TOP_PAD;
-  const H=H_BASE+gapCol;
-
-  function r(v){ return Math.round(v*10)/10; }
-  function fmtK(v){ return v>=1000?(v/1000).toFixed(1).replace('.',',')+' k€':Math.round(v)+' €'; }
-  function title(x,t){ return '<text x="'+r(x)+'" y="'+r(dy-11)+'" text-anchor="middle" font-size="12" font-family="Inter,system-ui,sans-serif" font-weight="700" letter-spacing="0.05em" fill="'+tc+'">'+t+'</text>'; }
-  function ribbon(xa,y0t,y0b,xb,y1t,y1b,fill,op){ const mx=(xa+xb)/2; return '<path d="M'+r(xa)+','+r(y0t)+' C'+r(mx)+','+r(y0t)+' '+r(mx)+','+r(y1t)+' '+r(xb)+','+r(y1t)+' L'+r(xb)+','+r(y1b)+' C'+r(mx)+','+r(y1b)+' '+r(mx)+','+r(y0b)+' '+r(xa)+','+r(y0b)+' Z" fill="'+fill+'" opacity="'+op+'"/>'; }
-  function seg(x,y,h,color,val,txt){ let o='<rect x="'+r(x)+'" y="'+r(y)+'" width="'+barW+'" height="'+r(Math.max(0,h))+'" rx="4" fill="'+color+'"/>'; if(h>=17) o+='<text x="'+r(x+barW/2)+'" y="'+r(y+h/2+4)+'" text-anchor="middle" font-size="11" font-weight="700" font-family="Inter,system-ui,sans-serif" fill="'+(txt||'#fff')+'">'+fmtK(val)+'</text>'; return o; }
-
-  const sources = [{name:'Revenus',val:revenus,color:cRevenu},{name:'Aides',val:aides,color:cAide}].filter(o=>o.val>0);
-  const charges = [{name:'Charges fixes',val:besoins,color:cBesoin},{name:'Dépenses variables',val:envies,color:cEnvie}].filter(o=>o.val>0);
-  const dispo = [];
-  if (epargne>0.5) dispo.push({name:'Épargne',val:epargne,color:cEp,txt:'#fff'});
-  if (reste>1)     dispo.push({name:'Reste',val:reste,color:cReste,txt:restTxt});
-
-  let y=dy; const srcPos=[];
-  sources.forEach(sc=>{ const h=sc.val/totalRev*H_BASE; srcPos.push({sc,y0:y,y1:y+h}); y+=h; });
-  y=dy; const outPos=[];
-  charges.forEach(o=>{ const h=o.val/totalRev*H_BASE; outPos.push({o,y0:y,y1:y+h}); y+=h; });
-  y+=gapCol;
-  dispo.forEach(o=>{ const h=o.val/totalRev*H_BASE; outPos.push({o,y0:y,y1:y+h}); y+=h; });
-
-  let html='';
-  let bl=dy;
-  srcPos.forEach(sp=>{ const h=sp.y1-sp.y0; html+=ribbon(x1+barW, sp.y0, sp.y1, x2, bl, bl+h, sp.sc.color, 0.13); bl+=h; });
-  let br=dy;
-  outPos.forEach(op=>{ const h=op.o.val/totalRev*H_BASE; html+=ribbon(x2+barW, br, br+h, x3, op.y0, op.y1, op.o.color, 0.13); br+=h; });
-
-  srcPos.forEach(sp=>{ html+=seg(x1, sp.y0, sp.y1-sp.y0, sp.sc.color, sp.sc.val); });
-  html += '<rect x="'+r(x2)+'" y="'+r(dy)+'" width="'+barW+'" height="'+r(H_BASE)+'" rx="4" fill="'+cBudget+'"/>';
-  html += '<text x="'+r(x2+barW/2)+'" y="'+r(dy+H_BASE/2+4)+'" text-anchor="middle" font-size="12" font-weight="700" font-family="Inter,system-ui,sans-serif" fill="#fff">'+fmtK(totalRev)+'</text>';
-  outPos.forEach(op=>{ html+=seg(x3, op.y0, op.y1-op.y0, op.o.color, op.o.val, op.o.txt); });
-
-  html += title(x1+barW/2,'REVENUS') + title(x2+barW/2,'BUDGET') + title(x3+barW/2,'RÉPARTITION');
-
-  const pct=v=>Math.round(v/totalRev*100);
-  const legendItems=[
-    {color:cBesoin,label:'Charges fixes · '+formatEuro(besoins)+' · '+pct(besoins)+'%'},
-    {color:cEnvie,label:'Dépenses variables · '+formatEuro(envies)+' · '+pct(envies)+'%'},
-  ];
-  if(epargne>0.5) legendItems.push({color:cEp,label:'Épargne · '+formatEuro(epargne)+' · '+pct(epargne)+'%'});
-  if(reste>1)     legendItems.push({color:cResteDot,label:'Reste à vivre · '+formatEuro(reste)+' · '+pct(reste)+'%'});
-
-  return { html, viewBox:'0 0 '+W+' '+r(dy+H+BOT_PAD), legendItems };
+  const res = renderBudgetSankey({income:income, outflows:outflows}, isDark, SANKEY_OPTS);
+  if (!res) return null;
+  return { html:res.html, viewBox:res.viewBox, W:res.W, legendItems:[] };
 }
 
 let sankeyMode = 'simple';
@@ -2595,7 +2556,7 @@ function _renderSankeyDetailedHTML(budgetData) {
   if(reste>=Math.max(20, totalRev*0.02)) outflows.push({name:'Reste à vivre', val:reste, kind:'reste'});
 
   const isDark=document.documentElement.classList.contains('dark');
-  const res=renderBudgetSankey({income:income, outflows:outflows}, isDark, { catGap:14, barW:30, H_BASE:380, innerGap:165, bands:true });
+  const res=renderBudgetSankey({income:income, outflows:outflows}, isDark, SANKEY_OPTS);
   if(!res) return null;
   return { html:res.html, viewBox:res.viewBox, W:res.W, legendItems:[] };
 }
@@ -2616,7 +2577,7 @@ function buildSankeyFlow() {
   if (wrap) wrap.style.display = '';
 
   svg.setAttribute('viewBox', result.viewBox);
-  svg.style.minWidth = (sankeyMode === 'detail' && result.W) ? (Math.min(result.W, 760) + 'px') : '';
+  svg.style.minWidth = result.W ? (Math.min(result.W, 760) + 'px') : '';
   svg.innerHTML = result.html;
 
   if (legend) {
@@ -2658,8 +2619,8 @@ function toggleDetailPoste() {
 function downloadBudgetImage() {
   const svg = document.getElementById('sankey-svg');
   if (!svg) return;
-  // Mode détaillé → export via le moteur budget-sankey.js (même rendu que le simulateur)
-  if (sankeyMode === 'detail' && typeof downloadBudgetSankeyPNG === 'function') {
+  // Export via le moteur budget-sankey.js (même rendu que le simulateur), pour les deux onglets
+  if (typeof downloadBudgetSankeyPNG === 'function') {
     downloadBudgetSankeyPNG(svg, { isDark: document.documentElement.classList.contains('dark'), title: 'Où va mon argent' });
     return;
   }
