@@ -65,11 +65,19 @@
     var gapCol = opts.gapCol || 20;                          // espace avant épargne/reste
     var H_BASE = opts.H_BASE || 320;
     var innerGap = opts.innerGap || 150;                     // espace entre colonnes
+    var subGap = (opts.subGap != null) ? opts.subGap : 3;    // espacement leger entre sous-postes
     var bands = !!opts.bands;                                // bandes de fond colorées par catégorie
     var TOP_PAD = 34, BOT_PAD = 22, dy = TOP_PAD;
     var hasGap = specialOut.length > 0 && normalOut.length > 0;
 
-    var LPz = 150, RPz = 150;
+    // Marges latérales dynamiques : assez larges pour ne pas couper les pastilles.
+    function lblW(n, v) { return pillW(esc(n) + ' : ' + fmtK(v)); }
+    var leftMax = 0, rightMax = 0;
+    if (incomeHasChildren) income.forEach(function (it) { (it.children || []).forEach(function (c) { leftMax = Math.max(leftMax, lblW(c.name, c.val)); }); });
+    else income.forEach(function (it) { leftMax = Math.max(leftMax, lblW(it.name, it.val)); });
+    if (expenseHasChildren) orderedOut.forEach(function (it) { if (it.children) it.children.forEach(function (c) { rightMax = Math.max(rightMax, lblW(c.name, c.val)); }); else rightMax = Math.max(rightMax, lblW(it.name, it.val)); });
+    else orderedOut.forEach(function (it) { rightMax = Math.max(rightMax, lblW(it.name, it.val)); });
+    var LPz = Math.max(150, leftMax + 24), RPz = Math.max(150, rightMax + 24);
     var nIncomeCols = incomeHasChildren ? 2 : 1;
     var nExpenseCols = expenseHasChildren ? 2 : 1;
     var nMid = nIncomeCols + 1 + nExpenseCols;
@@ -134,6 +142,15 @@
 
     var H = Math.max(incBottom, outBottom, dy + H_BASE) - dy;
 
+    // Disposition des sous-postes d'une catégorie, avec un espacement léger (subGap).
+    function childLayout(g) {
+      var kids = g.it.children, k = kids.length, Hc = g.y1 - g.y0;
+      var sg = (k > 1) ? Math.min(subGap, (Hc * 0.35) / (k - 1)) : 0;
+      var avail = Hc - (k - 1) * sg, cy = g.y0, arr = [];
+      kids.forEach(function (c, ci) { if (ci > 0) cy += sg; var h = c.val / g.it.val * avail; arr.push({ c: c, y0: cy, y1: cy + h }); cy += h; });
+      return arr;
+    }
+
     // ── Bandes de fond par catégorie (option) ──
     if (bands && expenseHasChildren) {
       outGroupPos.forEach(function (g) {
@@ -160,8 +177,7 @@
     if (expenseHasChildren) {
       outGroupPos.forEach(function (g) {
         if (!g.it.children) return;
-        var cy = g.y0;
-        g.it.children.forEach(function (c) { var h = c.val / g.it.val * (g.y1 - g.y0); html += ribbon(xExpGroup + barW, cy, cy + h, xExpLeaf, cy, cy + h, c.color, 0.12); cy += h; });
+        childLayout(g).forEach(function (p) { html += ribbon(xExpGroup + barW, p.y0, p.y1, xExpLeaf, p.y0, p.y1, p.c.color, 0.12); });
       });
     }
 
@@ -175,8 +191,7 @@
       outGroupPos.forEach(function (g) {
         if (g.it.children) {
           html += bar(xExpGroup, g.y0, g.y1 - g.y0, g.it.color);
-          var cy = g.y0;
-          g.it.children.forEach(function (c) { var h = c.val / g.it.val * (g.y1 - g.y0); html += bar(xExpLeaf, cy, h, c.color); cy += h; });
+          childLayout(g).forEach(function (p) { html += bar(xExpLeaf, p.y0, p.y1 - p.y0, p.c.color); });
         } else {
           html += bar(xExpLeaf, g.y0, g.y1 - g.y0, g.it.color);
         }
@@ -207,7 +222,7 @@
       html += labels(catNodes, xExpGroup + barW, xExpGroup + barW + 16, 'right', H);
       var leafNodes = [];
       outGroupPos.forEach(function (g) {
-        if (g.it.children) { var cy = g.y0; g.it.children.forEach(function (c) { var h = c.val / g.it.val * (g.y1 - g.y0); leafNodes.push({ yc: cy + h / 2, name: c.name, val: c.val, color: c.color }); cy += h; }); }
+        if (g.it.children) { childLayout(g).forEach(function (p) { leafNodes.push({ yc: (p.y0 + p.y1) / 2, name: p.c.name, val: p.c.val, color: p.c.color }); }); }
         else { leafNodes.push({ yc: (g.y0 + g.y1) / 2, name: g.it.name, val: g.it.val, color: g.it.dot || g.it.color }); }
       });
       html += labels(leafNodes, xExpLeaf + barW, xExpLeaf + barW + 16, 'right', H);

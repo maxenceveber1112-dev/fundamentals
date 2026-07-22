@@ -88,6 +88,12 @@
     .sb-ep-check { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.72rem; font-weight:600; color:var(--text-muted); cursor:pointer; white-space:nowrap; flex-shrink:0; padding:0 0.3rem; }
     .sb-ep-check input { accent-color:#16A34A; cursor:pointer; }
     .sb-subs { display:flex; flex-direction:column; gap:0.35rem; padding-left:0.5rem; border-left:2px solid var(--border-subtle); margin-left:0.15rem; }
+    .sb-drag { flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; width:16px; align-self:stretch; color:var(--text-faint); cursor:grab; touch-action:none; }
+    .sb-drag:hover { color:var(--text-muted); }
+    .sb-cat.sb-dragging, .sb-row.sb-dragging { opacity:0.92; box-shadow:0 8px 22px rgba(20,20,30,0.16); border-radius:0.6rem; position:relative; z-index:6; background:var(--bg-elevated); cursor:grabbing; }
+    html.dark .sb-cat.sb-dragging, html.dark .sb-row.sb-dragging { box-shadow:0 10px 26px rgba(0,0,0,0.55); }
+    body.sb-dragging-active { cursor:grabbing; }
+    body.sb-dragging-active, body.sb-dragging-active * { user-select:none; -webkit-user-select:none; }
 
     .sb-result-head { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.75rem; }
     .sb-result-title { font-size:0.75rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); }
@@ -226,6 +232,7 @@
     var detteP=['#F97316','#FB923C','#EF4444','#DC2626'];
     var tealP=['#14B8A6','#0D9488','#2DD4BF'];
     var GREEN='#16A34A';
+    var SB_HANDLE='<span class="sb-drag" aria-hidden="true" title="Glisser pour réorganiser"><svg width="10" height="16" viewBox="0 0 10 16"><g fill="currentColor"><circle cx="2.5" cy="4" r="1.2"/><circle cx="7.5" cy="4" r="1.2"/><circle cx="2.5" cy="8" r="1.2"/><circle cx="7.5" cy="8" r="1.2"/><circle cx="2.5" cy="12" r="1.2"/><circle cx="7.5" cy="12" r="1.2"/></g></svg></span>';
     // Options de rendu (P3 — blocs colorés, aéré)
     var RENDER_OPTS = { catGap:14, barW:30, H_BASE:380, innerGap:165, bands:true };
 
@@ -302,7 +309,7 @@
     }
     function addFCat(name){
       var list=el('f-cats-list'); var cat=document.createElement('div'); cat.className='sb-cat';
-      cat.innerHTML='<div class="sb-cat-head"><input type="text" class="sb-inp name" placeholder="Ex. Logement" oninput="render()">'
+      cat.innerHTML='<div class="sb-cat-head">'+SB_HANDLE+'<input type="text" class="sb-inp name" placeholder="Ex. Logement" oninput="render()">'
         +'<label class="sb-ep-check"><input type="checkbox" class="sb-cat-ep" onchange="render()"> Épargne</label>'
         +'<button class="sb-del" type="button" aria-label="Supprimer la catégorie" onclick="this.closest(\'.sb-cat\').remove(); render();">×</button></div>'
         +'<div class="sb-subs"></div>'
@@ -314,7 +321,7 @@
     }
     function addFSub(subs, name, val){
       var row=document.createElement('div'); row.className='sb-row';
-      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Poste (ex. Loyer)" oninput="render()">'
+      row.innerHTML=SB_HANDLE+'<input type="text" class="sb-inp name" placeholder="Poste (ex. Loyer)" oninput="render()">'
         +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric" oninput="render()"><span></span>'
         +'<button class="sb-del" type="button" aria-label="Supprimer" onclick="this.closest(\'.sb-row\').remove(); render();">×</button>';
       subs.appendChild(row);
@@ -401,6 +408,36 @@
       if(typeof downloadBudgetSankeyPNG==='function') downloadBudgetSankeyPNG(el('sb-svg'), { isDark:document.documentElement.classList.contains('dark'), title:'Mon budget' });
     }
     window.dlSankey=dlSankey;
+
+    // ── Réordonnancement par glisser-déposer (mode Libre) ──
+    (function(){
+      var drag=null;
+      document.addEventListener('pointerdown', function(e){
+        var handle = e.target.closest ? e.target.closest('.sb-drag') : null;
+        if(!handle) return;
+        if(e.pointerType==='mouse' && e.button!==0) return;
+        var item = handle.closest('.sb-cat, .sb-subs > .sb-row');
+        if(!item) return;
+        var container = item.parentElement;
+        if(!(container.id==='f-cats-list' || container.classList.contains('sb-subs'))) return;
+        e.preventDefault();
+        drag = { item:item, container:container, sel: item.classList.contains('sb-cat') ? '.sb-cat' : '.sb-row' };
+        item.classList.add('sb-dragging');
+        document.body.classList.add('sb-dragging-active');
+        try { handle.setPointerCapture(e.pointerId); } catch(_){}
+      });
+      document.addEventListener('pointermove', function(e){
+        if(!drag) return;
+        var y=e.clientY, before=null;
+        var sibs=Array.prototype.slice.call(drag.container.children).filter(function(el){ return el!==drag.item && el.matches && el.matches(drag.sel); });
+        for(var i=0;i<sibs.length;i++){ var rc=sibs[i].getBoundingClientRect(); if(y < rc.top + rc.height/2){ before=sibs[i]; break; } }
+        if(before){ if(drag.item.nextElementSibling!==before) drag.container.insertBefore(drag.item, before); }
+        else if(sibs.length){ var last=sibs[sibs.length-1]; if(drag.item.previousElementSibling!==last) drag.container.insertBefore(drag.item, last.nextSibling); }
+      });
+      function end(){ if(!drag) return; drag.item.classList.remove('sb-dragging'); document.body.classList.remove('sb-dragging-active'); drag=null; if(typeof render==='function') render(); }
+      document.addEventListener('pointerup', end);
+      document.addEventListener('pointercancel', end);
+    })();
 
     function init(){
       addGDette('Crédit conso', 180);
