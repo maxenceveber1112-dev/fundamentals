@@ -2513,6 +2513,16 @@ function dismissSankeyHint() {
 }
 window.dismissSankeyHint = dismissSankeyHint;
 
+// Re-rendu du Sankey au changement de thème (clair/sombre) : garde
+// l'affichage et l'export PNG cohérents avec le thème courant.
+(function(){
+  var wasDark = document.documentElement.classList.contains('dark');
+  new MutationObserver(function(){
+    var isDark = document.documentElement.classList.contains('dark');
+    if (isDark !== wasDark) { wasDark = isDark; if (typeof buildSankeyFlow === 'function') buildSankeyFlow(); }
+  }).observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
+})();
+
 // ── Sankey détaillé : moteur budget-sankey.js (design aéré, blocs colorés) ──
 function _renderSankeyDetailedHTML(budgetData) {
   const revenus=budgetData.revenus||0, aides=budgetData.aides||0;

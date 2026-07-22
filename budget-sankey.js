@@ -10,7 +10,8 @@
 (function () {
   'use strict';
 
-  function fmtK(v) { return v >= 1000 ? (v / 1000).toFixed(1).replace('.', ',') + ' k€' : Math.round(v) + ' €'; }
+  // Montants exacts sous 10 000 € ; au-delà (5 chiffres et +) : xx,xx k€.
+  function fmtK(v) { v = Math.round(v); return v >= 10000 ? (v / 1000).toFixed(2).replace('.', ',') + ' k€' : v.toLocaleString('fr-FR') + ' €'; }
   function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   function r(v) { return Math.round(v * 10) / 10; }
 
@@ -222,7 +223,10 @@
   function downloadBudgetSankeyPNG(svgEl, opts) {
     opts = opts || {};
     if (!svgEl) return;
-    var isDark = opts.isDark || document.documentElement.classList.contains('dark');
+    // Le fond de l'export suit le thème réellement rendu dans le SVG
+    // (détecté via la couleur des pastilles), pour éviter des pastilles
+    // sombres sur fond clair si le thème a changé sans re-rendu.
+    var isDark = /rgba\(28, ?28, ?46/.test(svgEl.innerHTML);
     var vb = (svgEl.getAttribute('viewBox') || '0 0 800 400').split(/\s+/).map(Number);
     var W = vb[2], H = vb[3];
     var bg = isDark ? '#12121f' : '#ffffff';

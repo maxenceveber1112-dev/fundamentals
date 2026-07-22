@@ -387,6 +387,16 @@
     }
     window.render=render;
 
+    // Re-rendu au changement de thème (clair/sombre) : garde l'affichage
+    // et l'export PNG cohérents avec le thème courant.
+    (function(){
+      var wasDark = document.documentElement.classList.contains('dark');
+      new MutationObserver(function(){
+        var isDark = document.documentElement.classList.contains('dark');
+        if(isDark!==wasDark){ wasDark=isDark; render(); }
+      }).observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
+    })();
+
     function dlSankey(){
       if(typeof downloadBudgetSankeyPNG==='function') downloadBudgetSankeyPNG(el('sb-svg'), { isDark:document.documentElement.classList.contains('dark'), title:'Mon budget' });
     }
