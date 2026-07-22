@@ -42,6 +42,8 @@
     .sb-banner-meta b { color:var(--text); font-weight:700; }
     .sb-meta-sm { font-size:0.8rem; }
     .sb-meta-sm2 { font-size:0.74rem; color:var(--text-faint); }
+    .sb-alert { font-size:0.95rem; font-weight:700; color:#DC2626; }
+    html.dark .sb-alert { color:#F87171; }
     @media(max-width:560px){ .sb-banner-meta { text-align:left; } }
 
     .sb-panel { background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:1.25rem; padding:1.4rem; box-shadow:0 1px 3px rgba(20,20,30,0.04), 0 10px 30px rgba(20,20,30,0.05); }
@@ -285,7 +287,7 @@
       var outflows=outNormal.slice();
       if(epargne>0) outflows.push({name:'Épargne', val:epargne, kind:'epargne'});
       if(resteSignif(reste,totalInc)) outflows.push({name:'Reste à vivre', val:reste, kind:'reste'});
-      return {income:income, outflows:outflows, epargne:epargne, reste:reste, totalInc:totalInc};
+      return {income:income, outflows:outflows, epargne:epargne, reste:reste, totalInc:totalInc, spent:sumOut};
     }
 
     // ── LIBRE ──
@@ -346,7 +348,7 @@
       var reste=Math.max(0, totalInc-sumCat);
       var outflows=cats.slice();
       if(resteSignif(reste,totalInc)) outflows.push({name:'Non réparti', val:reste, kind:'reste'});
-      return {income:income, outflows:outflows, epargne:epargne, reste:reste, totalInc:totalInc};
+      return {income:income, outflows:outflows, epargne:epargne, reste:reste, totalInc:totalInc, spent:sumCat};
     }
 
     function resteSignif(reste, totalInc){ return reste >= Math.max(20, totalInc*0.02); }
@@ -362,12 +364,18 @@
       // Bannière
       el('sb-total').innerHTML = totalInc>0 ? (Math.round(totalInc).toLocaleString('fr-FR'))+' <span class="unit">€/mois</span>' : '—';
       if(totalInc>0){
-        var ep=model.epargne||0, reste=model.reste||0;
+        var ep=model.epargne||0, reste=model.reste||0, spent=model.spent||0;
         var pct=function(v){ return Math.round(v/totalInc*100); };
+        var deficit=spent-totalInc;
+        if(deficit > Math.min(30, totalInc*0.02)){
+          el('sb-meta').innerHTML='<span class="sb-alert">Budget dépassé de '+euro(deficit)+' · '+pct(deficit)+' %</span>'
+            +'<br><span class="sb-meta-sm2">Épargne possible à l’équilibre : '+pct(Math.max(0,totalInc-(spent-ep)))+' %</span>';
+        } else {
         var meta='Taux d’épargne · <b>'+pct(ep)+' %</b>'
           +'<br><span class="sb-meta-sm">'+euro(ep)+' épargnés / '+euro(totalInc)+' gagnés</span>';
         if(resteSignif(reste,totalInc)) meta+='<br><span class="sb-meta-sm2">Épargne possible : '+pct(ep+reste)+' % (avec le non-dépensé)</span>';
         el('sb-meta').innerHTML=meta;
+        }
       } else { el('sb-meta').innerHTML=''; }
       // Sankey
       var res = (typeof renderBudgetSankey==='function') ? renderBudgetSankey(model, isDark, RENDER_OPTS) : null;
