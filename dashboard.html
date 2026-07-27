@@ -1659,22 +1659,6 @@
       ctaDisabled: true,
     });
     container.appendChild(simCredit);
-
-    // 4. Coût du découvert — désactivé (bientôt disponible)
-    const simDecouvert = makeSimCard({
-      id: 'sim_decouvert',
-      icon: iconSVG('warning'),
-      colorClass: 'teal',
-      name: 'Coût du découvert',
-      sub: 'Ce que tes agios te coûtent vraiment',
-      value: null,
-      valueLabel: null,
-      rows: [],
-      ctaLabel: 'Bientôt disponible',
-      ctaHref: null,
-      ctaDisabled: true,
-    });
-    container.appendChild(simDecouvert);
   }
 
   function makeSimCard(cfg) {
