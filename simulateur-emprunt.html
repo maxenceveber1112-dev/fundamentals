@@ -69,7 +69,15 @@
     .sim-step-project.active { display:block; animation:simReveal .42s cubic-bezier(.2,.7,.3,1); }
     @keyframes simReveal { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
     .sim-cols { display:grid; grid-template-columns:1fr 0.95fr; gap:1.5rem; align-items:start; }
-    @media (max-width:760px) { .sim-cols { grid-template-columns:1fr; } }
+    @media (max-width:760px) {
+      .sim-cols { grid-template-columns:minmax(0,1fr); }
+      /* Le résultat passe au-dessus des réglages et reste visible pendant l'ajustement */
+      .sim-cols > .sim-panel { order:1; }
+      .sim-cols > .sim-result-panel { order:0; position:sticky; top:56px; z-index:5; padding:1.1rem 1.2rem; }
+      .sim-result-value { font-size:2.1rem; }
+      .sim-result-rows { margin-top:0.9rem; padding-top:0.8rem; gap:0.4rem; }
+      .sim-rrow { font-size:0.78rem; }
+    }
 
     .sim-panel { background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:1.25rem; padding:1.5rem; box-shadow:0 1px 3px rgba(20,20,30,0.04), 0 10px 30px rgba(20,20,30,0.05); }
     html.dark .sim-panel { box-shadow:0 10px 30px rgba(0,0,0,0.35); }
@@ -135,9 +143,13 @@
     .sim-disclaimer { max-width:60ch; margin:2rem auto 0; font-size:0.72rem; color:var(--text-faint); text-align:center; line-height:1.5; }
 
     @media (max-width:520px) {
+      .sim-wrap { padding-left:1rem; padding-right:1rem; }
       .sim-title { font-size:1.7rem; }
-      .sim-result-value { font-size:2.7rem; }
       .sim-type-grid { grid-template-columns:repeat(2,1fr); }
+      .sim-panel { padding:1.1rem; }
+      /* 16px : évite le zoom automatique d'iOS à la saisie */
+      .sim-input { font-size:1.3rem; }
+      .sim-slider { height:9px; }
     }
   </style>
 </head>

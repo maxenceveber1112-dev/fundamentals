@@ -31,7 +31,17 @@
     /* Deux colonnes : saisie à gauche, résultat sticky à droite */
     .sb-cols { display:grid; grid-template-columns:360px minmax(0,1fr); gap:1.5rem; align-items:start; }
     .sb-right { position:sticky; top:72px; }
-    @media (max-width:900px) { .sb-cols { grid-template-columns:1fr; } .sb-right { position:static; } }
+    .sb-right { min-width:0; }
+    /* Mobile : le chiffre clé passe au-dessus du formulaire et reste visible */
+    @media (max-width:900px) {
+      .sb-cols { display:flex; flex-direction:column; align-items:stretch; }
+      .sb-cols > * { min-width:0; }
+      .sb-right { display:contents; }
+      .sb-banner { order:-1; position:sticky; top:56px; z-index:5; margin-bottom:0; }
+      .sb-left { order:0; min-width:0; }
+      .sb-right > .sb-banner { min-width:0; }
+      .sb-right > .sb-panel { order:1; min-width:0; }
+    }
 
     /* Bannière budget + taux d'épargne */
     .sb-banner { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; padding:1.15rem 1.4rem; border-radius:1.1rem; background:linear-gradient(160deg, var(--accent-soft), color-mix(in srgb, var(--accent-soft) 28%, transparent)); border:1px solid var(--accent-soft); margin-bottom:1.25rem; }
@@ -108,6 +118,19 @@
 
     .sb-disclaimer { margin:1.5rem 0 0; font-size:0.72rem; color:var(--text-faint); line-height:1.5; }
     @media (max-width:520px){ .sb-title{font-size:1.7rem;} .sb-banner-value{font-size:2rem;} }
+    /* Mobile : un champ par ligne (libellés lisibles, cibles tactiles confortables) */
+    @media (max-width:560px){
+      .sb-wrap { padding-left:1rem; padding-right:1rem; }
+      .sb-grid { grid-template-columns:1fr; }
+      .sb-panel { padding:1rem; }
+      .sb-section { padding:0.8rem 0.8rem 0.9rem; }
+      .sb-inp, .sb-row .sb-type { font-size:16px; padding-top:0.55rem; padding-bottom:0.55rem; }
+      .sb-row .sb-inp.amt { width:92px; }
+      .sb-del { width:32px; height:32px; }
+      .sb-banner { padding:0.9rem 1rem; gap:0.5rem; }
+      .sb-banner-value { font-size:1.8rem; }
+      .sb-banner-meta { font-size:0.85rem; }
+    }
   </style>
 </head>
 <body>

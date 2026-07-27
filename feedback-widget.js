@@ -60,6 +60,13 @@
       border-color: rgba(129,140,248,0.7); box-shadow: 0 8px 30px rgba(129,140,248,0.28); }
     #fb-fab svg { flex-shrink: 0; }
 
+    /* Mobile : pastille compacte (icône seule) pour ne pas masquer le contenu */
+    @media (max-width: 640px) {
+      #fb-fab { bottom: 0.9rem; right: 0.9rem; gap: 0; padding: 0.6rem; }
+      #fb-fab-label { display: none; }
+      #fb-fab svg { width: 16px; height: 16px; }
+    }
+
     #fb-dot { position: absolute; top: -2px; right: -2px; width: 11px; height: 11px; border-radius: 50%;
       background: linear-gradient(135deg,#8b5cf6,#c084fc); box-shadow: 0 0 0 2px rgba(255,255,255,0.85); }
     html.dark #fb-dot { box-shadow: 0 0 0 2px rgba(17,19,32,0.9); }
@@ -161,7 +168,7 @@
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </svg>
-    Bêta — Ton avis
+    <span id="fb-fab-label">Bêta — Ton avis</span>
     <span id="fb-dot" aria-hidden="true"></span>
   `;
 

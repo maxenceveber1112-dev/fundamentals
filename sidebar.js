@@ -334,6 +334,15 @@
       body.f-has-sidebar { padding-left: 0 !important; }
     }
 
+    /* Mobile : en-tête compact, sans débordement ni retour à la ligne */
+    @media (max-width: 640px) {
+      .f-ctx-header { padding: 0 1rem; gap: 10px; }
+      .f-ctx-left { min-width: 0; flex: 1 1 auto; overflow: hidden; }
+      .f-ctx-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .f-ctx-breadcrumb { display: none; }
+      .f-ctx-right { flex: 0 0 auto; }
+    }
+
     /* Fond discret : filigrane "f" + voile de couleur (hors dashboard) */
     .f-bg-fx { position:fixed; inset:0; z-index:-1; pointer-events:none; overflow:hidden;
       background:radial-gradient(72vw 58vh at 88% -6%, rgba(139,92,246,0.05), transparent 60%); }
