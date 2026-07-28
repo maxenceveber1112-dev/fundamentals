@@ -838,6 +838,26 @@
       box-shadow:var(--shadow-hover);
     }
     html.dark .modal { background:#161824; }
+    /* Ajuster mon plan */
+    .adj-hint { font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem; }
+    .adj-list { display:flex; flex-direction:column; gap:0.5rem; max-height:52vh; overflow-y:auto; }
+    .adj-item { display:flex; align-items:center; gap:0.6rem; padding:0.6rem 0.7rem;
+      background:var(--surface-2); border:1px solid var(--border-subtle); border-radius:var(--r-md); }
+    .adj-icon { font-size:1.1rem; flex-shrink:0; }
+    .adj-text { flex:1; min-width:0; font-size:0.85rem; font-weight:500; color:var(--text);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .adj-state { font-size:0.68rem; color:var(--text-faint); white-space:nowrap; }
+    .adj-ctrls { display:flex; gap:0.25rem; flex-shrink:0; }
+    .adj-btn { width:26px; height:26px; border-radius:0.45rem; background:var(--surface-3);
+      color:var(--text-muted); font-size:0.8rem; line-height:1; display:flex; align-items:center;
+      justify-content:center; border:none; cursor:pointer; }
+    .adj-btn:hover:not(:disabled) { color:var(--text); }
+    .adj-btn:disabled { opacity:0.3; cursor:not-allowed; }
+    .adj-btn.rm:hover:not(:disabled) { color:var(--red); }
+    .adj-save { width:100%; margin-top:1.1rem; padding:0.75rem; border-radius:var(--r-md);
+      background:var(--accent-strong); color:#fff; font-size:0.875rem; font-weight:600;
+      border:none; cursor:pointer; }
+    .adj-save:hover { filter:brightness(1.06); }
     .modal-overlay.open .modal { transform:translateY(0); }
 
     /* ── RESPONSIVE ── */
@@ -1054,6 +1074,7 @@
     <div class="section-head">
       <h2 class="section-title">Mes briques à venir</h2>
       <span class="section-action" id="briques-voir-tout-action" onclick="toggleAllBriques()" style="display:none;">Voir tout →</span>
+      <span class="section-action" id="briques-ajuster-action" onclick="openAdjust()" style="margin-left:0.9rem;">Ajuster</span>
     </div>
     <div class="section-divider"></div>
     <div id="briques-sections"></div>
@@ -1102,6 +1123,18 @@
 </main>
 
 <!-- ════════════ ENGAGEMENT MODAL ════════════ -->
+<div class="modal-overlay" id="adj-modal-overlay" role="dialog" aria-modal="true" aria-label="Ajuster mon plan">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+      <h3 style="font-size:1rem;font-weight:700;">Ajuster mon plan</h3>
+      <button style="width:28px;height:28px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text-muted);" onclick="closeAdjust()" aria-label="Fermer">×</button>
+    </div>
+    <p class="adj-hint">Réordonne tes modules, ou retire ceux qui ne te parlent pas. Les modules commencés ou terminés sont conservés.</p>
+    <div class="adj-list" id="adj-list"></div>
+    <button class="adj-save" onclick="saveAdjust()">Enregistrer mon plan</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="eng-modal-overlay">
   <div class="modal" id="eng-modal">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
@@ -1251,6 +1284,92 @@
       renderAll();
     }
   }
+
+
+  /* ─── AJUSTER MON PLAN ─────────────────────────────────────────
+     Reordonne / retire des modules. Agit sur dash.briques (l'ordre
+     reellement affiche) et synchronise profil.briques_recommandees.
+     Un module commence ou termine n'est jamais supprimable : sa
+     progression vit dans dash.briques. */
+  let adjIds = [];
+
+  function adjRecord(id) { return (dash.briques || []).find(b => b.id === id) || null; }
+  function adjLocked(id) {
+    const r = adjRecord(id);
+    return !!r && (r.statut === 'terminee' || r.statut === 'en_cours' || (r.progression || 0) > 0);
+  }
+
+  function openAdjust() {
+    adjIds = (dash.briques || []).filter(b => BRIQUES_META[b.id]).map(b => b.id);
+    renderAdjust();
+    document.getElementById('adj-modal-overlay').classList.add('open');
+  }
+  function closeAdjust() { document.getElementById('adj-modal-overlay').classList.remove('open'); }
+  window.openAdjust = openAdjust; window.closeAdjust = closeAdjust;
+
+  function renderAdjust() {
+    const list = document.getElementById('adj-list');
+    if (!list) return;
+    list.innerHTML = '';
+    adjIds.forEach((id, i) => {
+      const m = BRIQUES_META[id]; if (!m) return;
+      const rec = adjRecord(id);
+      const locked = adjLocked(id);
+      const etat = rec && rec.statut === 'terminee' ? 'Termin\u00e9'
+                 : rec && rec.statut === 'en_cours' ? 'En cours' : '';
+      const row = document.createElement('div');
+      row.className = 'adj-item';
+      row.innerHTML =
+        '<span class="adj-icon" aria-hidden="true">' + (m.icon || '') + '</span>' +
+        '<span class="adj-text">' + m.nom + '</span>' +
+        (etat ? '<span class="adj-state">' + etat + '</span>' : '') +
+        '<div class="adj-ctrls">' +
+          '<button class="adj-btn" onclick="adjMove(' + i + ',-1)" aria-label="Remonter"' + (i === 0 ? ' disabled' : '') + '>\u2191</button>' +
+          '<button class="adj-btn" onclick="adjMove(' + i + ',1)" aria-label="Descendre"' + (i === adjIds.length - 1 ? ' disabled' : '') + '>\u2193</button>' +
+          '<button class="adj-btn rm" onclick="adjRemove(\'' + id + '\')" aria-label="Retirer"' +
+            (locked || adjIds.length <= 1 ? ' disabled title="' + (locked ? 'Module commenc\u00e9 : ta progression est conserv\u00e9e' : 'Garde au moins un module') + '"' : '') +
+          '>\u00d7</button>' +
+        '</div>';
+      list.appendChild(row);
+    });
+  }
+
+  function adjMove(i, dir) {
+    const j = i + dir;
+    if (j < 0 || j >= adjIds.length) return;
+    const t = adjIds[i]; adjIds[i] = adjIds[j]; adjIds[j] = t;
+    renderAdjust();
+  }
+  function adjRemove(id) {
+    if (adjLocked(id) || adjIds.length <= 1) return;
+    adjIds = adjIds.filter(x => x !== id);
+    renderAdjust();
+  }
+  window.adjMove = adjMove; window.adjRemove = adjRemove;
+
+  function saveAdjust() {
+    const prev = dash.briques || [];
+    const byId = {};
+    prev.forEach(b => { if (b && b.id) byId[b.id] = b; });
+    // Ordre choisi (enregistrements conserves tels quels)
+    const next = adjIds.map(id => byId[id] || { id, statut: 'a_faire', progression: 0 });
+    // Filet de securite : rien de commence ne peut disparaitre
+    prev.forEach(b => {
+      if (!b || !b.id || adjIds.indexOf(b.id) !== -1) return;
+      if (b.statut === 'terminee' || b.statut === 'en_cours' || (b.progression || 0) > 0) next.push(b);
+    });
+    dash.briques = next;
+    if (!next.find(b => b.id === dash.brique_active_id)) {
+      const t = next.find(b => b.statut !== 'terminee') || next[0];
+      dash.brique_active_id = t ? t.id : null;
+    }
+    profil.briques_recommandees = next.map(b => b.id);
+    saveToStorage('fund_profil', profil);
+    save();
+    closeAdjust();
+    renderAll();
+  }
+  window.saveAdjust = saveAdjust;
 
   function save() { saveToStorage('fund_dashboard', dash); saveDashboard(dash).catch(() => {}); }
 
@@ -1803,6 +1922,9 @@
   function closeEngModal() {
     document.getElementById('eng-modal-overlay').classList.remove('open');
   }
+  document.getElementById('adj-modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeAdjust();
+  });
   document.getElementById('eng-modal-overlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeEngModal();
   });
