@@ -507,6 +507,12 @@
       letter-spacing:0.1em; text-transform:uppercase;
       color:var(--text-faint); margin:1.25rem 0 0.625rem;
     }
+    /* Sous-titre de phase (vue depliee du parcours) */
+    .phase-header { display:flex; align-items:center; gap:0.45rem;
+      font-size:0.7rem; font-weight:600; color:var(--text-muted);
+      margin:1rem 0 0.5rem; }
+    .phase-header .phase-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .phase-header .phase-count { color:var(--text-faint); font-weight:500; }
 
     /* Voir tout bouton */
     .voir-tout-btn {
@@ -1573,13 +1579,40 @@
       const hdr = document.createElement('p');
       hdr.className = 'soon-header'; hdr.textContent = 'Bientôt disponibles';
       container.appendChild(hdr);
-      const grid = document.createElement('div');
-      grid.className = 'briques-grid'; grid.setAttribute('role', 'list');
+      /* Groupe par phase : la vue depliee sert de vue d'ensemble du parcours */
+      const PHASES = ['Survie & stabilit\u00e9', 'Construction & projets', 'Investissement & long terme'];
+      const PHASE_VAR = { 'Survie & stabilit\u00e9':'--dot-survie',
+                          'Construction & projets':'--dot-construction',
+                          'Investissement & long terme':'--dot-invest' };
+      const parPhase = new Map();
       bientot.forEach(item => {
         const meta = BRIQUES_META[item.id]; if (!meta) return;
-        grid.appendChild(makeBriqueCard(item, meta, activeId));
+        const pack = PHASES.indexOf(meta.pack) !== -1 ? meta.pack : 'Autres modules';
+        if (!parPhase.has(pack)) parPhase.set(pack, []);
+        parPhase.get(pack).push(item);
       });
-      container.appendChild(grid);
+      const ordrePhases = PHASES.filter(ph => parPhase.has(ph));
+      if (parPhase.has('Autres modules')) ordrePhases.push('Autres modules');
+
+      ordrePhases.forEach(ph => {
+        const items = parPhase.get(ph) || [];
+        if (!items.length) return;
+        const ph_h = document.createElement('p');
+        ph_h.className = 'phase-header';
+        const cssVar = PHASE_VAR[ph];
+        ph_h.innerHTML =
+          (cssVar ? '<span class="phase-dot" style="background:var(' + cssVar + ');" aria-hidden="true"></span>' : '') +
+          '<span>' + ph + '</span>' +
+          '<span class="phase-count">' + items.length + '</span>';
+        container.appendChild(ph_h);
+        const grid = document.createElement('div');
+        grid.className = 'briques-grid'; grid.setAttribute('role', 'list');
+        items.forEach(item => {
+          const meta = BRIQUES_META[item.id]; if (!meta) return;
+          grid.appendChild(makeBriqueCard(item, meta, activeId));
+        });
+        container.appendChild(grid);
+      });
     }
 
     if (disponibles.length === 0 && realisees.length === 0 && bientot.length === 0) {
