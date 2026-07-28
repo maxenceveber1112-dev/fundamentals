@@ -469,8 +469,8 @@
   // Marquer le body
   document.body.classList.add('f-has-sidebar');
 
-  // Fond discret (filigrane) — pas sur le dashboard (qui a déjà son aurora)
-  if (!isDashboard && !document.querySelector('.f-bg-fx')) {
+  // Fond discret (filigrane) — sur toutes les pages, dashboard compris
+  if (!document.querySelector('.f-bg-fx')) {
     var fx = document.createElement('div');
     fx.className = 'f-bg-fx';
     fx.setAttribute('aria-hidden', 'true');
