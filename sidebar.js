@@ -37,6 +37,8 @@
 
   function getActiveNav() {
     if (isDashboard) return 'dashboard';
+    if (isPlan || isBrique) return 'plan';
+    if (isSimulateur) return 'explorer';
     return '';
   }
 
@@ -334,6 +336,36 @@
       body.f-has-sidebar { padding-left: 0 !important; }
     }
 
+    /* ── Bouton menu (mobile uniquement) ── */
+    .f-nav-toggle { display: none; align-items: center; justify-content: center;
+      width: 34px; height: 34px; margin-right: 4px; flex: 0 0 auto;
+      border: 1px solid var(--border-subtle, rgba(28,25,23,.10)); border-radius: 10px;
+      background: var(--surface-2, #fff); color: var(--text, #1C1917); cursor: pointer; padding: 0; }
+    html.dark .f-nav-toggle { background: rgba(255,255,255,.06); color: var(--text, #F5F5F4);
+      border-color: rgba(255,255,255,.12); }
+    .f-nav-backdrop { position: fixed; inset: 0; z-index: 499; background: rgba(12,12,24,.44);
+      opacity: 0; pointer-events: none; transition: opacity 200ms ease; }
+    body.f-nav-open .f-nav-backdrop { opacity: 1; pointer-events: auto; }
+
+    /* Item "Reprendre" (affiché seulement si une brique est en cours) */
+    .f-sb-resume .f-sb-ico { color: var(--accent-strong, #5B21B6); }
+    html.dark .f-sb-resume .f-sb-ico { color: #A78BFA; }
+    .f-sb-resume-sub { display: block; font-size: 11px; font-weight: 400; opacity: .62;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+
+    /* ── Tiroir de navigation sur mobile (même contenu que le rail) ── */
+    @media (max-width: 768px) {
+      .f-nav-toggle { display: inline-flex; }
+      .f-sidebar { display: flex; width: 264px; transform: translateX(-100%);
+        transition: transform 220ms cubic-bezier(.4,0,.2,1); box-shadow: none; }
+      .f-sidebar:hover { width: 264px; }
+      body.f-nav-open .f-sidebar { transform: translateX(0); box-shadow: 0 12px 40px rgba(0,0,0,.28); }
+      /* labels toujours visibles dans le tiroir */
+      .f-sidebar .f-sb-wordmark, .f-sidebar .f-sb-label,
+      .f-sidebar .f-sb-avatar-info { opacity: 1 !important; transform: none !important; }
+      body.f-nav-locked { overflow: hidden; }
+    }
+
     /* Mobile : en-tête compact, sans débordement ni retour à la ligne */
     @media (max-width: 640px) {
       .f-ctx-header { padding: 0 1rem; gap: 10px; }
@@ -360,6 +392,7 @@
   sidebar.className = 'f-sidebar';
   sidebar.setAttribute('role', 'navigation');
   sidebar.setAttribute('aria-label', 'Navigation principale');
+  sidebar.id = 'f-sidebar-nav-panel';
   sidebar.innerHTML = `
     <a href="dashboard.html" class="f-sidebar-logo" aria-label="Fundamental">
       <div class="f-sb-mark">f</div>
@@ -375,7 +408,15 @@
         </span>
         <span class="f-sb-label">Dashboard</span>
       </a>
-      <a href="dashboard.html#explorer-section" class="f-sidebar-item" id="f-sidebar-explorer">
+      <a href="plan.html" class="f-sidebar-item${activeNav==='plan'?' active':''}">
+        <span class="f-sb-ico" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </span>
+        <span class="f-sb-label">Mon parcours</span>
+      </a>
+      <a href="dashboard.html#explorer-section" class="f-sidebar-item${activeNav==='explorer'?' active':''}" id="f-sidebar-explorer">
         <span class="f-sb-ico" aria-hidden="true">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
@@ -404,6 +445,9 @@
   ctxHeader.id = 'f-ctx-header';
   ctxHeader.innerHTML = `
     <div class="f-ctx-left">
+      <button class="f-nav-toggle" id="f-nav-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="f-sidebar-nav-panel">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
       <span class="f-ctx-title">${title}</span>
       ${crumb ? `<span class="f-ctx-breadcrumb">${crumb}</span>` : ''}
     </div>
@@ -471,5 +515,76 @@
     } catch(e) {}
   }
   setTimeout(fillSidebarAvatar, 300);
+
+
+  // ── Tiroir de navigation (mobile) ───────────────────────────
+  var backdrop = document.createElement('div');
+  backdrop.className = 'f-nav-backdrop';
+  backdrop.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(backdrop);
+
+  function setNav(open) {
+    document.body.classList.toggle('f-nav-open', open);
+    document.body.classList.toggle('f-nav-locked', open);
+    var t = document.getElementById('f-nav-toggle');
+    if (t) t.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  var navToggleBtn = document.getElementById('f-nav-toggle');
+  if (navToggleBtn) navToggleBtn.addEventListener('click', function () {
+    setNav(!document.body.classList.contains('f-nav-open'));
+  });
+  backdrop.addEventListener('click', function () { setNav(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.body.classList.contains('f-nav-open')) setNav(false);
+  });
+  sidebar.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('a')) setNav(false);
+  });
+  // Un retour au desktop ne doit jamais laisser l'etat verrouille
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(min-width: 769px)');
+    var onWide = function (ev) { if (ev.matches) setNav(false); };
+    if (mq.addEventListener) mq.addEventListener('change', onWide);
+    else if (mq.addListener) mq.addListener(onWide);
+  }
+
+  // ── "Reprendre" : uniquement s'il y a une brique en cours ailleurs ──
+  function injectResume() {
+    try {
+      if (document.getElementById('f-sb-resume')) return;
+      if (typeof BRICK_FILES === 'undefined') return;
+      var dash = null;
+      try { if (typeof loadFromStorage === 'function') dash = loadFromStorage('fund_dashboard'); } catch (e) {}
+      if (!dash) {   // secours : lecture directe si le store partagé est indisponible
+        try {
+          var raw = (window.localStorage && localStorage.getItem('fund_dashboard'))
+                 || (window.sessionStorage && sessionStorage.getItem('fund_dashboard'));
+          if (raw) dash = JSON.parse(raw);
+        } catch (e) {}
+      }
+      if (!dash || !dash.briques || !dash.briques.length) return;
+      var cur = dash.briques.filter(function (b) { return b.statut === 'en_cours'; })[0];
+      if (!cur) return;
+      var file = BRICK_FILES[cur.id];
+      if (!file || file === page) return;   // deja sur place : aucun ajout
+      var meta = (typeof BRIQUES_META !== 'undefined' && BRIQUES_META[cur.id]) || null;
+      var nom = (meta && meta.nom) || 'Ma brique en cours';
+      var navEl = sidebar.querySelector('.f-sidebar-nav');
+      if (!navEl) return;
+      var a = document.createElement('a');
+      a.id = 'f-sb-resume';
+      a.href = file;
+      a.className = 'f-sidebar-item f-sb-resume';
+      a.title = 'Reprendre : ' + nom;
+      a.innerHTML = '<span class="f-sb-ico" aria-hidden="true">'
+        + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>'
+        + '</span><span class="f-sb-label">Reprendre'
+        + '<span class="f-sb-resume-sub">' + nom.replace(/</g, '&lt;') + '</span></span>';
+      navEl.insertBefore(a, navEl.firstChild);
+    } catch (e) { /* silencieux : aucune degradation si indisponible */ }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', injectResume);
+  else injectResume();
+  setTimeout(injectResume, 800);   // apres hydratation eventuelle
 
 })();
