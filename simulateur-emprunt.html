@@ -73,7 +73,11 @@
       .sim-cols { grid-template-columns:minmax(0,1fr); }
       /* Le résultat passe au-dessus des réglages et reste visible pendant l'ajustement */
       .sim-cols > .sim-panel { order:1; }
-      .sim-cols > .sim-result-panel { order:0; position:sticky; top:56px; z-index:5; padding:1.1rem 1.2rem; }
+      /* background-color opaque SOUS le dégradé : le contenu ne doit pas
+         transparaître au défilement (le dégradé seul est semi-transparent) */
+      .sim-cols > .sim-result-panel { order:0; position:sticky; top:56px; z-index:5; padding:1.1rem 1.2rem;
+        background-color:var(--bg); box-shadow:0 6px 16px rgba(20,20,30,0.10); }
+      html.dark .sim-cols > .sim-result-panel { box-shadow:0 6px 18px rgba(0,0,0,0.55); }
       .sim-result-value { font-size:2.1rem; }
       .sim-result-rows { margin-top:0.9rem; padding-top:0.8rem; gap:0.4rem; }
       .sim-rrow { font-size:0.78rem; }

@@ -37,9 +37,15 @@
       .sb-cols { display:flex; flex-direction:column; align-items:stretch; }
       .sb-cols > * { min-width:0; }
       .sb-right { display:contents; }
+      /* background-color opaque SOUS le dégradé : le contenu ne doit pas
+         transparaître au défilement (le dégradé seul est semi-transparent) */
       .sb-banner { order:-1; position:sticky; top:56px; z-index:5; margin-bottom:0; }
       .sb-left { order:0; min-width:0; }
-      .sb-right > .sb-banner { min-width:0; }
+      /* background-color opaque SOUS le dégradé : le contenu ne doit pas
+         transparaître au défilement (le dégradé seul est semi-transparent) */
+      .sb-right > .sb-banner { min-width:0; background-color:var(--bg);
+        box-shadow:0 6px 16px rgba(20,20,30,0.10); }
+      html.dark .sb-right > .sb-banner { box-shadow:0 6px 18px rgba(0,0,0,0.55); }
       .sb-right > .sb-panel { order:1; min-width:0; }
     }
 
