@@ -630,10 +630,26 @@
   // ─── START FIRST BRIQUE ───────────────────────────────────────
   function startFirstBrique() {
     const dash = loadFromStorage('fund_dashboard') || getMockDashboard();
-    dash.brique_active_id = briquesIds[0];
-    dash.briques = briquesIds.map((id, i) => ({
-      id, statut: i === 0 ? 'en_cours' : 'a_faire', progression: i === 0 ? 5 : 0
-    }));
+
+    // Fusion (jamais de remplacement) : la progression existante est préservée,
+    // y compris les briques hors plan ajoutées par d'autres écrans.
+    const prev = Array.isArray(dash.briques) ? dash.briques : [];
+    const byId = {};
+    prev.forEach(b => { if (b && b.id) byId[b.id] = b; });
+
+    const ordered = briquesIds.map(id => byId[id] || { id, statut: 'a_faire', progression: 0 });
+    prev.forEach(b => { if (b && b.id && briquesIds.indexOf(b.id) === -1) ordered.push(b); });
+    dash.briques = ordered;
+
+    // Cible = première brique non terminée ; on ne rétrograde jamais une brique.
+    const target = ordered.find(b => b.statut !== 'terminee') || ordered[0];
+    if (target) {
+      if (target.statut === 'a_faire') {
+        target.statut = 'en_cours';
+        if (!target.progression) target.progression = 5;
+      }
+      dash.brique_active_id = target.id;
+    }
     saveToStorage('fund_dashboard', dash);
     // Also pass profil + dash in hash for storage-less environments
     try {
