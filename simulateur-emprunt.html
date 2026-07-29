@@ -434,8 +434,8 @@
     window.toggleTauxEdit = toggleTauxEdit;
     window.resetTaux = resetTaux;
 
-    document.addEventListener('DOMContentLoaded', async function(){
-      try { if (typeof requireAuth === 'function'){ var u = await requireAuth(); if (!u) return; } } catch(e){}
+    // Outil public : aucun compte requis (aucune donnée n'est enregistrée ici).
+    document.addEventListener('DOMContentLoaded', function(){
       initSim();
     });
   })();
