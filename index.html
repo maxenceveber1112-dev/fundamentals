@@ -465,172 +465,40 @@
     html.dark .btn-hero { background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%); color: #fff; }
     .btn-hero:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 
-    /* ─── PARCOURS POPUP MODAL ────────────────────────────────────── */
-    .parcours-popup-overlay {
-      position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,0.55);
-      backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center;
-      animation: fadeIn 0.3s ease both;
-    }
-    .parcours-popup {
-      background: #0f0f1a;
-      border: 1px solid #2a2a4a;
-      border-radius: 20px;
-      padding: 28px 24px 24px;
-      max-width: 400px;
-      width: 90%;
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center;
-      animation: popIn 0.4s 0.1s var(--ease-spring) both;
-    }
-    .parcours-popup-kicker {
-      font-family: 'Inter', sans-serif;
-      font-size: 10px; font-weight: 700;
-      letter-spacing: 0.14em; text-transform: uppercase;
-      color: #8b5cf6;
-      margin-bottom: 6px;
-    }
-    .parcours-popup-title {
-      font-family: 'Fraunces', serif;
-      font-style: italic; font-weight: 400;
-      font-size: 1.35rem;
-      color: #fff;
-      line-height: 1.3;
-      margin-bottom: 16px;
-    }
-    .parcours-popup-label {
-      font-family: 'Inter', sans-serif;
-      font-size: 11px;
-      color: rgba(255,255,255,0.5);
-      margin-bottom: 4px;
-      text-align: left;
-      width: 100%;
-    }
-    .parcours-modal-label {
-      font-family: Inter, sans-serif;
-      font-size: 11px;
-      color: rgba(255,255,255,0.5);
-      margin: 0 0 8px;
-    }
-    .parcours-popup-cta {
-      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-      width: 100%;
-      padding: 14px 24px;
-      border-radius: var(--r-full);
-      background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9375rem; font-weight: 600; color: #fff;
-      border: none; cursor: pointer;
-      box-shadow: 0 4px 24px rgba(139,92,246,0.35);
-      transition: transform 0.15s var(--ease-out), box-shadow var(--t);
-    }
-    .parcours-popup-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(139,92,246,0.40); }
-
-    /* Cards carousel inside modal */
-    .parcours-modal-carousel {
-      display: flex;
-      flex-direction: row;
-      gap: 10px;
-      overflow: hidden;
-      width: 100%;
-      margin-bottom: 16px;
-    }
-    .parcours-modal-card {
-      flex: 0 0 148px;
-      min-height: 100px;
-      background: #1a1a2e;
-      border: 1px solid rgba(139,92,246,0.25);
-      border-radius: 12px;
-      padding: 12px;
-      position: relative;
-      overflow: hidden;
-      box-sizing: border-box;
-    }
-    .parcours-modal-card--peek {
-      filter: blur(2px);
-      opacity: 0.45;
-      pointer-events: none;
-    }
-    .parcours-kicker {
-      font-family: Inter, sans-serif;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .parcours-kicker--violet { color: #8b5cf6; }
-    .parcours-kicker--teal { color: #14b8a6; }
-    .parcours-kicker--amber { color: #f59e0b; }
-    .parcours-card-title {
-      font-family: Fraunces, serif;
-      font-style: italic;
-      font-size: 14px;
-      color: #fff;
-      line-height: 1.3;
-      margin-bottom: 4px;
-    }
-    .parcours-card-sub {
-      font-family: Inter, sans-serif;
-      font-size: 11px;
-      color: rgba(255,255,255,0.55);
-    }
-    .parcours-watermark {
-      position: absolute;
-      bottom: 8px;
-      right: 8px;
-      width: 38px;
-      height: 38px;
-      opacity: 0.09;
-      color: #fff;
-      pointer-events: none;
-    }
-
-    /* ─── BRIGHT MODE overrides for popup ──────────────────────────── */
-    :root:not(.dark) .parcours-popup {
-      background: #fff;
-      border-color: rgba(139,92,246,0.15);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
-    }
-    :root:not(.dark) .parcours-popup-overlay {
-      background: rgba(0,0,0,0.3);
-    }
-    :root:not(.dark) .parcours-popup-title {
-      color: #1a1a2e;
-    }
-    :root:not(.dark) .parcours-popup-label {
-      color: rgba(26,26,46,0.5);
-    }
-    :root:not(.dark) .parcours-popup-cta {
-      background: var(--accent-strong);
-      box-shadow: 0 4px 20px rgba(91,33,182,0.25);
-    }
-    :root:not(.dark) .parcours-modal-card,
-    body.theme-bright .parcours-modal-card,
-    .theme-bright .parcours-modal-card {
-      background: #ede9fe;
-      border-color: rgba(139,92,246,0.2);
-    }
-    :root:not(.dark) .parcours-card-title,
-    body.theme-bright .parcours-card-title,
-    .theme-bright .parcours-card-title {
-      color: #1a1a2e;
-    }
-    :root:not(.dark) .parcours-card-sub,
-    body.theme-bright .parcours-card-sub,
-    .theme-bright .parcours-card-sub {
-      color: rgba(26,26,46,0.6);
-    }
-    :root:not(.dark) .parcours-modal-label,
-    body.theme-bright .parcours-modal-label,
-    .theme-bright .parcours-modal-label {
-      color: rgba(26,26,46,0.5);
-    }
-    :root:not(.dark) .parcours-watermark,
-    body.theme-bright .parcours-watermark,
-    .theme-bright .parcours-watermark {
-      color: #1a1a2e;
+    /* ─── RÉVÉLATION DU PLAN (écran de fin) ──────────────── */
+    .rv-wrap { width:100%; max-width:660px; text-align:left;
+      animation: fadeIn 0.5s 0.15s ease both; }
+    .rv-meta { font-size:12.5px; color:var(--text-muted);
+      margin-bottom:1.5rem; text-align:center; }
+    .rv-meta b { color:var(--text); font-weight:600; }
+    .rv-phase { display:flex; align-items:center; gap:0.5rem; margin:1.5rem 0 0.75rem; }
+    .rv-phase:first-child { margin-top:0; }
+    .rv-phase-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .rv-phase-name { font-size:10.5px; font-weight:700; letter-spacing:0.12em;
+      text-transform:uppercase; color:var(--text-muted); }
+    .rv-phase-count { font-size:10.5px; color:var(--text-faint); margin-left:auto; }
+    .rv-list { display:flex; flex-direction:column; gap:0.5rem; }
+    .rv-item { display:flex; align-items:center; gap:0.875rem;
+      padding:0.8rem 1rem; border-radius:var(--r-xl);
+      background:var(--surface-2); border:1px solid var(--border-subtle); }
+    .rv-item--first { border-color:var(--accent-strong);
+      background:color-mix(in srgb, var(--accent-soft) 55%, transparent); }
+    .rv-num { flex:0 0 auto; width:22px; height:22px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:700; color:var(--text-muted);
+      background:var(--surface-3); }
+    .rv-item--first .rv-num { background:var(--accent-strong); color:#fff; }
+    .rv-body { flex:1; min-width:0; }
+    .rv-name { font-size:14px; font-weight:600; color:var(--text); }
+    .rv-tag { font-size:12px; color:var(--text-muted); line-height:1.4;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .rv-duree { flex:0 0 auto; font-size:11px; color:var(--text-faint); white-space:nowrap; }
+    .rv-badge { flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:0.06em;
+      text-transform:uppercase; color:var(--accent-strong); }
+    html.dark .rv-badge { color:#A78BFA; }
+    @media (max-width:560px) {
+      .rv-tag, .rv-duree { display:none; }
+      .rv-item { padding:0.7rem 0.85rem; }
     }
 
     /* ─── OBJ CARD (objectives grid) ────────────────────────────── */
@@ -1115,9 +983,11 @@
           <polyline points="26,42 36,52 56,30" stroke="var(--green)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="36" stroke-dashoffset="36" style="animation:drawCheck 0.5s 0.8s ease forwards;" />
         </svg>
         <h2 class="completion-title">Ton parcours est pr&#234;t.</h2>
-        <p class="completion-sub">On a tout ce qu&#8217;il faut pour personnaliser tes briques.</p>
+        <p class="completion-sub" id="completion-sub">On a tout ce qu&#8217;il faut pour personnaliser tes briques.</p>
 
-        <button class="btn-hero" onclick="goToDashboard()">
+        <div class="rv-wrap" id="reveal-plan" style="display:none"></div>
+
+        <button class="btn-hero" id="completion-cta" onclick="goToDashboard()">
           Voir mon tableau de bord
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
@@ -1148,47 +1018,6 @@
   </div><!-- /.onb-body -->
 </div><!-- /#app -->
 
-<!-- ═══ POPUP MODAL — Parcours prêt ═══════════════════════════════ -->
-<div class="parcours-popup-overlay" id="parcours-popup" style="display:none">
-  <div class="parcours-popup">
-    <p class="parcours-popup-kicker">PROFIL CR&#201;&#201;</p>
-    <h3 class="parcours-popup-title">Ton parcours est pr&#234;t&nbsp;!</h3>
-
-    <p class="parcours-modal-label">Ton parcours personnalis&#233;</p>
-    <div class="parcours-modal-carousel">
-      <div class="parcours-modal-card">
-        <div class="parcours-kicker parcours-kicker--violet">&#9679; FINANCES</div>
-        <div class="parcours-card-title">Stabilise ton mois</div>
-        <div class="parcours-card-sub">Ma&#238;trise tes flux</div>
-        <svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
-          <path d="M16 14h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M2 11h20" stroke="currentColor" stroke-width="1.5"/>
-        </svg>
-      </div>
-      <div class="parcours-modal-card">
-        <div class="parcours-kicker parcours-kicker--teal">&#9679; &#201;PARGNE</div>
-        <div class="parcours-card-title">Ton &#233;pargne de pr&#233;caution</div>
-        <div class="parcours-card-sub">Le fonds qui change tout</div>
-        <svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2l7 4v6c0 4.4-3.1 8.1-7 9.9C8.1 20.1 5 16.4 5 12V6l7-4z" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        </svg>
-      </div>
-      <div class="parcours-modal-card parcours-modal-card--peek">
-        <div class="parcours-kicker parcours-kicker--amber">&#9679; PERSONNALIS&#201;</div>
-        <div class="parcours-card-title">Ta brique suivante</div>
-        <div class="parcours-card-sub">Calcul&#233;e pour toi</div>
-        <svg class="parcours-watermark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </div>
-    </div>
-
-    <button class="parcours-popup-cta" onclick="goToDashboard()">
-      Commencer&nbsp;: Stabilise ton mois&nbsp;&#8594;
-    </button>
-  </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
@@ -1662,15 +1491,79 @@ async function submitQuiz() {
 
   // Show parcours popup after a short delay
   setTimeout(function() {
-    var popup = document.getElementById('parcours-popup');
-    if (popup) popup.style.display = 'flex';
-  }, 800);
+    revealPlan();
+  }, 650);
+}
+
+// ─── RÉVÉLATION DU PLAN ────────────────────────────────
+// Affiche le parcours reellement calcule (aucun contenu en dur).
+var RV_PHASES = ['Survie & stabilit\u00e9', 'Construction & projets', 'Investissement & long terme'];
+var RV_DOTS = { 'Survie & stabilit\u00e9':'#E8A6A0', 'Construction & projets':'#E5B66A',
+                'Investissement & long terme':'#8FB59A' };
+
+function revealPlan() {
+  var host = document.getElementById('reveal-plan');
+  if (!host) return;
+  var ids = [];
+  try {
+    var p = (typeof loadFromStorage === 'function' && loadFromStorage('fund_profil')) || null;
+    ids = (p && p.briques_recommandees) || (typeof computeBriques === 'function' ? computeBriques() : []);
+  } catch (e) {}
+  ids = (ids || []).filter(function (id) { return typeof BRIQUES_META !== 'undefined' && BRIQUES_META[id]; });
+  if (!ids.length) return;   // aucun plan calculable : on garde l'ecran d'origine
+
+  // Regroupement par phase, dans l'ordre canonique du parcours
+  var parPhase = {};
+  ids.forEach(function (id) {
+    var m = BRIQUES_META[id];
+    var ph = RV_PHASES.indexOf(m.pack) !== -1 ? m.pack : 'Autres modules';
+    (parPhase[ph] = parPhase[ph] || []).push(id);
+  });
+  var ordre = RV_PHASES.filter(function (ph) { return parPhase[ph]; });
+  if (parPhase['Autres modules']) ordre.push('Autres modules');
+
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  var rang = 0, html = '';
+  ordre.forEach(function (ph) {
+    var dot = RV_DOTS[ph];
+    html += '<div class="rv-phase">'
+          + (dot ? '<span class="rv-phase-dot" style="background:' + dot + '" aria-hidden="true"></span>' : '')
+          + '<span class="rv-phase-name">' + esc(ph) + '</span>'
+          + '<span class="rv-phase-count">' + parPhase[ph].length + '</span></div>'
+          + '<div class="rv-list">';
+    parPhase[ph].forEach(function (id) {
+      var m = BRIQUES_META[id]; rang++;
+      var premier = rang === 1;
+      html += '<div class="rv-item' + (premier ? ' rv-item--first' : '') + '">'
+            + '<span class="rv-num">' + rang + '</span>'
+            + '<span class="rv-body"><span class="rv-name">' + esc(m.nom) + '</span>'
+            + '<span class="rv-tag">' + esc(m.tagline || '') + '</span></span>'
+            + (premier ? '<span class="rv-badge">On commence ici</span>'
+                       : '<span class="rv-duree">' + esc(m.duree || '') + '</span>')
+            + '</div>';
+    });
+    html += '</div>';
+  });
+
+  var duree = ids.length <= 4 ? '3\u20134 semaines' : ids.length <= 8 ? '4\u20136 semaines' : '2\u20133 mois';
+  var meta = '<b>' + ids.length + '</b>&nbsp;module' + (ids.length > 1 ? 's' : '')
+           + '&nbsp;&middot;&nbsp;<b>' + duree + '</b>&nbsp;\u00e0 ton rythme';
+  host.innerHTML = '<p class="rv-meta">' + meta + '</p>' + html;
+  host.style.display = 'block';
+
+  // Le sous-titre et l'action reprennent le parcours reel
+  var sub = document.getElementById('completion-sub');
+  if (sub) sub.textContent = 'Voil\u00e0 les modules qu\u2019on a s\u00e9lectionn\u00e9s pour toi, dans cet ordre.';
+  var cta = document.getElementById('completion-cta');
+  if (cta) {
+    var m1 = BRIQUES_META[ids[0]];
+    cta.childNodes[0].nodeValue = '\n          Commencer\u00a0: ' + m1.nom + '\n          ';
+  }
 }
 
 function goToDashboard() {
   sessionStorage.removeItem('_wm_shown');   // reset pour nouvel onboarding
   sessionStorage.removeItem('_tour_shown'); // reset tour aussi
-  sessionStorage.setItem('show_welcome', '1');
   window.location.href = 'dashboard.html';
 }
 
