@@ -188,6 +188,27 @@
     }
     html.dark .f-sb-newdot { background: #A78BFA; }
 
+    /* Invitation (mode anonyme) */
+    .f-sb-invite { padding: 10px 14px 4px; }
+    .f-sb-invite-txt { font-size: 11.5px; line-height: 1.45;
+      color: var(--text-muted, #78716C); white-space: normal; }
+    html.dark .f-sb-invite-txt { color: var(--text-muted, #A1A1AA); }
+    .f-sb-invite-cta { display: inline-block; margin-top: 7px; font-size: 12px;
+      font-weight: 600; color: var(--accent-strong, #5B21B6); text-decoration: none;
+      white-space: nowrap; }
+    html.dark .f-sb-invite-cta { color: #A78BFA; }
+    .f-sb-invite-cta:hover { text-decoration: underline; }
+    /* Replie (rail 64px) : on n'affiche qu'une icone discrete */
+    .f-sb-invite-mini { display: flex; align-items: center; justify-content: center;
+      height: 40px; color: var(--text-muted, #78716C); }
+    .f-sidebar:hover .f-sb-invite-mini { display: none; }
+    .f-sb-invite { display: none; }
+    .f-sidebar:hover .f-sb-invite { display: block; }
+    @media (max-width: 768px) {
+      .f-sb-invite { display: block !important; }
+      .f-sb-invite-mini { display: none !important; }
+    }
+
     /* Bottom avatar */
     .f-sidebar-bottom {
       border-top: 1px solid var(--border-subtle, rgba(28,25,23,.07));
@@ -492,6 +513,108 @@
     });
   }
 
+  // ── Mode anonyme ──────────────────────────────────────────────
+  // Sans session : on masque tout ce qui est inaccessible et on n'expose
+  // que les outils publics, plus une invitation a se connecter.
+  var PUBLIC_PAGES = ['simulateur-budget.html', 'simulateur-emprunt.html'];
+
+  // Indice synchrone de session (jeton Supabase en stockage local) :
+  // evite un clignotement du menu avant la reponse asynchrone.
+  function hasCachedSession() {
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        if (/^sb-.*-auth-token$/.test(localStorage.key(i))) return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  function svgIco(d) {
+    return '<span class="f-sb-ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg></span>';
+  }
+
+  // Sauvegarde du rendu connecté, pour pouvoir revenir en arrière si la
+  // détection synchrone s'est trompée (jeton stocké autrement, session
+  // restaurée tardivement...). Sans cela, un utilisateur connecté resterait
+  // bloqué sur le menu anonyme.
+  var snapAuth = null;
+
+  function applyAnonymousMode() {
+    if (document.body.classList.contains('f-anon')) return;
+    if (!snapAuth) {
+      var n0 = sidebar.querySelector('.f-sidebar-nav');
+      var b0 = sidebar.querySelector('.f-sidebar-bottom');
+      var l0 = sidebar.querySelector('.f-sidebar-logo');
+      snapAuth = {
+        nav: n0 ? n0.innerHTML : null,
+        bottom: b0 ? b0.innerHTML : null,
+        logo: l0 ? l0.getAttribute('href') : null
+      };
+    }
+    document.body.classList.add('f-anon');
+
+    var nav = sidebar.querySelector('.f-sidebar-nav');
+    if (nav) {
+      nav.innerHTML = '';
+      var outils = [
+        { href: 'simulateur-budget.html', label: 'Simulateur de budget',
+          ico: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M8 16h5M8 8h8"/>' },
+        { href: 'simulateur-emprunt.html', label: "Simulateur d'emprunt",
+          ico: '<path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M10 21v-6h4v6"/>' }
+      ];
+      outils.forEach(function (o) {
+        var a = document.createElement('a');
+        a.href = o.href;
+        a.className = 'f-sidebar-item' + (page === o.href ? ' active' : '');
+        a.innerHTML = svgIco(o.ico) + '<span class="f-sb-label">' + o.label + '</span>';
+        nav.appendChild(a);
+      });
+    }
+
+    // Le logo ne doit pas renvoyer vers une page protegee
+    // (a l'etape 3, il pointera vers l'accueil public).
+    var logo = sidebar.querySelector('.f-sidebar-logo');
+    if (logo) logo.setAttribute('href', 'simulateur-budget.html');
+
+    // Bas de menu : l'identite cede la place a l'invitation
+    var bottom = sidebar.querySelector('.f-sidebar-bottom');
+    if (bottom) {
+      bottom.innerHTML =
+        '<div class="f-sb-invite-mini" aria-hidden="true">' +
+          '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>' +
+        '</div>' +
+        '<div class="f-sb-invite">' +
+          '<p class="f-sb-invite-txt">Connecte-toi ou cr\u00e9e un compte pour retrouver ton parcours et conserver ta progression.</p>' +
+          '<a class="f-sb-invite-cta" href="auth.html">Se connecter \u2192</a>' +
+        '</div>';
+    }
+  }
+
+  function applyAuthMode(connecte) {
+    if (!connecte) { applyAnonymousMode(); return; }
+    document.body.classList.remove('f-anon');
+    if (!snapAuth) return;                 // rien n'avait été remplacé
+    var nav = sidebar.querySelector('.f-sidebar-nav');
+    var bottom = sidebar.querySelector('.f-sidebar-bottom');
+    var logo = sidebar.querySelector('.f-sidebar-logo');
+    if (nav && snapAuth.nav !== null) nav.innerHTML = snapAuth.nav;
+    if (bottom && snapAuth.bottom !== null) bottom.innerHTML = snapAuth.bottom;
+    if (logo && snapAuth.logo) logo.setAttribute('href', snapAuth.logo);
+    snapAuth = null;
+    fillSidebarAvatar();                   // ré-alimente initiales + e-mail
+    injectResume();                        // et la reprise éventuelle
+  }
+
+  // 1er rendu d'apres l'indice local, puis confirmation asynchrone
+  if (!hasCachedSession()) applyAnonymousMode();
+  (async function () {
+    try {
+      if (typeof getCurrentUser !== 'function') return;
+      var u = await getCurrentUser();
+      applyAuthMode(!!u);
+    } catch (e) {}
+  })();
+
   // ── Avatar fill ───────────────────────────────────────────────
   async function fillSidebarAvatar() {
     try {
@@ -544,6 +667,7 @@
   function injectResume() {
     try {
       if (document.getElementById('f-sb-resume')) return;
+      if (document.body.classList.contains('f-anon')) return;
       if (typeof BRICK_FILES === 'undefined') return;
       var dash = null;
       try { if (typeof loadFromStorage === 'function') dash = loadFromStorage('fund_dashboard'); } catch (e) {}
