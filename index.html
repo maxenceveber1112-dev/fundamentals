@@ -1308,7 +1308,23 @@ var BRIQUES = {
   transmission:             { title:'Transmission du patrimoine' },
   clarification_contrats:   { title:'Clarifier ses contrats' }
 };
-var PRIORITY = ['budget_base','gestion_decouvert','paiements_fractionnes','fonds_urgence','droits_aides','plan_desendettement','dispositifs_bdf','anti_arnaques','premiers_pas_bancaires','emmenagement','plan_multi_objectifs','achat_immobilier','immo_locatif','treso_dirigeant','structuration_patrimoine','investissement_long_terme','diversification_allocation','produits_complexes_vs_simples','fiscalite_epargne','retraite','transmission','clarification_contrats'];
+// Ordre canonique du parcours. Le socle (budget + epargne) passe avant tout
+// le reste ; "Premiers pas bancaires" le precede pour les mineurs, car on
+// n'etablit pas un budget sans compte bancaire.
+var PRIORITY = [
+  // Socle
+  'premiers_pas_bancaires', 'budget_base', 'fonds_urgence',
+  // Urgences
+  'gestion_decouvert', 'paiements_fractionnes', 'plan_desendettement', 'dispositifs_bdf',
+  // Fondations
+  'droits_aides', 'anti_arnaques',
+  // Projets
+  'emmenagement', 'plan_multi_objectifs', 'achat_immobilier', 'immo_locatif', 'treso_dirigeant',
+  // Long terme
+  'structuration_patrimoine', 'investissement_long_terme', 'diversification_allocation',
+  'produits_complexes_vs_simples', 'fiscalite_epargne', 'retraite', 'transmission',
+  'clarification_contrats'
+];
 
 function computeBriques() {
   var age=A.q_age_group, rev=A.q_revenu_sentiment, stress=parseInt(A.q_stress_budget)||0,
@@ -1316,16 +1332,16 @@ function computeBriques() {
     retards=A.q_retards_paiement, produits=A.q_produits_detenu,
     confort=A.q_confort_numerique, fraude=A.q_fraude_experience, lp=A.q_logement_projet;
   var s=new Set();
-  if (stress>=4||['difficile_fin_mois','juste_juste'].includes(rev)) s.add('budget_base');
-  if (obj.includes('sortir_decouvert')||obj.includes('stabiliser_budget')) s.add('budget_base');
+  // Socle commun : tout le monde commence par le budget puis l'epargne.
+  s.add('budget_base');
+  s.add('fonds_urgence');
   if (dettes.includes('decouvert_regulier')) s.add('gestion_decouvert');
   if (dettes.includes('paiement_fractionne_mini_credit')) s.add('paiements_fractionnes');
-  if (rev!=='a_l_aise'&&(stress>=3||obj.includes('stabiliser_budget'))) s.add('fonds_urgence');
   if (rev==='difficile_fin_mois'||['chomeur_inactif','college_lycee'].includes(status)) s.add('droits_aides');
   if ((dettes.includes('credit_conso')||dettes.includes('paiement_fractionne_mini_credit')||dettes.includes('decouvert_regulier')||dettes.includes('credit_immo')||dettes.includes('autre_credit'))&&(obj.includes('rembourser_dettes')||(retards&&retards!=='aucun')||dettes.filter(function(d){return d!=='aucun';}).length>=2)) s.add('plan_desendettement');
   if (retards==='frequent'&&rev==='difficile_fin_mois'&&dettes.filter(function(d){return d!=='aucun';}).length>=2) s.add('dispositifs_bdf');
   if (['15_17','18_24','65_plus'].includes(age)||confort==='peu_a_l_aise'||fraude==='oui') s.add('anti_arnaques');
-  if (['15_17','18_24'].includes(age)&&['college_lycee','etudiant'].includes(status)) s.add('premiers_pas_bancaires');
+  if (age==='15_17'||(age==='18_24'&&['college_lycee','etudiant'].includes(status))) s.add('premiers_pas_bancaires');
   if (['je_vais_demenager','je_veux_acheter'].includes(lp)) s.add('emmenagement');
   if (lp==='je_veux_acheter') s.add('achat_immobilier');
   if (['financer_projet_court_terme','acheter_logement','preparer_retraite'].some(function(o){return obj.includes(o);})&&rev!=='difficile_fin_mois') s.add('plan_multi_objectifs');
