@@ -493,12 +493,15 @@
     .rv-tag { font-size:12px; color:var(--text-muted); line-height:1.4;
       overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .rv-duree { flex:0 0 auto; font-size:11px; color:var(--text-faint); white-space:nowrap; }
+    .rv-note { flex:0 0 auto; font-size:10.5px; font-weight:600; line-height:1.3;
+      color:var(--text-muted); max-width:9.5rem; text-align:right; }
     .rv-badge { flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:0.06em;
       text-transform:uppercase; color:var(--accent-strong); }
     html.dark .rv-badge { color:#A78BFA; }
     @media (max-width:560px) {
       .rv-tag, .rv-duree { display:none; }
       .rv-item { padding:0.7rem 0.85rem; }
+      .rv-note { max-width:7rem; font-size:10px; }
     }
 
     /* ─── OBJ CARD (objectives grid) ────────────────────────────── */
@@ -1319,7 +1322,7 @@ var PRIORITY = [
   // Fondations
   'droits_aides', 'anti_arnaques',
   // Projets
-  'emmenagement', 'plan_multi_objectifs', 'achat_immobilier', 'immo_locatif', 'treso_dirigeant',
+  'emmenagement', 'plan_multi_objectifs', 'projet_immo', 'achat_immobilier', 'immo_locatif', 'treso_dirigeant',
   // Long terme
   'structuration_patrimoine', 'investissement_long_terme', 'diversification_allocation',
   'produits_complexes_vs_simples', 'fiscalite_epargne', 'retraite', 'transmission',
@@ -1346,6 +1349,12 @@ function computeBriques() {
   if (lp==='je_veux_acheter') s.add('achat_immobilier');
   if (['financer_projet_court_terme','acheter_logement','preparer_retraite'].some(function(o){return obj.includes(o);})&&rev!=='difficile_fin_mois') s.add('plan_multi_objectifs');
   if (dettes.includes('credit_immo')) s.add('achat_immobilier');
+  // Decrypter l'achat immo : socle pedagogique (apport, frais, credit).
+  // L'immobilier structure la vie financiere en France : on l'integre des
+  // qu'un achat, un projet locatif ou un credit immo est dans le tableau.
+  if (lp==='je_veux_acheter' || obj.includes('acheter_logement') || dettes.includes('credit_immo')
+      || obj.includes('investir_long_terme') || produits.includes('immo_locatif')
+      || A.q_logement_situation==='proprietaire') s.add('projet_immo');
   // Brique investissement locatif : recommandée si l'utilisateur détient déjà du
   // locatif (produit détenu 'immo_locatif', distinct du brick_id homonyme) ou vise l'investissement long terme.
   if (produits.includes('immo_locatif') || obj.includes('investir_long_terme')) s.add('immo_locatif');
@@ -1356,7 +1365,38 @@ function computeBriques() {
   if (obj.includes('preparer_retraite')&&['35_54','55_64'].includes(age)) s.add('retraite');
   if (obj.includes('preparer_transmission')||(['55_64','65_plus'].includes(age)&&['immo_locatif','assurance_vie'].some(function(p){return produits.includes(p);}))) s.add('transmission');
   if (['55_64','65_plus'].includes(age)&&['assurance_vie','per','immo_locatif'].some(function(p){return produits.includes(p);})) s.add('clarification_contrats');
-  return PRIORITY.filter(function(b){return s.has(b);});
+  var ids = PRIORITY.filter(function(b){return s.has(b);});
+
+  // L'investissement locatif reste dans le parcours de tous ceux qui veulent
+  // investir, mais il n'arrive tot que si une capacite d'emprunt est plausible.
+  // Sinon on le repousse en fin de parcours (une note l'explique a l'ecran).
+  if (ids.indexOf('immo_locatif') !== -1 && !aCapaciteEmprunt()) {
+    ids = ids.filter(function(b){ return b !== 'immo_locatif'; });
+    ids.push('immo_locatif');
+  }
+  return ids;
+}
+
+// Capacite d'emprunt : heuristique, l'onboarding ne collecte aucun montant.
+// On se base sur les signaux disponibles (stabilite, incidents, charge de dettes).
+function aCapaciteEmprunt() {
+  var rev = A.q_revenu_sentiment, status = A.q_status_pro,
+      retards = A.q_retards_paiement, dettes = A.q_dettes_types || [];
+  if (rev === 'difficile_fin_mois') return false;
+  if (retards && retards !== 'aucun') return false;
+  if (['chomeur_inactif','college_lycee','etudiant'].includes(status)) return false;
+  if (dettes.includes('decouvert_regulier')) return false;
+  if (dettes.filter(function(d){ return d !== 'aucun'; }).length >= 2) return false;
+  return true;
+}
+
+// Notes affichees a cote d'un module quand son acces est conditionne.
+function computeBriquesNotes(ids) {
+  var notes = {};
+  if (ids.indexOf('immo_locatif') !== -1 && !aCapaciteEmprunt()) {
+    notes.immo_locatif = 'Quand ta capacité d’emprunt sera libérée';
+  }
+  return notes;
 }
 
 // ─── PREVIEW PANEL ──────────────────────────────────────────────
@@ -1477,6 +1517,7 @@ async function submitQuiz() {
       confort_numerique: A.q_confort_numerique, fraude_experience: A.q_fraude_experience,
       urgence_principale: A.q_urgence_principale,
       briques_recommandees: briquesIds,
+      briques_notes: computeBriquesNotes(briquesIds),
       montant_livrets: em.montant_livrets || null,
       montant_assurance_vie: em.montant_assurance_vie || null,
       epargne_liquide_total: em.epargne_liquide_total || null
@@ -1526,6 +1567,10 @@ function revealPlan() {
     ids = (p && p.briques_recommandees) || (typeof computeBriques === 'function' ? computeBriques() : []);
   } catch (e) {}
   ids = (ids || []).filter(function (id) { return typeof BRIQUES_META !== 'undefined' && BRIQUES_META[id]; });
+  var notes = {};
+  try {
+    notes = (p && p.briques_notes) || (typeof computeBriquesNotes === 'function' ? computeBriquesNotes(ids) : {});
+  } catch (e) {}
   if (!ids.length) return;   // aucun plan calculable : on garde l'ecran d'origine
 
   // Regroupement par phase, dans l'ordre canonique du parcours
@@ -1555,7 +1600,8 @@ function revealPlan() {
             + '<span class="rv-body"><span class="rv-name">' + esc(m.nom) + '</span>'
             + '<span class="rv-tag">' + esc(m.tagline || '') + '</span></span>'
             + (premier ? '<span class="rv-badge">On commence ici</span>'
-                       : '<span class="rv-duree">' + esc(m.duree || '') + '</span>')
+               : notes[id] ? '<span class="rv-note">' + esc(notes[id]) + '</span>'
+                           : '<span class="rv-duree">' + esc(m.duree || '') + '</span>')
             + '</div>';
     });
     html += '</div>';
