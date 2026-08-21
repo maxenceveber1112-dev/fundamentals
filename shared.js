@@ -538,6 +538,7 @@ function buildInsights(brickId, profil, data) {
 
 // ─── BRICK FILES + NAVIGATION ────────────────────────────────────────────
 const BRICK_FILES = {
+  premiers_pas_bancaires: 'brique-premiers-pas-bancaires.html',
   budget_base:          'brique-budget-base.html',
   fonds_urgence:        'brique-fonds-urgence.html',
   achat_immobilier:     'brique-achat-immobilier.html',

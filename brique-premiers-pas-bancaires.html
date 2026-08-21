@@ -1525,10 +1525,6 @@ function getSecuStatusText() {
   var done = Object.keys(setup).filter(function(k){return setup[k]==='done';}).length;
   return done+'/3 réglages';
 };
-  var total = 0, done = 0;
-  CHECKLIST_SECTIONS.forEach(function(s) { s.items.forEach(function(i) { total++; if (checked[i.id]) done++; }); });
-  return done + '/' + total + ' réglages';
-}
 
 
 /* ══════════════════════════════════════════════════════════════
