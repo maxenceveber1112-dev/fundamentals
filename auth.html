@@ -513,7 +513,8 @@
       </form>
 
       <p class="footer-note">
-        Groupe bêta fermé. <a href="mailto:hello@fundamental.app">Demander un accès</a><br>
+        <span id="fs-login">Pas encore de compte&nbsp;? <a href="javascript:void(0)" onclick="setTab('signup')">Cr&#233;er un compte</a></span>
+        <span id="fs-signup" style="display:none">D&#233;j&#224; un compte&nbsp;? <a href="javascript:void(0)" onclick="setTab('login')">Se connecter</a></span><br>
         <span style="margin-top:0.35rem;display:block;">En continuant, tu acceptes nos <a href="cgu.html">CGU</a> et notre <a href="confidentialite.html">politique de confidentialité</a>.</span>
       </p>
 
@@ -571,6 +572,12 @@
       ? 'Connecte-toi pour accéder à ton parcours.'
       : 'Rejoins Fundamental et construis ton parcours.';
     document.getElementById('password').setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
+    var fsl = document.getElementById('fs-login');
+    var fss = document.getElementById('fs-signup');
+    if (fsl && fss) {
+      fsl.style.display = isLogin ? '' : 'none';
+      fss.style.display = isLogin ? 'none' : '';
+    }
     clearMessages();
   }
 
