@@ -63,6 +63,7 @@ async function signInWithGoogle() {
 async function signOut() {
   const sb = getClient(); if (!sb) return;
   await sb.auth.signOut();
+  clearAnonDraft();   // navigateur partagé : aucun résidu d'essai
   window.location.href = 'auth.html';
 }
 
@@ -184,15 +185,100 @@ async function resetUserData() {
 
 const _MEM = {};
 
+// ─── BROUILLON ANONYME ─────────────────────────────────────────────
+// Sans session, Supabase refuse d'écrire et _MEM est vidé à chaque
+// navigation : le travail d'un visiteur non connecté serait perdu.
+// On le persiste donc en local, sous des clés préfixées, strictement
+// cloisonnées des données d'un compte.
+//
+// Avec session : comportement inchangé (mémoire + Supabase, aucune
+// écriture locale). C'est ce cloisonnement qui garantit qu'un essai
+// anonyme ne peut pas contaminer un compte, ni l'inverse.
+const _AUTH_KEY   = 'fund_auth';    // storageKey du client Supabase (voir getClient)
+const _ANON_PREFIX = 'fund_anon_';
+
+// Indice synchrone de session : la présence du jeton Supabase en stockage
+// local. Les fonctions ci-dessous sont synchrones et ne peuvent pas
+// attendre getCurrentUser().
+function _hasSession() {
+  try { return !!localStorage.getItem(_AUTH_KEY); } catch (e) { return false; }
+}
+
 function saveToStorage(key, val) {
   _MEM[key] = val;
-  // Async write to Supabase selon la clé
-  if (key === 'fund_profil')     saveProfile(val).catch(() => {});
-  if (key === 'fund_dashboard')  saveDashboard(val).catch(() => {});
+  if (_hasSession()) {
+    // Async write to Supabase selon la clé
+    if (key === 'fund_profil')     saveProfile(val).catch(() => {});
+    if (key === 'fund_dashboard')  saveDashboard(val).catch(() => {});
+  } else {
+    try { localStorage.setItem(_ANON_PREFIX + key, JSON.stringify(val)); } catch (e) {}
+  }
 }
 
 function loadFromStorage(key) {
+  if (_MEM[key]) return _MEM[key];
+  if (!_hasSession()) {
+    try {
+      const raw = localStorage.getItem(_ANON_PREFIX + key);
+      if (raw) { const v = JSON.parse(raw); _MEM[key] = v; return v; }
+    } catch (e) {}
+  }
   return _MEM[key] || null;
+}
+
+// ─── MIGRATION DU BROUILLON VERS LE COMPTE ─────────────────────────
+function readAnonDraft() {
+  const out = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf(_ANON_PREFIX) === 0) {
+        try { out[k.slice(_ANON_PREFIX.length)] = JSON.parse(localStorage.getItem(k)); } catch (e) {}
+      }
+    }
+  } catch (e) {}
+  return out;
+}
+
+function hasAnonDraft() {
+  const d = readAnonDraft();
+  return !!(d.fund_profil || d.fund_dashboard);
+}
+
+function clearAnonDraft() {
+  try {
+    const aSupprimer = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf(_ANON_PREFIX) === 0) aSupprimer.push(k);
+    }
+    aSupprimer.forEach(function (k) { localStorage.removeItem(k); });
+  } catch (e) {}
+}
+
+// Pousse le brouillon vers le compte — jamais l'inverse, et jamais
+// par-dessus un compte qui a déjà un parcours.
+async function migrateAnonDraft() {
+  const user = await getCurrentUser();
+  if (!user) return { migre: false, raison: 'pas de session' };
+  const draft = readAnonDraft();
+  if (!draft.fund_profil && !draft.fund_dashboard) return { migre: false, raison: 'aucun brouillon' };
+
+  const existant = await loadProfile();
+  if (existant && existant.briques_recommandees && existant.briques_recommandees.length) {
+    return { migre: false, raison: 'compte deja pourvu' };
+  }
+
+  if (draft.fund_profil) {
+    _MEM['fund_profil'] = draft.fund_profil;
+    await saveProfile(draft.fund_profil).catch(() => {});
+  }
+  if (draft.fund_dashboard) {
+    _MEM['fund_dashboard'] = draft.fund_dashboard;
+    await saveDashboard(draft.fund_dashboard).catch(() => {});
+  }
+  clearAnonDraft();
+  return { migre: true };
 }
 
 // Charge les données depuis Supabase au démarrage de la page et remplit _MEM

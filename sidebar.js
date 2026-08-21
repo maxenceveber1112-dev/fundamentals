@@ -522,9 +522,8 @@
   // evite un clignotement du menu avant la reponse asynchrone.
   function hasCachedSession() {
     try {
-      for (var i = 0; i < localStorage.length; i++) {
-        if (/^sb-.*-auth-token$/.test(localStorage.key(i))) return true;
-      }
+      // storageKey du client Supabase (voir getClient dans supabase.js)
+      return !!localStorage.getItem('fund_auth');
     } catch (e) {}
     return false;
   }
