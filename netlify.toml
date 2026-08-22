@@ -1,9 +1,20 @@
 [build]
   publish = "."
 
+# Racine du site : la page de connexion sert d'accueil.
+# status 200 = reecriture (l'URL reste "/"), force = false = les fichiers
+# reels (dashboard.html, index.html, simulateur-*.html...) restent servis
+# directement.
+[[redirects]]
+  from = "/"
+  to = "/auth.html"
+  status = 200
+
+# Chemin inconnu : on atterrit sur la connexion plutot qu'au milieu de
+# l'onboarding. Un visiteur deja connecte y est redirige vers son dashboard.
 [[redirects]]
   from = "/*"
-  to = "/index.html"
+  to = "/auth.html"
   status = 200
   force = false
 

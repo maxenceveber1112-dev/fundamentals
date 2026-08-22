@@ -493,6 +493,9 @@
     .rv-tag { font-size:12px; color:var(--text-muted); line-height:1.4;
       overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .rv-duree { flex:0 0 auto; font-size:11px; color:var(--text-faint); white-space:nowrap; }
+    .rv-locked { font-size:12px; color:var(--text-faint); line-height:1.5;
+      margin-top:1rem; padding-top:0.85rem; border-top:1px solid var(--border-subtle);
+      text-align:center; }
     .rv-note { flex:0 0 auto; font-size:10.5px; font-weight:600; line-height:1.3;
       color:var(--text-muted); max-width:9.5rem; text-align:right; }
     .rv-badge { flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:0.06em;
@@ -1577,7 +1580,12 @@ function revealPlan() {
   var duree = ids.length <= 4 ? '3\u20134 semaines' : ids.length <= 8 ? '4\u20136 semaines' : '2\u20133 mois';
   var meta = '<b>' + ids.length + '</b>&nbsp;module' + (ids.length > 1 ? 's' : '')
            + '&nbsp;&middot;&nbsp;<b>' + duree + '</b>&nbsp;\u00e0 ton rythme';
-  host.innerHTML = '<p class="rv-meta">' + meta + '</p>' + html;
+  // Sans compte, les modules ne s'ouvrent pas encore : on le dit, plutot
+  // que de laisser l'utilisateur se demander pourquoi rien ne reagit.
+  var connecteRv = (typeof _hasSession === 'function') ? _hasSession() : true;
+  var verrou = connecteRv ? '' :
+    '<p class="rv-locked">Les modules s\u2019ouvriront apr\u00e8s la cr\u00e9ation de ton compte.</p>';
+  host.innerHTML = '<p class="rv-meta">' + meta + '</p>' + html + verrou;
   host.style.display = 'block';
 
   // Le sous-titre et l'action reprennent le parcours reel

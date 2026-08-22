@@ -765,7 +765,17 @@
     // Le visiteur a pu construire un parcours sans compte : on le rattache
     // ici, avant toute redirection. La fonction refuse d'ecraser un compte
     // qui a deja un parcours (voir migrateAnonDraft dans supabase.js).
-    try { if (typeof migrateAnonDraft === 'function') await migrateAnonDraft(); } catch (e) {}
+    try {
+      if (typeof migrateAnonDraft === 'function') {
+        var r = await migrateAnonDraft();
+        // Le compte avait deja un parcours : on ne l'ecrase pas, mais on
+        // previent l'utilisateur plutot que de laisser son travail
+        // disparaitre en silence.
+        if (r && r.migre === false && r.raison === 'compte deja pourvu') {
+          try { sessionStorage.setItem('fund_brouillon_conserve', '1'); } catch (e2) {}
+        }
+      }
+    } catch (e) {}
     const params = new URLSearchParams(window.location.search);
     const next = params.get('next');
     if (next && next.startsWith('/')) {

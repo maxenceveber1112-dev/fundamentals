@@ -844,6 +844,16 @@
       box-shadow:var(--shadow-hover);
     }
     html.dark .modal { background:#161824; }
+    /* Avis : brouillon anonyme non repris */
+    .draft-note { display:flex; align-items:flex-start; gap:0.75rem;
+      padding:0.9rem 1.1rem; margin-bottom:1.25rem;
+      background:var(--surface-2); border:1px solid var(--border-subtle);
+      border-left:2px solid var(--accent-strong); border-radius:var(--r-md); }
+    .draft-note-txt { flex:1; font-size:0.82rem; color:var(--text-secondary); line-height:1.5; }
+    .draft-note-close { flex-shrink:0; width:24px; height:24px; border-radius:50%;
+      background:none; border:none; color:var(--text-faint); font-size:1.1rem;
+      line-height:1; cursor:pointer; }
+    .draft-note-close:hover { color:var(--text); }
     /* Ajuster mon plan */
     .adj-hint { font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem; }
     .adj-list { display:flex; flex-direction:column; gap:0.5rem; max-height:52vh; overflow-y:auto; }
@@ -1312,6 +1322,25 @@
     renderAll();
   }
   window.saveAdjust = saveAdjust;
+
+
+  /* Le visiteur avait construit un parcours sans compte, mais son compte en
+     avait deja un : rien n'a ete ecrase, on le lui dit une seule fois. */
+  (function () {
+    try {
+      if (sessionStorage.getItem('fund_brouillon_conserve') !== '1') return;
+      sessionStorage.removeItem('fund_brouillon_conserve');
+      var hote = document.querySelector('main') || document.body;
+      var el = document.createElement('div');
+      el.className = 'draft-note';
+      el.innerHTML =
+        '<span class="draft-note-txt">Ton compte avait d\u00e9j\u00e0 un parcours : celui que tu venais '
+        + 'de construire ne l\u2019a pas remplac\u00e9. Rien n\u2019a \u00e9t\u00e9 perdu de ta progression.</span>'
+        + '<button class="draft-note-close" type="button" aria-label="Fermer">\u00d7</button>';
+      el.querySelector('.draft-note-close').addEventListener('click', function () { el.remove(); });
+      hote.insertBefore(el, hote.firstChild);
+    } catch (e) {}
+  })();
 
   function save() { saveToStorage('fund_dashboard', dash); saveDashboard(dash).catch(() => {}); }
 
