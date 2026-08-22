@@ -1585,15 +1585,23 @@ function revealPlan() {
   if (sub) sub.textContent = 'Voil\u00e0 les modules qu\u2019on a s\u00e9lectionn\u00e9s pour toi, dans cet ordre.';
   var cta = document.getElementById('completion-cta');
   if (cta) {
+    var connecte = (typeof _hasSession === 'function') ? _hasSession() : true;
     var m1 = BRIQUES_META[ids[0]];
-    cta.childNodes[0].nodeValue = '\n          Commencer\u00a0: ' + m1.nom + '\n          ';
+    cta.childNodes[0].nodeValue = connecte
+      ? '\n          Commencer\u00a0: ' + m1.nom + '\n          '
+      : '\n          Cr\u00e9er mon compte pour garder ce parcours\n          ';
   }
 }
 
 function goToDashboard() {
   sessionStorage.removeItem('_wm_shown');   // reset pour nouvel onboarding
   sessionStorage.removeItem('_tour_shown'); // reset tour aussi
-  window.location.href = 'dashboard.html';
+  // Sans compte, le parcours vit en brouillon local : on emmene vers la
+  // creation de compte, qui le rattachera (migrateAnonDraft).
+  var connecte = (typeof _hasSession === 'function') ? _hasSession() : true;
+  window.location.href = connecte
+    ? 'dashboard.html'
+    : 'auth.html?signup=1&next=' + encodeURIComponent('/dashboard.html');
 }
 
 // ─── GATE MINEUR (15–17 ans) ──────────────────────────────────────
@@ -1636,8 +1644,9 @@ applyConditionals();
 updatePreview();
 
 (async function() {
-  var user = await requireAuth();
-  if (!user) return;
+  // Onboarding ouvert : un visiteur sans compte peut le suivre, ses reponses
+  // sont conservees en brouillon local (voir supabase.js) et rattachees a son
+  // compte s'il s'inscrit. Un utilisateur connecte retrouve son profil.
   var profil = await loadProfile();
   if (profil && profil.briques_recommandees && profil.briques_recommandees.length > 0) {
     saveToStorage('fund_profil', profil);
