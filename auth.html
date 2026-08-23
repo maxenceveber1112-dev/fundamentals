@@ -380,89 +380,46 @@
     .btn-primary:hover::after{animation:sheen .85s ease;}
     @keyframes sheen{to{left:130%;}}
 
-    /* ══ BULLE D'ESSAI ══════════════════════════════════════════
-       La pastille porte la marque en miniature ; le panneau la reprend
-       en grand, rognee au coin. Meme lettre, deux echelles. */
-    .try { position:fixed; left:25vw; top:32vh; z-index:60; }
-
-    .try-pill {
-      position:relative;
-      display:inline-flex; align-items:center; gap:.6rem;
-      padding:.5rem 1.05rem .5rem .5rem;
-      border-radius:var(--r-full);
-      font-family:inherit; font-size:.8rem; font-weight:600;
-      color:var(--accent-strong); cursor:pointer;
-      background:rgba(139,92,246,.12);
-      border:1px solid rgba(139,92,246,.32);
-      -webkit-backdrop-filter:blur(16px) saturate(1.4); backdrop-filter:blur(16px) saturate(1.4);
-      box-shadow:0 4px 18px rgba(99,82,240,.14);
-      animation:tryFloat 5.5s ease-in-out infinite;
-      transition:opacity .25s ease, transform .35s var(--ease-out),
-                 background .25s ease, border-color .25s ease;
-    }
-    html.dark .try-pill { color:#C4B5FD; background:rgba(167,139,250,.14); border-color:rgba(167,139,250,.34); }
-    .try-pill:hover { background:rgba(139,92,246,.18); border-color:rgba(139,92,246,.5); }
-    @keyframes tryFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-3px);} }
-
-    /* Marque miniature — meme traitement que .f-sb-mark du menu lateral */
-    .try-mark {
-      width:24px; height:24px; flex-shrink:0; border-radius:7px;
-      background:#8B93B8; color:#fff;
-      display:flex; align-items:center; justify-content:center;
-      font-family:'Fraunces','Instrument Serif',Georgia,serif;
-      font-style:italic; font-weight:500; font-size:15px; line-height:1;
-      box-shadow:0 2px 8px rgba(90,100,170,.32);
-    }
-    html.dark .try-mark { background:#17172e; color:#8F8CD4; }
-
-    /* ── Panneau ── */
-    .try-panel {
-      position:absolute; left:0; top:0; width:308px; max-width:calc(100vw - 3rem);
-      padding:1.2rem 1.25rem 1.1rem;
-      border-radius:var(--r-xl);
-      background:var(--bg-elevated);
-      border:1px solid var(--border-mid);
+    /* ══ ESSAI SANS COMPTE ═══════════════════════════════════════
+       Le panneau conclut la colonne editoriale, toujours deplie : texte
+       a gauche, action a droite, raccourcis sur une rangee. La marque le
+       traverse en filigrane, comme ailleurs sur la plateforme. */
+    .try { position:relative; width:100%; margin-top:.75rem;
+      border-radius:var(--r-xl); overflow:hidden;
+      background:var(--bg-elevated); border:1px solid var(--border-mid);
       box-shadow:0 18px 48px rgba(20,16,60,.16);
-      -webkit-backdrop-filter:blur(30px) saturate(1.6); backdrop-filter:blur(30px) saturate(1.6);
-      overflow:hidden;
-      opacity:0; visibility:hidden; pointer-events:none;
-      transform:scale(.9) translateY(-6px); transform-origin:0 0;
-      transition:opacity .24s ease, transform .34s cubic-bezier(.22,1.1,.36,1), visibility 0s .34s;
-    }
-    html.dark .try-panel { background:rgba(22,22,40,.78); border-color:rgba(255,255,255,.12);
-      box-shadow:0 18px 48px rgba(4,4,16,.5), inset 0 1px 0 rgba(255,255,255,.08); }
-    .try.try--open .try-panel,
-    .try:hover .try-panel, .try:focus-within .try-panel {
-      opacity:1; visibility:visible; pointer-events:auto;
-      transform:scale(1) translateY(0); transition-delay:0s; }
-    .try.try--open .try-pill,
-    .try:hover .try-pill, .try:focus-within .try-pill { opacity:0; pointer-events:none; }
+      transition:border-color .32s ease, box-shadow .32s ease, transform .32s var(--ease-out); }
+    html.dark .try { background:rgba(22,22,40,.78); border-color:rgba(255,255,255,.12);
+      box-shadow:0 18px 48px rgba(4,4,16,.5), inset 0 1px 0 rgba(255,255,255,.08);
+      -webkit-backdrop-filter:blur(30px) saturate(1.6); backdrop-filter:blur(30px) saturate(1.6); }
 
-    /* Filigrane franchement present, rogne au coin */
-    .try-panel::after {
-      content:'f'; position:absolute; right:-26px; bottom:-84px;
+    /* Filigrane calibre pour le format large : la panse occupe le coin
+       bas-droit, le fut monte derriere l'action. */
+    .try::after { content:'f'; position:absolute; right:-6px; bottom:-64px;
       font-family:'Instrument Serif',Georgia,serif; font-style:italic; font-weight:400;
-      font-size:250px; line-height:1; color:rgba(139,147,184,.24);
-      pointer-events:none;
-    }
-    html.dark .try-panel::after { color:rgba(143,140,212,.26); }
+      font-size:200px; line-height:1; color:rgba(139,147,184,.24);
+      pointer-events:none; user-select:none; }
+    html.dark .try::after { color:rgba(143,140,212,.26); }
 
-    .try-body { position:relative; z-index:1; }
-
+    .try-body { position:relative; z-index:1; padding:1.35rem 1.5rem 1.15rem; }
+    .try-head { display:flex; align-items:center; gap:2rem; }
+    .try-txt { flex:1; min-width:0; }
     .try-title { font-family:'Fraunces','Instrument Serif',Georgia,serif; font-style:italic;
       font-weight:400; font-size:1.22rem; line-height:1.18; color:var(--text); }
-    .try-sub { font-size:.78rem; color:var(--text-muted); line-height:1.55; margin:.4rem 0 1rem; }
+    .try-sub { font-size:.78rem; color:var(--text-muted); line-height:1.55; margin-top:.35rem; }
 
-    .try-panel .btn-primary { font-size:.84rem; padding:.75rem; text-decoration:none; }
+    .try-cta { flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center;
+      gap:.5rem; padding:.78rem 1.35rem; border-radius:var(--r-full);
+      background:var(--accent-fill); font-size:.84rem; font-weight:600;
+      color:#fff; text-decoration:none; white-space:nowrap;
+      transition:transform .16s var(--ease-out), box-shadow .2s; }
+    .try-cta:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(99,102,241,.35); }
 
-    .try-links { margin-top:.95rem; padding-top:.2rem; border-top:1px solid var(--border-subtle); }
-    .try-link {
-      display:flex; align-items:center; gap:.6rem;
-      padding:.58rem 0; text-decoration:none;
-      font-size:.78rem; font-weight:500; color:var(--text-muted);
-      transition:color .18s ease;
-    }
-    .try-link + .try-link { border-top:1px solid var(--border-subtle); }
+    .try-links { display:grid; grid-template-columns:1fr 1fr; column-gap:2rem;
+      margin-top:1rem; border-top:1px solid var(--border-subtle); }
+    .try-link { display:flex; align-items:center; gap:.6rem; padding:.6rem 0;
+      text-decoration:none; font-size:.78rem; font-weight:500; color:var(--text-muted);
+      transition:color .18s ease; }
     .try-link:hover { color:var(--text); }
     .try-link-ico { display:flex; flex-shrink:0; color:var(--accent-strong); opacity:.75;
       transition:opacity .18s ease; }
@@ -472,13 +429,44 @@
       transition:opacity .18s ease, transform .18s var(--ease-out); }
     .try-link:hover .try-link-go { opacity:.9; transform:translateX(2px); }
 
+    /* Choisir « Creer un compte » met l'essai en avant : c'est le moment
+       ou il sert le plus. */
+    .try.spot { animation:trySpot .5s var(--ease-out); transform:translateY(-4px);
+      border-color:color-mix(in srgb, var(--accent-strong) 55%, transparent);
+      box-shadow:0 22px 54px rgba(20,16,60,.2),
+                 0 0 0 4px color-mix(in srgb, var(--accent-strong) 13%, transparent); }
+    /* Sans cette regle, html.dark .try (0,2,1) l'emporterait sur .try.spot (0,2,0). */
+    html.dark .try.spot { border-color:color-mix(in srgb, var(--accent-strong) 55%, transparent);
+      box-shadow:0 22px 54px rgba(4,4,16,.55), inset 0 1px 0 rgba(255,255,255,.10),
+                 0 0 0 4px color-mix(in srgb, var(--accent-strong) 16%, transparent); }
+    @keyframes trySpot { 0% { transform:translateY(0); }
+                         55% { transform:translateY(-7px); }
+                         100% { transform:translateY(-4px); } }
+
+    .try-hint { display:block; overflow:hidden; max-height:0; opacity:0;
+      font-size:.72rem; color:var(--accent-strong); font-weight:600;
+      transition:max-height .3s var(--ease-out), opacity .22s ease, margin .3s var(--ease-out); }
+    .try.spot .try-hint { max-height:24px; opacity:1; margin-bottom:.3rem; }
+
+    /* Sous 820px la colonne editoriale est masquee. Le panneau, lui, doit
+       rester visible : on garde la colonne pour lui seul, sous la carte. */
     @media(max-width:820px) {
-      .try { left:1rem; top:auto; bottom:1rem; }
-      .try-panel { top:auto; bottom:0; transform-origin:0 100%; width:min(308px, calc(100vw - 2rem)); }
+      .auth-left { display:block; order:2; padding:0 1.5rem 2.5rem;
+        background:none; overflow:visible; }
+      .auth-left-content { height:auto !important; min-height:0 !important;
+        justify-content:flex-start; gap:0; }
+      .auth-left-content > :not(.try) { display:none; }
+      .auth-right { order:1; min-height:auto; padding-bottom:1.5rem; }
+      .try { margin-top:0; }
+      .try-head { flex-direction:column; align-items:stretch; gap:1rem; }
+      .try-cta { width:100%; }
+      .try-links { grid-template-columns:1fr; }
+      .try-links .try-link + .try-link { border-top:1px solid var(--border-subtle); }
+      .try::after { font-size:230px; bottom:-78px; right:-18px; }
     }
     @media(prefers-reduced-motion:reduce) {
-      .try-pill { animation:none !important; }
-      .try-panel, .try-link, .try-link-go { transition-duration:.01ms !important; }
+      .try, .try-cta, .try-hint { transition:none; }
+      .try.spot { animation:none; }
     }
 
     @media(prefers-reduced-motion:reduce){.aurora span{animation:none;}}
@@ -534,6 +522,33 @@
           <span>Ta progression t'attend là où tu l'as laissée.</span>
         </div>
       </div>
+
+      <!-- Essai sans compte : deplie, dans le flux de la colonne -->
+      <section class="try" id="try-panel" aria-label="Essayer sans compte">
+        <div class="try-body">
+          <div class="try-head">
+            <div class="try-txt">
+              <span class="try-hint">Tu peux aussi commencer par ici.</span>
+              <p class="try-title">Ton plan avant ton compte.</p>
+              <p class="try-sub">Deux minutes sur ta situation. Le parcours se r&#232;gle dessus,
+              et t&#8217;attend le jour o&#249; tu ouvres un compte.</p>
+            </div>
+            <a class="try-cta" href="index.html">Construire mon parcours<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          </div>
+          <div class="try-links">
+            <a class="try-link" href="simulateur-budget.html">
+              <span class="try-link-ico" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></span>
+              Simulateur de budget
+              <span class="try-link-go" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            </a>
+            <a class="try-link" href="simulateur-emprunt.html">
+              <span class="try-link-ico" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V9l7-5 7 5v12"/></svg></span>
+              Capacit&#233; d&#8217;emprunt
+              <span class="try-link-go" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            </a>
+          </div>
+        </div>
+      </section>
 
       <div class="auth-quote" style="margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border-subtle);">
         <div class="auth-quote-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
@@ -682,6 +697,9 @@
     // un compte existant conserve son propre parcours.
     var bd = document.getElementById('auth-draft');
     if (bd) bd.style.display = isLogin ? 'none' : '';
+    // L'essai sans compte s'adresse justement a qui s'apprete a s'inscrire
+    var essai = document.getElementById('try-panel');
+    if (essai) essai.classList.toggle('spot', !isLogin);
     var fsl = document.getElementById('fs-login');
     var fss = document.getElementById('fs-signup');
     if (fsl && fss) {
@@ -812,57 +830,17 @@
           // setTab n'a pas forcement tourne (arrivee sans ?signup=1) : on
           // aligne l'etat initial sur l'onglet reellement actif.
           hote.style.display = (currentTab === 'login') ? 'none' : '';
+          // Un parcours attend deja d'etre rattache : l'inviter a en
+          // construire un serait contradictoire. Le panneau s'efface.
+          if (hote.innerHTML !== '') {
+            var essai = document.getElementById('try-panel');
+            if (essai) essai.style.display = 'none';
+          }
         }
       } catch (e) {}
     } catch (e) {}
   })();
 </script>
 <script src="theme.js"></script>
-<!-- Bulle d'essai sans compte -->
-<div class="try" id="try-bubble">
-  <button class="try-pill" type="button" aria-expanded="false" aria-controls="try-panel">
-    <span class="try-mark" aria-hidden="true">f</span>
-    Essayer sans compte
-  </button>
-
-  <div class="try-panel" id="try-panel" role="group" aria-label="Essayer sans compte">
-    <div class="try-body">
-      <p class="try-title">Ton plan avant ton compte.</p>
-      <p class="try-sub">Deux minutes sur ta situation. Le parcours se r&#232;gle dessus, et t&#8217;attend le jour o&#249; tu ouvres un compte.</p>
-
-      <a class="btn-primary" href="index.html">
-        Construire mon parcours
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-
-      <div class="try-links">
-        <a class="try-link" href="simulateur-budget.html">
-          <span class="try-link-ico" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></span>
-          Simulateur de budget
-          <span class="try-link-go" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-        </a>
-        <a class="try-link" href="simulateur-emprunt.html">
-          <span class="try-link-ico" aria-hidden="true"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V9l7-5 7 5v12"/></svg></span>
-          Capacit&#233; d&#8217;emprunt
-          <span class="try-link-go" aria-hidden="true"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Bulle d'essai : le survol suffit a la souris, le clic prend le relais
-  // au toucher et au clavier. La fermeture se fait au clic exterieur ou Echap.
-  (function () {
-    var b = document.getElementById('try-bubble');
-    if (!b) return;
-    var pill = b.querySelector('.try-pill');
-    function ouvrir(v) { b.classList.toggle('try--open', v); pill.setAttribute('aria-expanded', v ? 'true' : 'false'); }
-    pill.addEventListener('click', function (e) { e.stopPropagation(); ouvrir(!b.classList.contains('try--open')); });
-    document.addEventListener('click', function (e) { if (!b.contains(e.target)) ouvrir(false); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') ouvrir(false); });
-  })();
-</script>
 </body>
 </html>
