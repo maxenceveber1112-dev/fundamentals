@@ -584,7 +584,7 @@
         '</div>' +
         '<div class="f-sb-invite">' +
           '<p class="f-sb-invite-txt">Connecte-toi ou cr\u00e9e un compte pour retrouver ton parcours et conserver ta progression.</p>' +
-          '<a class="f-sb-invite-cta" href="auth.html">Se connecter \u2192</a>' +
+          '<a class="f-sb-invite-cta" href="auth.html?signup=1">Cr\u00e9er mon compte \u2192</a>' +
         '</div>';
     }
   }

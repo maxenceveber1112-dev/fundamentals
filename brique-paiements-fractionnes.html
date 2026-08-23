@@ -1464,5 +1464,14 @@ function escAttr(str) {
 <script src="feedback-widget.js"></script>
 <script src="cookie-banner.js"></script>
 <script src="theme.js"></script>
+
+<script>
+  // Cette page n'a pas d'initialisation asynchrone ou se greffer : la
+  // garde vit seule. requireAuth() redirige s'il n'y a pas de session,
+  // et ne fait rien sinon.
+  (async function () {
+    try { if (typeof requireAuth === 'function') await requireAuth(); } catch (e) {}
+  })();
+</script>
 </body>
 </html>

@@ -1820,6 +1820,12 @@ function checkPrerequisitesAndStart() {
    les données (pattern identique à brique-budget-base)
 ══════════════════════════════════════════════════════════════ */
 (async function init() {
+  // 0. Auth — meme garde que les autres briques : le contenu n'est pas public
+  if (typeof requireAuth === 'function') {
+    const user = await requireAuth();
+    if (!user) return;
+  }
+
   // 1. Hydrater _MEM depuis Supabase (profil + dashboard + brick_data)
   if (typeof hydrateFromSupabase === 'function') {
     try { await hydrateFromSupabase(); } catch(e) { console.warn('[dettes] hydrateFromSupabase error', e); }
