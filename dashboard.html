@@ -1324,18 +1324,27 @@
   window.saveAdjust = saveAdjust;
 
 
-  /* Le visiteur avait construit un parcours sans compte, mais son compte en
-     avait deja un : rien n'a ete ecrase, on le lui dit une seule fois. */
+  /* Deux issues possibles au parcours construit sans compte : il a ete
+     rattache, ou le compte en avait deja un. Dans les deux cas on le dit
+     une seule fois, plutot que de laisser deviner. */
   (function () {
     try {
-      if (sessionStorage.getItem('fund_brouillon_conserve') !== '1') return;
+      var conserve  = sessionStorage.getItem('fund_brouillon_conserve') === '1';
+      var rattache  = sessionStorage.getItem('fund_parcours_rattache') === '1';
+      if (!conserve && !rattache) return;
       sessionStorage.removeItem('fund_brouillon_conserve');
+      sessionStorage.removeItem('fund_parcours_rattache');
       var hote = document.querySelector('main') || document.body;
       var el = document.createElement('div');
       el.className = 'draft-note';
       el.innerHTML =
-        '<span class="draft-note-txt">Ton compte avait d\u00e9j\u00e0 un parcours : celui que tu venais '
-        + 'de construire ne l\u2019a pas remplac\u00e9. Rien n\u2019a \u00e9t\u00e9 perdu de ta progression.</span>'
+        '<span class="draft-note-txt">'
+        + (conserve
+            ? 'Ton compte avait d\u00e9j\u00e0 un parcours : celui que tu venais '
+              + 'de construire ne l\u2019a pas remplac\u00e9. Rien n\u2019a \u00e9t\u00e9 perdu de ta progression.'
+            : 'Le parcours que tu as construit avant de cr\u00e9er ton compte a bien '
+              + '\u00e9t\u00e9 rattach\u00e9. Tu le retrouveras d\u2019un appareil \u00e0 l\u2019autre.')
+        + '</span>'
         + '<button class="draft-note-close" type="button" aria-label="Fermer">\u00d7</button>';
       el.querySelector('.draft-note-close').addEventListener('click', function () { el.remove(); });
       hote.insertBefore(el, hote.firstChild);

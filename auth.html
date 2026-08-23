@@ -250,6 +250,14 @@
 
     /* ── CARD TITLE ── */
     .auth-card-title { font-size:22px; font-weight:600; color:var(--text); letter-spacing:-.015em; transition: color 0.3s ease; }
+    .auth-draft { display:flex; align-items:flex-start; gap:0.6rem;
+      padding:0.75rem 0.9rem; border-radius:var(--r-md);
+      background:var(--accent-soft);
+      border:1px solid color-mix(in srgb, var(--accent-strong) 24%, transparent);
+      font-size:0.8rem; line-height:1.5; color:var(--text-secondary); }
+    .auth-draft[hidden] { display:none; }
+    .auth-draft-mark { flex-shrink:0; font-weight:700; color:var(--accent-strong); }
+
     .auth-card-sub { font-size:13.5px; color:var(--text-muted); margin-top:0.2rem; transition: color 0.3s ease; }
 
     /* ── TABS ── */
@@ -556,6 +564,13 @@
         <p class="auth-card-sub" id="card-sub">Connecte-toi pour accéder à ton parcours.</p>
       </div>
 
+      <!-- Affiche seulement si un parcours a ete construit sans compte -->
+      <div class="auth-draft" id="auth-draft" hidden>
+        <span class="auth-draft-mark" aria-hidden="true">&#10003;</span>
+        <span>Ton parcours est gard&#233;. Il sera rattach&#233; &#224; ce compte, avec
+        l&#39;ordre des modules qu&#39;on a d&#233;fini ensemble.</span>
+      </div>
+
       <!-- Tabs -->
       <div class="tab-controls" role="tablist">
         <button class="tab-underline active" id="tab-login"  onclick="setTab('login')"  role="tab" aria-selected="true">Se connecter</button>
@@ -773,6 +788,9 @@
         // disparaitre en silence.
         if (r && r.migre === false && r.raison === 'compte deja pourvu') {
           try { sessionStorage.setItem('fund_brouillon_conserve', '1'); } catch (e2) {}
+        } else if (r && r.migre === true) {
+          // Rattachement reussi : le dashboard le confirmera une fois.
+          try { sessionStorage.setItem('fund_parcours_rattache', '1'); } catch (e2) {}
         }
       }
     } catch (e) {}
@@ -794,6 +812,12 @@
   (function () {
     try {
       if (new URLSearchParams(window.location.search).get('signup') === '1') setTab('signup');
+      try {
+        if (typeof hasAnonDraft === 'function' && hasAnonDraft()) {
+          var bd = document.getElementById('auth-draft');
+          if (bd) bd.hidden = false;
+        }
+      } catch (e) {}
     } catch (e) {}
   })();
 </script>

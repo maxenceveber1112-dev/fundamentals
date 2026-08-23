@@ -132,7 +132,9 @@
       color: var(--text-faint);
     }
     .progress-pct {
-      font-weight: 700; color: var(--accent-strong); font-size: 12px;
+      font-weight: 600; color: var(--accent-strong); font-size: 12.5px;
+      text-transform: none; letter-spacing: 0.01em;
+      transition: opacity .25s ease;
     }
     html.dark .progress-pct { color: #A78BFA; }
 
@@ -437,8 +439,11 @@
     }
     .completion-screen.active { display: flex; animation: fadeIn 0.5s ease both; width: 100%; }
     /* Completion — full width centré */
-    .onb-body:has(.completion-screen.active) { grid-template-columns: 1fr; }
-    .onb-body:has(.completion-screen.active) .onb-left { max-width: 100%; padding: 4rem 2rem; }
+    .onb-body:has(.completion-screen.active) { grid-template-columns: 1fr; padding-top: 0; }
+    .onb-body:has(.completion-screen.active) .onb-left { max-width: 100%; padding: 0 2.5rem 7rem; }
+    .onb-body:has(.completion-screen.active) .completion-screen {
+      padding: 3.5rem 0 0; min-height: auto; justify-content: flex-start; gap: 1.5rem;
+    }
     .onb-body:has(.completion-screen.active) .onb-right { display: none; }
     .completion-icon {
       width: 80px; height: 80px;
@@ -465,46 +470,194 @@
     html.dark .btn-hero { background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%); color: #fff; }
     .btn-hero:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 
-    /* ─── RÉVÉLATION DU PLAN (écran de fin) ──────────────── */
-    .rv-wrap { width:100%; max-width:660px; text-align:left;
-      animation: fadeIn 0.5s 0.15s ease both; }
-    .rv-meta { font-size:12.5px; color:var(--text-muted);
-      margin-bottom:1.5rem; text-align:center; }
-    .rv-meta b { color:var(--text); font-weight:600; }
-    .rv-phase { display:flex; align-items:center; gap:0.5rem; margin:1.5rem 0 0.75rem; }
-    .rv-phase:first-child { margin-top:0; }
-    .rv-phase-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-    .rv-phase-name { font-size:10.5px; font-weight:700; letter-spacing:0.12em;
-      text-transform:uppercase; color:var(--text-muted); }
-    .rv-phase-count { font-size:10.5px; color:var(--text-faint); margin-left:auto; }
-    .rv-list { display:flex; flex-direction:column; gap:0.5rem; }
-    .rv-item { display:flex; align-items:center; gap:0.875rem;
-      padding:0.8rem 1rem; border-radius:var(--r-xl);
-      background:var(--surface-2); border:1px solid var(--border-subtle); }
-    .rv-item--first { border-color:var(--accent-strong);
-      background:color-mix(in srgb, var(--accent-soft) 55%, transparent); }
-    .rv-num { flex:0 0 auto; width:22px; height:22px; border-radius:50%;
+    /* ─── REPRISE DU QUESTIONNAIRE ───────────────────────── */
+    #onb-reprise { position:fixed; left:2rem; bottom:1.5rem;
+      z-index:9000; display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;
+      max-width:calc(100vw - 4rem);
+      padding:0.65rem 0.75rem 0.65rem 1.1rem; border-radius:var(--r-full);
+      background:var(--bg-elevated); border:1px solid var(--border-mid);
+      box-shadow:var(--shadow-card);
+      animation:fadeIn .4s ease both; }
+    .onb-reprise-txt { font-size:0.82rem; color:var(--text); }
+    #onb-reprise button { font-family:inherit; font-size:0.78rem; font-weight:600;
+      padding:0.45rem 0.95rem; border-radius:var(--r-full); border:none; cursor:pointer;
+      transition:filter .15s, color var(--t); }
+    .onb-reprise-oui { background:var(--accent-strong); color:#fff; }
+    html.dark .onb-reprise-oui { background:linear-gradient(135deg,#A78BFA 0%,#6B8AFE 100%); }
+    .onb-reprise-oui:hover { filter:brightness(1.08); }
+    .onb-reprise-non { background:transparent; color:var(--text-muted); }
+    .onb-reprise-non:hover { color:var(--text); }
+    /* Au-dessus du bouton d'avis, qui remonte en pied d'ecran sur mobile. */
+    @media (max-width:640px) {
+      #onb-reprise { left:1rem; right:1rem; bottom:5.25rem; max-width:none; }
+    }
+
+    /* ─── RÉVÉLATION DU PLAN (écran de fin) ────────────────
+       Trois zones : l'encart d'ouverture (pleine largeur), puis le chemin
+       à gauche et la carte d'action collante à droite — le schéma déjà
+       utilisé par le simulateur de budget. */
+    .rv-wrap { width:100%; max-width:1060px; text-align:left; }
+
+    /* ── Zone 1 : ce qu'on a compris de la personne (2/3) et la part du
+          catalogue que son parcours represente (1/3). ── */
+    .rv-echo { position:relative; overflow:hidden; margin-bottom:3.25rem;
+      border-radius:var(--r-xl); border:1px solid var(--border-subtle);
+      background:var(--bg-elevated); box-shadow:var(--shadow-card); }
+    .rv-echo::after { content:'f'; position:absolute; right:-0.5rem; bottom:-3.5rem;
+      font-family:'Instrument Serif','Fraunces',Georgia,serif; font-style:italic;
+      font-weight:300; font-size:14rem; line-height:1;
+      color:rgba(196,181,253,0.16); pointer-events:none; user-select:none; }
+    html.dark .rv-echo::after { color:rgba(139,92,246,0.13); }
+
+    .rv-echo-in { position:relative; z-index:1; display:grid; grid-template-columns:2fr 1fr; }
+    .rv-echo-main { padding:2.25rem 2.5rem; }
+    .rv-echo-side { padding:2.25rem 2.5rem; border-left:1px solid var(--border-subtle); }
+
+    .rv-echo-t { font-family:'Fraunces','Instrument Serif',Georgia,serif; font-style:italic;
+      font-weight:400; font-size:1.4rem; line-height:1.25; color:var(--text);
+      margin-bottom:1.5rem; }
+    .rv-echo-pills { display:flex; flex-wrap:wrap; gap:0.6rem; }
+    .rv-echo-pill { display:inline-flex; align-items:center; gap:0.5rem;
+      font-size:12.5px; color:var(--text-secondary); line-height:1.35;
+      padding:0.5rem 0.9rem 0.5rem 0.72rem; border-radius:var(--r-full);
+      background:var(--surface-2); border:1px solid var(--border-subtle);
+      opacity:0; transform:translateY(6px);
+      animation:rvIn .45s var(--ease-out) forwards; }
+    .rv-echo-mark { font-size:13px; line-height:1; color:var(--accent-strong); flex-shrink:0; }
+
+    .rv-cat-n { display:flex; align-items:baseline; gap:0.45rem; margin-bottom:1.05rem; }
+    .rv-cat-n b { font-family:'Fraunces','Instrument Serif',Georgia,serif; font-style:italic;
+      font-weight:400; font-size:2.2rem; line-height:1; color:var(--text);
+      font-variant-numeric:tabular-nums; }
+    .rv-cat-n span { font-size:12px; color:var(--text-faint); }
+    .rv-cat-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:4px;
+      max-width:196px; margin-bottom:1.05rem; }
+    .rv-cat-cell { aspect-ratio:1; border-radius:4px;
+      background:color-mix(in srgb, var(--text) 10%, transparent);
+      opacity:0; transform:scale(.55);
+      animation:rvCell .38s var(--ease-out) forwards; }
+    .rv-cat-cell.on { background:var(--seg); }
+    @keyframes rvCell { to { opacity:1; transform:none; } }
+    .rv-cat-txt { font-size:11.5px; line-height:1.55; color:var(--text-muted); }
+
+    @media (max-width:820px) {
+      .rv-echo-in { grid-template-columns:1fr; }
+      .rv-echo-main, .rv-echo-side { padding:1.6rem 1.5rem; }
+      .rv-echo-t { margin-bottom:1.15rem; }
+      .rv-echo-pills { gap:0.45rem; }
+      .rv-echo-pill { font-size:12px; padding:0.4rem 0.72rem 0.4rem 0.6rem; gap:0.42rem; }
+      .rv-echo-side { border-left:none; border-top:1px solid var(--border-subtle);
+        display:grid; grid-template-columns:minmax(0,1fr) 150px;
+        gap:0.35rem 1.25rem; align-items:start; }
+      .rv-cat-n    { grid-column:1; margin-bottom:0; }
+      .rv-cat-txt  { grid-column:1; }
+      .rv-cat-grid { grid-column:2; grid-row:1 / span 2; max-width:150px; margin-bottom:0; }
+      .rv-echo::after { font-size:11rem; bottom:-2.75rem; }
+    }
+
+    /* ── Zones 2 et 3 : chemin + carte collante ── */
+    .rv-cols { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:3rem; align-items:start; }
+    .rv-path { min-width:0; }
+    .rv-side { position:sticky; top:2rem; }
+
+    .rv-card { padding:1.9rem 1.75rem 1.75rem; border-radius:var(--r-xl);
+      background:linear-gradient(160deg, var(--accent-soft), transparent 90%);
+      border:1px solid color-mix(in srgb, var(--accent-strong) 26%, transparent); }
+    .rv-card-t { font-family:'Fraunces','Instrument Serif',Georgia,serif; font-style:italic;
+      font-weight:400; font-size:1.3rem; line-height:1.2; color:var(--text); margin-bottom:0.45rem; }
+    .rv-card-s { font-size:12.5px; color:var(--text-muted); line-height:1.55; margin-bottom:1.15rem; }
+    .rv-card .btn-hero { width:100%; margin-top:0; font-size:0.86rem; padding:0.85rem 1rem; }
+    .rv-locked { font-size:11.5px; color:var(--text-faint); line-height:1.5;
+      margin-top:0.9rem; text-align:center; }
+
+    /* ── Phase ── */
+    .rv-phase { display:flex; align-items:center; gap:0.6rem; margin:2.9rem 0 1.35rem;
+      opacity:0; animation:rvIn .5s var(--ease-out) forwards; }
+    .rv-phase:first-of-type { margin-top:0; }
+    .rv-phase-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0;
+      box-shadow:0 0 0 3px color-mix(in srgb, var(--seg) 22%, transparent); }
+    .rv-phase-name { font-size:11px; font-weight:700; letter-spacing:0.11em;
+      text-transform:uppercase; color:var(--text-secondary,var(--text-muted)); }
+    .rv-phase-rule { flex:1; height:1px; background:var(--border-subtle); }
+    .rv-phase-count { font-size:11px; color:var(--text-faint); font-variant-numeric:tabular-nums; }
+
+    /* ── Chemin ── */
+    .rv-seg { position:relative; padding-left:3.1rem; }
+    .rv-seg::before { content:''; position:absolute; left:17px; top:4px; bottom:4px;
+      width:2px; border-radius:2px; background:var(--seg);
+      opacity:0.30; transform:scaleY(0); transform-origin:50% 0;
+      animation:rvDraw .75s var(--ease-out) forwards; animation-delay:var(--seg-delay,0ms); }
+    @keyframes rvDraw { to { transform:scaleY(1); } }
+
+    .rv-item { position:relative; padding:1.05rem 0;
+      opacity:0; transform:translateY(7px); animation:rvIn .5s var(--ease-out) forwards; }
+    @keyframes rvIn { to { opacity:1; transform:translateY(0); } }
+    .rv-item + .rv-item { border-top:1px solid var(--border-subtle); }
+
+    .rv-node { position:absolute; left:-3.1rem; top:0.5rem;
+      width:36px; height:36px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center; font-size:17px;
+      background:var(--bg-elevated); border:2px solid color-mix(in srgb, var(--seg) 55%, transparent);
+      box-shadow:0 0 0 4px var(--bg); }
+    .rv-step { position:absolute; left:-3.1rem; top:-0.15rem;
+      min-width:16px; height:16px; padding:0 4px; border-radius:9999px;
       display:flex; align-items:center; justify-content:center;
-      font-size:11px; font-weight:700; color:var(--text-muted);
-      background:var(--surface-3); }
-    .rv-item--first .rv-num { background:var(--accent-strong); color:#fff; }
-    .rv-body { flex:1; min-width:0; }
-    .rv-name { font-size:14px; font-weight:600; color:var(--text); }
-    .rv-tag { font-size:12px; color:var(--text-muted); line-height:1.4;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .rv-duree { flex:0 0 auto; font-size:11px; color:var(--text-faint); white-space:nowrap; }
-    .rv-locked { font-size:12px; color:var(--text-faint); line-height:1.5;
-      margin-top:1rem; padding-top:0.85rem; border-top:1px solid var(--border-subtle);
-      text-align:center; }
-    .rv-note { flex:0 0 auto; font-size:10.5px; font-weight:600; line-height:1.3;
-      color:var(--text-muted); max-width:9.5rem; text-align:right; }
-    .rv-badge { flex:0 0 auto; font-size:10px; font-weight:700; letter-spacing:0.06em;
-      text-transform:uppercase; color:var(--accent-strong); }
-    html.dark .rv-badge { color:#A78BFA; }
+      font-size:9.5px; font-weight:700; font-variant-numeric:tabular-nums;
+      color:var(--bg); background:var(--seg); box-shadow:0 0 0 2px var(--bg); }
+
+    .rv-head { display:flex; align-items:baseline; gap:0.75rem; }
+    .rv-name { flex:1; min-width:0; font-size:14.5px; font-weight:600; color:var(--text); line-height:1.3; }
+    .rv-tag  { display:block; font-size:12.5px; color:var(--text-muted); line-height:1.5; margin-top:4px; }
+    .rv-duree { flex:0 0 auto; font-size:11px; color:var(--text-faint);
+      font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .rv-note { flex:0 0 auto; font-size:11px; font-weight:600; color:var(--text-muted);
+      max-width:10rem; text-align:right; line-height:1.35; }
+
+    /* Pourquoi ce module est là */
+    .rv-why { display:flex; align-items:baseline; gap:0.4rem; margin-top:0.5rem;
+      font-size:11.5px; color:var(--text-faint); line-height:1.4; }
+    .rv-why-mark { color:var(--seg); font-weight:700; flex-shrink:0; }
+
+    /* Aperçu des chapitres (seulement sur les premiers modules) */
+    .rv-chaps { display:flex; flex-wrap:wrap; gap:0.4rem 0.5rem; margin-top:0.7rem; }
+    .rv-chap { font-size:11px; color:var(--text-muted); padding:0.28rem 0.65rem;
+      border-radius:9999px; background:var(--surface-3); }
+
+    .rv-item--first { padding:1.35rem 1.4rem 1.4rem; margin:0 0 0.5rem -1.4rem;
+      border-radius:var(--r-lg); border-top:none;
+      background:linear-gradient(135deg, var(--accent-soft), transparent 85%);
+      border:1px solid color-mix(in srgb, var(--accent-strong) 28%, transparent); }
+    .rv-item--first .rv-node { left:-1.35rem; top:0.85rem; width:42px; height:42px; font-size:20px;
+      border-color:var(--accent-strong);
+      box-shadow:0 6px 18px color-mix(in srgb, var(--accent-strong) 22%, transparent); }
+    .rv-item--first .rv-step { left:-1.35rem; top:0.2rem; background:var(--accent-strong); }
+    .rv-item--first .rv-head,
+    .rv-item--first .rv-tag { padding-left:2.4rem; }
+    .rv-item--first .rv-name { font-size:15.5px; }
+    .rv-badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.07em;
+      text-transform:uppercase; color:var(--accent-strong); white-space:nowrap; }
+    html.dark .rv-badge { color:#C4B5FD; }
+
+    @media (max-width:900px) {
+      .rv-cols { grid-template-columns:minmax(0,1fr); gap:1.5rem; }
+      .rv-side { position:static; order:-1; }
+    }
     @media (max-width:560px) {
-      .rv-tag, .rv-duree { display:none; }
-      .rv-item { padding:0.7rem 0.85rem; }
-      .rv-note { max-width:7rem; font-size:10px; }
+      .onb-body:has(.completion-screen.active) .onb-left { padding:0 1.25rem 5rem; }
+      .onb-body:has(.completion-screen.active) .completion-screen { padding-top:2.5rem; }
+      .rv-echo-t { font-size:1.25rem; }
+      .rv-tag { display:none; }
+      .rv-seg { padding-left:2.7rem; }
+      .rv-node { left:-2.7rem; width:32px; height:32px; font-size:15px; }
+      .rv-step { left:-2.7rem; }
+      .rv-item--first { margin-left:-0.85rem; padding:0.85rem 0.9rem; }
+      .rv-item--first .rv-node { left:-1.1rem; width:36px; height:36px; font-size:17px; }
+      .rv-item--first .rv-step { left:-1.1rem; }
+      .rv-item--first .rv-head { padding-left:2.1rem; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .rv-item, .rv-phase { opacity:1; transform:none; animation:none; }
+      .rv-seg::before, .rv-cat-cell, .rv-echo-pill { transform:none; animation:none; opacity:1; }
     }
 
     /* ─── OBJ CARD (objectives grid) ────────────────────────────── */
@@ -607,8 +760,7 @@
       <div class="progress-bar-fill" id="progress-fill" style="width:25%"></div>
     </div>
     <div class="progress-info">
-      <span class="progress-pct" id="progress-pct">25 %</span>
-      <span id="progress-label">Profil</span>
+      <span class="progress-pct" id="progress-pct">On fait connaissance</span>
     </div>
   </div>
 
@@ -989,11 +1141,11 @@
           <polyline points="26,42 36,52 56,30" stroke="var(--green)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="36" stroke-dashoffset="36" style="animation:drawCheck 0.5s 0.8s ease forwards;" />
         </svg>
         <h2 class="completion-title">Ton parcours est pr&#234;t.</h2>
-        <p class="completion-sub" id="completion-sub">On a tout ce qu&#8217;il faut pour personnaliser tes briques.</p>
+        <p class="completion-sub" id="completion-sub">Voil&#224; les modules qu&#8217;on a s&#233;lectionn&#233;s pour toi, dans cet ordre.</p>
 
         <div class="rv-wrap" id="reveal-plan" style="display:none"></div>
 
-        <button class="btn-hero" id="completion-cta" onclick="goToDashboard()">
+        <button class="btn-hero" id="completion-cta" onclick="goToDashboard()" style="display:none">
           Voir mon tableau de bord
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
@@ -1043,6 +1195,9 @@ const A = {
 let current = 1;
 const TOTAL_BLOCS = 4;
 const BLOC_LABELS = { 1:'Profil', 2:'Ressenti', 3:'Priorit\u00e9s', 4:'\u00c9pargne' };
+// Ce qu'on est en train de faire, plutot qu'un pourcentage abstrait.
+const BLOC_ETATS = { 1:'On fait connaissance', 2:'On cerne ton quotidien',
+                     3:'Ton parcours prend forme', 4:'Derniers r\u00e9glages' };
 
 // ─── STRESS BUDGET AUTO-MAP ──────────────────────────────────────
 const STRESS_MAP = { difficile_fin_mois: '5', juste_juste: '3', a_l_aise: '1' };
@@ -1233,14 +1388,15 @@ function setStep(n) {
   if (t) { t.classList.remove('active'); void t.offsetWidth; t.classList.add('active'); }
   current = n;
   updateProgressBar(n);
+  if (typeof sauverReponses === 'function') sauverReponses();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function updateProgressBar(n) {
   var pct = Math.round((n / TOTAL_BLOCS) * 100);
   document.getElementById('progress-fill').style.width = pct + '%';
-  document.getElementById('progress-pct').textContent = pct + ' %';
-  document.getElementById('progress-label').textContent = BLOC_LABELS[n] || '';
+  // La barre porte la mesure ; le texte dit ce qui se passe.
+  document.getElementById('progress-pct').textContent = BLOC_ETATS[n] || '';
 }
 
 // ─── Q11 MONTANTS ─────────────────────────────────────────────────
@@ -1338,38 +1494,146 @@ function computeBriques() {
     retards=A.q_retards_paiement, produits=A.q_produits_detenu,
     confort=A.q_confort_numerique, fraude=A.q_fraude_experience, lp=A.q_logement_projet;
   var s=new Set();
+  // On retient la raison de chaque module : elle est montree a l'utilisateur
+  // sur l'ecran de fin, pour prouver que ses reponses ont servi.
+  RV_RAISONS = {};
+  function add(id, raison) { s.add(id); if (raison && !RV_RAISONS[id]) RV_RAISONS[id] = raison; }
   // Socle commun : tout le monde commence par le budget puis l'epargne.
-  s.add('budget_base');
-  s.add('fonds_urgence');
-  if (dettes.includes('decouvert_regulier')) s.add('gestion_decouvert');
-  if (dettes.includes('paiement_fractionne_mini_credit')) s.add('paiements_fractionnes');
-  if (rev==='difficile_fin_mois'||['chomeur_inactif','college_lycee'].includes(status)) s.add('droits_aides');
-  if ((dettes.includes('credit_conso')||dettes.includes('paiement_fractionne_mini_credit')||dettes.includes('decouvert_regulier')||dettes.includes('credit_immo')||dettes.includes('autre_credit'))&&(obj.includes('rembourser_dettes')||(retards&&retards!=='aucun')||dettes.filter(function(d){return d!=='aucun';}).length>=2)) s.add('plan_desendettement');
-  if (retards==='frequent'&&rev==='difficile_fin_mois'&&dettes.filter(function(d){return d!=='aucun';}).length>=2) s.add('dispositifs_bdf');
-  if (['15_17','18_24','65_plus'].includes(age)||confort==='peu_a_l_aise'||fraude==='oui') s.add('anti_arnaques');
-  if (age==='15_17'||(age==='18_24'&&['college_lycee','etudiant'].includes(status))) s.add('premiers_pas_bancaires');
-  if (['je_vais_demenager','je_veux_acheter'].includes(lp)) s.add('emmenagement');
-  if (lp==='je_veux_acheter') s.add('achat_immobilier');
-  if (['financer_projet_court_terme','acheter_logement','preparer_retraite'].some(function(o){return obj.includes(o);})&&rev!=='difficile_fin_mois') s.add('plan_multi_objectifs');
-  if (dettes.includes('credit_immo')) s.add('achat_immobilier');
+  add('budget_base', 'Le socle : savoir o\u00f9 va ton argent');
+  add('fonds_urgence', 'Le socle : de quoi encaisser un impr\u00e9vu');
+  if (dettes.includes('decouvert_regulier')) add('gestion_decouvert', 'Tu as signal\u00e9 un d\u00e9couvert r\u00e9gulier');
+  if (dettes.includes('paiement_fractionne_mini_credit')) add('paiements_fractionnes', 'Tu utilises des paiements en plusieurs fois');
+  if (rev==='difficile_fin_mois'||['chomeur_inactif','college_lycee'].includes(status)) add('droits_aides', 'Des aides existent pour ta situation');
+  if ((dettes.includes('credit_conso')||dettes.includes('paiement_fractionne_mini_credit')||dettes.includes('decouvert_regulier')||dettes.includes('credit_immo')||dettes.includes('autre_credit'))&&(obj.includes('rembourser_dettes')||(retards&&retards!=='aucun')||dettes.filter(function(d){return d!=='aucun';}).length>=2)) add('plan_desendettement', 'Plusieurs cr\u00e9dits en cours');
+  if (retards==='frequent'&&rev==='difficile_fin_mois'&&dettes.filter(function(d){return d!=='aucun';}).length>=2) add('dispositifs_bdf', 'Des recours existent en cas d\u2019impay\u00e9s r\u00e9p\u00e9t\u00e9s');
+  if (['15_17','18_24','65_plus'].includes(age)||confort==='peu_a_l_aise'||fraude==='oui') add('anti_arnaques', 'Pour reconna\u00eetre les pi\u00e8ges courants');
+  if (age==='15_17'||(age==='18_24'&&['college_lycee','etudiant'].includes(status))) add('premiers_pas_bancaires', 'Tu d\u00e9butes avec la banque');
+  if (['je_vais_demenager','je_veux_acheter'].includes(lp)) add('emmenagement', 'Tu pr\u00e9vois de changer de logement');
+  if (lp==='je_veux_acheter') add('achat_immobilier', 'Tu veux acheter');
+  if (['financer_projet_court_terme','acheter_logement','preparer_retraite'].some(function(o){return obj.includes(o);})&&rev!=='difficile_fin_mois') add('plan_multi_objectifs', 'Tu as plusieurs projets en t\u00eate');
+  if (dettes.includes('credit_immo')) add('achat_immobilier', 'Tu as un cr\u00e9dit immobilier');
   // Decrypter l'achat immo : socle pedagogique (apport, frais, credit).
   // L'immobilier structure la vie financiere en France : on l'integre des
   // qu'un achat, un projet locatif ou un credit immo est dans le tableau.
   if (lp==='je_veux_acheter' || obj.includes('acheter_logement') || dettes.includes('credit_immo')
       || obj.includes('investir_long_terme') || produits.includes('immo_locatif')
-      || A.q_logement_situation==='proprietaire') s.add('projet_immo');
+      || A.q_logement_situation==='proprietaire') add('projet_immo', 'L\u2019immobilier fait partie de tes projets');
   // Brique investissement locatif : recommandée si l'utilisateur détient déjà du
   // locatif (produit détenu 'immo_locatif', distinct du brick_id homonyme) ou vise l'investissement long terme.
-  if (produits.includes('immo_locatif') || obj.includes('investir_long_terme')) s.add('immo_locatif');
-  if (status==='indep_tpe') s.add('treso_dirigeant');
-  if (rev==='a_l_aise'||['assurance_vie','pea','per','immo_locatif'].some(function(p){return produits.includes(p);})) s.add('structuration_patrimoine');
-  if (obj.includes('investir_long_terme')) { s.add('investissement_long_terme'); s.add('diversification_allocation'); if (['pea','assurance_vie','per'].some(function(p){return produits.includes(p);})) s.add('fiscalite_epargne'); }
-  if (['trading_neo_broker','crypto'].some(function(p){return produits.includes(p);})) s.add('produits_complexes_vs_simples');
-  if (obj.includes('preparer_retraite')&&['35_54','55_64'].includes(age)) s.add('retraite');
-  if (obj.includes('preparer_transmission')||(['55_64','65_plus'].includes(age)&&['immo_locatif','assurance_vie'].some(function(p){return produits.includes(p);}))) s.add('transmission');
-  if (['55_64','65_plus'].includes(age)&&['assurance_vie','per','immo_locatif'].some(function(p){return produits.includes(p);})) s.add('clarification_contrats');
+  if (produits.includes('immo_locatif') || obj.includes('investir_long_terme')) add('immo_locatif', 'Tu veux investir');
+  if (status==='indep_tpe') add('treso_dirigeant', 'Tu es \u00e0 ton compte');
+  if (rev==='a_l_aise'||['assurance_vie','pea','per','immo_locatif'].some(function(p){return produits.includes(p);})) add('structuration_patrimoine', 'Tu as de quoi organiser ton patrimoine');
+  if (obj.includes('investir_long_terme')) { add('investissement_long_terme', 'Tu veux investir sur le long terme'); add('diversification_allocation', 'Tu veux investir sur le long terme'); if (['pea','assurance_vie','per'].some(function(p){return produits.includes(p);})) add('fiscalite_epargne', 'Tu d\u00e9tiens d\u00e9j\u00e0 des enveloppes fiscales'); }
+  if (['trading_neo_broker','crypto'].some(function(p){return produits.includes(p);})) add('produits_complexes_vs_simples', 'Tu utilises des produits \u00e0 risque');
+  if (obj.includes('preparer_retraite')&&['35_54','55_64'].includes(age)) add('retraite', 'Tu pr\u00e9pares ta retraite');
+  if (obj.includes('preparer_transmission')||(['55_64','65_plus'].includes(age)&&['immo_locatif','assurance_vie'].some(function(p){return produits.includes(p);}))) add('transmission', 'La transmission fait partie de tes sujets');
+  if (['55_64','65_plus'].includes(age)&&['assurance_vie','per','immo_locatif'].some(function(p){return produits.includes(p);})) add('clarification_contrats', 'Tu as des contrats \u00e0 clarifier');
   return PRIORITY.filter(function(b){return s.has(b);});
 }
+
+// ─── BROUILLON DU QUESTIONNAIRE ───────────────────────────────────
+// Les reponses ne vivaient qu'en memoire : un rechargement les perdait
+// toutes. On les depose au fil de l'eau (cle dediee, cloisonnee de celles
+// du compte) pour pouvoir reprendre.
+var ONB_CLE = 'fund_onb_brouillon';
+
+// Lu une fois a l'ouverture : l'initialisation du questionnaire ecrit dans le
+// brouillon avant qu'on ait pu proposer la reprise.
+var ONB_BROUILLON = (function () {
+  try {
+    var d = JSON.parse(localStorage.getItem(ONB_CLE) || 'null');
+    return (d && d.reponses) ? d : null;
+  } catch (e) { return null; }
+})();
+
+function nbReponses(rep) {
+  return Object.keys(rep || {}).filter(function (k) {
+    var v = rep[k];
+    return v !== null && v !== undefined && v !== '' && !(Array.isArray(v) && !v.length);
+  }).length;
+}
+
+function sauverReponses() {
+  try {
+    if (!nbReponses(A)) return;   // rien a retenir : on ne detruit pas l'existant
+    var montants = {};
+    (PRODUITS_MONTANT || []).forEach(function (pm) {
+      var inp = document.getElementById(pm.inputId);
+      if (inp && inp.value) montants[pm.inputId] = inp.value;
+    });
+    localStorage.setItem(ONB_CLE, JSON.stringify({
+      reponses: A, montants: montants,
+      bloc: (typeof current !== 'undefined' ? current : 1)
+    }));
+  } catch (e) {}
+}
+
+function lireReponses() {
+  try {
+    var d = ONB_BROUILLON;
+    if (!d || !d.reponses) return null;
+    return nbReponses(d.reponses) >= 2 ? d : null;   // en dessous, ca ne vaut pas la peine
+  } catch (e) { return null; }
+}
+
+function oublierReponses() {
+  try {
+    ONB_BROUILLON = null;
+    localStorage.removeItem(ONB_CLE);
+  } catch (e) {}
+}
+
+// Repose les reponses sur les controles (pastilles, cartes, champs)
+function restaurerReponses(d) {
+  Object.keys(d.reponses).forEach(function (q) { A[q] = d.reponses[q]; });
+  document.querySelectorAll('[data-q]').forEach(function (btn) {
+    var q = btn.dataset.q, v = btn.dataset.val, val = A[q];
+    var actif = Array.isArray(val) ? val.indexOf(v) !== -1 : val === v;
+    btn.classList.toggle('selected', !!actif);
+    btn.setAttribute('aria-checked', actif ? 'true' : 'false');
+  });
+  (PRODUITS_MONTANT || []).forEach(function (pm) {
+    var btn = document.querySelector('[data-q="q_produits_detenu"][data-val="' + pm.val + '"]');
+    if (btn) { try { handleProduitExpansion(btn); } catch (e) {} }
+    var inp = document.getElementById(pm.inputId);
+    if (inp && d.montants && d.montants[pm.inputId]) inp.value = d.montants[pm.inputId];
+  });
+  try { applyConditionals(); } catch (e) {}
+  try { updatePreview(); } catch (e) {}
+}
+
+// Bandeau de reprise, propose une seule fois au chargement
+function proposerReprise() {
+  var d = lireReponses();
+  if (!d) return;
+  var el = document.createElement('div');
+  el.id = 'onb-reprise';
+  el.innerHTML =
+    '<span class="onb-reprise-txt">Tu avais commenc\u00e9 \u00e0 r\u00e9pondre. On reprend o\u00f9 tu en \u00e9tais\u00a0?</span>'
+    + '<button type="button" class="onb-reprise-oui">Reprendre</button>'
+    + '<button type="button" class="onb-reprise-non">Recommencer</button>';
+  document.body.appendChild(el);
+  el.querySelector('.onb-reprise-oui').addEventListener('click', function () {
+    restaurerReponses(d);
+    if (d.bloc && typeof setStep === 'function') { try { setStep(d.bloc); } catch (e) {} }
+    el.remove();
+  });
+  el.querySelector('.onb-reprise-non').addEventListener('click', function () {
+    oublierReponses(); el.remove();
+  });
+  // Repondre, c'est repartir de zero : la proposition n'a plus lieu d'etre.
+  document.addEventListener('click', function surReponse(ev) {
+    if (!ev.target.closest || !ev.target.closest('[data-q]')) return;
+    document.removeEventListener('click', surReponse, true);
+    if (el.isConnected) el.remove();
+  }, true);
+}
+document.addEventListener('input', function (e) {
+  if (e.target && e.target.classList && e.target.classList.contains('produit-montant-input')) {
+    sauverReponses();
+  }
+});
+window.addEventListener('load', function () { setTimeout(proposerReprise, 400); });
 
 // ─── PREVIEW PANEL ──────────────────────────────────────────────
 var ONB_STATUS_LABELS = {
@@ -1390,6 +1654,7 @@ var ONB_OBJ_TO_BRIQUE = {
 };
 
 function updatePreview() {
+  sauverReponses();
   // Zone 1 — Profil
   var profZone = document.getElementById('pv-profil');
   var profText = document.getElementById('pv-profil-text');
@@ -1515,12 +1780,77 @@ async function submitQuiz() {
   } catch(e) {
     console.error('submitQuiz error:', e);
   }
+  oublierReponses();   // questionnaire termine : le brouillon n'a plus lieu d'etre
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Show parcours popup after a short delay
-  setTimeout(function() {
-    revealPlan();
-  }, 650);
+  // Séquence continue : le plan se déploie sous le titre, sans état
+  // intermédiaire. Si aucun plan n'est calculable, on rétablit l'écran
+  // d'origine plutôt que de laisser un écran muet.
+  var planAffiche = false;
+  try { planAffiche = revealPlan(); } catch (e) { console.error('revealPlan:', e); }
+  if (!planAffiche) {
+    var sub = document.getElementById('completion-sub');
+    if (sub) sub.textContent = 'On a tout ce qu\u2019il faut pour personnaliser tes briques.';
+    var cta = document.getElementById('completion-cta');
+    if (cta) cta.style.display = '';
+  }
+}
+
+var RV_RAISONS = {};
+
+// Libelles courts pour l'echo du profil. Volontairement distincts des
+// intitules du questionnaire : ici on resume une personne, pas une question.
+var RV_ECHO = {
+  q_age_group: { '15_17':'15\u201317 ans', '18_24':'18\u201324 ans', '25_34':'25\u201334 ans',
+    '35_54':'35\u201354 ans', '55_64':'55\u201364 ans', '65_plus':'65 ans et +' },
+  q_status_pro: { college_lycee:'Lyc\u00e9en', etudiant:'\u00c9tudiant',
+    sal_ouvrier_employe:'Salari\u00e9', sal_prof_inter:'Salari\u00e9',
+    cadre_prof_lib:'Cadre', indep_tpe:'Ind\u00e9pendant',
+    chomeur_inactif:'En recherche d\u2019emploi', retraite:'Retrait\u00e9' },
+  q_logement_situation: { chez_parents:'Chez ses parents', colocation:'En colocation',
+    locataire:'Locataire', proprietaire:'Propri\u00e9taire', heberge_autre:'H\u00e9berg\u00e9' },
+  q_logement_projet: { je_vais_demenager:'D\u00e9m\u00e9nagement en vue',
+    je_veux_acheter:'Achat en projet' },
+  q_revenu_sentiment: { difficile_fin_mois:'Fins de mois difficiles',
+    juste_juste:'Fins de mois justes', a_l_aise:'\u00c0 l\u2019aise' },
+  q_objectifs: { sortir_decouvert:'Sortir du d\u00e9couvert', stabiliser_budget:'Stabiliser son budget',
+    rembourser_dettes:'Rembourser ses dettes', financer_projet_court_terme:'Financer un projet',
+    acheter_logement:'Acheter un logement', preparer_retraite:'Pr\u00e9parer la retraite',
+    investir_long_terme:'Investir sur le long terme',
+    mieux_comprendre_contrats:'Comprendre ses contrats',
+    preparer_transmission:'Pr\u00e9parer la transmission', se_reperer:'S\u2019y retrouver' },
+  q_dettes_types: { decouvert_regulier:'D\u00e9couvert r\u00e9gulier',
+    paiement_fractionne_mini_credit:'Paiements fractionn\u00e9s', credit_conso:'Cr\u00e9dit conso',
+    credit_immo:'Cr\u00e9dit immo', autre_credit:'Autre cr\u00e9dit' },
+  q_produits_detenu: { livrets_seuls:'Livrets', assurance_vie:'Assurance-vie', pea:'PEA',
+    per:'PER', immo_locatif:'Immo locatif', trading_neo_broker:'Trading', crypto:'Crypto' }
+};
+
+var RV_ECHO_MARQUE = {
+  q_age_group:'\u25d4', q_status_pro:'\u25c8', q_logement_situation:'\u2302',
+  q_logement_projet:'\u2302', q_revenu_sentiment:'\u2248', q_objectifs:'\u2197',
+  q_dettes_types:'\u25c7', q_produits_detenu:'\u25c7'
+};
+
+// Ce qu'on a compris de la personne, dans l'ordre ou on le lui dirait.
+function rvEchoProfil() {
+  var out = [];
+  function pousse(q, val) {
+    if (!val) return;
+    var t = (RV_ECHO[q] || {})[val];
+    if (t) out.push({ m: RV_ECHO_MARQUE[q] || '\u25c7', t: t });
+  }
+  pousse('q_age_group', A.q_age_group);
+  pousse('q_status_pro', A.q_status_pro);
+  var logement = [ (RV_ECHO.q_logement_situation || {})[A.q_logement_situation],
+                   (RV_ECHO.q_logement_projet || {})[A.q_logement_projet] ]
+                 .filter(Boolean).join(' · ');
+  if (logement) out.push({ m: RV_ECHO_MARQUE.q_logement_situation, t: logement });
+  pousse('q_revenu_sentiment', A.q_revenu_sentiment);
+  (A.q_objectifs || []).slice(0, 2).forEach(function (o) { pousse('q_objectifs', o); });
+  (A.q_dettes_types || []).forEach(function (d) { if (d !== 'aucun') pousse('q_dettes_types', d); });
+  (A.q_produits_detenu || []).forEach(function (x) { pousse('q_produits_detenu', x); });
+  return out.slice(0, 8);   // au-dela, ce n'est plus un portrait mais une liste
 }
 
 // ─── RÉVÉLATION DU PLAN ────────────────────────────────
@@ -1531,17 +1861,22 @@ var RV_DOTS = { 'Survie & stabilit\u00e9':'#E8A6A0', 'Construction & projets':'#
 
 function revealPlan() {
   var host = document.getElementById('reveal-plan');
-  if (!host) return;
+  if (!host) return false;
   var ids = [];
   try {
     var p = (typeof loadFromStorage === 'function' && loadFromStorage('fund_profil')) || null;
     ids = (p && p.briques_recommandees) || (typeof computeBriques === 'function' ? computeBriques() : []);
   } catch (e) {}
   ids = (ids || []).filter(function (id) { return typeof BRIQUES_META !== 'undefined' && BRIQUES_META[id]; });
+  // Les raisons naissent dans computeBriques(). Si le plan vient d'un profil
+  // enregistre, elle n'a pas tourne : on la relance pour les obtenir.
+  if (!Object.keys(RV_RAISONS).length && typeof computeBriques === 'function') {
+    try { computeBriques(); } catch (e) {}
+  }
   // Notes eventuelles attachees a un module (ex. condition d'acces).
   // Elles sont alimentees au fil du parcours, pas a l'onboarding.
   var notes = (p && p.briques_notes) || {};
-  if (!ids.length) return;   // aucun plan calculable : on garde l'ecran d'origine
+  if (!ids.length) return false;   // aucun plan calculable
 
   // Regroupement par phase, dans l'ordre canonique du parcours
   var parPhase = {};
@@ -1554,43 +1889,137 @@ function revealPlan() {
   if (parPhase['Autres modules']) ordre.push('Autres modules');
 
   function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
-  var rang = 0, html = '';
+
+  var RV_PALETTE = { 'Survie & stabilit\u00e9':'#E8A6A0',
+                     'Construction & projets':'#E5B66A',
+                     'Investissement & long terme':'#8FB59A' };
+
+  // ── Le chemin ──
+  var rang = 0, chemin = '', retard = 0;
   ordre.forEach(function (ph) {
-    var dot = RV_DOTS[ph];
-    html += '<div class="rv-phase">'
-          + (dot ? '<span class="rv-phase-dot" style="background:' + dot + '" aria-hidden="true"></span>' : '')
+    var col = RV_PALETTE[ph] || 'var(--accent-strong)';
+    chemin += '<div class="rv-phase" style="--seg:' + col + ';animation-delay:' + retard + 'ms">'
+          + '<span class="rv-phase-dot" style="background:' + col + '" aria-hidden="true"></span>'
           + '<span class="rv-phase-name">' + esc(ph) + '</span>'
+          + '<span class="rv-phase-rule" aria-hidden="true"></span>'
           + '<span class="rv-phase-count">' + parPhase[ph].length + '</span></div>'
-          + '<div class="rv-list">';
+          + '<div class="rv-seg" style="--seg:' + col + ';--seg-delay:' + retard + 'ms">';
     parPhase[ph].forEach(function (id) {
       var m = BRIQUES_META[id]; rang++;
+      retard = Math.min(retard + 55, 900);
       var premier = rang === 1;
-      html += '<div class="rv-item' + (premier ? ' rv-item--first' : '') + '">'
-            + '<span class="rv-num">' + rang + '</span>'
-            + '<span class="rv-body"><span class="rv-name">' + esc(m.nom) + '</span>'
-            + '<span class="rv-tag">' + esc(m.tagline || '') + '</span></span>'
-            + (premier ? '<span class="rv-badge">On commence ici</span>'
-               : notes[id] ? '<span class="rv-note">' + esc(notes[id]) + '</span>'
-                           : '<span class="rv-duree">' + esc(m.duree || '') + '</span>')
+      var droite = premier
+        ? '<span class="rv-badge">On commence ici</span>'
+        : (notes[id] ? '<span class="rv-note">' + esc(notes[id]) + '</span>'
+                     : '<span class="rv-duree">' + esc(m.duree || '') + '</span>');
+      var pourquoi = RV_RAISONS[id]
+        ? '<span class="rv-why"><span class="rv-why-mark" aria-hidden="true">\u2192</span>'
+          + esc(RV_RAISONS[id]) + '</span>' : '';
+      // Aperçu des chapitres : seulement sur les trois premiers, sinon la
+      // page devient un mur de texte.
+      var chapitres = '';
+      if (rang <= 3 && m.chapitres && m.chapitres.length) {
+        chapitres = '<span class="rv-chaps">'
+          + m.chapitres.slice(0, 3).map(function (c) {
+              return '<span class="rv-chap">' + esc(c) + '</span>'; }).join('')
+          + '</span>';
+      }
+      chemin += '<div class="rv-item' + (premier ? ' rv-item--first' : '') + '"'
+            + ' style="animation-delay:' + retard + 'ms">'
+            + '<span class="rv-node" aria-hidden="true">' + (m.icon || '') + '</span>'
+            + '<span class="rv-step" aria-hidden="true">' + rang + '</span>'
+            + '<span class="rv-head"><span class="rv-name">' + esc(m.nom) + '</span>'
+            + droite + '</span>'
+            + '<span class="rv-tag">' + esc(m.tagline || '') + '</span>'
+            + pourquoi + chapitres
             + '</div>';
     });
-    html += '</div>';
+    chemin += '</div>';
   });
 
-  var duree = ids.length <= 4 ? '3\u20134 semaines' : ids.length <= 8 ? '4\u20136 semaines' : '2\u20133 mois';
-  var meta = '<b>' + ids.length + '</b>&nbsp;module' + (ids.length > 1 ? 's' : '')
-           + '&nbsp;&middot;&nbsp;<b>' + duree + '</b>&nbsp;\u00e0 ton rythme';
-  // Sans compte, les modules ne s'ouvrent pas encore : on le dit, plutot
-  // que de laisser l'utilisateur se demander pourquoi rien ne reagit.
+  // ── L'empreinte du parcours ──
+  // La repartition par phase est deja sous les yeux, juste en dessous. On dit
+  // donc autre chose : la part du catalogue qui a ete retenue pour cet utilisateur,
+  // et le fait que ce tri n'est pas fige.
+  var cases = '', dc = 0;
+  ordre.forEach(function (ph) {
+    var col = RV_PALETTE[ph] || 'var(--accent-strong)';
+    parPhase[ph].forEach(function () {
+      dc = Math.min(dc + 22, 640);
+      cases += '<span class="rv-cat-cell on" style="--seg:' + col
+             + ';animation-delay:' + dc + 'ms"></span>';
+    });
+  });
+  var catalogue = Object.keys(BRIQUES_META).length;
+  for (var k = ids.length; k < catalogue; k++) {
+    dc = Math.min(dc + 22, 640);
+    cases += '<span class="rv-cat-cell" style="animation-delay:' + dc + 'ms"></span>';
+  }
+
+  var dp = 60;
+  var pastilles = rvEchoProfil().map(function (e) {
+    dp += 55;
+    return '<span class="rv-echo-pill" style="animation-delay:' + dp + 'ms">'
+         + '<span class="rv-echo-mark" aria-hidden="true">' + e.m + '</span>'
+         + esc(e.t) + '</span>';
+  }).join('');
+
+  var bandeau = '<section class="rv-echo"><div class="rv-echo-in">'
+    + '<div class="rv-echo-main">'
+    +   '<p class="rv-echo-t">Ce qu\u2019on a retenu de toi.</p>'
+    +   '<div class="rv-echo-pills">' + pastilles + '</div>'
+    + '</div>'
+    + '<aside class="rv-echo-side">'
+    +   '<p class="rv-cat-n"><b data-compte="' + ids.length + '">0</b>'
+    +     '<span>sur ' + catalogue + '</span></p>'
+    +   '<div class="rv-cat-grid" aria-hidden="true">' + cases + '</div>'
+    +   '<p class="rv-cat-txt">modules du catalogue retenus pour toi. D\u2019autres '
+    +     's\u2019ajouteront si tes besoins changent.</p>'
+    + '</aside>'
+    + '</div></section>';
+
+  // ── La carte d'action ──
   var connecteRv = (typeof _hasSession === 'function') ? _hasSession() : true;
-  var verrou = connecteRv ? '' :
-    '<p class="rv-locked">Les modules s\u2019ouvriront apr\u00e8s la cr\u00e9ation de ton compte.</p>';
-  host.innerHTML = '<p class="rv-meta">' + meta + '</p>' + html + verrou;
+  var m1 = BRIQUES_META[ids[0]];
+  var carte = '<div class="rv-card">'
+    + '<p class="rv-card-t">' + (connecteRv ? 'Pr\u00eat \u00e0 commencer\u00a0?' : 'Garde ce parcours.') + '</p>'
+    + '<p class="rv-card-s">' + (connecteRv
+        ? 'Tu d\u00e9marres par <b>' + esc(m1.nom) + '</b>, puis le parcours se d\u00e9roule dans l\u2019ordre.'
+        : 'Il t\u2019attend sur ton compte, avec ta progression, d\u2019un appareil \u00e0 l\u2019autre.')
+    + '</p>'
+    + '<div id="rv-cta-slot"></div>'
+    + (connecteRv ? '' : '<p class="rv-locked">Les modules s\u2019ouvriront apr\u00e8s la cr\u00e9ation de ton compte.</p>')
+    + '</div>';
+
+  var btnPrec = document.getElementById('completion-cta');
+  if (btnPrec && host.contains(btnPrec)) {
+    btnPrec.style.display = 'none';
+    document.getElementById('completion').appendChild(btnPrec);
+  }
+
+  host.innerHTML = bandeau
+    + '<div class="rv-cols"><div class="rv-path">' + chemin + '</div>'
+    + '<aside class="rv-side">' + carte + '</aside></div>';
+
+  // Le bouton d'origine emmenage dans la carte : un seul bouton, un seul gestionnaire
+  var slot = host.querySelector('#rv-cta-slot');
+  var btn = document.getElementById('completion-cta');
+  if (slot && btn) { btn.style.display = ''; slot.appendChild(btn); }
+
+  // Les compteurs s'incrementent : le plan se "compte" sous les yeux
+  host.querySelectorAll('[data-compte]').forEach(function (el) {
+    var cible = parseInt(el.getAttribute('data-compte'), 10) || 0, n = 0;
+    var pas = Math.max(1, Math.round(cible / 18));
+    var t = setInterval(function () {
+      n += pas;
+      if (n >= cible) { n = cible; clearInterval(t); }
+      el.textContent = n;
+    }, 34);
+  });
+
   host.style.display = 'block';
 
   // Le sous-titre et l'action reprennent le parcours reel
-  var sub = document.getElementById('completion-sub');
-  if (sub) sub.textContent = 'Voil\u00e0 les modules qu\u2019on a s\u00e9lectionn\u00e9s pour toi, dans cet ordre.';
   var cta = document.getElementById('completion-cta');
   if (cta) {
     var connecte = (typeof _hasSession === 'function') ? _hasSession() : true;
@@ -1599,6 +2028,8 @@ function revealPlan() {
       ? '\n          Commencer\u00a0: ' + m1.nom + '\n          '
       : '\n          Cr\u00e9er mon compte pour garder ce parcours\n          ';
   }
+
+  return true;
 }
 
 function goToDashboard() {
