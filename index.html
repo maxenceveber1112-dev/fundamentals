@@ -1180,6 +1180,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
+<script src="auth-modal.js"></script>
 <script>
 // ─── STATE ─────────────────────────────────────────────────────
 const A = {
@@ -2038,10 +2039,30 @@ function goToDashboard() {
   // Sans compte, le parcours vit en brouillon local : on emmene vers la
   // creation de compte, qui le rattachera (migrateAnonDraft).
   var connecte = (typeof _hasSession === 'function') ? _hasSession() : true;
-  window.location.href = connecte
-    ? 'dashboard.html'
-    : 'auth.html?signup=1&next=' + encodeURIComponent('/dashboard.html');
+  if (connecte) { window.location.href = 'dashboard.html'; return; }
+  // Sans compte : on ouvre la creation de compte par-dessus le plan plutot
+  // que de le faire disparaitre. auth.html reste le repli si le script de
+  // la modale n'a pas pu etre charge.
+  if (typeof openAuthModal === 'function') { openAuthModal({ mode: 'signup' }); return; }
+  window.location.href = 'auth.html?signup=1&next=' + encodeURIComponent('/dashboard.html');
 }
+
+// Retour d'une connexion Google ou Apple : le SDK depose la session en
+// revenant sur cette page, mais rien ne rattachait le parcours construit
+// sans compte — il etait simplement perdu. Sans session, migrateAnonDraft
+// repond « pas de session » et on ne fait rien.
+(async function rattacherApresOAuth() {
+  try {
+    if (typeof hasAnonDraft !== 'function' || !hasAnonDraft()) return;
+    if (typeof migrateAnonDraft !== 'function') return;
+    var r = await migrateAnonDraft();
+    if (!r) return;
+    if (r.migre === true) sessionStorage.setItem('fund_parcours_rattache', '1');
+    else if (r.raison === 'compte deja pourvu') sessionStorage.setItem('fund_brouillon_conserve', '1');
+    else return;                       // pas de session : on laisse l'onboarding
+    window.location.replace('dashboard.html');
+  } catch (e) {}
+})();
 
 // ─── GATE MINEUR (15–17 ans) ──────────────────────────────────────
 function handleAgeSelection(val) {
