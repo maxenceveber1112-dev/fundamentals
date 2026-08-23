@@ -145,10 +145,14 @@
   // Construit ici plutôt que dans chaque page : la modale et auth.html
   // montrent le même bloc, il ne doit pas diverger.
   var MAX_PASTILLES = 5;
+  // Au-dela, ce n'est plus « le parcours que je viens de construire » : c'est
+  // un residu, parfois celui de quelqu'un d'autre sur un navigateur partage.
+  var FRAICHEUR_MS = 24 * 60 * 60 * 1000;
 
   function modulesEnAttente() {
     try {
       if (typeof readAnonDraft !== 'function' || typeof BRIQUES_META === 'undefined') return null;
+      if (typeof anonDraftAge === 'function' && anonDraftAge() > FRAICHEUR_MS) return null;
       var d = readAnonDraft();
       var ids = d && d.fund_profil && d.fund_profil.briques_recommandees;
       if (!ids || !ids.length) return null;
@@ -228,6 +232,10 @@
     overlay.querySelector('#am-pass').setAttribute('autocomplete', estConnexion ? 'current-password' : 'new-password');
     overlay.querySelector('#am-alt-login').style.display = estConnexion ? 'none' : '';
     overlay.querySelector('#am-alt-signup').style.display = estConnexion ? '' : 'none';
+    // « Il sera rattache a ce compte » ne vaut que pour un compte neuf : un
+    // compte existant garde son propre parcours, le brouillon serait ecarte.
+    var bd = overlay.querySelector('.am-draft');
+    if (bd) bd.style.display = estConnexion ? 'none' : '';
     effacerMsg();
   }
 

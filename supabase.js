@@ -211,8 +211,22 @@ function saveToStorage(key, val) {
     if (key === 'fund_profil')     saveProfile(val).catch(() => {});
     if (key === 'fund_dashboard')  saveDashboard(val).catch(() => {});
   } else {
-    try { localStorage.setItem(_ANON_PREFIX + key, JSON.stringify(val)); } catch (e) {}
+    try {
+      localStorage.setItem(_ANON_PREFIX + key, JSON.stringify(val));
+      // Horodatage : un parcours construit il y a trois semaines sur un
+      // navigateur partage n'a pas a s'annoncer comme « en attente ».
+      localStorage.setItem(_ANON_PREFIX + 'ts', String(Date.now()));
+    } catch (e) {}
   }
+}
+
+// Age du brouillon anonyme, en millisecondes. Infinity s'il n'est pas
+// horodate (brouillon anterieur a cette regle) ou absent.
+function anonDraftAge() {
+  try {
+    var t = parseInt(localStorage.getItem(_ANON_PREFIX + 'ts'), 10);
+    return t ? Date.now() - t : Infinity;
+  } catch (e) { return Infinity; }
 }
 
 function loadFromStorage(key) {
@@ -262,10 +276,14 @@ async function migrateAnonDraft() {
   const user = await getCurrentUser();
   if (!user) return { migre: false, raison: 'pas de session' };
   const draft = readAnonDraft();
-  if (!draft.fund_profil && !draft.fund_dashboard) return { migre: false, raison: 'aucun brouillon' };
+  if (!draft.fund_profil && !draft.fund_dashboard) return { migre: false, raison: 'aucun brouillon' };   // 'ts' seul ne compte pas
 
   const existant = await loadProfile();
   if (existant && existant.briques_recommandees && existant.briques_recommandees.length) {
+    // Ce brouillon ne sera jamais rattachable : le compte a deja son
+    // parcours. Le garder le ferait re-declencher a chaque page, sans
+    // jamais servir — on le solde apres avoir prevenu l'utilisateur.
+    clearAnonDraft();
     return { migre: false, raison: 'compte deja pourvu' };
   }
 

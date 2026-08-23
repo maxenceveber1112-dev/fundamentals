@@ -678,6 +678,10 @@
       ? 'Connecte-toi pour accéder à ton parcours.'
       : 'Rejoins Fundamental et construis ton parcours.';
     document.getElementById('password').setAttribute('autocomplete', isLogin ? 'current-password' : 'new-password');
+    // Le bloc du parcours en attente ne concerne que la creation de compte :
+    // un compte existant conserve son propre parcours.
+    var bd = document.getElementById('auth-draft');
+    if (bd) bd.style.display = isLogin ? 'none' : '';
     var fsl = document.getElementById('fs-login');
     var fss = document.getElementById('fs-signup');
     if (fsl && fss) {
@@ -805,6 +809,9 @@
         var hote = document.getElementById('auth-draft');
         if (hote && typeof blocParcoursGarde === 'function') {
           hote.innerHTML = blocParcoursGarde();   // vide s'il n'y a rien a rattacher
+          // setTab n'a pas forcement tourne (arrivee sans ?signup=1) : on
+          // aligne l'etat initial sur l'onglet reellement actif.
+          hote.style.display = (currentTab === 'login') ? 'none' : '';
         }
       } catch (e) {}
     } catch (e) {}
