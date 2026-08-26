@@ -842,7 +842,6 @@ function buildToi() {
   majPortrait(); majSticky();
 }
 
-function complet() { return QUESTIONS.every(function (q) { return !!A[q.cle]; }); }
 
 /* portrait vivant, dans le panneau latéral */
 const PORTRAIT = {
@@ -1053,7 +1052,8 @@ function engagementParDefaut() {
 
 function buildScreen4() {
   const e = engagementsPossibles();
-  if (!engagementChoisi) engagementChoisi = engagementParDefaut();
+  const encoreLa = engagementChoisi && e.some(function (x) { return x.id === engagementChoisi; });
+  if (!encoreLa) engagementChoisi = engagementParDefaut();
 
   let html = '<div>' +
     '<p class="kick" style="margin-bottom:.4rem">Étape 4 · La suite</p>' +
@@ -1170,9 +1170,13 @@ function majSticky() {
   note.textContent = '';
 
   if (ecran === 1) {
-    next.textContent = 'Comprendre ma banque'; next.disabled = !complet();
     const n = QUESTIONS.filter(function (q) { return !!A[q.cle]; }).length;
-    if (!complet()) note.textContent = n + ' réponse' + (n > 1 ? 's' : '') + ' sur ' + QUESTIONS.length;
+    const reste = QUESTIONS.length - n;
+    next.disabled = reste > 0;
+    next.textContent = reste > 0
+      ? 'Encore ' + reste + ' réponse' + (reste > 1 ? 's' : '')
+      : 'Comprendre ma banque';
+    if (reste > 0) note.textContent = n + ' réponse' + (n > 1 ? 's' : '') + ' sur ' + QUESTIONS.length;
   } else if (ecran === 2) {
     next.textContent = 'Voir ce qui me va'; next.disabled = false;
     const q = Object.keys(reponsesChk).length;
