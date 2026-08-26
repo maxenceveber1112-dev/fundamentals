@@ -183,8 +183,9 @@ html.dark .hero-cream::after{color:rgba(139,92,246,.16)}
 .pli{padding:0;overflow:hidden}
 .pli-h{display:flex;align-items:center;gap:.8rem;width:100%;padding:1.05rem 1.3rem;
   background:none;border:none;cursor:pointer;font-family:inherit;text-align:left}
-.pli-h .liste-h{margin-bottom:.1rem}
-.pli-h .liste-s{margin-bottom:0}
+.pli-h > span:first-child{display:flex;flex-direction:column;gap:.12rem;
+  min-width:0;text-align:left}
+.pli-h .liste-h,.pli-h .liste-s{display:block;margin-bottom:0}
 .pli-c{margin-left:auto;flex:0 0 auto;color:var(--text-faint);transition:transform var(--t);display:flex}
 .pli.open .pli-c{transform:rotate(180deg)}
 .pli-b{max-height:0;overflow:hidden;transition:max-height .34s var(--ease-out)}
@@ -444,7 +445,7 @@ html.dark .reco::after{color:rgba(139,92,246,.13)}
           </div>
           <p class="kick" style="margin:.5rem 0 .75rem">Qu&rsquo;est-ce qui t&rsquo;am&egrave;ne&nbsp;?</p>
           <div class="q-opts" id="motifs" style="margin-bottom:1.75rem"></div>
-          <button class="btn-hero" onclick="goToScreen(1)">Commencer par les bases
+          <button type="button" class="btn-hero" onclick="goToScreen(1)">Commencer par les bases
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div></div>
@@ -500,8 +501,8 @@ html.dark .reco::after{color:rgba(139,92,246,.13)}
   <div class="sticky-in">
     <span class="sticky-note" id="sticky-note"></span>
     <div class="sticky-act">
-      <button class="btn-txt" id="btn-back" onclick="goToScreen(ecran-1)" style="display:none">Retour</button>
-      <button class="btn-hero" id="btn-next" onclick="suivant()">Continuer</button>
+      <button type="button" class="btn-txt" id="btn-back" onclick="goToScreen(ecran-1)" style="display:none">Retour</button>
+      <button type="button" class="btn-hero" id="btn-next" onclick="suivant()">Continuer</button>
     </div>
   </div>
 </div>
@@ -543,14 +544,21 @@ const MOTIFS = [
 
 function buildMotifs() {
   const h = document.getElementById('motifs');
+  h.setAttribute('role', 'radiogroup');
+  h.setAttribute('aria-label', 'Ce qui t’amène');
   h.innerHTML = MOTIFS.map(function (m) {
-    return '<button class="opt' + (A.motif === m[0] ? ' on' : '') + '" data-motif="' + m[0] + '">' +
-           m[1] + '</button>';
+    const on = A.motif === m[0];
+    return '<button type="button" class="opt' + (on ? ' on' : '') + '" role="radio" ' +
+           'aria-checked="' + on + '" data-motif="' + m[0] + '">' + m[1] + '</button>';
   }).join('');
   h.querySelectorAll('[data-motif]').forEach(function (b) {
     b.addEventListener('click', function () {
       A.motif = b.dataset.motif;
-      h.querySelectorAll('[data-motif]').forEach(function (x) { x.classList.toggle('on', x === b); });
+      h.querySelectorAll('[data-motif]').forEach(function (x) {
+        const sel = x === b;
+        x.classList.toggle('on', sel);
+        x.setAttribute('aria-checked', String(sel));
+      });
     });
   });
 }
@@ -610,9 +618,9 @@ const NOTIONS = {
       'd’épargne, et souvent le seul dont on a besoin au début.' },
   credit: { e:'🔑', t:'Emprunter', r:'Le crédit, plus tard',
     p:'Un jour tu voudras une voiture, financer des études, plus tard un logement. La banque dira ' +
-      'oui ou non en regardant comment tu t’es comporté <b>avant</b>. C’est le seul service où ton ' +
+      'oui ou non en regardant ce que tu as fait <b>avant</b>. C’est le seul service où ton ' +
       'passé compte vraiment.',
-    sm:'🗓️', st:'À 26 ans tu demandes un prêt. On regarde tes relevés des derniers mois : revenus ' +
+    sm:'🗓️', st:'Quelques années plus tard, tu demandes un prêt. On regarde tes relevés des derniers mois : revenus ' +
       'réguliers, pas d’incident, un peu d’épargne. <b>Tout se joue avant.</b>',
     mot:'<b>Taux d’endettement</b> — la part de tes revenus qui part en remboursements. ' +
       'C’est le premier chiffre que la banque calcule.' }
@@ -676,10 +684,10 @@ function buildComprendre() {
       '</div>' +
       '<div class="nt-f"><span class="cpt">' + (notionIdx + 1) + ' sur ' + seq.length + '</span>' +
         '<span class="act">' +
-          (notionIdx > 0 ? '<button class="btn-mini" data-nav="-1">Précédent</button>' : '') +
+          (notionIdx > 0 ? '<button type="button" class="btn-mini" data-nav="-1">Précédent</button>' : '') +
           (notionIdx < seq.length - 1
-            ? '<button class="btn-mini plein" data-nav="1">Suivant</button>'
-            : '<button class="btn-mini plein" data-nav="chk">Passer aux situations</button>') +
+            ? '<button type="button" class="btn-mini plein" data-nav="1">Suivant</button>'
+            : '<button type="button" class="btn-mini plein" data-nav="chk">Passer aux situations</button>') +
         '</span></div>' +
     '</div>';
 
@@ -741,12 +749,14 @@ function buildControle() {
           if (o[0] === q.bon) cls = ' bon';
           else if (o[0] === rep) cls = ' faux';
         }
-        return '<button class="chk-o' + cls + '" data-chk="' + q.id + '" data-v="' + o[0] + '"' +
+        return '<button type="button" class="chk-o' + cls + '" role="radio" ' +
+               'aria-checked="' + (rep === o[0]) + '" data-chk="' + q.id + '" data-v="' + o[0] + '"' +
                (rep ? ' disabled' : '') + '>' + o[1] + '</button>';
       }).join('');
-      return '<div class="chk-q"><p class="chk-l">' + q.l + '</p>' +
-        '<div class="chk-opts">' + opts + '</div>' +
-        (rep ? '<p class="chk-f">' + q.f + '</p>' : '') + '</div>';
+      return '<div class="chk-q"><p class="chk-l" id="chk-l-' + q.id + '">' + q.l + '</p>' +
+        '<div class="chk-opts" role="radiogroup" aria-labelledby="chk-l-' + q.id + '">' + opts + '</div>' +
+        // la reponse doit etre annoncee, pas seulement affichee
+        (rep ? '<p class="chk-f" role="status">' + q.f + '</p>' : '') + '</div>';
     }).join('') + '</div>';
 
   hote.querySelectorAll('[data-chk]').forEach(function (b) {
@@ -779,21 +789,25 @@ function buildToi() {
     '<div class="qc">' + QUESTIONS.map(function (q) {
       const su = prerempli.indexOf(q.cle) !== -1;
       const opts = q.opts.map(function (o) {
-        return '<button class="opt' + (A[q.cle] === o[0] ? ' on' : '') + '" data-q="' + q.cle +
+        const on = A[q.cle] === o[0];
+        return '<button type="button" class="opt' + (on ? ' on' : '') + '" role="radio" ' +
+               'aria-checked="' + on + '" data-q="' + q.cle +
                '" data-v="' + o[0] + '">' + o[1] + '</button>';
       }).join('');
       return '<div class="qr' + (A[q.cle] ? ' ok' : '') + '">' +
         '<div class="qr-l"><b>' + q.l + '</b>' +
           (su ? '<span class="q-su">déjà connu</span>' : '') +
           '<span>' + q.h + '</span></div>' +
-        '<div class="qr-o">' + opts + '</div></div>';
+        '<div class="qr-o" role="radiogroup" aria-label="' + q.l + '">' + opts + '</div></div>';
     }).join('') + '</div>';
 
   document.querySelectorAll('#questions .opt').forEach(function (b) {
     b.addEventListener('click', function () {
       A[b.dataset.q] = b.dataset.v;
       document.querySelectorAll('[data-q="' + b.dataset.q + '"]').forEach(function (x) {
-        x.classList.toggle('on', x === b);
+        const sel = x === b;
+        x.classList.toggle('on', sel);
+        x.setAttribute('aria-checked', String(sel));
       });
       const r = b.closest('.qr'); if (r) r.classList.add('ok');
       majPortrait(); majSticky();
@@ -872,7 +886,7 @@ function besoins() {
     'Même avec 10 € par mois. Pas pour le rendement : pour que l’argent ne soit plus à portée de carte.']);
   if (A.logement === 'seul') {
     oui.push(['Une assurance habitation',
-      'Obligatoire quand on loue. Ta banque en propose une, ton assureur aussi : compare, tu n’es tenu à rien.']);
+      'Obligatoire quand on loue. Ta banque en propose une, ton assureur aussi : compare, rien ne t’oblige.']);
     oui.push(['Connaître la date de tes prélèvements',
       'Loyer, énergie, abonnements partent tout seuls. Savoir <b>quand</b> évite la moitié des incidents.']);
   }
@@ -890,7 +904,8 @@ function besoins() {
   }
   non.push(['Une carte haut de gamme',
     'On y paie surtout des assurances de voyage et des plafonds élevés. ' +
-    (A.voyage === 'souvent' ? 'Tu voyages souvent : ça se discute, mais compare ce que tu utiliserais vraiment.'
+    (A.voyage === 'souvent' ? 'Tu voyages souvent, donc l’argument revient : compare d’abord ce que tu '
+     + 'utiliserais vraiment, c’est presque toujours moins que ce qui est vendu avec.'
                             : 'Tu n’es pas dans ce cas aujourd’hui.')]);
   if (A.voyage === 'jamais') {
     non.push(['Les options liées à l’étranger',
@@ -1025,15 +1040,15 @@ function buildScreen4() {
   }).join('') + '</div></div>';
 
   const RETOUR = {
-    comprendre:'Tu es venu parce que tu n’y comprenais rien.',
-    premier:'Tu es venu parce que tu vas toucher ton premier argent.',
-    decouvert:'Tu es venu parce que le découvert te faisait peur.',
-    arnaque:'Tu es venu parce que tu ne voulais pas te faire avoir.',
-    flou:'Tu es venu sans trop savoir quoi chercher.'
+    comprendre:'Au départ, tu n’y comprenais rien.',
+    premier:'Au départ, tu allais toucher ton premier argent.',
+    decouvert:'Au départ, le découvert te faisait peur.',
+    arnaque:'Au départ, tu ne voulais pas te faire avoir.',
+    flou:'Au départ, tu ne savais pas trop quoi chercher.'
   };
   const ouverture = (A.motif && RETOUR[A.motif])
     ? RETOUR[A.motif]
-    : 'Tu es arrivé ici sans savoir ce qu’une banque faisait vraiment.';
+    : 'Au départ, tu ne savais pas vraiment ce que faisait une banque.';
   {
     html += '<div class="boucle"><div class="boucle-in">' +
       '<p class="kick" style="margin-bottom:.5rem">On referme</p>' +
