@@ -2408,7 +2408,7 @@ function buildLeviers() {
     deficit: [
       { icon:'\u{1F6A8}', title:'Identifier les charges coupables', sub:`Ton budget est en d\u00e9ficit de ${formatEuro(Math.abs(reste))}/mois. Commence par lister les charges r\u00e9ductibles.`, color:'#EF4444', cta:null, ctaLabel:'G\u00e9rer mon d\u00e9couvert', bientot:true },
       { icon:'\u{1F4F5}', title:'Suspendre les abonnements non essentiels', sub: budgetData.abonnements_total > 0 ? `Tes abonnements (${formatEuro(budgetData.abonnements_total)}/mois) sont le levier le plus rapide.` : 'Les abonnements sont souvent le levier le plus rapide \u00e0 activer.', color:'#F97316' },
-      { icon:'\u{1F4B3}', title:'Prioriser le remboursement des dettes co\u00fbteuses', sub:'D\u00e9couvert, cr\u00e9dit renouvelable \u2014 ce sont eux qui creusent le trou. Voir la brique d\u00e9di\u00e9e.', color:'#EF4444', cta:null, ctaLabel:'Voir la brique dettes', bientot:true },
+      { icon:'\u{1F4B3}', title:'Prioriser le remboursement des dettes co\u00fbteuses', sub:'D\u00e9couvert, cr\u00e9dit renouvelable \u2014 ce sont eux qui creusent le trou. Voir la brique d\u00e9di\u00e9e.', color:'#EF4444', cta:'brique-plan-desendettement.html', ctaLabel:'Voir la brique dettes' },
     ],
     deficit_couvert: [
       { icon:'\u2696\uFE0F', title:'Identifier les charges qui d\u00e9passent tes revenus', sub:`Hors \u00e9pargne, tu es \u00e0 ${formatEuro(Math.abs(reste))}/mois de d\u00e9ficit. Liste les charges fixes r\u00e9ductibles \u2014 loyer, abonnements, cr\u00e9dits.`, color:'#F97316', cta:null },
@@ -2931,7 +2931,7 @@ function buildPrioritesPersonnalisees() {
     equilibre: [
       { num:'1', titre: buildEpargnePrioriteTitre(), sub: buildEpargnePrioriteSub(), horizon:'D\u00E8s ce mois', cta: epargnePrioriteCta },
       { num:'2', titre:'Identifie ton prochain objectif \u00E0 6 mois', sub:'Voyage, v\u00E9hicule, projet perso \u2014 nommer l\u2019objectif le rend concret et oriente les d\u00E9cisions du quotidien.', horizon:'Cette semaine' },
-      { num:'3', titre:'Optimise tes frais fixes', sub:`${formatEuro(budgetData.total_besoins)} de charges fixes chaque mois. Certains sont n\u00E9gociables (assurances, forfaits). 30 min de comparaison peuvent d\u00E9gager 20-40\u20AC/mois.`, horizon:'Ce mois', cta:{ href:null, label:'Voir Premiers pas bancaires', bientot:true } },
+      { num:'3', titre:'Optimise tes frais fixes', sub:`${formatEuro(budgetData.total_besoins)} de charges fixes chaque mois. Certains sont n\u00E9gociables (assurances, forfaits). 30 min de comparaison peuvent d\u00E9gager 20-40\u20AC/mois.`, horizon:'Ce mois', cta:{ href:'brique-premiers-pas-bancaires.html', label:'Voir Premiers pas bancaires' } },
     ],
     aise: [
       { num:'1', titre: buildEpargnePrioriteTitre(), sub: buildEpargnePrioriteSub(), horizon:'D\u00E8s ce mois', cta: epargnePrioriteCta },

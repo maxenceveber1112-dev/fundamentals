@@ -1458,6 +1458,7 @@
     else if (item.statut === 'en_cours' && item.progression > 0) statusTxt = 'Brique en cours';
     else if (item.statut === 'en_cours') statusTxt = 'Brique en cours';
     else if (isSoon)                  statusTxt = 'Bientôt';
+    else if (item.hors_parcours)      statusTxt = 'Disponible';
     else                              statusTxt = 'Non commencée';
 
     // Barre progression
@@ -1506,25 +1507,35 @@
     const disponibles = (dash.briques || []).filter(b => b.statut !== 'terminee' && BRICK_FILES[b.id]);
     const realisees   = (dash.briques || []).filter(b => b.statut === 'terminee');
 
-    // Briques hors plan (pas dans briques_recommandees)
+    // Briques hors plan (pas dans briques_recommandees). Celles qui existent
+    // restent accessibles : ne pas faire son parcours n'est pas une raison de
+    // ne pas pouvoir les ouvrir.
     const horsplan = Object.values(BRIQUES_META)
       .filter(m => !planIds.has(m.id))
-      .map(m => ({ id: m.id, statut: 'bientot', progression: 0 }));
+      .map(m => ({ id: m.id, progression: 0,
+                   statut: BRICK_FILES[m.id] ? 'a_faire' : 'bientot',
+                   hors_parcours: !!BRICK_FILES[m.id] }));
 
     // Briques dans le plan mais sans fichier disponible (non validées)
     const nonDispo = (dash.briques || [])
       .filter(b => b.statut !== 'terminee' && !BRICK_FILES[b.id])
       .map(b => ({ ...b, statut: 'bientot' }));
 
-    const bientot = [...nonDispo, ...horsplan];
+    // Vue « Voir tout » : ce qui n'est pas dans la premiere rangee. Les
+    // briques ouvrables passent devant les briques a venir.
+    const bientot = [...nonDispo, ...horsplan]
+      .sort((a, b) => (a.statut === 'bientot' ? 1 : 0) - (b.statut === 'bientot' ? 1 : 0));
 
     /* Action "Voir tout" dans le header — pilote l'affichage des bientôt */
     const actionEl = document.getElementById('briques-voir-tout-action');
     if (actionEl) {
-      actionEl.style.display = bientot.length > 0 ? '' : 'none';
+      // Le compte doit refleter ce que la vue depliee ajoute reellement :
+      // les briques a venir et celles deja terminees.
+      const nbDeplie = bientot.length + realisees.length;
+      actionEl.style.display = nbDeplie > 0 ? '' : 'none';
       actionEl.textContent = briquesExpanded
         ? 'Réduire ↑'
-        : `Voir tout (${bientot.length}) →`;
+        : `Voir tout (${nbDeplie}) →`;
     }
 
     /* Grid disponibles — toujours toutes affichées, à gauche */
@@ -1551,7 +1562,7 @@
     /* Bientôt disponibles — visibles uniquement si briquesExpanded */
     if (briquesExpanded && bientot.length > 0) {
       const hdr = document.createElement('p');
-      hdr.className = 'soon-header'; hdr.textContent = 'Bientôt disponibles';
+      hdr.className = 'soon-header'; hdr.textContent = 'Le reste du parcours';
       container.appendChild(hdr);
       /* Groupe par phase : la vue depliee sert de vue d'ensemble du parcours */
       const PHASES = ['Survie & stabilit\u00e9', 'Construction & projets', 'Investissement & long terme'];
@@ -1587,6 +1598,21 @@
         });
         container.appendChild(grid);
       });
+    }
+
+    /* Deja terminees — ouvrables pour les relire */
+    if (briquesExpanded && realisees.length > 0) {
+      const hdrFin = document.createElement('p');
+      hdrFin.className = 'soon-header';
+      hdrFin.textContent = 'Déjà terminées';
+      container.appendChild(hdrFin);
+      const gridFin = document.createElement('div');
+      gridFin.className = 'briques-grid'; gridFin.setAttribute('role', 'list');
+      realisees.forEach(item => {
+        const meta = BRIQUES_META[item.id]; if (!meta) return;
+        gridFin.appendChild(makeBriqueCard(item, meta, activeId));
+      });
+      container.appendChild(gridFin);
     }
 
     if (disponibles.length === 0 && realisees.length === 0 && bientot.length === 0) {
