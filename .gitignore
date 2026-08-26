@@ -12,6 +12,7 @@ AUDIT*.md
 _*.txt
 _*.py
 __*.html
+brique-zz-*.html
 
 # Config locale de l'outil de preview
 .claude/

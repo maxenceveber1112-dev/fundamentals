@@ -69,11 +69,11 @@ const BRIQUES_META = {
   },
   premiers_pas_bancaires: {
     id: 'premiers_pas_bancaires', nom: 'Premiers pas bancaires',
-    tagline: 'Comprendre sa banque quand on débute.',
+    tagline: 'Comprendre ce que ta banque fait pour toi.',
     duree: '10 min', pack: 'Survie & stabilité', pack_color: '#f87171',
     icon: '🎓',
-    resume: 'Compte courant, CB, virement, découvert autorisé : les bases sans jargon.',
-    chapitres: ['Anatomie d\'un compte bancaire', 'Choisir sa banque', 'Les bons réflexes dès le départ']
+    resume: 'Tu comprends ce que fournit une banque, tu identifies ce dont tu as besoin, et tu sais à quoi t’attendre.',
+    chapitres: ['Ce que ta banque te fournit', 'Ce dont tu as besoin, toi', 'Vivre avec sa banque']
   },
   emmenagement: {
     id: 'emmenagement', nom: 'Préparer son emménagement',
@@ -427,8 +427,15 @@ function autosaveBrickProgress(brickId, screenIdx, rawData) {
 //   insights      : [{id, type, titre, contenu}] (utiliser buildInsights())
 async function completeBrickFull(brickId, { profileFields = {}, rawData = {}, engagements = [], insights = [] } = {}) {
   let dash = loadFromStorage('fund_dashboard') || getMockDashboard();
+  dash.briques = dash.briques || [];
   const b = dash.briques.find(br => br.id === brickId);
   if (b) { b.statut = 'terminee'; b.progression = 100; }
+  // Les briques sont accessibles librement, mais le plan calcule a
+  // l'onboarding n'en contient qu'une partie. Sans cela, terminer une brique
+  // hors plan n'inscrivait rien nulle part.
+  else if (BRIQUES_META[brickId]) {
+    dash.briques.push({ id: brickId, statut: 'terminee', progression: 100, hors_plan: true });
+  }
   dash.modules_completes = (dash.modules_completes || 0) + 1;
 
   const next = dash.briques.find(br => br.statut === 'a_faire');
@@ -505,6 +512,27 @@ function buildInsights(brickId, profil, data) {
       ins.push({ id: 'ins_budget_ok', type: 'info',
         titre: 'Marge disponible',
         contenu: `Tu as ${formatEuro(ral)} de marge mensuelle. C'est une base solide pour construire ton coussin d'urgence.` });
+    }
+  }
+  if (brickId === 'premiers_pas_bancaires') {
+    const carte   = data.carte_recommandee || null;
+    const besoins = data.besoins_identifies || [];
+    const notions = (data.notions_lues || []).length;
+    if (carte) {
+      ins.push({ id: 'ins_ppb_carte', type: 'conseil',
+        titre: "La carte qui te convient",
+        contenu: `D’après ta situation, ${carte}. Pour savoir ce que tu as aujourd’hui, le type est écrit à côté de la cotisation sur ton relevé.` });
+    }
+    if (besoins.length) {
+      const pluriel = besoins.length > 1;
+      ins.push({ id: 'ins_ppb_besoins', type: 'info',
+        titre: "Ce qui te sera utile",
+        contenu: `On a retenu ${besoins.length} chose${pluriel ? 's' : ''} adaptée${pluriel ? 's' : ''} à ta situation : ${besoins.slice(0, 3).join(', ')}${besoins.length > 3 ? '…' : ''}.` });
+    }
+    if (notions >= 4) {
+      ins.push({ id: 'ins_ppb_bases', type: 'info',
+        titre: "Les bases sont posées",
+        contenu: `Tu as parcouru ${notions} notions sur 5. Compte, moyens de paiement, découvert, épargne, crédit : tu sais désormais à quoi sert chaque pièce.` });
     }
   }
   if (brickId === 'gestion_decouvert') {

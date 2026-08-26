@@ -2060,6 +2060,28 @@
       });
     }
 
+    // ── BRIQUE PREMIERS PAS BANCAIRES ───────────────────────
+    const ppbRaw  = loadFromStorage('fund_brick_premiers_pas_bancaires');
+    const ppbData = ppbRaw?.data || ppbRaw || null;
+    if (ppbData && ppbData.carte_courte) {
+      const ppbNotions = (ppbData.notions_lues || []).length;
+      const ppbBesoins = (ppbData.besoins_identifies || []).length;
+      cards.push({
+        title: 'Premiers pas bancaires',
+        brique: 'premiers_pas_bancaires',
+        status: 'complet',
+        statusLabel: 'Terminée',
+        value: ppbData.carte_courte,
+        valueLabel: 'te correspond',
+        rows: [
+          { label: 'Ce qui t’est utile', val: ppbBesoins > 0 ? ppbBesoins + ' point' + (ppbBesoins > 1 ? 's' : '') : '—', color: '' },
+          { label: 'Notions parcourues', val: ppbNotions + ' / 5', color: '' }
+        ],
+        progress: null,
+        cta: { href: 'brique-premiers-pas-bancaires.html', label: 'Revoir' }
+      });
+    }
+
     // ── BRIQUE GESTION DECOUVERT ────────────────────────────
     const decouvertRaw  = loadFromStorage('fund_brick_gestion_decouvert');
     const decouvertData = decouvertRaw?.data || decouvertRaw || null;

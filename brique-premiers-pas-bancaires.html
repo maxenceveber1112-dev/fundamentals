@@ -1,734 +1,511 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Fundamental — Premiers pas bancaires</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-
-  <!-- THEME BOOTSTRAP — synchronous, before CSS -->
-  <script>(function(){var s=localStorage.getItem('fundamental-theme');var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');})()</script>
-
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
-
-  <style>
-  /* ══════════════════════════════════════════════════════════════
-     TOKENS — dashboard V2 (light + dark)
-  ══════════════════════════════════════════════════════════════ */
-  :root {
-    --bg:#FAF8F5;--bg-elevated:#FFFFFF;
-    --cream-grad:linear-gradient(180deg,#F6F1E8 0%,#EFE7D8 100%);
-    --cream-border:rgba(184,159,113,0.18);
-    --text:#1C1917;--text-secondary:#57534E;--text-muted:#78716C;--text-faint:#A8A29E;
-    --accent:#C4B5FD;--accent-strong:#5B21B6;--accent-fill:#C4B5FD;--accent-soft:rgba(196,181,253,0.22);--accent-pill-text:#2E1065;
-    --track:#E7E5E4;--green:#22C55E;--green-soft:rgba(34,197,94,0.12);--green-border:rgba(34,197,94,0.25);
-    --surface:#FFFFFF;--surface-2:#F5F5F4;--surface-3:#EDEBE8;
-    --border-subtle:rgba(28,25,23,0.07);--border:rgba(28,25,23,0.10);--border-mid:rgba(28,25,23,0.11);--border-hover:rgba(28,25,23,0.18);
-    --shadow-card:0 1px 2px rgba(20,20,30,0.04),0 4px 16px rgba(20,20,30,0.04);
-    --orange:#F97316;--orange-soft:rgba(249,115,22,0.10);--red:#EF4444;--red-soft:rgba(239,68,68,0.10);
-    --indigo:#6366F1;--indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);--violet:#818CF8;--violet-glow:rgba(129,140,248,0.10);
-    --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1rem;--r-xl:1.5rem;--r-full:9999px;
-    --ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
-    --v3-bg-elevated:#FFFFFF;--v3-border-subtle:rgba(28,25,23,.07);--v3-text:#1C1917;--v3-text-secondary:#57534E;--v3-text-muted:#78716C;--v3-text-faint:#A8A29E;--v3-accent-strong:#5B21B6;--v3-accent-soft:rgba(196,181,253,.22);--v3-track:#E7E5E4;--v3-shadow-card:0 1px 2px rgba(20,20,30,.04),0 4px 16px rgba(20,20,30,.04);
-  }
-  html.dark {
-    --bg:#0B0B1A;--bg-elevated:#161824;
-    --cream-grad:linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
-    --cream-border:rgba(255,255,255,0.08);
-    --text:#F5F5F4;--text-secondary:#D4D4D8;--text-muted:#A1A1AA;--text-faint:#71717A;
-    --accent:linear-gradient(90deg,#8B5CF6 0%,#6366F1 60%,#3B82F6 100%);--accent-strong:#A78BFA;--accent-soft:rgba(167,139,250,0.14);--accent-fill:rgba(167,139,250,0.35);--accent-pill-text:#FFFFFF;
-    --track:rgba(255,255,255,0.08);
-    --surface:#161824;--surface-2:#1E2030;--surface-3:#252840;
-    --border-subtle:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.08);--border-mid:rgba(255,255,255,0.10);--border-hover:rgba(255,255,255,0.16);
-    --green:#4ADE80;--green-soft:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.25);
-    --shadow-card:0 1px 2px rgba(0,0,0,0.4),0 4px 24px rgba(0,0,0,0.20);
-    --indigo:#818CF8;--violet:#A78BFA;--indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
-    --v3-bg-elevated:#161824;--v3-border-subtle:rgba(255,255,255,.08);--v3-text:#F5F5F4;--v3-text-secondary:#D4D4D8;--v3-text-muted:#A1A1AA;--v3-text-faint:#71717A;--v3-accent-strong:#A78BFA;--v3-accent-soft:rgba(167,139,250,.14);--v3-track:rgba(255,255,255,.08);--v3-shadow-card:0 1px 2px rgba(0,0,0,.4),0 4px 24px rgba(0,0,0,.20);
-  }
-  /* ── Reset ── */
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  html{-webkit-font-smoothing:antialiased}
-  body{min-height:100dvh;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:1rem;line-height:1.6;overflow-x:hidden;transition:background .3s ease,color .3s ease}
-  html.dark body{background:radial-gradient(1100px 600px at 70% -5%,#1E1B4B 0%,transparent 55%),linear-gradient(180deg,#0B0B1A 0%,#050507 100%);background-attachment:fixed}
-  button{cursor:pointer;background:none;border:none;font:inherit;color:inherit}
-  a{color:inherit;text-decoration:none}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fundamental — Premiers pas bancaires</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
+<script>
+  (function () {
+    var t = localStorage.getItem('fundamental-theme');
+    if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches))
+      document.documentElement.classList.add('dark');
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
+<link rel="stylesheet" href="theme.css" />
+<style>
+  /* Meme regle que les autres briques : sans elle, aucun repere au clavier. */
   :focus-visible{outline:2px solid var(--accent-strong);outline-offset:3px;border-radius:var(--r-sm)}
-  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-  @keyframes countUp{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}
-  /* ── Sidebar shell ── */
-  .f-sidebar-shell{display:flex;min-height:100dvh}
-  /* ── 2-column layout ── */
-  .brique-2col-wrapper{display:grid;grid-template-columns:1fr 320px;gap:2rem;max-width:1080px;margin:0 auto;padding:2rem 2rem 6rem;align-items:start}
-  .brique-main-col{min-width:0}
-  .brique-side-panel{position:sticky;top:5rem}
-  /* ── Ctx header ── */
-  .ctx-header{margin-bottom:1.5rem}
-  #ctx-nav{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0}
-  .wordmark{display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none}
-  .wordmark-icon{width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent-strong);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:15px;line-height:1}
-  html.dark .wordmark-icon{background:linear-gradient(135deg,#8B5CF6,#3B82F6);color:#fff}
-  .wordmark span{font-size:15px;font-weight:600;letter-spacing:-0.01em;color:var(--text)}
-  .nav-right{display:flex;align-items:center;gap:1rem}
-  /* ── Progress panel ── */
-  .brique-progress-card{background:var(--v3-bg-elevated);border:1px solid var(--v3-border-subtle);border-radius:1.25rem;box-shadow:var(--v3-shadow-card);padding:1.5rem}
-  html.dark .brique-progress-card{backdrop-filter:blur(12px)}
-  .bpc-kicker{font-size:0.6875rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--v3-accent-strong);margin-bottom:0.625rem}
-  .bpc-title{font-family:'Fraunces',serif;font-size:0.9375rem;font-weight:400;font-style:italic;color:var(--v3-text);margin-bottom:1.25rem;line-height:1.35}
-  .bpc-ring-wrap{display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem}
-  .bpc-ring{}
-  .bpc-ring-bg{fill:none;stroke:var(--v3-track);stroke-width:6}
-  .bpc-ring-fill{fill:none;stroke:var(--v3-accent-strong);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .8s var(--ease-out)}
-  .bpc-ring-pct{font-family:'Fraunces',serif;font-size:1.125rem;font-weight:400;fill:var(--v3-text)}
-  .bpc-steps{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.5rem}
-  .bpc-step{display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0.625rem;border-radius:0.625rem;color:var(--v3-text-faint);font-size:13px;transition:background .15s,color .15s}
-  .bpc-step.active{background:var(--v3-accent-soft);color:var(--v3-text)}
-  .bpc-step.done{color:var(--v3-text-muted)}
-  .bpc-step-num{width:20px;height:20px;border-radius:50%;background:var(--v3-track);color:var(--v3-text-faint);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,color .2s}
-  .bpc-step.active .bpc-step-num{background:var(--v3-accent-strong);color:#fff}
-  .bpc-step.done .bpc-step-num{background:var(--v3-accent-soft);color:var(--v3-accent-strong)}
-  html.dark .bpc-step.done .bpc-step-num{color:#C4B5FD}
-  .bpc-step-label{font-size:13px;font-weight:500;min-width:0;line-height:1.3}
-  .bpc-step.active .bpc-step-label{color:var(--v3-text);font-weight:600}
-  .bpc-nav{display:flex;flex-direction:column;gap:0.375rem;padding-top:1rem;border-top:1px solid var(--v3-border-subtle)}
-  .bpc-dashboard-link{display:flex;align-items:center;gap:0.4rem;font-size:12px;color:var(--v3-text-faint);text-decoration:none;transition:color .15s;padding:0.3rem 0}
-  .bpc-dashboard-link:hover{color:var(--v3-accent-strong)}
-  /* ── Screens ── */
-  .screen{display:none;flex-direction:column;gap:1.5rem;animation:fadeSlideUp .3s ease both}
-  .screen.active-screen{display:flex}
-  /* ── Brick card ── */
-  .brick-card{background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:1.25rem;box-shadow:var(--shadow-card);padding:2rem 2.25rem;position:relative;overflow:hidden;transition:background .3s ease,border-color .3s ease}
-  html.dark .brick-card{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-  .brick-card::before{content:'';position:absolute;top:0;left:0;right:0;height:280px;background:radial-gradient(ellipse 60% 40% at 50% 0%,var(--accent-soft) 0%,transparent 100%);opacity:0.06;pointer-events:none}
-  .brick-kicker{font-size:0.6875rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.875rem}
-  html.dark .brick-kicker{color:#A5B4FC}
-  .brick-title{font-family:'Fraunces','Instrument Serif',Georgia,serif;font-size:clamp(1.5rem,3.5vw,2rem);font-weight:400;font-style:italic;line-height:1.15;letter-spacing:-0.02em;color:var(--text);margin-bottom:0.625rem}
-  .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.75rem;line-height:1.55}
-  /* ── Fields ── */
-  .field-group{display:flex;flex-direction:column;gap:0.375rem;margin-bottom:1.25rem}
-  .field-label{font-size:0.82rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:0.5rem}
-  .field-help{font-size:0.75rem;color:var(--text-faint);margin-top:0.2rem}
-  .field-input{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t),box-shadow var(--t)}
-  .field-input:focus{outline:none;border-color:var(--accent-strong);box-shadow:0 0 0 3px var(--accent-soft)}
-  .field-input::placeholder{color:var(--text-faint)}
-  .field-input.prefilled{border-color:rgba(34,197,94,0.3)}
-  .field-input.prefilled:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,0.1)}
-  .euro-wrap{position:relative;display:flex;align-items:center}
-  .euro-wrap .field-input{padding-right:2.5rem}
-  .euro-suffix{position:absolute;right:0.875rem;font-size:0.9rem;color:var(--text-muted);pointer-events:none;font-weight:600}
-  .badge-prefilled{font-size:0.6rem;font-weight:600;letter-spacing:0.06em;color:var(--green);background:rgba(34,197,94,0.08);border-radius:9999px;padding:0.15rem 0.45rem;white-space:nowrap}
-  .badge-source{display:inline-flex;align-items:center;padding:0.2rem 0.55rem;border-radius:9999px;font-size:0.65rem;font-weight:600;letter-spacing:0.04em;background:var(--accent-soft);color:var(--accent-strong);white-space:nowrap}
-  html.dark .badge-source{color:#C4B5FD}
-  /* ── Select ── */
-  .field-select{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.875rem center;padding-right:2.5rem;transition:border-color var(--t),box-shadow var(--t);cursor:pointer}
-  .field-select:focus{outline:none;border-color:var(--accent-strong);box-shadow:0 0 0 3px var(--accent-soft)}
-  /* ── Buttons ── */
-  .btn-hero-primary{display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.375rem;border-radius:9999px;background:var(--accent);color:var(--accent-pill-text);font-size:0.875rem;font-weight:600;border:none;cursor:pointer;transition:filter .2s ease,transform .12s ease}
-  html.dark .btn-hero-primary{box-shadow:0 8px 28px -10px rgba(99,102,241,0.55),inset 0 1px 0 rgba(255,255,255,0.18)}
-  .btn-hero-primary:hover{filter:brightness(0.95)}
-  html.dark .btn-hero-primary:hover{filter:brightness(1.08)}
-  .btn-hero-primary:active{transform:scale(0.98)}
-  .btn-hero-primary:disabled{opacity:0.45;cursor:not-allowed;filter:none}
-  .btn-hero-secondary{font-size:0.8125rem;font-weight:500;color:var(--text-muted);text-decoration:none;cursor:pointer;transition:color var(--t);background:none;border:none}
-  .btn-hero-secondary:hover{color:var(--text)}
-  .btn-back{display:flex;align-items:center;gap:0.375rem;font-size:0.8125rem;font-weight:500;color:var(--text-muted);padding:0.5rem 0;cursor:pointer;transition:color var(--t)}
-  .btn-back:hover{color:var(--text)}
-  .nav-btns{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding-top:0.5rem}
-  /* ── Data cards ── */
-  .data-cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.5rem}
-  .data-card{background:var(--cream-grad);border:1px solid var(--cream-border);border-radius:var(--r-lg);padding:1rem;display:flex;flex-direction:column;gap:0.25rem;position:relative;transition:border-color var(--t)}
-  html.dark .data-card{background:var(--surface-2);border-color:var(--border)}
-  .data-card-value{font-size:1.25rem;font-weight:700;color:var(--text);line-height:1.2}
-  .data-card-label{font-size:0.78rem;color:var(--text-muted);line-height:1.3}
-  .data-card-badge{position:absolute;top:0.625rem;right:0.625rem}
-  .data-card.full-width{grid-column:1/-1}
-  /* ── Jauge score ── */
-  .jauge-wrap{margin:1.5rem 0}
-  .jauge-bar{position:relative;height:10px;border-radius:9999px;background:var(--track);overflow:hidden}
-  .jauge-fill{height:100%;border-radius:9999px;transition:width .6s var(--ease-out);min-width:0}
-  .jauge-labels{display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;font-size:0.72rem;color:var(--text-faint)}
-  /* ── Option cards (reusable) ── */
-  .option-cards{display:flex;flex-direction:column;gap:0.75rem;margin:1.25rem 0}
-  .option-card{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.125rem;cursor:pointer;transition:all var(--t);display:flex;align-items:center;gap:1rem}
-  .option-card:hover{border-color:var(--border-hover);background:var(--surface-3)}
-  .option-card.selected{background:var(--accent-soft);border-color:var(--accent-strong)}
-  html.dark .option-card.selected{border-color:rgba(167,139,250,0.5)}
-  .option-card-info{flex:1;min-width:0}
-  .option-card-title{font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.15rem}
-  .option-card-desc{font-size:0.75rem;color:var(--text-muted);line-height:1.4}
-  .option-card-badge{flex-shrink:0;font-size:0.65rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:9999px;background:var(--accent-soft);color:var(--accent-strong);white-space:nowrap}
-  html.dark .option-card-badge{color:#C4B5FD}
-  .option-card-badge.green{background:var(--green-soft);color:var(--green);border:1px solid var(--green-border)}
-  .option-card-badge.orange{background:var(--orange-soft);color:var(--orange)}
-  .option-card-badge.red{background:var(--red-soft);color:var(--red)}
-  /* ── Livret product cards ── */
-  .livret-filters{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem}
-  .livret-filter{padding:0.4rem 0.875rem;border-radius:9999px;background:var(--surface-2);border:1.5px solid var(--border);font-size:0.8rem;color:var(--text-muted);cursor:pointer;transition:all var(--t)}
-  .livret-filter:hover{border-color:var(--border-hover);color:var(--text)}
-  .livret-filter.active{background:var(--accent-soft);border-color:var(--accent-strong);color:var(--accent-strong)}
-  html.dark .livret-filter.active{color:#C4B5FD}
-  .livret-grid{display:flex;flex-direction:column;gap:0.75rem}
-  .livret-card{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.125rem;transition:all var(--t)}
-  .livret-card:hover{border-color:var(--border-hover)}
-  .livret-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.5rem}
-  .livret-card-name{font-size:0.9rem;font-weight:700;color:var(--text)}
-  .livret-card-badge{font-size:0.6rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:9999px;white-space:nowrap}
-  .livret-card-row{display:flex;justify-content:space-between;font-size:0.78rem;padding:0.2rem 0;color:var(--text-muted)}
-  .livret-card-row span:last-child{font-weight:600;color:var(--text)}
-  .livret-card-usage{font-size:0.75rem;color:var(--text-muted);margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border-subtle);line-height:1.45}
-  .livret-card-erreur{font-size:0.72rem;color:var(--orange);margin-top:0.35rem;line-height:1.4}
-  .livret-card.highlight{border-color:var(--accent-strong);background:var(--accent-soft)}
-  html.dark .livret-card.highlight{border-color:rgba(167,139,250,0.4)}
-  /* ── Flux cards (screen 5) ── */
-  .flux-container{display:flex;flex-direction:column;gap:0;margin:1.25rem 0}
-  .flux-step{display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;background:var(--surface-2);border:1px solid var(--border);position:relative}
-  .flux-step:first-child{border-radius:var(--r-lg) var(--r-lg) 0 0}
-  .flux-step:last-child{border-radius:0 0 var(--r-lg) var(--r-lg)}
-  .flux-step+.flux-step{border-top:none}
-  .flux-step-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.875rem;flex-shrink:0}
-  .flux-step-info{flex:1;min-width:0}
-  .flux-step-label{font-size:0.78rem;color:var(--text-muted)}
-  .flux-step-amount{font-size:1rem;font-weight:700;color:var(--text)}
-  .flux-step-dest{font-size:0.72rem;color:var(--text-faint)}
-  .flux-arrow{text-align:center;font-size:0.75rem;color:var(--text-faint);padding:0.15rem 0}
-  /* ── Checklist (screen 6) ── */
-  .check-section{margin-bottom:1.5rem}
-  .check-section-title{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:0.5rem}
-  html.dark .check-section-title{color:#A78BFA}
-  .check-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.5rem 0;cursor:pointer;transition:opacity .15s}
-  .check-item:hover{opacity:0.85}
-  .check-box{width:20px;height:20px;border-radius:6px;border:2px solid var(--border-mid);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px}
-  .check-item.checked .check-box{background:var(--green);border-color:var(--green);color:#fff}
-  .check-item.checked .check-box::after{content:'';display:block;width:6px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
-  .check-label{font-size:0.82rem;color:var(--text-secondary);line-height:1.45}
-  .check-item.checked .check-label{color:var(--text-faint);text-decoration:line-through}
-  .check-progress{font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem}
-  .check-progress strong{color:var(--text)}
-  /* ── Radar (5 axes, screen 1) ── */
-  .radar-wrap{display:flex;justify-content:center;margin:1rem 0}
-  .radar-label{font-size:0.65rem;fill:var(--text-muted);font-weight:500}
-  html.dark .radar-label{fill:var(--text-faint)}
-  .radar-grid{fill:none;stroke:var(--track);stroke-width:1}
-  .radar-shape{fill:var(--accent-soft);stroke:var(--accent-strong);stroke-width:2;transition:d .5s var(--ease-out)}
-  /* ── Lexique overlay ── */
-  .lexique-overlay{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.45);backdrop-filter:blur(3px);opacity:0;transition:opacity .25s ease;pointer-events:none}
-  .lexique-overlay.visible{opacity:1;pointer-events:auto}
-  .lexique-panel{position:fixed;top:0;right:0;bottom:0;width:min(420px,90vw);background:var(--bg-elevated);border-left:1px solid var(--border);z-index:9999;transform:translateX(100%);transition:transform .3s var(--ease-out);overflow-y:auto;padding:1.5rem}
-  .lexique-overlay.visible+.lexique-panel,.lexique-panel.visible{transform:translateX(0)}
-  .lexique-close{position:absolute;top:1rem;right:1rem;width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;color:var(--text-muted);transition:all var(--t)}
-  .lexique-close:hover{background:var(--surface-3);color:var(--text)}
-  .lexique-title{font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;font-style:italic;color:var(--text);margin-bottom:1.25rem;padding-right:2rem}
-  .lex-item{border-bottom:1px solid var(--border-subtle);overflow:hidden}
-  .lex-item-header{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;cursor:pointer;font-size:0.85rem;font-weight:600;color:var(--text);transition:color var(--t)}
-  .lex-item-header:hover{color:var(--accent-strong)}
-  .lex-item-chevron{font-size:0.7rem;color:var(--text-faint);transition:transform .2s}
-  .lex-item.open .lex-item-chevron{transform:rotate(90deg)}
-  .lex-item-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
-  .lex-item.open .lex-item-body{max-height:300px}
-  .lex-item-def{font-size:0.82rem;color:var(--text-muted);line-height:1.55;padding-bottom:0.75rem}
-  .lex-item-example{font-size:0.75rem;color:var(--text-faint);font-style:italic;padding-bottom:0.75rem}
-  /* ── Placement cards (screen 2) ── */
-  .placement-visual{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1.25rem 0}
-  /* pv-card legacy — kept for compat but replaced by chips */
-  .placement-visual{display:none}
+:root{
+  --bg:#FAF8F5; --bg-elevated:#FFFFFF; --surface:#FFFFFF; --surface-2:#F5F5F4; --surface-3:#EDEBE8;
+  --border-subtle:rgba(28,25,23,.07); --border-mid:rgba(28,25,23,.11); --border-hover:rgba(28,25,23,.18);
+  --text:#1C1917; --text-secondary:#57534E; --text-muted:#78716C; --text-faint:#756E67;
+  --accent:#C4B5FD; --accent-strong:#5B21B6;
+  --violet-glow:rgba(129,140,248,0.10);   /* consomme par nav-avatar.js */
+  --accent-fill:linear-gradient(135deg,#8B5CF6,#3B82F6); --accent-soft:rgba(196,181,253,.22);
+  --green:#16A34A; --green-soft:rgba(34,197,94,.12);
+  --red:#DC2626; --red-soft:rgba(220,38,38,.10);
+  --orange:#EA580C;
+  --track:#E7E5E4;
+  --shadow-card:0 1px 2px rgba(20,20,30,.04), 0 4px 16px rgba(20,20,30,.04);
+  --shadow-hover:0 4px 20px rgba(20,20,30,.10);
+  --cream-grad:linear-gradient(150deg,#FFF9F0 0%,#FDF4E8 100%);
+  --cream-border:rgba(28,25,23,.08);
+  --r-sm:.5rem; --r-md:.875rem; --r-lg:1rem; --r-xl:1.5rem; --r-full:9999px;
+  --ease-out:cubic-bezier(.16,1,.3,1); --ease-spring:cubic-bezier(.34,1.56,.64,1); --t:180ms;
+  --font-display:'Fraunces','Instrument Serif',Georgia,serif;
+}
+html.dark{
+  --bg:#0B0B1A; --bg-elevated:#161824; --surface:rgba(255,255,255,.04);
+  --surface-2:rgba(255,255,255,.06); --surface-3:rgba(255,255,255,.09);
+  --border-subtle:rgba(255,255,255,.06); --border-mid:rgba(255,255,255,.10); --border-hover:rgba(255,255,255,.16);
+  --text:#F5F5F4; --text-secondary:#D4D4D8; --text-muted:#A1A1AA; --text-faint:#71717A;
+  --accent:#A78BFA; --accent-strong:#A78BFA; --accent-soft:rgba(167,139,250,.14);
+  --green:#4ade80; --red:#f87171; --orange:#fbbf24;
+  --track:rgba(255,255,255,.08);
+  --shadow-card:0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
+  --shadow-hover:0 4px 20px rgba(0,0,0,.30);
+  --cream-grad:linear-gradient(150deg,rgba(139,92,246,.10) 0%,rgba(59,130,246,.06) 100%);
+  --cream-border:rgba(255,255,255,.09);
+  --violet-glow:rgba(167,139,250,0.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.6}
 
-  /* Lexique pill button */
-  .lexique-pill{display:flex;align-items:center;gap:0.625rem;width:100%;padding:0.875rem 1.125rem;background:var(--accent-soft);border:1px solid rgba(196,181,253,0.35);border-radius:var(--r-lg);color:var(--accent-strong);font-size:0.875rem;font-weight:600;cursor:pointer;transition:background var(--t),border-color var(--t);margin-bottom:1.25rem;text-align:left}
-  .lexique-pill:hover{background:rgba(196,181,253,0.32);border-color:rgba(196,181,253,0.55)}
-  html.dark .lexique-pill{color:#C4B5FD;background:rgba(196,181,253,0.12);border-color:rgba(196,181,253,0.2)}
-  .lexique-pill-icon{font-size:1.125rem;flex-shrink:0}
-  .lexique-pill-arrow{margin-left:auto;opacity:0.6;font-size:0.8rem}
+.f-sidebar-shell{display:flex;min-height:100dvh}
+.brique-2col-wrapper{display:grid;grid-template-columns:1fr 320px;gap:2rem;max-width:1080px;
+  margin:0 auto;padding:2rem 2rem 7rem;align-items:start}
+.brique-main-col{min-width:0}
+.brique-side-panel{position:sticky;top:2rem;display:flex;flex-direction:column;gap:.85rem}
+.ctx-header{margin-bottom:1.5rem}
+.ctx-header nav{display:flex;align-items:center;justify-content:space-between}
+.wordmark{display:inline-flex;align-items:center;gap:9px;text-decoration:none}
+.wordmark-icon{width:26px;height:26px;border-radius:7px;background:var(--accent-strong);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-display);
+  font-style:italic;font-weight:500;font-size:15px}
+.wordmark span{font-size:15px;font-weight:600;color:var(--text)}
 
-  /* Chips placement argent */
-  .pv-chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.875rem}
-  .pv-chip{display:flex;align-items:center;gap:0.4rem;padding:0.425rem 0.875rem;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);font-size:0.78rem;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all var(--t);white-space:nowrap}
-  .pv-chip:hover{border-color:var(--accent);color:var(--text)}
-  .pv-chip.active{background:var(--accent-soft);border-color:rgba(196,181,253,0.5);color:var(--accent-strong);font-weight:600}
-  html.dark .pv-chip.active{color:#C4B5FD;background:rgba(196,181,253,0.14);border-color:rgba(196,181,253,0.3)}
-  .pv-chip-icon{font-size:0.9rem}
-  .pv-chip-label{font-size:0.75rem}
+.screen{display:none;flex-direction:column;gap:1.5rem;animation:fadeUp .32s var(--ease-out) both}
+.screen.active-screen{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
-  /* Détail chip */
-  .pv-detail{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:0.3rem}
-  .pv-detail-icon{font-size:1.75rem;margin-bottom:0.25rem}
-  .pv-detail-support{font-size:0.82rem}
-  .pv-detail-dispo{font-size:0.75rem;color:var(--text-muted)}
-  .pv-detail-note{font-size:0.78rem;color:var(--text-secondary);line-height:1.4}
-  .pv-detail-in{animation:fadeSlideIn 0.18s ease both}
-  @keyframes fadeSlideIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-  /* ── Simulateur ── */
-  .sim-output{background:var(--cream-grad);border:1px solid var(--cream-border);border-radius:var(--r-lg);padding:1.25rem;text-align:center;margin:1rem 0}
-  html.dark .sim-output{background:var(--surface-2);border-color:var(--border)}
-  .sim-output-value{font-size:clamp(1.5rem,5vw,2rem);font-weight:700;color:var(--text);margin-bottom:0.25rem}
-  .sim-output-label{font-size:0.82rem;color:var(--text-muted)}
-  .sim-warning{display:none;align-items:flex-start;gap:0.5rem;padding:0.875rem 1rem;border-radius:var(--r-md);font-size:0.82rem;line-height:1.5;margin-top:0.75rem}
-  .sim-warning.visible{display:flex}
-  .sim-warning.orange{background:var(--orange-soft);border:1px solid rgba(249,115,22,0.2);color:var(--orange)}
-  .sim-warning.green{background:var(--green-soft);border:1px solid var(--green-border);color:var(--green)}
-  /* ── Preset chips ── */
-  .preset-chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin:1rem 0}
-  .preset-chip{padding:0.5rem 1rem;border-radius:9999px;background:var(--surface-2);border:1.5px solid var(--border);font-size:0.82rem;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all var(--t)}
-  .preset-chip:hover{border-color:var(--border-hover);color:var(--text)}
-  .preset-chip.active{background:var(--accent-soft);border-color:var(--accent-strong);color:var(--accent-strong)}
-  html.dark .preset-chip.active{color:#C4B5FD}
-  /* ── Callout cite ── */
-  .callout-cite{background:var(--surface-2);border-left:3px solid var(--accent-strong);border-radius:0 var(--r-md) var(--r-md) 0;padding:0.75rem 1rem;font-size:0.82rem;color:var(--text-secondary);line-height:1.55;margin:0.75rem 0}
-  html.dark .callout-cite{border-left-color:#A78BFA}
-  /* ── Score card (modal) ── */
-  .score-ring-wrap{display:flex;flex-direction:column;align-items:center;gap:0.5rem;margin:1rem 0}
-  .score-ring{}
-  .score-ring-bg{fill:none;stroke:var(--track);stroke-width:8}
-  .score-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s var(--ease-out)}
-  .score-ring-text{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;fill:var(--text)}
-  .score-status{font-size:0.875rem;font-weight:600}
-  /* ── Modal fin ── */
-  .modal-fin-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;transition:opacity .25s ease}
-  .modal-fin-overlay.visible{opacity:1}
-  .modal-fin-card{background:var(--bg-elevated);border:1px solid var(--cream-border);border-radius:20px;padding:2rem 1.75rem 1.5rem;max-width:460px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,0.18);transform:translateY(12px) scale(0.97);transition:transform .3s cubic-bezier(0.34,1.56,0.64,1),opacity .25s ease;opacity:0;max-height:90vh;overflow-y:auto}
-  .modal-fin-overlay.visible .modal-fin-card{transform:translateY(0) scale(1);opacity:1}
-  .modal-fin-header{text-align:center;margin-bottom:1.5rem}
-  .modal-fin-check{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--accent-soft);color:var(--accent-strong);font-size:1.25rem;font-weight:700;margin-bottom:0.75rem}
-  html.dark .modal-fin-check{color:#A78BFA}
-  .modal-fin-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:400;color:var(--text);margin:0 0 0.25rem}
-  .modal-fin-sub{font-size:0.875rem;color:var(--text-muted);margin:0}
-  .modal-fin-summary{display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem}
-  .modal-fin-row{display:flex;justify-content:space-between;align-items:center;font-size:0.82rem;padding:0.35rem 0;border-bottom:1px solid var(--border-subtle)}
-  .modal-fin-row:last-child{border-bottom:none}
-  .modal-fin-row-label{color:var(--text-muted)}
-  .modal-fin-row-val{font-weight:600;color:var(--text)}
-  .modal-fin-actions{display:flex;flex-direction:column;gap:0.625rem;margin-top:1.25rem}
-  .modal-fin-actions .btn-hero-primary{width:100%;justify-content:center}
-  .modal-fin-secondary{display:block;text-align:center;font-size:0.8125rem;color:var(--text-muted);text-decoration:none;padding:0.375rem 0;transition:color .15s;cursor:pointer}
-  .modal-fin-secondary:hover{color:var(--text)}
-  .modal-next-invest{margin:1rem 0 0.5rem;padding:1rem;background:var(--accent-soft);border-radius:12px}
-  .modal-next-kicker{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:0.375rem}
-  html.dark .modal-next-kicker{color:#A78BFA}
-  .modal-next-msg{font-size:0.8rem;color:var(--text-muted);line-height:1.55;margin:0 0 0.75rem}
-  .modal-actions-row{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem}
-  /* ── Resume card ── */
-  .resume-card{background:var(--cream-grad);border:1px solid var(--cream-border);border-radius:var(--r-lg);padding:1.125rem;margin-bottom:1.25rem;display:none}
-  html.dark .resume-card{background:var(--surface-2);border-color:var(--border)}
-  .resume-card .resume-kicker{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:0.375rem}
-  html.dark .resume-card .resume-kicker{color:#A78BFA}
-  .resume-card .resume-text{font-size:0.875rem;color:var(--text-secondary);margin-bottom:0.75rem}
-  .resume-card .resume-actions{display:flex;gap:0.75rem;flex-wrap:wrap}
-  /* ── Range slider ── */
-  input[type=range]{height:6px;-webkit-appearance:none;appearance:none;background:var(--track);border-radius:9999px;outline:none}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent-strong);cursor:pointer;border:2px solid var(--bg-elevated);box-shadow:0 1px 4px rgba(0,0,0,0.15)}
-  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent-strong);cursor:pointer;border:2px solid var(--bg-elevated);box-shadow:0 1px 4px rgba(0,0,0,0.15)}
-    /* ── Responsive ── */
-  @media(max-width:900px){.brique-2col-wrapper{grid-template-columns:1fr;gap:1.5rem;padding:1rem 1rem 5rem}.brique-side-panel{position:static;order:-1}}
-  @media(max-width:640px){.brick-card{padding:1.5rem 1.25rem}.data-cards-grid{grid-template-columns:1fr}.placement-visual{grid-template-columns:1fr}.nav-btns{flex-wrap:wrap}.nav-btns .btn-hero-primary{width:100%;justify-content:center;order:-1}.ctx-header{margin-bottom:1rem}}
-  /* ── Print ── */
-  @media print{body>*:not(#print-bilan){display:none!important}#print-bilan{display:block!important;font-family:'Inter',system-ui,sans-serif;color:#1C1917;background:#fff;max-width:680px;margin:0 auto;padding:2rem}#print-bilan h1{font-family:Georgia,serif;font-size:1.5rem;margin-bottom:0.25rem}#print-bilan .pb-date{font-size:0.8rem;color:#78716C;margin-bottom:1.5rem}#print-bilan .pb-section{margin-bottom:1.25rem}#print-bilan .pb-section-title{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#A8A29E;margin-bottom:0.5rem;border-bottom:1px solid #E7E5E4;padding-bottom:0.25rem}#print-bilan .pb-row{display:flex;justify-content:space-between;font-size:0.875rem;padding:0.2rem 0}#print-bilan .pb-row-label{color:#57534E}#print-bilan .pb-row-val{font-weight:600;color:#1C1917}#print-bilan .pb-footer{margin-top:2rem;font-size:0.72rem;color:#A8A29E;text-align:center}}
-  </style>
-  <link rel="stylesheet" href="theme.css">
+.hero-cream{position:relative;overflow:hidden;background:var(--cream-grad);
+  border:1px solid var(--cream-border);border-radius:1.375rem;padding:2.5rem 2.5rem 2.25rem}
+.hero-cream::after{content:'f';position:absolute;right:-.25rem;bottom:-2.5rem;
+  font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:300;
+  font-size:13rem;line-height:1;color:rgba(196,181,253,.30);pointer-events:none;user-select:none}
+html.dark .hero-cream::after{color:rgba(139,92,246,.16)}
+.hero-in{position:relative;z-index:1}
+.kick{font-size:.6875rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:1rem}
+.h1{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:2.15rem;
+  line-height:1.15;color:var(--text)}
+.h2{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:1.6rem;
+  line-height:1.2;color:var(--text)}
+.sub{font-size:.95rem;color:var(--text-secondary);line-height:1.6;margin-top:.75rem;max-width:48ch}
+
+.gains{display:flex;flex-direction:column;gap:.9rem;margin:1.75rem 0}
+.gain{display:flex;gap:.8rem;align-items:flex-start}
+.gain-n{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);
+  color:var(--accent-strong);display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;margin-top:1px}
+.gain-t{font-size:.875rem;line-height:1.5}
+.gain-t b{font-weight:600}
+
+.btn-hero{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
+  padding:.9rem 1.9rem;border-radius:var(--r-full);background:var(--accent-fill);
+  font-family:inherit;font-size:.92rem;font-weight:600;color:#fff;border:none;cursor:pointer;
+  transition:transform .15s var(--ease-out),box-shadow var(--t)}
+.btn-hero:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.btn-hero:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-txt{background:none;border:none;color:var(--text-muted);font-family:inherit;
+  font-size:.8rem;font-weight:600;cursor:pointer;padding:.4rem 0}
+.btn-txt:hover{color:var(--text)}
+
+/* ═══ Comprendre — une notion a la fois ═══ */
+.nt{background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--r-xl);
+  box-shadow:var(--shadow-card);overflow:hidden}
+
+/* rail : ou on en est, et de quoi on parle */
+.rail{display:flex;align-items:center;gap:0;padding:1.1rem 1.4rem;background:var(--surface-2);
+  border-bottom:1px solid var(--border-subtle)}
+.rp{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
+.rp-d{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border-hover);
+  background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;
+  font-size:.68rem;font-weight:700;color:var(--text-faint);transition:all var(--t)}
+.rp.lu .rp-d{border-color:var(--green);background:var(--green-soft);color:var(--green)}
+.rp.on .rp-d{border-color:var(--accent-strong);background:var(--accent-strong);color:#fff;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-strong) 14%,transparent)}
+.rp-l{font-size:.63rem;font-weight:600;color:var(--text-faint);white-space:nowrap;
+  letter-spacing:.02em;transition:color var(--t)}
+.rp.on .rp-l{color:var(--accent-strong)}
+.rp.lu .rp-l{color:var(--text-secondary)}
+.rl{flex:1;height:2px;background:var(--border-mid);border-radius:2px;margin:0 .35rem;
+  margin-bottom:1.15rem}
+.rl.fait{background:var(--green)}
+
+/* la notion */
+.nt-b{padding:1.6rem 1.6rem 1.4rem;animation:fadeUp .3s var(--ease-out) both}
+.nt-h{display:flex;align-items:center;gap:.95rem;margin-bottom:1.1rem}
+.nt-e{flex:0 0 auto;width:46px;height:46px;border-radius:14px;background:var(--accent-soft);
+  display:flex;align-items:center;justify-content:center;font-size:23px}
+.nt-t b{display:block;font-family:var(--font-display);font-style:italic;font-weight:400;
+  font-size:1.45rem;line-height:1.15;color:var(--text)}
+.nt-t span{display:block;font-size:.8rem;color:var(--text-muted);margin-top:.15rem}
+.nt-pr{margin-left:auto;flex:0 0 auto;font-size:.6rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:#fff;background:var(--accent-strong);
+  padding:.18rem .5rem;border-radius:var(--r-full);white-space:nowrap}
+.nt-p{font-size:.92rem;color:var(--text-secondary);line-height:1.7}
+.nt-p b{color:var(--text);font-weight:600}
+
+/* la situation : un filet, pas une boite */
+.nt-sit{display:flex;gap:.8rem;margin-top:1.25rem;padding-left:1rem;
+  border-left:2px solid color-mix(in srgb,var(--accent-strong) 45%,transparent)}
+.nt-sit .m{flex:0 0 auto;font-size:1.05rem;line-height:1.5}
+.nt-sit .t{font-size:.86rem;color:var(--text-secondary);line-height:1.6}
+.nt-sit .t b{color:var(--text);font-weight:600}
+
+/* le mot : une legende, pas un encart */
+.nt-mot{margin-top:1.25rem;padding-top:.9rem;border-top:1px solid var(--border-subtle);
+  font-size:.8rem;color:var(--text-muted);line-height:1.6}
+.nt-mot b{color:var(--accent-strong);font-weight:600}
+
+/* ce que la banque regarde, dans la notion Emprunter */
+.obs-in{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border-subtle)}
+.obs-h{font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:.7rem}
+.obs-g{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem}
+.og{padding:.65rem .45rem;border-radius:var(--r-sm);background:var(--surface-2);text-align:center}
+.og .e{font-size:15px;display:block;margin-bottom:.25rem}
+.og b{display:block;font-size:.7rem;font-weight:600;line-height:1.25}
+.og span{display:block;font-size:.66rem;color:var(--text-muted);line-height:1.35;margin-top:.2rem}
+
+/* pied de la notion */
+.nt-f{display:flex;align-items:center;gap:.75rem;padding:1rem 1.6rem;
+  border-top:1px solid var(--border-subtle);background:var(--surface-2)}
+.nt-f .cpt{font-size:.75rem;color:var(--text-faint)}
+.nt-f .act{margin-left:auto;display:flex;gap:.6rem}
+.btn-mini{font-family:inherit;font-size:.79rem;font-weight:600;padding:.5rem 1.05rem;
+  border-radius:var(--r-full);border:1px solid var(--border-mid);background:transparent;
+  color:var(--text);cursor:pointer;transition:all var(--t)}
+.btn-mini:hover{border-color:var(--border-hover)}
+.btn-mini.plein{background:var(--accent-strong);border-color:var(--accent-strong);color:#fff}
+.btn-mini.plein:hover{filter:brightness(1.08)}
+
+/* bloc repliable, reutilise pour « pas besoin » et « autre chose » */
+.pli{padding:0;overflow:hidden}
+.pli-h{display:flex;align-items:center;gap:.8rem;width:100%;padding:1.05rem 1.3rem;
+  background:none;border:none;cursor:pointer;font-family:inherit;text-align:left}
+.pli-h .liste-h{margin-bottom:.1rem}
+.pli-h .liste-s{margin-bottom:0}
+.pli-c{margin-left:auto;flex:0 0 auto;color:var(--text-faint);transition:transform var(--t);display:flex}
+.pli.open .pli-c{transform:rotate(180deg)}
+.pli-b{max-height:0;overflow:hidden;transition:max-height .34s var(--ease-out)}
+.pli.open .pli-b{max-height:720px}
+.pli-in{padding:0 1.3rem 1.15rem;border-top:1px solid var(--border-subtle);padding-top:.35rem}
+
+/* l'engagement retenu */
+.eng.grand{padding:1.25rem 1.35rem;
+  background:linear-gradient(160deg,var(--accent-soft),transparent 92%)}
+.eng-pq{display:block;font-size:.75rem;color:var(--accent-strong);font-weight:600;margin-top:.45rem}
+
+/* la conclusion : un bloc signe, pas une note de reference */
+.boucle{position:relative;overflow:hidden;border-radius:var(--r-xl);
+  background:var(--cream-grad);border:1px solid var(--cream-border);padding:1.6rem 1.6rem 1.5rem}
+.boucle::after{content:'f';position:absolute;right:-.3rem;bottom:-2.2rem;
+  font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:300;font-size:10rem;
+  line-height:1;color:rgba(196,181,253,.28);pointer-events:none;user-select:none}
+html.dark .boucle::after{color:rgba(139,92,246,.15)}
+.boucle-in{position:relative;z-index:1}
+.boucle-t{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:1.25rem;
+  line-height:1.25;color:var(--text)}
+.boucle-p{font-size:.85rem;color:var(--text-secondary);line-height:1.65;margin-top:.5rem;max-width:52ch}
+.boucle-p b{color:var(--text);font-weight:600}
+
+/* contrôle */
+.chk{background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--r-lg);
+  padding:1.35rem 1.4rem;box-shadow:var(--shadow-card)}
+.chk-h{font-size:.95rem;font-weight:600}
+.chk-s{font-size:.8rem;color:var(--text-muted);margin-top:.15rem;margin-bottom:1.1rem}
+.chk-q{padding:.9rem 0}
+.chk-q + .chk-q{border-top:1px solid var(--border-subtle)}
+.chk-l{font-size:.86rem;color:var(--text);line-height:1.5;margin-bottom:.7rem}
+.chk-opts{display:flex;flex-wrap:wrap;gap:.45rem}
+.chk-o{font-family:inherit;font-size:.79rem;font-weight:500;padding:.5rem .9rem;
+  border-radius:var(--r-full);border:1px solid var(--border-mid);background:transparent;
+  color:var(--text-muted);cursor:pointer;transition:all var(--t)}
+.chk-o:hover:not(:disabled){border-color:var(--border-hover);color:var(--text)}
+.chk-o:disabled{cursor:default}
+.chk-o.bon{background:var(--green-soft);border-color:var(--green);color:var(--text);font-weight:600}
+.chk-o.faux{background:var(--red-soft);border-color:var(--red);color:var(--text);opacity:.8}
+.chk-f{margin-top:.65rem;font-size:.8rem;line-height:1.55;color:var(--text-secondary);
+  animation:fadeUp .25s var(--ease-out) both}
+.chk-f b{color:var(--text);font-weight:600}
+
+/* ═══ ÉCRAN 2 ═══ */
+.qc{background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--r-xl);
+  box-shadow:var(--shadow-card);overflow:hidden}
+.qr{display:grid;grid-template-columns:210px 1fr;gap:1.25rem;align-items:center;
+  padding:1.05rem 1.4rem;transition:background var(--t)}
+.qr + .qr{border-top:1px solid var(--border-subtle)}
+.qr.ok{background:color-mix(in srgb,var(--green) 4%,transparent)}
+.qr-l b{display:block;font-size:.88rem;font-weight:600;line-height:1.35}
+.qr-l span{display:block;font-size:.74rem;color:var(--text-faint);line-height:1.45;margin-top:.15rem}
+.qr-o{display:flex;flex-wrap:wrap;gap:.4rem}
+.opt{font-family:inherit;font-size:.81rem;font-weight:500;padding:.55rem 1rem;
+  border-radius:var(--r-full);border:1px solid var(--border-mid);background:transparent;
+  color:var(--text-muted);cursor:pointer;transition:all var(--t)}
+.opt:hover{border-color:var(--border-hover);color:var(--text)}
+.opt.on{background:var(--accent-soft);border-color:var(--accent-strong);color:var(--text);font-weight:600}
+
+/* ═══ ÉCRAN 3 — comparaison de cartes ═══ */
+.cartes{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.cb{position:relative;padding:1.15rem 1rem 1rem;border-radius:var(--r-lg);
+  border:1px solid var(--border-subtle);background:var(--bg-elevated);
+  box-shadow:var(--shadow-card);transition:all var(--t)}
+.cb.reco{border-color:var(--accent-strong);
+  box-shadow:var(--shadow-card),0 0 0 3px color-mix(in srgb,var(--accent-strong) 12%,transparent);
+  transform:translateY(-3px)}
+.cb-b{display:inline-block;margin-bottom:.5rem;font-size:.6rem;font-weight:700;
+  letter-spacing:.07em;text-transform:uppercase;color:#fff;
+  background:var(--accent-strong);padding:.2rem .55rem;border-radius:var(--r-full)}
+html.dark .cb-b{background:#7C3AED}
+.cb-n{font-size:.85rem;font-weight:600;line-height:1.3;margin-bottom:.55rem}
+.cb-l{display:flex;gap:.4rem;font-size:.75rem;color:var(--text-muted);line-height:1.45;padding:.22rem 0}
+.cb-l i{flex:0 0 auto;font-style:normal;font-weight:700}
+.cb-l.o i{color:var(--green)}
+.cb-l.n i{color:var(--text-faint)}
+
+.reco{position:relative;overflow:hidden;background:var(--bg-elevated);
+  border:1px solid var(--border-subtle);border-radius:var(--r-xl);padding:1.7rem 1.7rem;
+  box-shadow:var(--shadow-card)}
+.reco::after{content:'f';position:absolute;right:-.4rem;bottom:-2.4rem;
+  font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:11rem;line-height:1;
+  color:rgba(196,181,253,.16);pointer-events:none}
+html.dark .reco::after{color:rgba(139,92,246,.13)}
+.reco-in{position:relative;z-index:1}
+.reco-t{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:1.55rem;
+  line-height:1.2;margin:.4rem 0 .55rem}
+.reco-p{font-size:.87rem;color:var(--text-secondary);line-height:1.65;max-width:52ch}
+.reco-p b{color:var(--text);font-weight:600}
+.reco-note{margin-top:1rem;padding:.85rem 1rem;border-radius:var(--r-md);background:var(--accent-soft);
+  border:1px solid color-mix(in srgb,var(--accent-strong) 22%,transparent);
+  font-size:.81rem;color:var(--text-secondary);line-height:1.6}
+.reco-note b{color:var(--text);font-weight:600}
+
+.empile{display:flex;flex-direction:column;gap:.7rem}
+.liste{background:var(--bg-elevated);border:1px solid var(--border-subtle);
+  border-radius:var(--r-lg);padding:1.25rem 1.3rem;box-shadow:var(--shadow-card)}
+.liste-h{font-size:.9rem;font-weight:600;margin-bottom:.15rem}
+.liste-s{font-size:.78rem;color:var(--text-muted);margin-bottom:.9rem;line-height:1.5}
+.li{display:flex;gap:.7rem;padding:.7rem 0}
+.li + .li{border-top:1px solid var(--border-subtle)}
+.li-m{flex:0 0 auto;width:16px;text-align:center;font-weight:700;font-size:.85rem;margin-top:1px}
+.li-m.oui{color:var(--green)}
+.li-m.non{color:var(--text-faint)}
+.li-c b{display:block;font-size:.83rem;font-weight:600;margin-bottom:.1rem}
+.li-c span{display:block;font-size:.78rem;color:var(--text-muted);line-height:1.55}
+.li-c span b{display:inline;color:var(--text);font-size:inherit}
+
+/* jauges « ce que ta banque regarde » */
+.obs-in{margin-top:.9rem;padding:.95rem 1rem;border-radius:var(--r-md);
+  background:var(--surface-2);border:1px solid var(--border-subtle)}
+.obs-h{font-size:.8rem;font-weight:600;color:var(--text)}
+.obs-g{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem;margin-top:.75rem}
+.og{padding:.7rem .5rem;border-radius:var(--r-sm);background:var(--bg-elevated);
+  border:1px solid var(--border-subtle);text-align:center}
+.og .e{font-size:17px;display:block;margin-bottom:.35rem}
+.og b{display:block;font-size:.75rem;font-weight:600;line-height:1.3}
+.og span{display:block;font-size:.7rem;color:var(--text-muted);line-height:1.4;margin-top:.25rem}
+
+.reperes{background:var(--surface-2);border:1px dashed var(--border-hover);
+  border-radius:var(--r-md);padding:1rem 1.1rem}
+.reperes > b{display:block;font-size:.84rem;font-weight:600;margin-bottom:.3rem}
+.reperes p{font-size:.8rem;color:var(--text-secondary);line-height:1.6}
+.reperes em{display:block;margin-top:.45rem;font-size:.74rem;color:var(--text-faint);font-style:italic}
+
+/* ═══ ÉCRAN 4 — la frise ═══ */
+.fr{background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--r-xl);
+  padding:1.75rem 1.6rem 1.5rem;box-shadow:var(--shadow-card)}
+.fr-l{position:relative;padding-left:2.5rem;margin-top:1.1rem}
+.fr-l::before{content:'';position:absolute;left:12px;top:16px;bottom:16px;width:2px;
+  background:linear-gradient(to bottom,var(--accent-strong),var(--border-mid) 35%);border-radius:2px}
+.fr-i{position:relative;padding:.7rem 0;opacity:0;animation:fadeUp .4s var(--ease-out) forwards}
+.fr-d{position:absolute;left:-2.5rem;top:.8rem;width:26px;height:26px;border-radius:50%;
+  background:var(--bg-elevated);border:2px solid var(--border-mid);display:flex;
+  align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-faint)}
+.fr-i.now .fr-d{border-color:var(--accent-strong);background:var(--accent-strong);color:#fff;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-strong) 14%,transparent)}
+.fr-t{font-size:.88rem;font-weight:600}
+.fr-i.now .fr-t{color:var(--accent-strong)}
+.fr-s{font-size:.8rem;color:var(--text-muted);line-height:1.6;margin-top:.1rem}
+
+.eng{display:flex;gap:.85rem;align-items:flex-start;padding:1.05rem 1.2rem;border-radius:var(--r-lg);
+  background:var(--bg-elevated);border:1px solid var(--border-subtle);cursor:pointer;
+  transition:all var(--t)}
+.eng:hover{border-color:var(--border-hover)}
+.eng.on{border-color:var(--accent-strong);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent-strong) 11%,transparent)}
+.eng-r{flex:0 0 auto;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border-hover);
+  margin-top:3px;transition:all var(--t)}
+.eng.on .eng-r{border-color:var(--accent-strong);border-width:5px}
+.eng-t{display:block;font-size:.87rem;font-weight:600;line-height:1.4}
+.eng-d{display:block;font-size:.78rem;color:var(--text-muted);line-height:1.55;margin-top:.15rem}
+
+/* ═══ Barre + panneau ═══ */
+.sticky{position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-top:1px solid var(--border-subtle)}
+.sticky-in{max-width:1080px;margin:0 auto;padding:.85rem 2rem;display:flex;align-items:center;gap:1.25rem}
+.sticky-note{font-size:.8rem;color:var(--text-muted)}
+.sticky-act{margin-left:auto;display:flex;align-items:center;gap:.8rem}
+@media(max-width:1430px){ .sticky-act{margin-right:11rem} }
+
+.side{background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--r-lg);
+  padding:1.2rem 1.25rem;box-shadow:var(--shadow-card)}
+.side-k{font-size:.6875rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-muted);margin-bottom:.9rem}
+.side-step{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0}
+.side-dot{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--surface-3);
+  color:var(--text-faint);font-size:.66rem;font-weight:700;display:flex;align-items:center;
+  justify-content:center;transition:all var(--t)}
+.side-step.done .side-dot{background:var(--green-soft);color:var(--green)}
+.side-step.now .side-dot{background:var(--accent-strong);color:#fff}
+.side-l{font-size:.81rem;color:var(--text-faint);line-height:1.35;padding-top:1px}
+.side-step.now .side-l{color:var(--text);font-weight:600}
+.side-step.done .side-l{color:var(--text-secondary)}
+
+/* portrait vivant */
+.pt-i{display:flex;gap:.6rem;align-items:flex-start;padding:.42rem 0;opacity:.35;
+  transition:opacity .3s ease}
+.pt-i.on{opacity:1}
+.pt-m{flex:0 0 auto;font-size:.85rem;line-height:1.5}
+.pt-t{font-size:.79rem;line-height:1.4;color:var(--text-faint)}
+.pt-i.on .pt-t{color:var(--text-secondary)}
+.pt-i.on .pt-t b{color:var(--text);font-weight:600}
+.pt-vide{font-size:.78rem;color:var(--text-faint);font-style:italic;line-height:1.5}
+
+/* droits, dépliables en permanence */
+.dr-h{display:flex;align-items:center;gap:.5rem;width:100%;background:none;border:none;
+  padding:0;cursor:pointer;font-family:inherit;text-align:left}
+.dr-h .side-k{margin-bottom:0}
+.dr-c{margin-left:auto;color:var(--text-faint);transition:transform var(--t);display:flex}
+.side.open .dr-c{transform:rotate(180deg)}
+.dr-b{max-height:0;overflow:hidden;transition:max-height .34s var(--ease-out)}
+.side.open .dr-b{max-height:400px}
+.dr-i{padding:.65rem 0}
+.dr-i:first-child{padding-top:.9rem}
+.dr-i + .dr-i{border-top:1px solid var(--border-subtle)}
+.dr-i b{display:block;font-size:.79rem;font-weight:600;margin-bottom:.1rem}
+.dr-i span{display:block;font-size:.75rem;color:var(--text-muted);line-height:1.5}
+
+@media(max-width:900px){
+  .brique-2col-wrapper{grid-template-columns:1fr;gap:1.1rem;padding:1rem 1rem 7rem}
+  .brique-side-panel{position:static;order:-1}
+  .hero-cream{padding:1.75rem 1.35rem 1.6rem}
+  .h1{font-size:1.7rem}
+  .qr{grid-template-columns:1fr;gap:.6rem;padding:.95rem 1.1rem}
+  .rail{padding:.9rem .8rem;overflow-x:auto}
+  .rp-l{display:none}
+  .rail{gap:.25rem;justify-content:space-between}
+  .rl{margin-bottom:0}
+  .nt-b{padding:1.25rem 1.15rem 1.15rem}
+  .nt-t b{font-size:1.25rem}
+  .nt-f{padding:.85rem 1.15rem}
+  .cartes{grid-template-columns:1fr}
+  .obs-g{grid-template-columns:repeat(2,1fr)}
+  .dr-h{padding:.55rem 0}
+  .btn-txt{padding:.7rem 0;min-height:44px}
+  .sticky-act{margin-right:3.4rem}
+  .sticky-in{padding:.75rem 1rem}
+  .sticky-note{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important}
+  .screen,.chk-f,.fr-i,.eng.grand,.boucle,.pli-b{animation:none;opacity:1}
+  .btn-hero:hover{transform:none}
+}
+</style>
 </head>
 <body data-brick-name="Premiers pas bancaires">
 
-<!-- SIDEBAR injected by sidebar.js -->
 <div class="f-sidebar-shell">
-
-  <!-- MAIN CONTENT WRAPPER -->
-  <div class="brique-2col-wrapper" id="brique-wrapper">
-
-    <!-- ════════════════════════════════════════════════════════
-         LEFT COL: main brick content
-    ════════════════════════════════════════════════════════ -->
+  <div class="brique-2col-wrapper">
     <div class="brique-main-col" id="main-col">
-
-      <!-- CTX HEADER -->
       <div class="ctx-header">
         <nav id="ctx-nav">
-          <a href="dashboard.html" class="wordmark">
-            <div class="wordmark-icon">f</div>
-            <span>Fundamental</span>
-          </a>
+          <a href="dashboard.html" class="wordmark"><div class="wordmark-icon">f</div><span>Fundamental</span></a>
           <div class="nav-right" id="nav-right-slot"></div>
         </nav>
       </div>
 
-      <!-- ═══ SCREEN 1 — Ton système bancaire actuel ═══ -->
-      <div id="screen-1" class="screen active-screen">
-        <div class="brick-card">
-          <div class="brick-kicker">ETAPE 1 / 6 · CE QU'ON SAIT DEJA</div>
-          <h2 class="brick-title">Ce qu'on sait deja.</h2>
-          <p class="brick-subtitle">Verifie et complete. Le diagnostic s'ajuste en temps reel.</p>
-
-          <!-- Resume card -->
-          <div class="resume-card" id="resume-card">
-            <div class="resume-kicker">Reprendre ou tu t'es arrete-e</div>
-            <p class="resume-text">Tu avais commence cette brique. <em>Continuer ?</em></p>
-            <div class="resume-actions">
-              <button class="btn-hero-primary" id="btn-resume" style="padding:0.5rem 1.125rem;font-size:0.825rem;">Reprendre &rarr;</button>
-              <button class="btn-hero-secondary" onclick="dismissResume()">Recommencer</button>
-            </div>
+      <section class="screen active-screen" id="screen-0">
+        <div class="hero-cream"><div class="hero-in">
+          <p class="kick">Premiers pas bancaires &middot; 10 min</p>
+          <h1 class="h1">Personne ne t&rsquo;a expliqu&eacute;<br>&agrave; quoi sert une banque.</h1>
+          <p class="sub">On t&rsquo;a ouvert un compte, donn&eacute; une carte, fait signer des papiers.
+            Sans jamais dire ce qu&rsquo;il y avait derri&egrave;re. On reprend depuis le d&eacute;but.</p>
+          <div class="gains">
+            <div class="gain"><span class="gain-n">1</span><span class="gain-t">
+              Ce qu&rsquo;une banque te fournit vraiment, <b>en fran&ccedil;ais</b>.</span></div>
+            <div class="gain"><span class="gain-n">2</span><span class="gain-t">
+              Ce dont <b>toi</b> tu as besoin &mdash; et ce dont tu n&rsquo;as pas besoin.</span></div>
+            <div class="gain"><span class="gain-n">3</span><span class="gain-t">
+              Comment ta banque te regarde, et <b>pourquoi &ccedil;a comptera</b> plus tard.</span></div>
           </div>
-
-          <!-- Data cards from previous bricks -->
-          <div class="data-cards-grid" id="data-cards-grid"></div>
-
-          <!-- Editable fields -->
-          <div style="display:flex;flex-direction:column;gap:1.25rem;" id="fields-s1">
-
-            <div class="field-group">
-              <label class="field-label" for="input-frais-mensuels">Frais bancaires mensuels (&#8364;)
-                <span class="badge-prefilled" id="badge-frais" style="display:none">&#10003; Pre-rempli</span>
-              </label>
-              <div class="euro-wrap">
-                <input type="number" id="input-frais-mensuels" class="field-input" placeholder="ex : 8" min="0" inputmode="numeric" aria-label="Frais bancaires mensuels"/>
-                <span class="euro-suffix">&#8364;</span>
-              </div>
-              <div class="field-help">Tenue de compte + carte + frais recurrents</div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-alerte-solde">Alerte solde bas activée</label>
-              <select id="input-alerte-solde" class="field-select" aria-label="Alerte solde bas">
-                <option value="">Selectionner...</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-                <option value="nsp">Je ne sais pas</option>
-              </select>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="input-virement-auto">Virement automatique épargne</label>
-              <select id="input-virement-auto" class="field-select" aria-label="Virement automatique epargne">
-                <option value="">Selectionner...</option>
-                <option value="oui">Oui</option>
-                <option value="non">Non</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Score provisoire -->
-          <div class="jauge-wrap" id="score-provisoire-wrap" style="margin-top:1.5rem">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
-              <span style="font-size:0.82rem;font-weight:600;color:var(--text)">Score bancaire provisoire</span>
-              <span id="score-provisoire-val" style="font-size:1.1rem;font-weight:700;color:var(--text)">0/100</span>
-            </div>
-            <div class="jauge-bar">
-              <div class="jauge-fill" id="score-provisoire-fill" style="width:0%;background:var(--track)"></div>
-            </div>
-          </div>
-
-          <!-- Radar (shown when >= 4 fields filled) -->
-          <div class="radar-wrap" id="radar-wrap" style="display:none">
-            <svg id="radar-svg" width="220" height="220" viewBox="0 0 220 220" aria-label="Radar score bancaire">
-              <!-- Grid circles -->
-              <circle class="radar-grid" cx="110" cy="110" r="80"/>
-              <circle class="radar-grid" cx="110" cy="110" r="53"/>
-              <circle class="radar-grid" cx="110" cy="110" r="27"/>
-              <!-- Axis lines -->
-              <line class="radar-grid" x1="110" y1="30" x2="110" y2="190"/>
-              <line class="radar-grid" x1="33.82" y1="60.72" x2="186.18" y2="159.28"/>
-              <line class="radar-grid" x1="33.82" y1="159.28" x2="186.18" y2="60.72"/>
-              <line class="radar-grid" x1="14.11" y1="110" x2="205.89" y2="110"/>
-              <line class="radar-grid" x1="62.54" y1="27.64" x2="157.46" y2="192.36"/>
-              <!-- Shape -->
-              <polygon class="radar-shape" id="radar-shape" points="110,110 110,110 110,110 110,110 110,110"/>
-              <!-- Labels -->
-              <text class="radar-label" x="110" y="22" text-anchor="middle">Frais</text>
-              <text class="radar-label" x="200" y="62" text-anchor="start">Securite</text>
-              <text class="radar-label" x="200" y="162" text-anchor="start">Epargne</text>
-              <text class="radar-label" x="110" y="210" text-anchor="middle">Automatisation</text>
-              <text class="radar-label" x="20" y="112" text-anchor="end">Routine</text>
-            </svg>
-          </div>
-
-          <div class="nav-btns" style="margin-top:1.5rem">
-            <span></span>
-            <button class="btn-hero-primary" id="btn-s1-next" aria-label="Continuer">Continuer &rarr;</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ SCREEN 2 — Compte courant & lexique ═══ -->
-      <div id="screen-2" class="screen" style="display:none">
-        <div class="brick-card">
-          <div class="brick-kicker">ETAPE 2 / 6 · TON COMPTE COURANT</div>
-          <h2 class="brick-title">Ton compte courant n'est pas un coffre.</h2>
-          <p class="brick-subtitle">Il sert a recevoir, payer et faire circuler. L'argent qui dort dessus doit avoir une raison.</p>
-
-          <!-- Lexique button — prominent -->
-          <button class="lexique-pill" onclick="openLexique()" aria-label="Ouvrir le lexique bancaire">
-            <span class="lexique-pill-icon">📖</span>
-            <span>Lexique bancaire</span>
-            <span class="lexique-pill-arrow">→</span>
+          <p class="kick" style="margin:.5rem 0 .75rem">Qu&rsquo;est-ce qui t&rsquo;am&egrave;ne&nbsp;?</p>
+          <div class="q-opts" id="motifs" style="margin-bottom:1.75rem"></div>
+          <button class="btn-hero" onclick="goToScreen(1)">Commencer par les bases
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
+        </div></div>
+      </section>
 
-          <!-- Pedagogique block -->
-          <div class="callout-cite">
-            Ton compte courant est fait pour les flux du mois : salaire, loyer, courses, abonnements. Ce qui depasse tes besoins courants devrait avoir une destination precise.
-          </div>
-
-          <!-- Où doit aller ton argent — chips interactifs -->
-          <h3 style="font-size:0.875rem;font-weight:700;color:var(--text);margin:1.5rem 0 0.75rem">Où doit aller ton argent ?</h3>
-          <div class="pv-chips" id="pv-chips" role="tablist" aria-label="Catégories de placement"></div>
-          <div class="pv-detail" id="pv-detail" style="display:none">
-            <div class="pv-detail-icon" id="pv-detail-icon"></div>
-            <div class="pv-detail-support" id="pv-detail-support"></div>
-            <div class="pv-detail-dispo" id="pv-detail-dispo"></div>
-            <div class="pv-detail-note" id="pv-detail-note"></div>
-          </div>
-
-          <!-- Mini simulateur -->
-          <h3 style="font-size:0.875rem;font-weight:700;color:var(--text);margin:1.5rem 0 0.75rem">Combien laisser sur ton compte ?</h3>
-          <div style="display:flex;flex-direction:column;gap:1rem">
-            <div class="field-group" style="margin-bottom:0">
-              <label class="field-label" for="input-sim-charges">Charges fixes mensuelles (&#8364;)
-                <span class="badge-prefilled" id="badge-sim-charges" style="display:none">&#10003; Pre-rempli</span>
-              </label>
-              <div class="euro-wrap">
-                <input type="number" id="input-sim-charges" class="field-input" placeholder="ex : 1 200" min="0" inputmode="numeric" aria-label="Charges fixes"/>
-                <span class="euro-suffix">&#8364;</span>
-              </div>
-            </div>
-            <div class="field-group" style="margin-bottom:0">
-              <label class="field-label" for="input-sim-marge">Marge securite souhaitee (&#8364;)
-                <span class="badge-prefilled" id="badge-sim-marge" style="display:none">&#10003; Pre-rempli</span>
-              </label>
-              <div class="euro-wrap">
-                <input type="number" id="input-sim-marge" class="field-input" placeholder="ex : 200" min="0" inputmode="numeric" aria-label="Marge securite"/>
-                <span class="euro-suffix">&#8364;</span>
-              </div>
-              <div class="field-help">Un petit coussin pour les impr&eacute;vus du mois</div>
-            </div>
-          </div>
-
-          <div class="sim-output" id="sim-output">
-            <div class="sim-output-value" id="sim-output-value">&mdash;</div>
-            <div class="sim-output-label">a laisser sur ton compte courant</div>
-          </div>
-
-          <!-- warnings supprimés — trop d'information à ce stade -->
-
-          <div class="nav-btns">
-            <button class="btn-back" onclick="goToScreen(1)" aria-label="Retour">&larr; Retour</button>
-            <button class="btn-hero-primary" id="btn-s2-next" aria-label="Continuer">Continuer &rarr;</button>
-          </div>
+      <section class="screen" id="screen-1">
+        <div>
+          <p class="kick" style="margin-bottom:.4rem">&Eacute;tape 1 &middot; Toi</p>
+          <h2 class="h2" tabindex="-1">Parlons de ta vie,<br>pas de ton contrat.</h2>
+          <p class="sub">Aucune question technique, et on ne redemande pas ce qu&rsquo;on sait
+            d&eacute;j&agrave;. Ton portrait se remplit &agrave; c&ocirc;t&eacute;.</p>
         </div>
-      </div>
+        <div id="questions" style="display:flex;flex-direction:column;gap:.85rem"></div>
+      </section>
 
-      <!-- ═══ SCREEN 3 — Mon profil livrets ═══ -->
-      <div id="screen-3" class="screen" style="display:none">
-        <div class="brick-card">
-          <div class="brick-kicker">ÉTAPE 3 / 6 · TES LIVRETS</div>
-          <h2 class="brick-title">Ton profil livrets.</h2>
-          <p class="brick-subtitle">Réponds à 3 questions, on te recommande les livrets adaptés.</p>
-
-          <div id="assistant-livret" style="margin-bottom:1.25rem">
-            <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.75rem">Quel livret vérifier en premier ?</div>
-            <div id="assistant-q1" class="option-cards">
-              <div class="option-card" onclick="assistantAnswer(1,'oui')" role="button" aria-label="Moins de 25 ans">
-                <div class="option-card-info"><div class="option-card-title">J’ai moins de 25 ans</div></div>
-              </div>
-              <div class="option-card" onclick="assistantAnswer(1,'non')" role="button" aria-label="25 ans ou plus">
-                <div class="option-card-info"><div class="option-card-title">J’ai 25 ans ou plus</div></div>
-              </div>
-            </div>
-            <div id="assistant-q2" style="display:none" class="option-cards">
-              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.5rem">Penses-tu être éligible au LEP ?</div>
-              <div class="option-card" onclick="assistantAnswer(2,'oui')" role="button"><div class="option-card-info"><div class="option-card-title">Oui</div></div></div>
-              <div class="option-card" onclick="assistantAnswer(2,'nsp')" role="button"><div class="option-card-info"><div class="option-card-title">Je ne sais pas</div></div></div>
-              <div class="option-card" onclick="assistantAnswer(2,'non')" role="button"><div class="option-card-info"><div class="option-card-title">Probablement pas</div></div></div>
-            </div>
-            <div id="assistant-q3" style="display:none" class="option-cards">
-              <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.5rem">As-tu déjà un Livret A ?</div>
-              <div class="option-card" onclick="assistantAnswer(3,'oui')" role="button"><div class="option-card-info"><div class="option-card-title">Oui</div></div></div>
-              <div class="option-card" onclick="assistantAnswer(3,'non')" role="button"><div class="option-card-info"><div class="option-card-title">Non</div></div></div>
-            </div>
-          </div>
-
-          <div id="s3-reco-panel" style="display:none">
-            <div style="font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:0.75rem">🎯 Livrets recommandés pour toi</div>
-            <div id="s3-reco-cards" class="livret-grid"></div>
-            <button onclick="openAllLivretsModal()" style="display:inline-flex;align-items:center;gap:0.3rem;margin-top:0.75rem;font-size:0.82rem;font-weight:500;color:var(--accent-strong);background:none;border:none;cursor:pointer;padding:0.25rem 0" aria-label="Voir tous les supports">Voir tous les supports →</button>
-          </div>
-
-          <div style="font-size:0.72rem;color:var(--text-faint);margin-top:1rem;line-height:1.5">Les taux et plafonds peuvent évoluer. Vérifie les conditions au moment d’ouvrir ou d’utiliser le produit.</div>
-
-          <div class="nav-btns">
-            <button class="btn-back" onclick="goToScreen(2)" aria-label="Retour">&larr; Retour</button>
-            <button class="btn-hero-primary" onclick="goToScreen(4)" aria-label="Continuer">Continuer &rarr;</button>
-          </div>
+      <section class="screen" id="screen-2">
+        <div>
+          <p class="kick" style="margin-bottom:.4rem">&Eacute;tape 2 &middot; Comprendre</p>
+          <h2 class="h2" tabindex="-1">Tout tourne autour<br>d&rsquo;une seule chose.</h2>
+          <p class="sub">Cinq notions, une &agrave; la fois. Deux minutes en tout,
+            et tu peux passer &agrave; la suite quand tu veux.</p>
         </div>
-      </div>
+        <div id="schema"></div>
+        <div id="controle"></div>
+      </section>
 
-      <!-- ═══ SCREEN 4 — Tes 3 actions bancaires ═══ -->
-      <div id="screen-4" class="screen" style="display:none">
-        <div class="brick-card">
-          <div class="brick-kicker">ÉTAPE 4 / 6 · TES ACTIONS</div>
-          <h2 class="brick-title">Tes 3 actions bancaires.</h2>
-          <p class="brick-subtitle">Concrètes, personnalisées, basées sur ce qu’on sait déjà.</p>
-          <div id="s4-actions" style="display:flex;flex-direction:column;gap:0.75rem;margin:1.25rem 0"></div>
-          <div class="nav-btns">
-            <button class="btn-back" onclick="goToScreen(3)" aria-label="Retour">&larr; Retour</button>
-            <button class="btn-hero-primary" onclick="goToScreen(5)" aria-label="Continuer">Continuer &rarr;</button>
-          </div>
-        </div>
-      </div>
+      <section class="screen" id="screen-3">
+        <div id="reco" style="display:flex;flex-direction:column;gap:1.1rem"></div>
+      </section>
 
-      <!-- ═══ SCREEN 5 — Plan virement auto calculé ═══ -->
-      <div id="screen-5" class="screen" style="display:none">
-        <div class="brick-card">
-          <div class="brick-kicker">ÉTAPE 5 / 6 · AUTOMATISATION</div>
-          <h2 class="brick-title">Ton plan d’épargne automatique.</h2>
-          <p class="brick-subtitle">On a calculé un plan à partir de tes données. Ajuste le curseur.</p>
-          <div class="data-cards-grid" style="margin-bottom:1.25rem">
-            <div class="data-card"><div class="data-card-value" id="s5-objectif-val">—</div><div class="data-card-label">Objectif épargne de précaution</div></div>
-            <div class="data-card"><div class="data-card-value" id="s5-duree-val">—</div><div class="data-card-label">Durée estimée</div></div>
-          </div>
-          <div style="margin:1.5rem 0">
-            <label style="font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.75rem" for="s5-slider">Montant mensuel : <strong id="s5-slider-val">50 €</strong></label>
-            <input type="range" id="s5-slider" min="10" max="500" value="50" step="5" style="width:100%;accent-color:var(--accent-strong)" aria-label="Montant mensuel virement"/>
-            <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--text-faint);margin-top:0.25rem"><span id="s5-slider-min">10 €</span><span id="s5-slider-max">500 €</span></div>
-          </div>
-          <div class="sim-output" id="s5-recap" style="text-align:left"><div style="display:flex;flex-direction:column;gap:0.5rem" id="s5-recap-lines"></div></div>
-          <div class="nav-btns">
-            <button class="btn-back" onclick="goToScreen(4)" aria-label="Retour">&larr; Retour</button>
-            <button class="btn-hero-primary" onclick="goToScreen(6)" aria-label="Continuer">Continuer &rarr;</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══ SCREEN 6 — Setup en 3 clics ═══ -->
-      <div id="screen-6" class="screen" style="display:none">
-        <div class="brick-card">
-          <div class="brick-kicker">ÉTAPE 6 / 6 · SETUP FINAL</div>
-          <h2 class="brick-title">Setup en 3 clics.</h2>
-          <p class="brick-subtitle">3 réglages prioritaires à activer maintenant.</p>
-          <div id="s6-setup-cards" style="display:flex;flex-direction:column;gap:0.75rem;margin:1.25rem 0"></div>
-          <div class="nav-btns" style="margin-top:1.5rem">
-            <button class="btn-back" onclick="goToScreen(5)" aria-label="Retour">&larr; Retour</button>
-            <button class="btn-hero-primary" id="btn-finaliser" onclick="openModalFin()" disabled aria-label="Terminer">Terminer &rarr;</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <!-- end .brique-main-col -->
-
-    <!-- ════════════════════════════════════════════════════════
-         RIGHT COL: progress panel
-    ════════════════════════════════════════════════════════ -->
-    <div class="brique-side-panel" id="side-panel">
-      <div class="brique-progress-card" id="progress-card">
-        <div class="bpc-kicker">TA PROGRESSION</div>
-        <div class="bpc-title" id="bpc-step-title">Ton système bancaire actuel</div>
-
-        <div class="bpc-ring-wrap">
-          <svg class="bpc-ring" width="80" height="80" aria-hidden="true">
-            <circle class="bpc-ring-bg" cx="40" cy="40" r="32"/>
-            <circle class="bpc-ring-fill" id="bpc-ring-fill" cx="40" cy="40" r="32" stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
-            <text class="bpc-ring-pct" id="bpc-ring-pct" x="40" y="40" text-anchor="middle" dominant-baseline="central">0%</text>
-          </svg>
-        </div>
-
-        <div class="bpc-steps" id="bpc-steps-list">
-          <div class="bpc-step active" id="bpc-step-1"><div class="bpc-step-num">1</div><div class="bpc-step-label">Ton système actuel</div></div>
-          <div class="bpc-step" id="bpc-step-2"><div class="bpc-step-num">2</div><div class="bpc-step-label">Compte courant</div></div>
-          <div class="bpc-step" id="bpc-step-3"><div class="bpc-step-num">3</div><div class="bpc-step-label">Livrets d'epargne</div></div>
-          <div class="bpc-step" id="bpc-step-4"><div class="bpc-step-num">4</div><div class="bpc-step-label">Tes 3 actions</div></div>
-          <div class="bpc-step" id="bpc-step-5"><div class="bpc-step-num">5</div><div class="bpc-step-label">Épargne auto</div></div>
-          <div class="bpc-step" id="bpc-step-6"><div class="bpc-step-num">6</div><div class="bpc-step-label">Setup final</div></div>
-        </div>
-
-        <div class="bpc-nav">
-          <a href="dashboard.html" class="bpc-dashboard-link">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            Dashboard
-          </a>
-        </div>
-      </div>
+      <section class="screen" id="screen-4">
+        <div id="suite" style="display:flex;flex-direction:column;gap:1.1rem"></div>
+      </section>
     </div>
 
+    <aside class="brique-side-panel">
+      <div class="side"><p class="side-k">O&ugrave; tu en es</p><div id="side-steps"></div></div>
+      <div class="side" id="side-portrait" style="display:none">
+        <p class="side-k">Ton portrait</p><div id="portrait" aria-live="polite"></div>
+      </div>
+      <div class="side" id="side-droits">
+        <button class="dr-h" type="button" id="dr-toggle" aria-expanded="false">
+          <span class="side-k">Tes droits</span>
+          <span class="dr-c"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+        <div class="dr-b"><div id="droits"></div></div>
+      </div>
+    </aside>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════════
-     LEXIQUE PANEL
-══════════════════════════════════════════════════════════════ -->
-<div class="lexique-overlay" id="lexique-overlay" onclick="closeLexique()"></div>
-<div class="lexique-panel" id="lexique-panel">
-  <button class="lexique-close" onclick="closeLexique()" aria-label="Fermer le lexique">&times;</button>
-  <div class="lexique-title">Lexique bancaire</div>
-  <div id="lexique-list">
-    <!-- Built by JS -->
-  </div>
-</div>
-
-<!-- ALL LIVRETS MODAL -->
-<div class="modal-fin-overlay" id="modal-all-livrets" style="display:none">
-  <div class="modal-fin-card" style="max-width:540px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
-      <h3 style="font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;font-style:italic;color:var(--text);margin:0">Tous les supports</h3>
-      <button onclick="closeAllLivretsModal()" style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;color:var(--text-muted)" aria-label="Fermer">&times;</button>
-    </div>
-    <div id="modal-all-livrets-list" class="livret-grid" style="max-height:60vh;overflow-y:auto"></div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════════
-     COMPLETION MODAL
-══════════════════════════════════════════════════════════════ -->
-<div class="modal-fin-overlay" id="modal-fin" style="display:none">
-  <div class="modal-fin-card">
-    <div class="modal-fin-header">
-      <div class="modal-fin-check" aria-hidden="true">&#10003;</div>
-      <h2 class="modal-fin-title">Ton système bancaire est posé.</h2>
-      <p class="modal-fin-sub" id="modal-fin-sub">Voici ton bilan.</p>
-    </div>
-
-    <!-- Score ring -->
-    <div class="score-ring-wrap">
-      <svg class="score-ring" width="100" height="100" aria-label="Score bancaire">
-        <circle class="score-ring-bg" cx="50" cy="50" r="40"/>
-        <circle class="score-ring-fill" id="modal-score-fill" cx="50" cy="50" r="40" stroke-dasharray="251" stroke-dashoffset="251" transform="rotate(-90 50 50)"/>
-        <text class="score-ring-text" id="modal-score-text" x="50" y="50" text-anchor="middle" dominant-baseline="central">0</text>
-      </svg>
-      <div class="score-status" id="modal-score-status"></div>
-    </div>
-
-    <div class="modal-fin-summary" id="modal-fin-summary">
-      <!-- Populated by JS -->
-    </div>
-
-    <!-- Actions prioritaires -->
-    <div id="modal-actions-prio" style="display:none;margin:1rem 0">
-      <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:0.5rem">Actions prioritaires</div>
-      <div id="modal-actions-list" style="display:flex;flex-direction:column;gap:0.35rem"></div>
-    </div>
-
-    <!-- Next brick -->
-    <div class="modal-next-invest" id="modal-next-brick" style="display:none">
-      <div class="modal-next-kicker">Prochaine etape</div>
-      <p class="modal-next-msg" id="modal-next-msg"></p>
-      <a href="#" class="btn-hero-primary" id="modal-next-cta" style="width:100%;justify-content:center"></a>
-    </div>
-
-    <div class="modal-fin-actions">
-      <button class="btn-hero-primary" onclick="validerBrique()" aria-label="Ajouter a mon dashboard">Ajouter a mon dashboard</button>
-      <button class="modal-fin-secondary" onclick="window.print()" aria-label="Télécharger mon plan bancaire">Télécharger mon plan bancaire</button>
-      <a href="dashboard.html" class="modal-fin-secondary">Retour au tableau de bord</a>
+<div class="sticky" id="sticky">
+  <div class="sticky-in">
+    <span class="sticky-note" id="sticky-note"></span>
+    <div class="sticky-act">
+      <button class="btn-txt" id="btn-back" onclick="goToScreen(ecran-1)" style="display:none">Retour</button>
+      <button class="btn-hero" id="btn-next" onclick="suivant()">Continuer</button>
     </div>
   </div>
 </div>
 
-<!-- Print bilan -->
-<div id="print-bilan" style="display:none"></div>
-
-<!-- ══════════════════════════════════════════════════════════════
-     SCRIPTS — order is invariant
-══════════════════════════════════════════════════════════════ -->
 <script src="sidebar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
@@ -736,1027 +513,730 @@
 <script src="nav-avatar.js"></script>
 
 <script>
-/* ══════════════════════════════════════════════════════════════
-   BRIQUE PREMIERS PAS BANCAIRES — V2
-   ══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   PREMIERS PAS BANCAIRES
+   Le contenu enseigne ; la forme fait manipuler. L'ecran 1 est un
+   schema qu'on explore, pas une liste qu'on lit. Les droits vivent
+   dans le panneau lateral, disponibles a tout moment plutot que
+   deverses a la fin — l'ecran 4 en est allege.
+   ═══════════════════════════════════════════════════════════════ */
+const BRICK_ID = 'premiers_pas_bancaires';
 
-var BRICK_ID = 'premiers_pas_bancaires';
-var TOTAL_SCREENS = 6;
-var mData = {};
-var currentScreen = 1;
+/* Reperes de tarif : NON VERIFIES (voir plus bas). */
+const REPERES = { verifie: false, verifie_le: null };
 
-var STEP_TITLES = {
-  1:'Ton système bancaire actuel',
-  2:'Compte courant & lexique',
-  3:'Mon profil livrets',
-  4:'Tes 3 actions',
-  5:'Plan épargne auto',
-  6:'Setup en 3 clics'
-};
+let ecran = 0;
+let vus = [];
+let ouvert = null;
+let reponsesChk = {};
+const A = { motif:null, statut:null, logement:null, revenus:null, voyage:null, findemois:null };
+let prerempli = [];   // ce qu'on savait deja par l'onboarding
+let engagementChoisi = null;
 
-/* ── SAVINGS PRODUCTS CONFIG ── */
-var SAVINGS_PRODUCTS_CONFIG = [
-  {id:'livret_a',nom:'Livret A',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere d\'impots et prelevements sociaux',plafond:'22 950 \u20ac',taux:'2,4 %',conditions:'Ouvert a tous. 1 seul par personne.',usage_recommande:'Epargne de precaution, epargne disponible, projets courts',erreur:'Y laisser tout son argent sans distinguer les objectifs',priorite:1,badge:'Adapte a l\'epargne de precaution',source_update:'Banque de France'},
-  {id:'ldds',nom:'LDDS',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere d\'impots et prelevements sociaux',plafond:'12 000 \u20ac',taux:'2,4 %',conditions:'Contribuable domicilie en France. 1 seul par personne.',usage_recommande:'Complement du Livret A, epargne disponible',erreur:'Le voir comme totalement different du Livret A \u2014 usage tres proche',priorite:2,badge:'Adapte a l\'epargne de precaution',source_update:'Banque de France'},
-  {id:'lep',nom:'LEP',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere d\'impots et prelevements sociaux',plafond:'10 000 \u20ac',taux:'3,5 %',conditions:'Sous conditions de revenus (revenu fiscal de reference). 1 seul par personne.',usage_recommande:'Epargne de precaution si eligible \u2014 a verifier en priorite',erreur:'Ne pas verifier son eligibilite',priorite:0,badge:'A verifier en priorite',source_update:'Banque de France'},
-  {id:'livret_jeune',nom:'Livret Jeune',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Exonere',plafond:'1 600 \u20ac',taux:'Variable selon banque (min. Livret A)',conditions:'12 a 25 ans. 1 seul par personne.',usage_recommande:'Premiers reflexes d\'epargne pour jeunes eligibles',erreur:'Ignorer le plafond \u2014 tres vite atteint',priorite:3,badge:'Pour moins de 25 ans',source_update:'Banque de France'},
-  {id:'cel',nom:'CEL',categorie:'reglemente',disponible:true,risque:'aucun',fiscalite:'Interets soumis a PFU depuis 2018',plafond:'15 300 \u20ac',taux:'2 %',conditions:'Ouvert a tous. Lie a un projet logement potentiel.',usage_recommande:'Epargne logement ou epargne disponible specifique',erreur:'Le choisir sans comprendre ses conditions de pret',priorite:5,badge:'Projet logement',source_update:'Banque de France'},
-  {id:'pel',nom:'PEL',categorie:'reglemente',disponible:false,risque:'aucun',fiscalite:'Interets soumis a PFU',plafond:'61 200 \u20ac',taux:'1,75 %',conditions:'Versements reguliers obligatoires. Duree min. 4 ans.',usage_recommande:'Projet logement sur horizon long',erreur:'L\'utiliser comme epargne de precaution immediate \u2014 argent bloque',priorite:6,badge:'Argent bloque',source_update:'Banque de France'},
-  {id:'compte_terme',nom:'Compte a terme',categorie:'bancaire',disponible:false,risque:'aucun',fiscalite:'Soumis a PFU',plafond:'Aucun plafond',taux:'Variable selon duree et banque',conditions:'Duree definie a l\'ouverture. Sortie anticipee possible avec penalites.',usage_recommande:'Argent dont on n\'a pas besoin pendant une duree definie',erreur:'Y mettre son epargne de precaution \u2014 pas adapte a une disponibilite rapide',priorite:7,badge:'Argent bloque',source_update:'Banque'},
-  {id:'livret_bancaire',nom:'Livret bancaire fiscalise',categorie:'bancaire',disponible:true,risque:'aucun',fiscalite:'Soumis a PFU (30 %)',plafond:'Selon banque',taux:'Taux brut \u2014 regarder le taux net',conditions:'Propose par les banques commerciales.',usage_recommande:'Complement eventuel apres avoir epuise les livrets reglementes',erreur:'Regarder le taux brut sans regarder le taux net apres PFU',priorite:8,badge:'Apres les reglementes',source_update:'Banque'},
-  {id:'compte_courant',nom:'Compte courant',categorie:'courant',disponible:true,risque:'aucun',fiscalite:'Non remunere (en general)',plafond:'Aucun',taux:'0 %',conditions:'Ouvert a tous.',usage_recommande:'Depenses du mois uniquement',erreur:'Y stocker toute son epargne \u2014 l\'argent ne travaille pas',priorite:9,badge:'Depenses du mois',source_update:''},
-  {id:'compte_separe',nom:'Compte separe',categorie:'courant',disponible:true,risque:'aucun',fiscalite:'Non remunere (en general)',plafond:'Aucun',taux:'0 %',conditions:'Compte courant dedie a un usage.',usage_recommande:'Separer visuellement les objectifs (voyages, projets, etc.)',erreur:'Croire qu\'il remplace un livret si l\'objectif est aussi de remunerer',priorite:10,badge:'Organisation',source_update:''}
+const MOTIFS = [
+  ['comprendre', 'Je n’y comprends rien'],
+  ['premier',    'Je vais toucher mon premier argent'],
+  ['decouvert',  'J’ai peur du découvert'],
+  ['arnaque',    'Je veux pas me faire avoir'],
+  ['flou',       'Je ne sais pas trop']
 ];
 
-/* ── LEXIQUE DATA ── */
-var LEXIQUE_DATA = [
-  {terme:'Compte courant',def:'Compte utilise pour les operations quotidiennes : encaissement de revenus, paiements, prelevements.',ex:'C\'est la ou arrive ton salaire et d\'ou partent tes virements.'},
-  {terme:'Solde disponible',def:'Montant reel que tu peux depenser maintenant, en tenant compte des operations en cours.',ex:'Si tu as 1 500 \u20ac et un cheque de 300 \u20ac en attente, ton solde disponible est 1 200 \u20ac.'},
-  {terme:'Solde comptable',def:'Solde \u00ab officiel \u00bb du compte, sans les operations non encore comptabilisees.',ex:'Peut etre different du solde disponible pendant quelques jours.'},
-  {terme:'RIB / IBAN / BIC',def:'Coordonnees bancaires de ton compte. L\'IBAN identifie ton compte en Europe, le BIC identifie ta banque.',ex:'Tu en as besoin pour recevoir un virement ou mettre en place un prelevement.'},
-  {terme:'Virement',def:'Transfert d\'argent d\'un compte vers un autre. Peut etre ponctuel ou permanent (automatique).',ex:'Virer 100 \u20ac/mois vers ton livret pour epargner automatiquement.'},
-  {terme:'Virement instantane',def:'Virement qui arrive en quelques secondes (contre quelques heures pour un virement classique). Parfois facture.',ex:'Utile en urgence. Certaines banques le proposent gratuitement.'},
-  {terme:'Prelevement SEPA',def:'Paiement automatique initie par un creancier (EDF, assurance, abonnement) avec ton autorisation.',ex:'Ton loyer ou ton forfait telephone preleve chaque mois.'},
-  {terme:'Mandat SEPA',def:'Autorisation que tu signes pour permettre un prelevement automatique sur ton compte.',ex:'Quand tu t\'abonnes a un service, tu signes un mandat SEPA.'},
-  {terme:'Carte bancaire',def:'Moyen de paiement lie a ton compte. Permet de payer chez les commercants et de retirer au distributeur.',ex:'Visa, Mastercard \u2014 le reseau determine l\'acceptation a l\'etranger.'},
-  {terme:'Debit immediat',def:'Le montant est debite de ton compte des que tu paies ou dans les 24-48h.',ex:'Tu vois le mouvement rapidement, ce qui facilite le suivi.'},
-  {terme:'Debit differe',def:'Tous les achats du mois sont debites en une seule fois, a date fixe (souvent fin de mois).',ex:'Pratique si tu geres bien. Risque si tu oublies le cumul.'},
-  {terme:'Plafond paiement / retrait',def:'Montant max que tu peux depenser par carte ou retirer au distributeur sur une periode donnee.',ex:'Plafond retrait de 500 \u20ac/semaine = tu ne peux pas retirer plus en especes.'},
-  {terme:'Découvert autorisé',def:'Montant negatif tolere par ta banque sur ton compte, pendant une duree limitee.',ex:'Si ton decouvert autorise est de 300 \u20ac, tu peux descendre a \u2013300 \u20ac sans rejet.'},
-  {terme:'Decouvert non autorise',def:'Solde negatif au-dela de ta limite de decouvert. Entraine des frais supplementaires.',ex:'Depasser ton decouvert autorise peut couter plus cher que le montant depasse.'},
-  {terme:'Agios',def:'Interets factures par la banque quand tu es en decouvert. Calcules au jour le jour.',ex:'Plus tu restes en negatif longtemps, plus les agios augmentent.'},
-  {terme:'Commission d\'intervention',def:'Frais factures a chaque operation passee alors que ton compte est en decouvert non autorise.',ex:'Jusqu\'a 8 \u20ac par operation, plafonnee a 80 \u20ac/mois.'},
-  {terme:'Frais de rejet',def:'Frais factures quand un prelevement ou un cheque est refuse par manque de provision.',ex:'Un prelevement EDF de 90 \u20ac refuse peut generer 20 \u20ac de frais \u2014 en plus de la relance.'},
-  {terme:'Date de valeur',def:'Date a laquelle une operation est effectivement prise en compte pour le calcul des interets.',ex:'Un cheque depose le lundi peut avoir une date de valeur au mercredi.'},
-  {terme:'Opposition',def:'Demande de blocage de ta carte en cas de perte, vol ou utilisation frauduleuse.',ex:'En cas de vol, appelle immediatement le numero d\'opposition de ta banque.'},
-  {terme:'Authentification forte',def:'Validation d\'un paiement en ligne par deux facteurs (ex : code SMS + empreinte).',ex:'Obligatoire pour les paiements en ligne depuis la DSP2.'},
-  {terme:'Beneficiaire',def:'Personne ou entite vers qui tu envoies un virement. Doit etre ajoute dans ton espace bancaire.',ex:'Ajouter ton livret comme beneficiaire pour programmer un virement automatique.'},
-  {terme:'Releve de compte',def:'Document mensuel listant toutes les operations de ton compte.',ex:'Disponible en PDF dans ton espace bancaire. A verifier chaque mois.'},
-  {terme:'Recapitulatif annuel des frais',def:'Document que ta banque doit t\'envoyer chaque annee avec le total de tous les frais factures.',ex:'Tres utile pour reperer les frais caches et comparer les banques.'}
-];
-
-/* ── CHECKLIST DATA ── */
-var CHECKLIST_SECTIONS = [
-  {id:'alertes',title:'Alertes',items:[
-    {id:'alerte_solde_bas',label:'Activer l\'alerte solde bas'},
-    {id:'alerte_grosse_depense',label:'Activer l\'alerte grosse depense'},
-    {id:'notif_carte',label:'Activer les notifications carte'},
-    {id:'notif_virement',label:'Activer les notifications virement'}
-  ]},
-  {id:'carte',title:'Carte',items:[
-    {id:'verif_plafond_paiement',label:'Verifier le plafond paiement'},
-    {id:'verif_plafond_retrait',label:'Verifier le plafond retrait'},
-    {id:'ajuster_plafonds',label:'Ajuster les plafonds si besoin'},
-    {id:'paiement_etranger',label:'Activer/desactiver paiement etranger'},
-    {id:'savoir_opposition',label:'Savoir comment faire opposition'}
-  ]},
-  {id:'prelevements',title:'Prelevements',items:[
-    {id:'identifier_prelevements',label:'Identifier les prelevements principaux'},
-    {id:'verif_abonnements',label:'Verifier les abonnements actifs'},
-    {id:'supprimer_inutiles',label:'Supprimer les abonnements inutiles'},
-    {id:'marge_dates',label:'Garder une marge avant les grosses dates'}
-  ]},
-  {id:'virements',title:'Virements',items:[
-    {id:'beneficiaire_livret',label:'Creer un beneficiaire pour le livret'},
-    {id:'programmer_epargne',label:'Programmer le virement epargne'},
-    {id:'programmer_invest',label:'Programmer l\'investissement si pertinent'}
-  ]},
-  {id:'fraude',title:'Fraude',items:[
-    {id:'jamais_codes',label:'Ne jamais donner ses codes'},
-    {id:'pas_valider_tel',label:'Ne pas valider par telephone'},
-    {id:'raccrocher_rappeler',label:'Raccrocher et rappeler soi-meme'},
-    {id:'verifier_liens',label:'Verifier liens et emails'}
-  ]},
-  {id:'routine',title:'Routine',items:[
-    {id:'routine_hebdo',label:'5 min/semaine : verifier le solde'},
-    {id:'routine_mensuelle',label:'15 min/mois : frais + abos + virements'},
-    {id:'routine_annuelle',label:'1x/an : recapitulatif annuel des frais'}
-  ]}
-];
-
-/* ── PLACEMENT VISUAL DATA ── */
-var PLACEMENT_VISUAL = [
-  {icon:'\uD83D\uDCB3',title:'Argent du mois',support:'Compte courant',note:'Paie tes charges et d\u00e9penses courantes \u2014 rien de plus.',badge:'D\u00e9penses'},
-  {icon:'\uD83D\uDEE1\uFE0F',title:'\u00c9pargne de pr\u00e9caution',support:'Livret A, LDDS, LEP si \u00e9ligible',note:'Ta r\u00e9serve pour absorber les impr\u00e9vus sans stress.',badge:'S\u00e9curit\u00e9'},
-  {icon:'\uD83C\uDFAF',title:'Projet court terme',support:'Livret disponible',note:'Mets de c\u00f4t\u00e9 pour un objectif pr\u00e9cis : vacances, permis, achat.',badge:'Projet'},
-  {icon:'\uD83C\uDF31',title:'Investissement long terme',support:'PEA, assurance-vie\u2026',note:'Fais travailler ton argent sur le long terme.',badge:'Croissance'},
-  {icon:'\uD83D\uDD12',title:'Argent \u00e0 ne pas toucher',support:'Compte s\u00e9par\u00e9',note:'Isole ce qui ne doit pas \u00eatre d\u00e9pens\u00e9 par r\u00e9flexe.',badge:'S\u00e9curit\u00e9',fw:true}
-];
-
-
-/* ══════════════════════════════════════════════════════════════
-   SCORE CALCULATION
-   ══════════════════════════════════════════════════════════════ */
-function calculateBankingScore() {
-  var s = 0, axes = {frais:0,securite:0,epargne:0,automatisation:0,routine:0};
-
-  /* Frais axis (0-20) */
-  var frais = parseNum(mData.frais_mensuels);
-  if (frais === 0) axes.frais = 20;
-  else if (frais <= 5) axes.frais = 16;
-  else if (frais <= 15) axes.frais = 12;
-  else if (frais <= 30) axes.frais = 6;
-  else axes.frais = 2;
-
-  if (mData.frais_decouvert_recents === 'non') axes.frais = Math.min(20, axes.frais + 2);
-  if (mData.commissions === 'non') axes.frais = Math.min(20, axes.frais + 1);
-  if (mData.rejets === 'non') axes.frais = Math.min(20, axes.frais + 1);
-  if (mData.frais_decouvert_recents === 'oui') axes.frais = Math.max(0, axes.frais - 4);
-  if (mData.commissions === 'oui') axes.frais = Math.max(0, axes.frais - 3);
-  if (mData.rejets === 'oui') axes.frais = Math.max(0, axes.frais - 3);
-
-  /* Securite axis (0-20) */
-  if (mData.alerte_solde === 'oui') axes.securite += 5;
-  if (mData.decouvert_autorise === 'oui') axes.securite += 3;
-  if (mData.utilisation_decouvert === 'jamais') axes.securite += 6;
-  else if (mData.utilisation_decouvert === '1_fois') axes.securite += 3;
-  else if (mData.utilisation_decouvert === 'souvent') axes.securite -= 2;
-  var checked = mData.checklist_checked || {};
-  var secuItems = ['alerte_solde_bas','alerte_grosse_depense','notif_carte','savoir_opposition','jamais_codes','raccrocher_rappeler','verifier_liens'];
-  var secuDone = secuItems.filter(function(k){return checked[k]}).length;
-  axes.securite += Math.round(secuDone / secuItems.length * 6);
-  axes.securite = Math.max(0, Math.min(20, axes.securite));
-
-  /* Epargne axis (0-20) */
-  var epargne = mData.epargne_liquide_total || 0;
-  var charges = mData.charges_fixes_total || mData.total_besoins || 0;
-  if (charges > 0) {
-    var ratio = epargne / charges;
-    if (ratio >= 3) axes.epargne = 20;
-    else if (ratio >= 1.5) axes.epargne = 15;
-    else if (ratio >= 0.5) axes.epargne = 10;
-    else if (ratio > 0) axes.epargne = 5;
-  } else if (epargne > 0) {
-    axes.epargne = 10;
-  }
-
-  /* Automatisation axis (0-20) */
-  if (mData.virement_auto_epargne === 'oui') axes.automatisation += 10;
-  var virMatelas = parseNum(mData.vir_matelas);
-  if (virMatelas > 0) axes.automatisation += 5;
-  var virProjet = parseNum(mData.vir_projet);
-  if (virProjet > 0) axes.automatisation += 3;
-  var virInvest = parseNum(mData.vir_invest);
-  if (virInvest > 0) axes.automatisation += 2;
-  axes.automatisation = Math.min(20, axes.automatisation);
-
-  /* Routine axis (0-20) */
-  var routineItems = ['routine_hebdo','routine_mensuelle','routine_annuelle','identifier_prelevements','verif_abonnements','supprimer_inutiles'];
-  var routineDone = routineItems.filter(function(k){return checked[k]}).length;
-  axes.routine = Math.round(routineDone / routineItems.length * 20);
-
-  s = axes.frais + axes.securite + axes.epargne + axes.automatisation + axes.routine;
-  return {score:Math.min(100, Math.max(0, s)), axes:axes};
+function buildMotifs() {
+  const h = document.getElementById('motifs');
+  h.innerHTML = MOTIFS.map(function (m) {
+    return '<button class="opt' + (A.motif === m[0] ? ' on' : '') + '" data-motif="' + m[0] + '">' +
+           m[1] + '</button>';
+  }).join('');
+  h.querySelectorAll('[data-motif]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      A.motif = b.dataset.motif;
+      h.querySelectorAll('[data-motif]').forEach(function (x) { x.classList.toggle('on', x === b); });
+    });
+  });
 }
 
-
-/* ══════════════════════════════════════════════════════════════
-   INIT
-   ══════════════════════════════════════════════════════════════ */
-(async function init() {
-  if (typeof brickStarted === 'function') brickStarted(BRICK_ID);
-
-  if (typeof requireAuth === 'function') {
-    var user = await requireAuth();
-    if (!user) return;
+/* On ne redemande pas ce que l'onboarding a deja recueilli. Ce qui vient de
+   la se signale, et reste modifiable. */
+function preremplir() {
+  let profil = null;
+  try { profil = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_profil') : null) || null; } catch (e) {}
+  if (!profil) return;
+  const st = profil.q_status_pro, age = profil.q_age_group, log = profil.q_logement_situation;
+  if (!A.statut) {
+    const carte = { college_lycee:'lycee', etudiant:'etudiant', indep_tpe:'autre',
+                    sal_ouvrier_employe:'emploi', sal_prof_inter:'emploi',
+                    cadre_prof_lib:'emploi', chomeur_inactif:'autre', retraite:'autre' };
+    if (st && carte[st]) { A.statut = carte[st]; prerempli.push('statut'); }
+    else if (age === '15_17') { A.statut = 'lycee'; prerempli.push('statut'); }
   }
-
-  if (typeof hydrateFromSupabase === 'function') {
-    await hydrateFromSupabase().catch(function(){return {profil:null}});
+  if (!A.logement && log) {
+    const carteL = { chez_parents:'parents', colocation:'seul', locataire:'seul',
+                     proprietaire:'seul', heberge_autre:'parents' };
+    if (carteL[log]) { A.logement = carteL[log]; prerempli.push('logement'); }
   }
+}
 
-  var profilLocal = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_profil') : null)
-    || (typeof getMockProfile === 'function' ? getMockProfile() : {});
+/* ═══ Le schéma ═══ */
+const NOTIONS = {
+  compte: { e:'🏦', t:'Ton compte courant', r:'Là où tout passe',
+    p:'C’est le point de passage de tout : ce que tu reçois y atterrit, ce que tu dépenses en sort. ' +
+      'Il ne rapporte rien — ce n’est pas son rôle. Son rôle est de faire circuler.',
+    sm:'💼', st:'Tu commences un job ou tu touches une bourse. On te demande un <b>RIB</b> : ' +
+      'c’est la carte d’identité de ton compte, celle qu’on donne pour être payé.',
+    mot:'<b>IBAN</b> — le numéro de ton compte, celui du RIB. On le donne sans crainte pour ' +
+      '<b>recevoir</b> de l’argent : il ne permet à personne de se servir.' },
+  paiement: { e:'💳', t:'Payer', r:'Carte, virement, prélèvement',
+    p:'La <b>carte</b> sert à payer sur le moment. Le <b>virement</b>, c’est toi qui envoies quand ' +
+      'tu veux. Le <b>prélèvement</b>, c’est l’inverse : tu autorises quelqu’un à venir se servir ' +
+      'chaque mois. C’est pratique, et c’est ce qui demande le plus d’attention.',
+    sm:'🏠', st:'Ton loyer part tout seul le 5 : c’est un <b>prélèvement</b>. ' +
+      'Tu rembourses 20 € à un ami : c’est un <b>virement</b>.',
+    mot:'<b>Autorisation de prélèvement</b> — révocable quand tu veux, et un prélèvement contesté ' +
+      'peut être remboursé dans les semaines qui suivent.' },
+  decouvert: { e:'📉', t:'Manquer', r:'Le découvert et ses frais',
+    p:'Deux situations très différentes. Le découvert <b>autorisé</b> : convenu d’avance, avec un ' +
+      'plafond et un tarif connus. Le découvert <b>non autorisé</b> : tu passes en dessous sans ' +
+      'accord, et là chaque opération peut déclencher des frais.',
+    sm:'⚠️', st:'Un prélèvement se présente alors que le compte est vide. Sans découvert autorisé, ' +
+      'il est <b>rejeté</b> — et le rejet se facture.',
+    mot:'<b>Agios</b> — le prix du découvert, calculé au jour le jour. Trois jours dans le rouge ' +
+      'coûtent moins que trente : c’est une durée, pas une amende fixe.' },
+  epargne: { e:'🐖', t:'Mettre de côté', r:'L’épargne comme barrière',
+    p:'L’intérêt n’est pas le rendement, il est faible. L’intérêt, c’est que l’argent n’est plus ' +
+      'sur le compte courant, donc plus à portée de carte. C’est une barrière, pas un placement.',
+    sm:'🔧', st:'Ton téléphone tombe. Si tu as 200 € de côté, c’est un ennui. ' +
+      'Sinon, c’est un découvert, puis des frais.',
+    mot:'<b>Livret</b> — disponible à tout moment, sans frais et sans risque. Le premier produit ' +
+      'd’épargne, et souvent le seul dont on a besoin au début.' },
+  credit: { e:'🔑', t:'Emprunter', r:'Le crédit, plus tard',
+    p:'Un jour tu voudras une voiture, financer des études, plus tard un logement. La banque dira ' +
+      'oui ou non en regardant comment tu t’es comporté <b>avant</b>. C’est le seul service où ton ' +
+      'passé compte vraiment.',
+    sm:'🗓️', st:'À 26 ans tu demandes un prêt. On regarde tes relevés des derniers mois : revenus ' +
+      'réguliers, pas d’incident, un peu d’épargne. <b>Tout se joue avant.</b>',
+    mot:'<b>Taux d’endettement</b> — la part de tes revenus qui part en remboursements. ' +
+      'C’est le premier chiffre que la banque calcule.' }
+};
+/* L'ordre des satellites suit ce que la personne a dit : celui qui la
+   concerne le plus vient en premier et porte une marque. */
+function satsOrdonnes() {
+  const base = ['paiement','decouvert','epargne','credit'];
+  const prio = [];
+  if (A.findemois === 'souvent' || A.motif === 'decouvert') prio.push('decouvert');
+  if (A.logement === 'seul') prio.push('paiement');
+  if (A.motif === 'premier') prio.push('paiement');
+  return prio.concat(base.filter(function (k) { return prio.indexOf(k) === -1; }));
+}
+function estPrioritaire(k) { return satsOrdonnes().indexOf(k) === 0 && !!A.findemois; }
 
-  var budgetBrickStore = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_budget_base') : null) || {};
-  var budgetBrick = budgetBrickStore.data || budgetBrickStore || {};
+let notionIdx = 0;   // position dans la sequence
 
-  var urgenceBrickStore = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_fonds_urgence') : null) || {};
-  var urgenceBrick = urgenceBrickStore.data || urgenceBrickStore || {};
+function sequence() {
+  // Le compte d'abord — tout en depend — puis l'ordre adapte au profil.
+  return ['compte'].concat(satsOrdonnes());
+}
 
-  /* Resume session */
-  var savedState = null;
-  if (typeof loadBrickState === 'function') {
-    savedState = await loadBrickState(BRICK_ID);
-  }
-  if (savedState && savedState.data && !savedState.completed) {
-    mData = Object.assign({}, savedState.data);
-    var resumeCard = document.getElementById('resume-card');
-    if (resumeCard) {
-      resumeCard.style.display = 'block';
-      var btnResume = document.getElementById('btn-resume');
-      if (btnResume) {
-        btnResume.onclick = function() {
-          resumeCard.style.display = 'none';
-          if (savedState.screenCourant && savedState.screenCourant > 1) {
-            goToScreen(savedState.screenCourant);
-          }
-        };
-      }
-    }
-  }
+function buildComprendre() {
+  const seq = sequence();
+  if (notionIdx >= seq.length) notionIdx = 0;
+  const k = seq[notionIdx];
+  const n = NOTIONS[k];
+  if (vus.indexOf(k) === -1) vus.push(k);
 
-  /* Pre-fill from profile & previous bricks */
-  if (mData.revenus == null) mData.revenus = budgetBrick.revenus || profilLocal.revenus_nets || profilLocal.revenus_nets_mensuel || 0;
-  if (mData.charges_fixes_total == null) mData.charges_fixes_total = budgetBrick.total_besoins || profilLocal.charges_fixes_total || 0;
-  if (mData.reste_a_vivre == null) mData.reste_a_vivre = budgetBrick.reste_a_vivre || 0;
-  if (mData.capacite_epargne == null) mData.capacite_epargne = budgetBrick.epargne || profilLocal.capacite_epargne || 0;
-  if (mData.epargne_liquide_total == null) mData.epargne_liquide_total = profilLocal.epargne_liquide_total || 0;
-  if (mData.total_besoins == null) mData.total_besoins = budgetBrick.total_besoins || profilLocal.charges_fixes_total || 0;
-  mData.objectif_matelas = urgenceBrick.fonds_urgence_objectif || profilLocal.fonds_urgence_objectif || 0;
-  mData.matelas_actuel = urgenceBrick.fonds_urgence_actuel || profilLocal.fonds_urgence_actuel || 0;
-  mData.status_pro = profilLocal.status_pro || '';
-  mData.dettes_types = profilLocal.dettes_types || [];
-  mData.produits_detenu = profilLocal.produits_detenu || [];
-  mData.age_group = profilLocal.age_group || '';
-  if (!mData.checklist_checked) mData.checklist_checked = {};
+  const rail = seq.map(function (c, i) {
+    const cls = (i === notionIdx) ? ' on' : (vus.indexOf(c) !== -1 ? ' lu' : '');
+    const trait = i < seq.length - 1
+      ? '<span class="rl' + (vus.indexOf(seq[i + 1]) !== -1 || i < notionIdx ? ' fait' : '') + '"></span>'
+      : '';
+    return '<button class="rp' + cls + '" data-i="' + i + '" type="button" ' +
+      'aria-current="' + (i === notionIdx) + '">' +
+      '<span class="rp-d">' + (vus.indexOf(c) !== -1 && i !== notionIdx ? '&#10003;' : (i + 1)) + '</span>' +
+      '<span class="rp-l">' + NOTIONS[c].t + '</span></button>' + trait;
+  }).join('');
 
-  buildScreen1();
-  updateProgressPanel(1);
-})();
+  const jauges = (k !== 'credit') ? '' :
+    '<div class="obs-in"><p class="obs-h">Ce qu’elle regarde, concrètement</p>' +
+    '<div class="obs-g">' + OBSERVE.map(function (o) {
+      return '<div class="og"><span class="e" aria-hidden="true">' + o[0] + '</span>' +
+             '<b>' + o[1] + '</b><span>' + o[2] + '</span></div>';
+    }).join('') + '</div></div>';
 
+  const prio = estPrioritaire(k) ? '<span class="nt-pr">pour toi</span>' : '';
 
-/* ══════════════════════════════════════════════════════════════
-   goToScreen
-   ══════════════════════════════════════════════════════════════ */
-function goToScreen(n) {
-  document.querySelectorAll('.screen').forEach(function(s) {
-    s.style.display = 'none';
-    s.classList.remove('active-screen');
+  document.getElementById('schema').innerHTML =
+    '<div class="nt">' +
+      '<div class="rail">' + rail + '</div>' +
+      '<div class="nt-b" aria-live="polite">' +
+        '<div class="nt-h"><span class="nt-e" aria-hidden="true">' + n.e + '</span>' +
+          '<span class="nt-t"><b>' + n.t + '</b><span>' + n.r + '</span></span>' + prio + '</div>' +
+        '<p class="nt-p">' + n.p + '</p>' +
+        '<div class="nt-sit"><span class="m">' + n.sm + '</span><span class="t">' + n.st + '</span></div>' +
+        jauges +
+        '<p class="nt-mot">' + n.mot + '</p>' +
+      '</div>' +
+      '<div class="nt-f"><span class="cpt">' + (notionIdx + 1) + ' sur ' + seq.length + '</span>' +
+        '<span class="act">' +
+          (notionIdx > 0 ? '<button class="btn-mini" data-nav="-1">Précédent</button>' : '') +
+          (notionIdx < seq.length - 1
+            ? '<button class="btn-mini plein" data-nav="1">Suivant</button>'
+            : '<button class="btn-mini plein" data-nav="chk">Passer aux situations</button>') +
+        '</span></div>' +
+    '</div>';
+
+  document.querySelectorAll('[data-i]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      notionIdx = parseInt(b.dataset.i, 10);
+      buildComprendre(); buildControle(); majSticky();
+    });
   });
-  var el = document.getElementById('screen-' + n);
-  if (!el) return;
-  el.style.display = '';
-  el.classList.add('active-screen');
-  currentScreen = n;
-  updateProgressPanel(n);
-  if (typeof autosaveBrickProgress === 'function') {
-    autosaveBrickProgress(BRICK_ID, n, mData);
+  document.querySelectorAll('[data-nav]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      const v = b.dataset.nav;
+      if (v === 'chk') {
+        // On amene au controle plutot que de l'enjamber. La sortie vers
+        // l'ecran suivant reste dans la barre collante, comme partout.
+        const c = document.querySelector('.chk');
+        if (c) c.scrollIntoView({ behavior:'smooth', block:'center' });
+        return;
+      }
+      notionIdx = Math.max(0, Math.min(seq.length - 1, notionIdx + parseInt(v, 10)));
+      buildComprendre(); buildControle(); majSticky();
+      document.querySelector('.nt').scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+  });
+
+  buildControle();
+  majSticky();
+}
+
+/* Contrôle : trois situations, apparaît quand trois notions ont été vues */
+const CHK = [
+  { id:'c1', l:'Ton abonnement de transport part tout seul le 3 de chaque mois. C’est…',
+    o:[['virement','Un virement'],['prelevement','Un prélèvement'],['carte','Un paiement par carte']],
+    bon:'prelevement',
+    f:'<b>Un prélèvement.</b> Tu as autorisé quelqu’un à venir se servir à date fixe. C’est toi qui ' +
+       'gardes la main : l’autorisation se révoque.' },
+  { id:'c2', l:'Un ami te demande ton IBAN pour te rembourser. Tu peux le donner ?',
+    o:[['oui','Oui, sans risque'],['non','Non, jamais'],['depend','Seulement à la famille']],
+    bon:'oui',
+    f:'<b>Oui.</b> L’IBAN sert à <b>recevoir</b>. Il ne permet à personne de prélever sans une ' +
+       'autorisation que tu aurais signée.' },
+  { id:'c3', l:'Tu es à découvert trois jours, puis ton salaire arrive. Ça coûte…',
+    o:[['fixe','Une pénalité fixe'],['duree','Selon le nombre de jours'],['rien','Rien du tout']],
+    bon:'duree',
+    f:'<b>Selon la durée.</b> Les agios courent au jour le jour : trois jours coûtent bien moins ' +
+       'que trente. Sortir vite du rouge change tout.' }
+];
+
+function buildControle() {
+  const hote = document.getElementById('controle');
+  if (vus.length < 5) { hote.innerHTML = ''; return; }
+  hote.innerHTML = '<div class="chk"><p class="chk-h">Tu as tout vu. Trois situations, pour ancrer.</p>' +
+    '<p class="chk-s">Pas de note, pas de piège. Juste de quoi ancrer ce que tu viens de lire.</p>' +
+    CHK.map(function (q) {
+      const rep = reponsesChk[q.id];
+      const opts = q.o.map(function (o) {
+        let cls = '';
+        if (rep) {
+          if (o[0] === q.bon) cls = ' bon';
+          else if (o[0] === rep) cls = ' faux';
+        }
+        return '<button class="chk-o' + cls + '" data-chk="' + q.id + '" data-v="' + o[0] + '"' +
+               (rep ? ' disabled' : '') + '>' + o[1] + '</button>';
+      }).join('');
+      return '<div class="chk-q"><p class="chk-l">' + q.l + '</p>' +
+        '<div class="chk-opts">' + opts + '</div>' +
+        (rep ? '<p class="chk-f">' + q.f + '</p>' : '') + '</div>';
+    }).join('') + '</div>';
+
+  hote.querySelectorAll('[data-chk]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      reponsesChk[b.dataset.chk] = b.dataset.v;
+      buildControle(); majSticky();
+    });
+  });
+}
+
+/* ═══ Écran 2 ═══ */
+const QUESTIONS = [
+  { cle:'statut', l:'Tu es plutôt…', h:'Pour situer d’où vient ton argent.',
+    opts:[['lycee','Au lycée'],['etudiant','Étudiant'],['alternance','En alternance'],
+          ['emploi','En emploi'],['autre','Autre chose']] },
+  { cle:'logement', l:'Tu vis…', h:'Le logement change tout à ce qui sort de ton compte.',
+    opts:[['parents','Chez mes parents'],['seul','Seul ou en coloc']] },
+  { cle:'revenus', l:'Ton argent arrive…', h:'La régularité compte plus que le montant.',
+    opts:[['regulier','Chaque mois, à date'],['irregulier','De temps en temps'],['variable','Ça dépend des mois']] },
+  { cle:'voyage', l:'Tu vas hors zone euro…', h:'Payer dans une autre monnaie ne coûte pas pareil.',
+    opts:[['jamais','Jamais'],['parfois','De temps en temps'],['souvent','Souvent']] },
+  { cle:'findemois', l:'Il t’arrive de finir le mois à zéro…', h:'Sans jugement. C’est ce qui décide du type de carte.',
+    opts:[['jamais','Jamais'],['parfois','Parfois'],['souvent','Souvent']] }
+];
+
+function buildToi() {
+  // Une carte unique a rangees : cinq cartes identiques empilees donnaient
+  // exactement l'uniformite qu'on cherche a casser.
+  document.getElementById('questions').innerHTML =
+    '<div class="qc">' + QUESTIONS.map(function (q) {
+      const su = prerempli.indexOf(q.cle) !== -1;
+      const opts = q.opts.map(function (o) {
+        return '<button class="opt' + (A[q.cle] === o[0] ? ' on' : '') + '" data-q="' + q.cle +
+               '" data-v="' + o[0] + '">' + o[1] + '</button>';
+      }).join('');
+      return '<div class="qr' + (A[q.cle] ? ' ok' : '') + '">' +
+        '<div class="qr-l"><b>' + q.l + '</b>' +
+          (su ? '<span class="q-su">déjà connu</span>' : '') +
+          '<span>' + q.h + '</span></div>' +
+        '<div class="qr-o">' + opts + '</div></div>';
+    }).join('') + '</div>';
+
+  document.querySelectorAll('#questions .opt').forEach(function (b) {
+    b.addEventListener('click', function () {
+      A[b.dataset.q] = b.dataset.v;
+      document.querySelectorAll('[data-q="' + b.dataset.q + '"]').forEach(function (x) {
+        x.classList.toggle('on', x === b);
+      });
+      const r = b.closest('.qr'); if (r) r.classList.add('ok');
+      majPortrait(); majSticky();
+    });
+  });
+  majPortrait(); majSticky();
+}
+
+function complet() { return QUESTIONS.every(function (q) { return !!A[q.cle]; }); }
+
+/* portrait vivant, dans le panneau latéral */
+const PORTRAIT = {
+  statut:  { lycee:['🎓','Au lycée'], etudiant:['🎓','Étudiant'], alternance:['🔧','En alternance'],
+             emploi:['💼','En emploi'], autre:['•','Autre situation'] },
+  logement:{ parents:['🏡','Chez tes parents'], seul:['🔑','Tu vis seul ou en coloc'] },
+  revenus: { regulier:['📅','Rentrées régulières'], irregulier:['〰️','Rentrées irrégulières'],
+             variable:['〰️','Rentrées variables'] },
+  voyage:  { jamais:['🇪🇺','Zone euro uniquement'], parfois:['✈️','Parfois hors zone euro'],
+             souvent:['✈️','Souvent hors zone euro'] },
+  findemois:{ jamais:['✅','Jamais à zéro'], parfois:['⚠️','Parfois à zéro'], souvent:['⚠️','Souvent à zéro'] }
+};
+
+function majPortrait() {
+  const panneau = document.getElementById('side-portrait');
+  panneau.style.display = (ecran >= 2) ? '' : 'none';
+  const lignes = QUESTIONS.map(function (q) {
+    const v = A[q.cle];
+    const p = v && PORTRAIT[q.cle] ? PORTRAIT[q.cle][v] : null;
+    return '<div class="pt-i' + (p ? ' on' : '') + '">' +
+      '<span class="pt-m">' + (p ? p[0] : '·') + '</span>' +
+      '<span class="pt-t">' + (p ? '<b>' + p[1] + '</b>' : '—') + '</span></div>';
+  }).join('');
+  const rien = !QUESTIONS.some(function (q) { return !!A[q.cle]; });
+  document.getElementById('portrait').innerHTML = rien
+    ? '<p class="pt-vide">Il se remplit à chaque réponse.</p>' + lignes
+    : lignes;
+}
+
+/* ═══ Écran 3 ═══ */
+const CARTES = {
+  aut: { n:'À autorisation systématique',
+    l:[[1,'Vérifie ton solde à chaque paiement'],[1,'Découvert quasi impossible'],[0,'Un paiement peut être refusé']] },
+  imm: { n:'À débit immédiat',
+    l:[[1,'Ton solde reflète la réalité'],[1,'Le réglage le plus lisible'],[0,'Le découvert reste possible']] },
+  dif: { n:'À débit différé',
+    l:[[1,'Tout est débité en une fois'],[0,'Le compte paraît plus rempli'],[0,'Demande de la rigueur']] }
+};
+
+function carteRecommandee() {
+  if (A.findemois === 'souvent') {
+    return { cle:'aut', nom:'une carte à autorisation systématique',
+      pourquoi:'Tu as dit qu’il t’arrive <b>souvent</b> de finir le mois à zéro. Cette carte vérifie ' +
+        'ton solde à chaque paiement : s’il n’y a pas assez, le paiement est refusé. C’est désagréable ' +
+        'sur le moment, mais un refus ne coûte rien alors qu’un rejet, si.',
+      note:'Beaucoup de banques la proposent par défaut aux moins de 25 ans. Si tu ne sais pas ce que ' +
+        'tu as, le type est écrit à côté de la cotisation sur ton relevé.' };
   }
-  window.scrollTo({top:0,behavior:'smooth'});
-  if (n === 2) buildScreen2();
+  if (A.findemois === 'parfois' || A.revenus !== 'regulier') {
+    return { cle:'imm', nom:'une carte à débit immédiat',
+      pourquoi:'Le montant part de ton compte tout de suite : ce que tu vois sur ton solde est ce que ' +
+        'tu as vraiment. C’est le réglage le plus lisible quand les rentrées ne sont pas parfaitement ' +
+        'régulières.',
+      note:'À éviter pour l’instant : le <b>débit différé</b>, qui débite tout en une fois en fin de ' +
+        'mois. Il fait paraître le compte plus rempli qu’il ne l’est.' };
+  }
+  return { cle:'imm', nom:'une carte à débit immédiat, et c’est très bien',
+    pourquoi:'Tes rentrées sont régulières et tu ne finis pas le mois à zéro. Tu n’as besoin de rien ' +
+      'de plus élaboré : une carte simple fait le travail.',
+    note:'Le <b>débit différé</b> pourra t’intéresser plus tard, quand tes revenus seront bien ' +
+      'installés. Il n’y a aucune raison de se presser.' };
+}
+
+function besoins() {
+  const oui = [], non = [];
+  oui.push(['Un livret d’épargne',
+    'Même avec 10 € par mois. Pas pour le rendement : pour que l’argent ne soit plus à portée de carte.']);
+  if (A.logement === 'seul') {
+    oui.push(['Une assurance habitation',
+      'Obligatoire quand on loue. Ta banque en propose une, ton assureur aussi : compare, tu n’es tenu à rien.']);
+    oui.push(['Connaître la date de tes prélèvements',
+      'Loyer, énergie, abonnements partent tout seuls. Savoir <b>quand</b> évite la moitié des incidents.']);
+  }
+  if (A.voyage === 'souvent') {
+    oui.push(['Regarder les frais hors zone euro',
+      'Payer dans une autre monnaie se facture, souvent en pourcentage. C’est le seul poste qui justifie de comparer.']);
+  }
+  if (A.findemois !== 'jamais') {
+    oui.push(['Une alerte sur ton solde',
+      'La notification de l’application, gratuite, prévient avant le découvert. Le réglage le plus utile et le moins connu.']);
+  }
+  if (A.statut === 'lycee' || A.statut === 'etudiant') {
+    oui.push(['Demander s’il existe une offre jeune',
+      'Beaucoup d’établissements allègent la tenue de compte et la cotisation. Une question à poser, pas une faveur.']);
+  }
+  non.push(['Une carte haut de gamme',
+    'On y paie surtout des assurances de voyage et des plafonds élevés. ' +
+    (A.voyage === 'souvent' ? 'Tu voyages souvent : ça se discute, mais compare ce que tu utiliserais vraiment.'
+                            : 'Tu n’es pas dans ce cas aujourd’hui.')]);
+  if (A.voyage === 'jamais') {
+    non.push(['Les options liées à l’étranger',
+      'Tu ne sors jamais de la zone euro : rien de ce qui concerne les devises ne te sert.']);
+  }
+  non.push(['Tout souscrire le jour de l’ouverture',
+    'On propose souvent l’ensemble d’un bloc. Rien ne presse : un service peut s’ajouter quand l’usage arrive.']);
+  return { oui:oui, non:non };
+}
+
+const OBSERVE = [
+  ['📅','La régularité','Un revenu qui tombe à date rassure plus qu’un gros revenu irrégulier.'],
+  ['⚠️','Les incidents','C’est ce qui marque le plus, et s’efface le plus lentement.'],
+  ['⏳','L’ancienneté','Une relation qui dure compte. En changer chaque année pèse.'],
+  ['🐖','Ton épargne','Même de petites sommes régulières : tu sais tenir un engagement.']
+];
+
+function buildScreen3() {
+  const c = carteRecommandee(), b = besoins();
+  const jeune = A.statut === 'lycee' || A.statut === 'etudiant';
+
+  let html = '<div>' +
+    '<p class="kick" style="margin-bottom:.4rem">Étape 3 · Ce qui te va</p>' +
+    '<h2 class="h2" tabindex="-1">Les trois cartes,<br>et celle qui te correspond.</h2></div>';
+
+  html += '<div class="cartes">' + ['aut','imm','dif'].map(function (k) {
+    const x = CARTES[k];
+    return '<div class="cb' + (c.cle === k ? ' reco' : '') + '">' +
+      (c.cle === k ? '<span class="cb-b">Pour toi</span>' : '') +
+      '<p class="cb-n">' + x.n + '</p>' +
+      x.l.map(function (l) {
+        return '<p class="cb-l ' + (l[0] ? 'o' : 'n') + '"><i>' + (l[0] ? '+' : '–') + '</i>' + l[1] + '</p>';
+      }).join('') + '</div>';
+  }).join('') + '</div>';
+
+  html += '<div class="reco"><div class="reco-in">' +
+    '<p class="kick" style="margin-bottom:0">Pourquoi celle-là</p>' +
+    '<p class="reco-t">Pour toi, ' + c.nom + '.</p>' +
+    '<p class="reco-p">' + c.pourquoi + '</p>' +
+    '<div class="reco-note">' + c.note + '</div></div></div>';
+
+  html += '<div class="empile">' +
+    '<div class="liste"><p class="liste-h">Ce qui te sera utile</p>' +
+      '<p class="liste-s">Tiré de tes réponses, pas d’un profil moyen.</p>' +
+      b.oui.map(function (x) {
+        return '<div class="li"><span class="li-m oui">+</span><span class="li-c"><b>' + x[0] +
+               '</b><span>' + x[1] + '</span></span></div>'; }).join('') + '</div>' +
+    '<div class="liste pli" id="pli-non">' +
+      '<button class="pli-h" type="button" id="pli-t" aria-expanded="false">' +
+        '<span><b class="liste-h">Ce dont tu n’as pas besoin</b>' +
+        '<span class="liste-s">' + b.non.length + ' choses qu’on va te proposer, et qui ne te ' +
+        'servent pas aujourd’hui.</span></span>' +
+        '<span class="pli-c"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" ' +
+        'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M6 9l6 6 6-6"/></svg></span></button>' +
+      '<div class="pli-b"><div class="pli-in">' +
+      b.non.map(function (x) {
+        return '<div class="li"><span class="li-m non">–</span><span class="li-c"><b>' + x[0] +
+               '</b><span>' + x[1] + '</span></span></div>'; }).join('') +
+      '</div></div></div>' +
+    '</div>';
+
+  html += '<div class="reperes"><b>Ce qui est normal de payer</b>' +
+    (REPERES.verifie ? '<p>Repères à jour au ' + REPERES.verifie_le + '.</p>'
+      : '<p>Chaque banque doit t’envoyer une fois par an un <b>récapitulatif des frais</b> ' +
+        'qu’elle t’a prélevés. Trois lignes suffisent à le lire : la <b>tenue de compte</b>, la ' +
+        '<b>cotisation de carte</b>, et les <b>frais d’incident</b>. ' +
+        (jeune ? 'À ton âge, les deux premières sont souvent allégées — vérifie que c’est bien le cas chez toi.' : '') +
+        '</p><em>Ces trois lignes sont sur ton relevé annuel de frais : c’est là qu’il faut regarder. ' +
+        'On n’affiche pas de montants ici, ils changent chaque année et d’une banque à l’autre.</em>') + '</div>';
+
+  document.getElementById('reco').innerHTML = html;
+  const pt = document.getElementById('pli-t');
+  if (pt) pt.addEventListener('click', function () {
+    const bloc = document.getElementById('pli-non');
+    const o = !bloc.classList.contains('open');
+    bloc.classList.toggle('open', o);
+    pt.setAttribute('aria-expanded', o ? 'true' : 'false');
+  });
+}
+
+/* ═══ Écran 4 — allégé : la frise, puis l'engagement ═══ */
+const MOMENTS = [
+  ['Ouvrir un compte','Tu y es. Si toutes les banques refusent, la Banque de France peut en désigner une.'],
+  ['Ton premier découvert','Il arrivera peut-être. Ce qui compte : qu’il soit autorisé et court.'],
+  ['Ta première épargne','Un livret, quelques dizaines d’euros. Le moment où tu cesses de subir.'],
+  ['Ton premier crédit','Voiture, études, matériel. On regardera les mois qui précèdent.'],
+  ['Un crédit immobilier','Des années plus tard. Tout ce que tu auras fait avant sera dans le dossier.'],
+  ['Changer de banque','Gratuit, et la nouvelle transfère tes prélèvements à ta place.']
+];
+
+function engagementsPossibles() {
+  const e = [];
+  if (A.findemois !== 'jamais') e.push({ id:'alerte', t:'Activer l’alerte de solde dans mon application',
+    d:'Cinq minutes. C’est ce qui évite le plus d’incidents, et ça ne coûte rien.',
+    pq:'Tu as dit qu’il t’arrive de finir le mois à zéro.' });
+  e.push({ id:'releve', t:'Ouvrir mon dernier relevé et repérer trois lignes',
+    d:'Tenue de compte, cotisation de carte, frais d’incident. Juste savoir ce que je paie.',
+    pq:'Personne ne regarde son relevé. C’est dix minutes, une fois.' });
+  e.push({ id:'livret', t:'Mettre en place un virement automatique vers un livret',
+    d:'Le montant n’a pas d’importance. C’est l’automatisme qui compte.',
+    pq:'C’est la barrière dont on a parlé, celle qui évite le découvert.' });
+  if (A.logement === 'seul') e.push({ id:'prelev', t:'Lister mes prélèvements et leurs dates',
+    d:'Savoir quel jour part quoi. La moitié des incidents viennent d’un calendrier mal connu.',
+    pq:'Tu vis seul : les prélèvements rythment ton mois.' });
+  return e;
+}
+
+// Une seule proposition mise en avant : celle qui rapporte le plus pour le
+// moins d'effort, selon ce qu'elle a dit. Les autres restent accessibles.
+function engagementParDefaut() {
+  const e = engagementsPossibles();
+  const ordre = (A.findemois !== 'jamais') ? ['alerte','prelev','livret','releve']
+                                           : ['livret','releve','prelev','alerte'];
+  for (const id of ordre) { if (e.find(function (x) { return x.id === id; })) return id; }
+  return e[0] ? e[0].id : null;
+}
+
+function buildScreen4() {
+  const e = engagementsPossibles();
+  if (!engagementChoisi) engagementChoisi = engagementParDefaut();
+
+  let html = '<div>' +
+    '<p class="kick" style="margin-bottom:.4rem">Étape 4 · La suite</p>' +
+    '<h2 class="h2" tabindex="-1">Six rendez-vous,<br>sur toute une vie.</h2>' +
+    '<p class="sub">Tu es au premier. Les autres arriveront, et ce que tu fais maintenant les prépare.</p></div>';
+
+  html += '<div class="fr"><div class="fr-l">' + MOMENTS.map(function (m, i) {
+    return '<div class="fr-i' + (i === 0 ? ' now' : '') + '" style="animation-delay:' + (i * 70) + 'ms">' +
+      '<span class="fr-d">' + (i === 0 ? '&#10003;' : (i + 1)) + '</span>' +
+      '<p class="fr-t">' + m[0] + '</p><p class="fr-s">' + m[1] + '</p></div>';
+  }).join('') + '</div></div>';
+
+  const RETOUR = {
+    comprendre:'Tu es venu parce que tu n’y comprenais rien.',
+    premier:'Tu es venu parce que tu vas toucher ton premier argent.',
+    decouvert:'Tu es venu parce que le découvert te faisait peur.',
+    arnaque:'Tu es venu parce que tu ne voulais pas te faire avoir.',
+    flou:'Tu es venu sans trop savoir quoi chercher.'
+  };
+  const ouverture = (A.motif && RETOUR[A.motif])
+    ? RETOUR[A.motif]
+    : 'Tu es arrivé ici sans savoir ce qu’une banque faisait vraiment.';
+  {
+    html += '<div class="boucle"><div class="boucle-in">' +
+      '<p class="kick" style="margin-bottom:.5rem">On referme</p>' +
+      '<p class="boucle-t">' + ouverture + '</p>' +
+      '<p class="boucle-p">Tu sais maintenant ce que fait chaque pièce, ce qui te va, et ce que ' +
+      'ta banque regarde. La suite, c’est de savoir où va ton argent — c’est exactement ' +
+      'l’objet de la brique <b>Stabilise ton mois</b>.</p></div></div>';
+  }
+
+  const def = e.find(function (x) { return x.id === engagementChoisi; }) || e[0];
+  const autres = e.filter(function (x) { return x.id !== def.id; });
+  html += '<div><p class="liste-h" style="margin-bottom:.15rem">Une chose à faire cette semaine</p>' +
+    '<p class="liste-s" style="margin-bottom:.9rem">On t’en propose une. Tu peux en préférer une autre.</p>' +
+    '<div class="eng on grand" data-eng="' + def.id + '" role="button" tabindex="0" aria-pressed="true">' +
+      '<span class="eng-r"></span><span><span class="eng-t">' + def.t + '</span>' +
+      '<span class="eng-d">' + def.d + '</span>' +
+      '<span class="eng-pq">' + def.pq + '</span></span></div>' +
+    (autres.length ? '<div class="liste pli" id="pli-eng" style="margin-top:.7rem">' +
+      '<button class="pli-h" type="button" id="pli-e" aria-expanded="false">' +
+        '<span><b class="liste-h">Je préfère autre chose</b>' +
+        '<span class="liste-s">' + autres.length + ' autre' + (autres.length > 1 ? 's' : '') +
+        ' proposition' + (autres.length > 1 ? 's' : '') + '</span></span>' +
+        '<span class="pli-c"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" ' +
+        'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M6 9l6 6 6-6"/></svg></span></button>' +
+      '<div class="pli-b"><div class="pli-in" style="display:flex;flex-direction:column;gap:.6rem">' +
+      autres.map(function (x) {
+        return '<div class="eng" data-eng="' + x.id + '" role="button" tabindex="0" aria-pressed="false">' +
+          '<span class="eng-r"></span><span><span class="eng-t">' + x.t + '</span>' +
+          '<span class="eng-d">' + x.d + '</span></span></div>'; }).join('') +
+      '</div></div></div>' : '') + '</div>';
+
+  document.getElementById('suite').innerHTML = html;
+  const pe = document.getElementById('pli-e');
+  if (pe) pe.addEventListener('click', function () {
+    const bloc = document.getElementById('pli-eng');
+    const o = !bloc.classList.contains('open');
+    bloc.classList.toggle('open', o);
+    pe.setAttribute('aria-expanded', o ? 'true' : 'false');
+  });
+
+  document.querySelectorAll('[data-eng]').forEach(function (el) {
+    const choisir = function () {
+      engagementChoisi = el.dataset.eng;
+      buildScreen4();   // le choix remonte en tete, les autres se replient
+    };
+    el.addEventListener('click', choisir);
+    el.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); choisir(); }
+    });
+  });
+}
+
+/* ═══ Droits — panneau latéral, disponibles partout ═══ */
+const DROITS = [
+  ['Le droit au compte','Si les banques refusent, la Banque de France peut en désigner une qui devra accepter.'],
+  ['Un plafond sur les frais d’incident','Les commissions en cas d’incident sont encadrées, par opération et par mois.'],
+  ['La mobilité bancaire gratuite','Changer de banque ne coûte rien : la nouvelle transfère tes prélèvements.']
+];
+
+function buildDroits() {
+  document.getElementById('droits').innerHTML = DROITS.map(function (d) {
+    return '<div class="dr-i"><b>' + d[0] + '</b><span>' + d[1] + '</span></div>';
+  }).join('');
+  const t = document.getElementById('dr-toggle');
+  t.addEventListener('click', function () {
+    const p = document.getElementById('side-droits');
+    const o = !p.classList.contains('open');
+    p.classList.toggle('open', o);
+    t.setAttribute('aria-expanded', o ? 'true' : 'false');
+  });
+}
+
+/* ═══ Navigation ═══ */
+const ETAPES = ['Intro', 'Toi', 'Comprendre', 'Ce qui te va', 'La suite'];
+
+function majSide() {
+  document.getElementById('side-steps').innerHTML = ETAPES.map(function (l, i) {
+    const cls = i < ecran ? 'done' : (i === ecran ? 'now' : '');
+    return '<div class="side-step ' + cls + '"><span class="side-dot">' +
+           (i < ecran ? '&#10003;' : (i + 1)) + '</span><span class="side-l">' + l + '</span></div>';
+  }).join('');
+}
+
+function majSticky() {
+  const next = document.getElementById('btn-next');
+  const back = document.getElementById('btn-back');
+  const note = document.getElementById('sticky-note');
+  document.getElementById('sticky').style.display = ecran === 0 ? 'none' : '';
+  back.style.display = ecran > 0 ? '' : 'none';
+  note.textContent = '';
+
+  if (ecran === 1) {
+    next.textContent = 'Comprendre ma banque'; next.disabled = !complet();
+    const n = QUESTIONS.filter(function (q) { return !!A[q.cle]; }).length;
+    if (!complet()) note.textContent = n + ' réponse' + (n > 1 ? 's' : '') + ' sur ' + QUESTIONS.length;
+  } else if (ecran === 2) {
+    next.textContent = 'Voir ce qui me va'; next.disabled = false;
+    const q = Object.keys(reponsesChk).length;
+    note.textContent = vus.length + ' notion' + (vus.length > 1 ? 's' : '') + ' sur 5' +
+                       (q ? ' · ' + q + ' situation' + (q > 1 ? 's' : '') : '') +
+                       ' · tu peux continuer quand tu veux';
+  } else if (ecran === 3) { next.textContent = 'Et après ?'; next.disabled = false; }
+  else { next.textContent = 'Terminer la brique'; next.disabled = false; }
+}
+
+function goToScreen(n) {
+  n = Math.max(0, Math.min(4, n));
+  ecran = n;
+  document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active-screen'); });
+  const t = document.getElementById('screen-' + n);
+  if (t) t.classList.add('active-screen');
+  if (n === 1) buildToi();
+  if (n === 2) buildComprendre();
   if (n === 3) buildScreen3();
   if (n === 4) buildScreen4();
-  if (n === 5) buildScreen5();
-  if (n === 6) buildScreen6();
+  majSide(); majPortrait(); majSticky();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Le lecteur d'ecran doit savoir qu'on a change d'etape.
+  const titre = t ? t.querySelector('h2[tabindex]') : null;
+  if (titre) setTimeout(function () { try { titre.focus({ preventScroll:true }); } catch (e) {} }, 60);
+  if (typeof autosaveBrickProgress === 'function') autosaveBrickProgress(BRICK_ID, n, etatBrut());
 }
 
-
-/* ══════════════════════════════════════════════════════════════
-   buildScreen1
-   ══════════════════════════════════════════════════════════════ */
-function buildScreen1() {
-  var grid = document.getElementById('data-cards-grid');
-  if (grid) {
-    grid.innerHTML = '';
-    var rev = mData.revenus || 0;
-    if (rev > 0) grid.innerHTML += buildDataCard(formatEuro(rev), 'Revenus mensuels', 'profil');
-    var ch = mData.charges_fixes_total || 0;
-    if (ch > 0) grid.innerHTML += buildDataCard(formatEuro(ch), 'Charges fixes', 'budget');
-    var rav = mData.reste_a_vivre || 0;
-    if (rav > 0) grid.innerHTML += buildDataCard(formatEuro(rav), 'Reste a vivre', 'budget');
-    var ep = mData.epargne_liquide_total || 0;
-    if (ep > 0) grid.innerHTML += buildDataCard(formatEuro(ep), 'Epargne disponible', 'profil');
-    var mat = mData.objectif_matelas || 0;
-    if (mat > 0) grid.innerHTML += buildDataCard(formatEuro(mat), 'Objectif épargne de précaution', 'fonds urgence');
-  }
-
-  /* Bind inputs */
-  bindInput('input-banque', 'banque_principale', 'text');
-  bindSelect('input-type-carte', 'type_carte');
-  bindSelect('input-type-debit', 'type_debit');
-  bindInput('input-frais-mensuels', 'frais_mensuels', 'number');
-  bindSelect('input-decouvert', 'decouvert_autorise');
-  bindInput('input-montant-decouvert', 'montant_decouvert', 'number');
-  bindSelect('input-utilisation-decouvert', 'utilisation_decouvert');
-  bindSelect('input-alerte-solde', 'alerte_solde');
-  bindSelect('input-virement-auto', 'virement_auto_epargne');
-
-  /* Conditional montant decouvert */
-  var selDec = document.getElementById('input-decouvert');
-  if (selDec) {
-    selDec.addEventListener('change', function() {
-      var g = document.getElementById('group-montant-decouvert');
-      if (g) g.style.display = this.value === 'oui' ? '' : 'none';
-    });
-    if (mData.decouvert_autorise === 'oui') {
-      var g = document.getElementById('group-montant-decouvert');
-      if (g) g.style.display = '';
-    }
-  }
-
-  /* Pre-fill if coming from profile */
-  if (mData.frais_mensuels > 0) {
-    var inp = document.getElementById('input-frais-mensuels');
-    if (inp && !inp.value) { inp.value = mData.frais_mensuels; inp.classList.add('prefilled'); showBadge('badge-frais'); }
-  }
-
-  updateScoreProvisoire();
-
-  var btnNext = document.getElementById('btn-s1-next');
-  if (btnNext) btnNext.onclick = function(){ goToScreen(2); };
+function profilAEcrire() {
+  const champs = { ppb_revenus_regularite: A.revenus, ppb_tension_fin_de_mois: A.findemois };
+  let profil = {};
+  try { profil = (typeof loadFromStorage === 'function' && loadFromStorage('fund_profil')) || {}; }
+  catch (e) {}
+  const deja = profil.logement_situation || profil.q_logement_situation;
+  if (!deja && A.logement === 'parents') champs.logement_situation = 'chez_parents';
+  return champs;
 }
 
+function etatBrut() {
+  const c = carteRecommandee();
+  return { reponses:A, notions_lues:vus, situations:reponsesChk, engagement:engagementChoisi,
+           carte_recommandee:c.nom,
+           // libelle court, pour la carte du tableau de bord
+           carte_cle:c.cle, carte_courte:(CARTES[c.cle] || {}).n || null,
+           besoins_identifies:besoins().oui.map(function (x) { return x[0]; }) };
+}
 
-/* ══════════════════════════════════════════════════════════════
-   buildScreen2
-   ══════════════════════════════════════════════════════════════ */
-function buildScreen2() {
-  /* Placement visual */
-  var pvGrid = document.getElementById('pv-grid');
-  if (pvGrid && !pvGrid.dataset.built) {
-    pvGrid.innerHTML = '';
-    PLACEMENT_VISUAL.forEach(function(p) {
-      var cls = 'pv-card' + (p.fw ? ' full-width' : '');
-      pvGrid.innerHTML +=
-        '<div class="' + cls + '">' +
-          '<div class="pv-card-icon">' + p.icon + '</div>' +
-          '<div class="pv-card-title">' + escapeHtml(p.title) + '</div>' +
-          '<div class="pv-card-support">' + escapeHtml(p.support) + '</div>' +
-          '<div class="pv-card-dispo">' + p.dispo + '</div>' +
-          '<div class="pv-card-note">' + escapeHtml(p.note) + '</div>' +
-        '</div>';
-    });
-    pvGrid.dataset.built = '1';
-  }
+function suivant() { if (ecran < 4) { goToScreen(ecran + 1); return; } terminer(); }
 
-  /* Simulateur pre-fill */
-  var charges = mData.charges_fixes_total || mData.total_besoins || 0;
-  var marge = Math.round(charges * 0.15) || 200;
-  var inputSimCharges = document.getElementById('input-sim-charges');
-  var inputSimMarge = document.getElementById('input-sim-marge');
-  if (inputSimCharges && !inputSimCharges.value && charges > 0) {
-    inputSimCharges.value = charges;
-    inputSimCharges.classList.add('prefilled');
-    showBadge('badge-sim-charges');
-  }
-  if (inputSimMarge && !inputSimMarge.value) {
-    inputSimMarge.value = marge;
-    inputSimMarge.classList.add('prefilled');
-    showBadge('badge-sim-marge');
-  }
-
-  /* Wire btn-s2-next */
-  var btnS2Next = document.getElementById('btn-s2-next');
-  if (btnS2Next && !btnS2Next._wired) {
-    btnS2Next.onclick = function() { goToScreen(3); };
-    btnS2Next._wired = true;
-  }
-
-  /* Build chips interactifs */
-  var chipsEl = document.getElementById('pv-chips');
-  if (chipsEl && !chipsEl.dataset.built) {
-    chipsEl.innerHTML = '';
-    PLACEMENT_VISUAL.forEach(function(p, i) {
-      var chip = document.createElement('button');
-      chip.className = 'pv-chip';
-      chip.setAttribute('role', 'tab');
-      chip.setAttribute('aria-selected', 'false');
-      chip.innerHTML = '<span class="pv-chip-icon">' + p.icon + '</span><span class="pv-chip-label">' + p.title + '</span>';
-      chip.addEventListener('click', function() {
-        document.querySelectorAll('.pv-chip').forEach(function(c) { c.classList.remove('active'); c.setAttribute('aria-selected','false'); });
-        chip.classList.add('active');
-        chip.setAttribute('aria-selected','true');
-        var det = document.getElementById('pv-detail');
-        if (det) {
-          det.style.display = '';
-          document.getElementById('pv-detail-icon').textContent = p.icon;
-          document.getElementById('pv-detail-support').innerHTML = '<span style="color:var(--accent-strong);font-weight:600;">' + p.support + '</span>';
-          document.getElementById('pv-detail-dispo').innerHTML = p.badge ? '<span style="display:inline-block;padding:0.2rem 0.6rem;border-radius:9999px;background:var(--accent-soft);color:var(--accent-strong);font-size:0.7rem;font-weight:700;letter-spacing:0.04em">' + p.badge + '</span>' : '';
-          document.getElementById('pv-detail-note').textContent = p.note;
-          det.classList.remove('pv-detail-in');
-          void det.offsetWidth;
-          det.classList.add('pv-detail-in');
-        }
+async function terminer() {
+  const e = engagementsPossibles().find(function (x) { return x.id === engagementChoisi; });
+  const btn = document.getElementById('btn-next');
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  try {
+    if (typeof completeBrickFull === 'function') {
+      await completeBrickFull(BRICK_ID, {
+        // Ce qu'on a appris ici sert aux briques suivantes : elles ne le
+        // redemanderont pas.
+        // Prudence sur le profil partage : la question « logement » d'ici est
+        // volontairement grossiere (parents / seul), alors que la plateforme
+        // distingue cinq situations et que budget-base et fonds-urgence lisent
+        // cette cle. On ne comble qu'un trou, et seulement quand c'est certain :
+        // « seul » ne permet pas de trancher entre coloc et locataire.
+        profileFields: profilAEcrire(),
+        rawData: etatBrut(),
+        engagements: e ? [{ id:'eng_ppb_' + e.id, type:'action', label:e.t, detail:e.d,
+          montant_cible:null, montant_actuel:null, versement:null, atteint:false,
+          brique_id:BRICK_ID }] : [],
+        insights: (typeof buildInsights === 'function')
+          ? buildInsights(BRICK_ID, (typeof loadFromStorage === 'function' ? loadFromStorage('fund_profil') : {}) || {}, etatBrut())
+          : []
       });
-      chipsEl.appendChild(chip);
-    });
-    // Activer le premier par défaut
-    if (chipsEl.children[0]) chipsEl.children[0].click();
-    chipsEl.dataset.built = '1';
-  }
-
-  if (inputSimCharges) inputSimCharges.oninput = updateSimulateur;
-  if (inputSimMarge) inputSimMarge.oninput = updateSimulateur;
-  updateSimulateur();
-}
-
-function updateSimulateur() {
-  var charges = parseNum(document.getElementById('input-sim-charges') ? document.getElementById('input-sim-charges').value : 0);
-  var marge = parseNum(document.getElementById('input-sim-marge') ? document.getElementById('input-sim-marge').value : 0);
-  var recommended = charges + marge;
-  mData.sim_recommended_buffer = recommended;
-
-  var valEl = document.getElementById('sim-output-value');
-  if (valEl) valEl.textContent = recommended > 0 ? formatEuro(recommended) : '\u2014';
-
-  var epargne = mData.epargne_liquide_total || 0;
-  var warnTrop = document.getElementById('sim-warning-trop');
-  var warnBas = document.getElementById('sim-warning-bas');
-  if (warnTrop) warnTrop.classList.toggle('visible', epargne > 0 && recommended > 0 && epargne > recommended * 3);
-  if (warnBas) warnBas.classList.toggle('visible', recommended > 0 && charges > 0 && marge < charges * 0.05);
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   buildScreen3 — Livrets
-   ══════════════════════════════════════════════════════════════ */
-function buildScreen3() {
-  buildLexique();
-}
-
-var assistantState = {q1:null,q2:null,q3:null};
-
-function assistantAnswer(q, val) {
-  if (q === 1) {
-    assistantState.q1 = val;
-    document.getElementById('assistant-q1').style.display = 'none';
-    if (val === 'oui') { finishAssistant('jeune'); }
-    else { document.getElementById('assistant-q2').style.display = ''; }
-  } else if (q === 2) {
-    assistantState.q2 = val;
-    document.getElementById('assistant-q2').style.display = 'none';
-    if (val === 'oui' || val === 'nsp') { finishAssistant('securite'); }
-    else { document.getElementById('assistant-q3').style.display = ''; }
-  } else if (q === 3) {
-    assistantState.q3 = val;
-    document.getElementById('assistant-q3').style.display = 'none';
-    if (val === 'non') { finishAssistant('default'); }
-    else { finishAssistant('complement'); }
-  }
-}
-
-function finishAssistant(goal) {
-  var recs = [];
-  var livretA = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='livret_a';});
-  if (livretA) recs.push({product:livretA,usage:'S\u00e9curit\u00e9'});
-
-  if (goal==='jeune') {
-    var lj = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='livret_jeune';});
-    if (lj) recs.unshift({product:lj,usage:'S\u00e9curit\u00e9'});
-    mData.livret_prioritaire = 'Livret Jeune';
-  } else if (goal==='securite') {
-    var lep = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='lep';});
-    if (lep) recs.unshift({product:lep,usage:'S\u00e9curit\u00e9'});
-    mData.livret_prioritaire = 'LEP';
-  } else if (goal==='complement') {
-    var ldds = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='ldds';});
-    if (ldds) recs.push({product:ldds,usage:'S\u00e9curit\u00e9'});
-    mData.livret_prioritaire = 'LDDS';
-  } else {
-    var ldds2 = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.id==='ldds';});
-    if (ldds2) recs.push({product:ldds2,usage:'S\u00e9curit\u00e9'});
-    mData.livret_prioritaire = 'Livret A';
-  }
-
-  var panel = document.getElementById('s3-reco-panel');
-  var cards = document.getElementById('s3-reco-cards');
-  if (!panel||!cards) return;
-  cards.innerHTML = '';
-  recs.forEach(function(r) {
-    var p = r.product;
-    cards.innerHTML += '<div class="livret-card'+(p.nom===mData.livret_prioritaire?' highlight':'')+'"><div class="livret-card-header"><span class="livret-card-name">'+escapeHtml(p.nom)+'</span><span class="livret-card-badge" style="background:var(--accent-soft);color:var(--accent-strong)">'+escapeHtml(r.usage)+'</span></div><div class="livret-card-row"><span>Taux</span><span>'+escapeHtml(p.taux)+'</span></div><div class="livret-card-usage">'+escapeHtml(p.usage_recommande)+'</div></div>';
-  });
-  panel.style.display = '';
-  document.getElementById('assistant-livret').style.display = 'none';
-}
-
-function renderLivretsFull(container) {
-  if (!container) return;
-  container.innerHTML = '';
-  var products = SAVINGS_PRODUCTS_CONFIG.slice().sort(function(a,b){return a.priorite-b.priorite;});
-  products.forEach(function(p) {
-    var bc = p.badge==='Adapte a l\'epargne de precaution'?'background:var(--green-soft);color:var(--green);border:1px solid var(--green-border)':p.badge==='A verifier en priorite'?'background:var(--orange-soft);color:var(--orange)':p.badge==='Argent bloque'?'background:var(--red-soft);color:var(--red)':'background:var(--accent-soft);color:var(--accent-strong)';
-    container.innerHTML += '<div class="livret-card"><div class="livret-card-header"><span class="livret-card-name">'+escapeHtml(p.nom)+'</span><span class="livret-card-badge" style="'+bc+'">'+escapeHtml(p.badge)+'</span></div><div class="livret-card-row"><span>Taux</span><span>'+escapeHtml(p.taux)+'</span></div><div class="livret-card-row"><span>Plafond</span><span>'+escapeHtml(p.plafond)+'</span></div><div class="livret-card-usage">'+escapeHtml(p.usage_recommande)+'</div></div>';
-  });
-}
-
-function openAllLivretsModal() {
-  renderLivretsFull(document.getElementById('modal-all-livrets-list'));
-  var o = document.getElementById('modal-all-livrets');
-  if (!o) return;
-  o.style.display = 'flex';
-  requestAnimationFrame(function(){requestAnimationFrame(function(){o.classList.add('visible');});});
-  o.addEventListener('click',function h(e){if(e.target===o){closeAllLivretsModal();o.removeEventListener('click',h);}});
-}
-function closeAllLivretsModal() {
-  var o = document.getElementById('modal-all-livrets');
-  if (!o) return;
-  o.classList.remove('visible');
-  setTimeout(function(){o.style.display='none';},250);
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   buildScreen4 — Audit frais
-   ══════════════════════════════════════════════════════════════ */
-function buildScreen4() {
-  if (!mData.s4_actions) mData.s4_actions = {};
-  var container = document.getElementById('s4-actions');
-  if (!container) return;
-  container.innerHTML = '';
-  var frais = parseNum(mData.frais_mensuels);
-  var livretReco = mData.livret_prioritaire || 'Livret A';
-  var livretProd = SAVINGS_PRODUCTS_CONFIG.find(function(p){return p.nom===livretReco;})||SAVINGS_PRODUCTS_CONFIG[0];
-  var virAuto = mData.virement_auto_epargne;
-  var actions = [];
-  if (frais > 5) {
-    actions.push({id:'frais',icon:'\uD83D\uDCB8',title:'N\u00e9gocier tes frais bancaires',desc:'Tu paies '+frais+'\u00a0\u20ac/mois, soit '+(frais*12)+'\u00a0\u20ac/an. Beaucoup de banques offrent 0\u00a0\u20ac de frais.',done:false});
-  } else {
-    actions.push({id:'frais',icon:'\u2705',title:'Super, '+frais+'\u00a0\u20ac de frais',desc:'Tes frais sont d\u00e9j\u00e0 bas. Rien \u00e0 faire ici.',done:true});
-  }
-  actions.push({id:'livret',icon:'\uD83C\uDFE6',title:'Ouvrir ton '+livretProd.nom,desc:'Taux actuel : '+livretProd.taux+'. Id\u00e9al pour '+(livretProd.usage_recommande.split(',')[0].toLowerCase())+'.',done:false});
-  if (virAuto==='oui') {
-    actions.push({id:'virement',icon:'\u2705',title:'Virement automatique en place',desc:'Tu as d\u00e9j\u00e0 un virement automatique. Bien jou\u00e9.',done:true});
-  } else {
-    actions.push({id:'virement',icon:'\uD83D\uDD04',title:'Automatiser ton \u00e9pargne',desc:'Un virement automatique mensuel supprime la tentation de d\u00e9penser.',done:false});
-  }
-  actions.forEach(function(a){
-    var state = mData.s4_actions[a.id]||(a.done?'done':'pending');
-    container.innerHTML += buildActionCard(a, state);
-  });
-}
-function buildActionCard(action, state) {
-  var isDone = state==='done'||action.done;
-  var isDismissed = state==='dismissed';
-  var opacity = isDismissed?'opacity:0.5;':'';
-  var bg = isDone?'background:var(--green-soft);border-color:var(--green-border);':'';
-  var buttons = '';
-  if (!action.done && state!=='done' && state!=='dismissed') {
-    buttons = '<div style="display:flex;gap:0.5rem;margin-top:0.75rem"><button onclick="markS4Action(\''+action.id+'\',\'done\')" class="btn-hero-primary" style="padding:0.5rem 1rem;font-size:0.78rem">Fait \u2713</button><button onclick="markS4Action(\''+action.id+'\',\'dismissed\')" class="btn-hero-secondary" style="font-size:0.78rem">Plus tard \u2192</button></div>';
-  } else if (isDone) {
-    buttons = '<div style="margin-top:0.5rem;font-size:0.78rem;font-weight:600;color:var(--green)">\u2713 Fait</div>';
-  }
-  return '<div class="livret-card" style="'+bg+opacity+'"><div style="display:flex;align-items:flex-start;gap:0.75rem"><div style="font-size:1.25rem;flex-shrink:0;margin-top:0.1rem">'+action.icon+'</div><div style="flex:1;min-width:0"><div style="font-size:0.875rem;font-weight:600;color:var(--text)">'+escapeHtml(action.title)+'</div><div style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-top:0.2rem">'+escapeHtml(action.desc)+'</div>'+buttons+'</div></div></div>';
-}
-function markS4Action(id, state) {
-  mData.s4_actions[id] = state;
-  buildScreen4();
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   buildScreen5 — Automatisation
-   ══════════════════════════════════════════════════════════════ */
-function buildScreen5() {
-  var revenus = mData.revenus||0;
-  var objectif = mData.objectif_matelas||0;
-  if (objectif<=0) { var ch = mData.charges_fixes_total||mData.total_besoins||0; objectif = ch>0?ch*3:3000; }
-  var sliderMax = Math.min(500,Math.round(revenus*0.3));
-  if (sliderMax<10) sliderMax = 500;
-  var defaultVal = 50;
-  if (mData.virement_auto_epargne==='oui'&&mData.vir_matelas>0) defaultVal = parseNum(mData.vir_matelas);
-  else if (mData.capacite_epargne>0) defaultVal = Math.min(sliderMax,Math.max(10,Math.round(mData.capacite_epargne*0.5)));
-  defaultVal = Math.max(10,Math.min(sliderMax,defaultVal));
-  var objEl = document.getElementById('s5-objectif-val');
-  if (objEl) objEl.textContent = formatEuro(objectif);
-  var slider = document.getElementById('s5-slider');
-  if (slider) {
-    slider.min=10; slider.max=sliderMax; slider.value=defaultVal;
-    var minL=document.getElementById('s5-slider-min'), maxL=document.getElementById('s5-slider-max');
-    if (minL) minL.textContent='10 \u20ac';
-    if (maxL) maxL.textContent=sliderMax+' \u20ac';
-    slider.oninput = function(){updateS5Recap(objectif);};
-  }
-  updateS5Recap(objectif);
-}
-function updateS5Recap(objectif) {
-  var slider = document.getElementById('s5-slider');
-  if (!slider) return;
-  var amount = parseInt(slider.value,10);
-  mData.vir_matelas = amount;
-  var valEl = document.getElementById('s5-slider-val');
-  if (valEl) valEl.textContent = amount+' \u20ac';
-  var already = mData.matelas_actuel||0;
-  var remaining = Math.max(0,objectif-already);
-  var duree = amount>0?Math.ceil(remaining/amount):0;
-  var dureeEl = document.getElementById('s5-duree-val');
-  if (dureeEl) dureeEl.textContent = duree>0?duree+' mois':'\u2014';
-  var recapEl = document.getElementById('s5-recap-lines');
-  if (recapEl) {
-    var livret = mData.livret_prioritaire||'Livret A';
-    recapEl.innerHTML = '<div style="font-size:0.82rem;color:var(--text-muted)">\u2713 Virement vers '+escapeHtml(livret)+' : <strong style="color:var(--text)">'+formatEuro(amount)+'/mois</strong></div><div style="font-size:0.82rem;color:var(--text-muted)">\u2713 Objectif atteint en <strong style="color:var(--text)">'+duree+' mois</strong></div>';
-  }
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   buildScreen6 — Checklist
-   ══════════════════════════════════════════════════════════════ */
-function buildScreen6() {
-  if (!mData.s6_setup) mData.s6_setup = {};
-  var container = document.getElementById('s6-setup-cards');
-  if (!container) return;
-  container.innerHTML = '';
-  var alerteSeuil = parseNum(mData.sim_recommended_buffer)||200;
-  var cards = [
-    {id:'alerte_solde',icon:'\uD83D\uDD14',title:'Activer l\u2019alerte solde bas',desc:'Re\u00e7ois une notification quand ton solde passe sous '+alerteSeuil+'\u00a0\u20ac.'},
-    {id:'lep_eligible',icon:'\uD83C\uDFE6',title:'Ouvrir un LEP',desc:'Taux 3,5\u00a0% \u2014 le meilleur livret r\u00e9glement\u00e9. \u00c9ligible si revenus < 21\u00a0393\u00a0\u20ac/an.'},
-    {id:'beneficiaire',icon:'\uD83D\uDD17',title:'Ajouter ton livret comme b\u00e9n\u00e9ficiaire',desc:'Pour automatiser les virements depuis ton appli bancaire.'}
-  ];
-  if (typeof assistantState!=='undefined' && assistantState && assistantState.q2==='non') {
-    cards[1] = {id:'optimiser_livret',icon:'\uD83D\uDCCA',title:'Optimiser ton livret',desc:'V\u00e9rifie que ton livret est au bon taux et au bon plafond.'};
-  }
-  cards.forEach(function(c2){
-    var state = mData.s6_setup[c2.id]||'pending';
-    container.innerHTML += buildSetupCard(c2,state);
-  });
-  updateS6FinButton();
-}
-function buildSetupCard(card, state) {
-  var isDone = state==='done';
-  var isDismissed = state==='dismissed';
-  var bg = isDone?'background:var(--green-soft);border-color:var(--green-border);':'';
-  var opacity = isDismissed?'opacity:0.5;':'';
-  var buttons = '';
-  if (state==='pending') {
-    buttons = '<div style="display:flex;gap:0.5rem;margin-top:0.75rem"><button onclick="markS6Setup(\''+card.id+'\',\'done\')" class="btn-hero-primary" style="padding:0.5rem 1rem;font-size:0.78rem">Fait \u2713</button><button onclick="markS6Setup(\''+card.id+'\',\'dismissed\')" class="btn-hero-secondary" style="font-size:0.78rem">Plus tard \u2192</button></div>';
-  } else if (isDone) {
-    buttons = '<div style="margin-top:0.5rem;font-size:0.78rem;font-weight:600;color:var(--green)">\u2713 Fait</div>';
-  }
-  return '<div class="livret-card" style="'+bg+opacity+'"><div style="display:flex;align-items:flex-start;gap:0.75rem"><div style="font-size:1.25rem;flex-shrink:0;margin-top:0.1rem">'+card.icon+'</div><div style="flex:1;min-width:0"><div style="font-size:0.875rem;font-weight:600;color:var(--text)">'+escapeHtml(card.title)+'</div><div style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-top:0.2rem">'+escapeHtml(card.desc)+'</div>'+buttons+'</div></div></div>';
-}
-function markS6Setup(id, state) {
-  mData.s6_setup[id] = state;
-  if (id==='alerte_solde'&&state==='done') mData.checklist_checked['alerte_solde_bas'] = true;
-  if (id==='beneficiaire'&&state==='done') mData.checklist_checked['beneficiaire_livret'] = true;
-  buildScreen6();
-}
-function updateS6FinButton() {
-  var setup = mData.s6_setup||{};
-  var interacted = Object.keys(setup).filter(function(k){return setup[k]==='done'||setup[k]==='dismissed';}).length;
-  var btn = document.getElementById('btn-finaliser');
-  if (btn) btn.disabled = interacted<3;
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   LEXIQUE
-   ══════════════════════════════════════════════════════════════ */
-function buildLexique() {
-  var list = document.getElementById('lexique-list');
-  if (!list || list.dataset.built) return;
-
-  list.innerHTML = '';
-  LEXIQUE_DATA.forEach(function(item) {
-    list.innerHTML +=
-      '<div class="lex-item" onclick="this.classList.toggle(\'open\')">' +
-        '<div class="lex-item-header">' +
-          '<span>' + escapeHtml(item.terme) + '</span>' +
-          '<span class="lex-item-chevron">\u25B6</span>' +
-        '</div>' +
-        '<div class="lex-item-body">' +
-          '<div class="lex-item-def">' + escapeHtml(item.def) + '</div>' +
-          (item.ex ? '<div class="lex-item-example">' + escapeHtml(item.ex) + '</div>' : '') +
-        '</div>' +
-      '</div>';
-  });
-  list.dataset.built = '1';
-}
-
-function openLexique() {
-  buildLexique();
-  document.getElementById('lexique-overlay').classList.add('visible');
-  document.getElementById('lexique-panel').classList.add('visible');
-}
-
-function closeLexique() {
-  document.getElementById('lexique-overlay').classList.remove('visible');
-  document.getElementById('lexique-panel').classList.remove('visible');
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   MODAL FINALE
-   ══════════════════════════════════════════════════════════════ */
-function openModalFin() {
-  var result = calculateBankingScore();
-  var score = result.score;
-
-  /* Score ring */
-  var circ = 251;
-  var offset = circ - (score / 100) * circ;
-  var fillEl = document.getElementById('modal-score-fill');
-  var textEl = document.getElementById('modal-score-text');
-  var statusEl = document.getElementById('modal-score-status');
-
-  var scoreColor = score >= 70 ? 'var(--green)' : score >= 40 ? 'var(--orange)' : 'var(--red)';
-  if (fillEl) { fillEl.style.strokeDashoffset = offset; fillEl.style.stroke = scoreColor; }
-  if (textEl) textEl.textContent = score + '/100';
-
-  var statusText = score >= 70 ? 'Sain' : score >= 40 ? 'À surveiller' : 'À corriger';
-  if (statusEl) { statusEl.textContent = statusText; statusEl.style.color = scoreColor; }
-
-  /* Summary rows */
-  var summaryEl = document.getElementById('modal-fin-summary');
-  if (summaryEl) {
-    summaryEl.innerHTML =
-      buildModalRow('Score bancaire', score + '/100 \u2014 ' + statusText) +
-      buildModalRow('Compte courant', mData.sim_recommended_buffer ? formatEuro(mData.sim_recommended_buffer) + ' conseille' : 'Non calcule') +
-      buildModalRow('Livret prioritaire', mData.livret_prioritaire || 'Non defini') +
-      buildModalRow('Frais estimes', mData.frais_annuels_estimes ? formatEuro(mData.frais_annuels_estimes) + '/an' : 'Non calcule') +
-      buildModalRow('Virement automatique', mData.vir_matelas ? formatEuro(parseNum(mData.vir_matelas)) + '/mois' : 'À créer') +
-      buildModalRow('Setup final', getSecuStatusText());
-  }
-
-  /* Actions prioritaires */
-  var actions = getActionsFromData();
-  var actCont = document.getElementById('modal-actions-prio');
-  var actList = document.getElementById('modal-actions-list');
-  if (actCont && actList && actions.length > 0) {
-    actCont.style.display = '';
-    actList.innerHTML = actions.slice(0, 3).map(function(a) {
-      return '<div style="font-size:0.8rem;color:var(--text-secondary);padding:0.35rem 0;border-bottom:1px solid var(--border-subtle)">\u2022 ' + escapeHtml(a) + '</div>';
-    }).join('');
-  }
-
-  /* Next brick routing */
-  var nextBrique = getNextBriqueLocale();
-  var nextCont = document.getElementById('modal-next-brick');
-  var nextMsg = document.getElementById('modal-next-msg');
-  var nextCta = document.getElementById('modal-next-cta');
-  if (nextCont && nextMsg && nextCta) {
-    nextCont.style.display = '';
-    nextMsg.textContent = nextBrique.msg;
-    nextCta.textContent = nextBrique.label + ' \u2192';
-    nextCta.href = nextBrique.url;
-  }
-
-  /* Sub text */
-  var subEl = document.getElementById('modal-fin-sub');
-  if (subEl) subEl.textContent = statusText === 'Sain' ? 'Ton systeme est bien cale.' : 'Quelques ajustements a faire.';
-
-  /* Build print bilan */
-  buildPrintBilan(score, statusText);
-
-  /* Show modal */
-  var overlay = document.getElementById('modal-fin');
-  if (!overlay) return;
-  overlay.style.display = 'flex';
-  requestAnimationFrame(function() {
-    requestAnimationFrame(function() {
-      overlay.classList.add('visible');
-    });
-  });
-  overlay.addEventListener('click', function handler(e) {
-    if (e.target === overlay) {
-      overlay.classList.remove('visible');
-      setTimeout(function() { overlay.style.display = 'none'; }, 250);
-      overlay.removeEventListener('click', handler);
     }
-  });
+  } catch (err) { console.error('completeBrickFull:', err); }
+  window.location.href = 'dashboard.html';
 }
 
-function getActionsFromData() {
-  var actions = [];
-  if (mData.alerte_solde !== 'oui') actions.push('Activer l\'alerte solde bas dans ton app bancaire');
-  if (mData.virement_auto_epargne !== 'oui') actions.push('Programmer un virement automatique vers ton livret');
-  if (mData.frais_decouvert_recents === 'oui') actions.push('Mettre en place un filet anti-decouvert');
-  if (!mData.livret_prioritaire) actions.push('Verifier ton eligibilite au LEP');
-  if (mData.rejets === 'oui') actions.push('Provisionner ton compte avant les dates de prelevement');
-  if (mData.commissions === 'oui') actions.push('Surveiller ton solde pour eviter les commissions d\'intervention');
-  var checked = mData.checklist_checked || {};
-  if (!checked.routine_hebdo) actions.push('Instaurer une routine de 5 min/semaine sur tes finances');
-  return actions;
-}
+/* ═══ Init ═══ */
+(async function init() {
+  if (typeof requireAuth === 'function') {
+    const user = await requireAuth();
+    if (!user) return;
+  }
+  if (typeof brickStarted === 'function') brickStarted(BRICK_ID);
+  if (typeof hydrateFromSupabase === 'function') { try { await hydrateFromSupabase(); } catch (e) {} }
+  buildDroits();
+  buildMotifs();
 
-function getSecuStatusText() {
-  var setup = mData.s6_setup||{};
-  var done = Object.keys(setup).filter(function(k){return setup[k]==='done';}).length;
-  return done+'/3 réglages';
-};
-
-
-/* ══════════════════════════════════════════════════════════════
-   ROUTING
-   ══════════════════════════════════════════════════════════════ */
-function getNextBriqueLocale() {
-  var decouvertFrequent = mData.utilisation_decouvert === 'souvent' || mData.utilisation_decouvert === 'plusieurs' || mData.frais_decouvert_recents === 'oui';
-  if (decouvertFrequent) return {url:'brique-gestion-decouvert.html',label:'Gerer mon decouvert',msg:'Tu utilises le decouvert regulierement. On va voir comment en sortir.'};
-
-  var matIncomplet = (mData.matelas_actuel || 0) < (mData.objectif_matelas || 1);
-  if (matIncomplet && mData.objectif_matelas > 0) return {url:'brique-fonds-urgence.html',label:'Construire mon epargne de precaution',msg:'Ton epargne de precaution n\'est pas encore complete. C\'est la priorite.'};
-
-  var budgetDone = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_brick_budget_base') : null);
-  if (!budgetDone || !budgetDone.data) return {url:'brique-budget-base.html',label:'Stabiliser mon budget',msg:'On commence par poser un budget clair.'};
-
-  if (mData.fractionnes === 'oui') return {url:'brique-paiements-fractionnes.html',label:'Comprendre les paiements fractionnes',msg:'Tu as des paiements fractionnes en cours. On va demeler ca.'};
-
-  var matelasDone = !matIncomplet && (mData.objectif_matelas || 0) > 0;
-  var surplus = (mData.capacite_epargne || 0) > 0;
-  if (matelasDone && surplus) return {url:'dashboard.html',label:'Commencer a investir',msg:'Ton epargne de precaution est en place. Tu peux passer a l\'etape suivante.'};
-
-  return {url:'dashboard.html',label:'Retour au dashboard',msg:'On a fait le tour. Continue a ton rythme.'};
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   VALIDATION — completeBrickFull
-   ══════════════════════════════════════════════════════════════ */
-async function validerBrique() {
-  var result = calculateBankingScore();
-
-  var profileFields = {
-    banque_principale: mData.banque_principale,
-    type_carte: mData.type_carte,
-    type_debit: mData.type_debit,
-    frais_bancaires_mensuels: parseNum(mData.frais_mensuels),
-    decouvert_autorise: mData.decouvert_autorise,
-    decouvert_utilise: mData.utilisation_decouvert,
-    virement_auto_epargne: mData.virement_auto_epargne,
-    produits_detenu: mData.livrets_detectes || [],
-    score_bancaire: result.score
-  };
-
-  var rawData = Object.assign({}, mData, {
-    score_bancaire: result.score,
-    score_axes: result.axes,
-    frais_annuels_estimes: mData.frais_annuels_estimes,
-    livret_prioritaire: mData.livret_prioritaire,
-    sim_recommended_buffer: mData.sim_recommended_buffer
-  });
-
-  var insights = typeof buildInsights === 'function' ? buildInsights(BRICK_ID, {}, rawData) : [];
-
-  if (typeof completeBrickFull === 'function') {
-    await completeBrickFull(BRICK_ID, {
-      profileFields: profileFields,
-      rawData: rawData,
-      engagements: [],
-      insights: insights
+  let etat = null;
+  try { if (typeof loadBrickState === 'function') etat = await loadBrickState(BRICK_ID); } catch (e) {}
+  if (!etat && typeof loadFromStorage === 'function') {
+    const l = loadFromStorage('fund_brick_' + BRICK_ID);
+    if (l && l.data) etat = { data:l.data, screenCourant:l.screen };
+  }
+  if (etat && etat.data) {
+    // On ne recopie que les cles connues : un etat laisse par une version
+    // anterieure de la brique polluerait A, et remonterait jusqu'a Supabase.
+    if (etat.data.reponses) Object.keys(A).forEach(function (k) {
+      if (etat.data.reponses[k] !== undefined) A[k] = etat.data.reponses[k];
     });
+    vus = etat.data.notions_lues || [];
+    reponsesChk = etat.data.situations || {};
+    engagementChoisi = etat.data.engagement || null;
   }
-
-  buildPrintBilan(result.score, result.score >= 70 ? 'Sain' : result.score >= 40 ? 'À surveiller' : 'À corriger');
-
-  setTimeout(function() { window.location.href = 'dashboard.html'; }, 300);
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   PROGRESS PANEL
-   ══════════════════════════════════════════════════════════════ */
-function updateProgressPanel(screenIdx) {
-  var titleEl = document.getElementById('bpc-step-title');
-  if (titleEl) titleEl.textContent = STEP_TITLES[screenIdx] || STEP_TITLES[1];
-
-  var circ = 201;
-  var pct = Math.round((screenIdx / TOTAL_SCREENS) * 100);
-  var offset = circ - (pct / 100) * circ;
-  var fill = document.getElementById('bpc-ring-fill');
-  var pctEl = document.getElementById('bpc-ring-pct');
-  if (fill) fill.style.strokeDashoffset = offset;
-  if (pctEl) pctEl.textContent = pct + '%';
-
-  for (var i = 1; i <= TOTAL_SCREENS; i++) {
-    var step = document.getElementById('bpc-step-' + i);
-    if (!step) continue;
-    step.classList.remove('active', 'done');
-    if (i < screenIdx) step.classList.add('done');
-    else if (i === screenIdx) step.classList.add('active');
-  }
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   SCORE PROVISOIRE (screen 1)
-   ══════════════════════════════════════════════════════════════ */
-function updateScoreProvisoire() {
-  var result = calculateBankingScore();
-  var score = result.score;
-  var valEl = document.getElementById('score-provisoire-val');
-  var fillEl = document.getElementById('score-provisoire-fill');
-  if (valEl) valEl.textContent = score + '/100';
-  if (fillEl) {
-    fillEl.style.width = score + '%';
-    fillEl.style.background = score >= 70 ? 'var(--green)' : score >= 40 ? 'var(--orange)' : 'var(--red)';
-  }
-
-  /* Radar */
-  var filledFields = 0;
-  ['banque_principale','type_carte','type_debit','frais_mensuels','decouvert_autorise','utilisation_decouvert','alerte_solde','virement_auto_epargne'].forEach(function(k) {
-    if (mData[k] && mData[k] !== '' && mData[k] !== 0) filledFields++;
-  });
-
-  var radarWrap = document.getElementById('radar-wrap');
-  if (radarWrap) radarWrap.style.display = filledFields >= 4 ? '' : 'none';
-
-  if (filledFields >= 4) {
-    updateRadar(result.axes);
-  }
-}
-
-function updateRadar(axes) {
-  var cx = 110, cy = 110, r = 80;
-  var keys = ['frais','securite','epargne','automatisation','routine'];
-  var points = [];
-  keys.forEach(function(k, i) {
-    var val = (axes[k] || 0) / 20;
-    var angle = (Math.PI * 2 * i / 5) - Math.PI / 2;
-    var px = cx + r * val * Math.cos(angle);
-    var py = cy + r * val * Math.sin(angle);
-    points.push(Math.round(px) + ',' + Math.round(py));
-  });
-  var shape = document.getElementById('radar-shape');
-  if (shape) shape.setAttribute('points', points.join(' '));
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   PRINT BILAN
-   ══════════════════════════════════════════════════════════════ */
-function buildPrintBilan(score, status) {
-  var el = document.getElementById('print-bilan');
-  if (!el) return;
-  var now = new Date().toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
-  el.innerHTML =
-    '<h1>Premiers pas bancaires \u2014 Bilan</h1>' +
-    '<div class="pb-date">' + now + '</div>' +
-    '<div class="pb-section">' +
-      '<div class="pb-section-title">Score</div>' +
-      '<div class="pb-row"><span class="pb-row-label">Score global</span><span class="pb-row-val">' + score + '/100 \u2014 ' + escapeHtml(status) + '</span></div>' +
-    '</div>' +
-    '<div class="pb-section">' +
-      '<div class="pb-section-title">Systeme bancaire</div>' +
-      '<div class="pb-row"><span class="pb-row-label">Banque</span><span class="pb-row-val">' + escapeHtml(mData.banque_principale || 'Non renseigne') + '</span></div>' +
-      '<div class="pb-row"><span class="pb-row-label">Carte</span><span class="pb-row-val">' + escapeHtml(mData.type_carte || 'Non renseigne') + '</span></div>' +
-      '<div class="pb-row"><span class="pb-row-label">Frais annuels estimes</span><span class="pb-row-val">' + (mData.frais_annuels_estimes ? formatEuro(mData.frais_annuels_estimes) : '\u2014') + '</span></div>' +
-    '</div>' +
-    '<div class="pb-section">' +
-      '<div class="pb-section-title">Plan</div>' +
-      '<div class="pb-row"><span class="pb-row-label">Compte courant</span><span class="pb-row-val">' + (mData.sim_recommended_buffer ? formatEuro(mData.sim_recommended_buffer) : '\u2014') + '</span></div>' +
-      '<div class="pb-row"><span class="pb-row-label">Livret prioritaire</span><span class="pb-row-val">' + escapeHtml(mData.livret_prioritaire || 'Non defini') + '</span></div>' +
-      '<div class="pb-row"><span class="pb-row-label">Virement epargne</span><span class="pb-row-val">' + (mData.vir_matelas ? formatEuro(parseNum(mData.vir_matelas)) + '/mois' : 'À créer') + '</span></div>' +
-    '</div>' +
-    '<div class="pb-footer">Fundamental \u2014 premiers pas bancaires \u00B7 ' + now + '</div>';
-}
-
-
-/* ══════════════════════════════════════════════════════════════
-   HELPERS
-   ══════════════════════════════════════════════════════════════ */
-function parseNum(v) {
-  var n = parseFloat(v);
-  return isNaN(n) ? 0 : Math.max(0, n);
-}
-
-function escapeHtml(s) {
-  if (!s) return '';
-  var str = String(s);
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function showBadge(id) {
-  var el = document.getElementById(id);
-  if (el) el.style.display = 'inline-flex';
-}
-
-function dismissResume() {
-  var card = document.getElementById('resume-card');
-  if (card) card.style.display = 'none';
-}
-
-function buildDataCard(value, label, source) {
-  return '<div class="data-card">' +
-    '<div class="data-card-badge"><span class="badge-source">' + escapeHtml(source) + '</span></div>' +
-    '<div class="data-card-value">' + escapeHtml(value) + '</div>' +
-    '<div class="data-card-label">' + escapeHtml(label) + '</div>' +
-  '</div>';
-}
-
-function buildModalRow(label, val) {
-  return '<div class="modal-fin-row">' +
-    '<span class="modal-fin-row-label">' + escapeHtml(label) + '</span>' +
-    '<span class="modal-fin-row-val">' + escapeHtml(val) + '</span>' +
-  '</div>';
-}
-
-function setInputVal(id, val) {
-  var el = document.getElementById(id);
-  if (el) el.value = val || '';
-}
-
-function bindInput(elementId, dataKey, type) {
-  var el = document.getElementById(elementId);
-  if (!el) return;
-  if (mData[dataKey] != null && mData[dataKey] !== '' && mData[dataKey] !== 0) {
-    el.value = mData[dataKey];
-  }
-  el.addEventListener('input', function() {
-    mData[dataKey] = type === 'number' ? parseNum(this.value) : this.value;
-    updateScoreProvisoire();
-  });
-}
-
-function bindSelect(elementId, dataKey) {
-  var el = document.getElementById(elementId);
-  if (!el) return;
-  if (mData[dataKey]) el.value = mData[dataKey];
-  el.addEventListener('change', function() {
-    mData[dataKey] = this.value;
-    updateScoreProvisoire();
-  });
-}
+  preremplir();
+  goToScreen(etat && etat.screenCourant ? etat.screenCourant : 0);
+})();
 </script>
 
 <script src="feedback-widget.js"></script>
