@@ -1559,7 +1559,8 @@
       }
     }
 
-    /* Bientôt disponibles — visibles uniquement si briquesExpanded */
+    /* Le reste du parcours — visible uniquement si briquesExpanded.
+       Contient les briques ouvrables hors parcours et celles a venir. */
     if (briquesExpanded && bientot.length > 0) {
       const hdr = document.createElement('p');
       hdr.className = 'soon-header'; hdr.textContent = 'Le reste du parcours';
