@@ -527,6 +527,19 @@ const BRICK_ID = 'premiers_pas_bancaires';
 const REPERES = { verifie: false, verifie_le: null };
 
 let ecran = 0;
+// Sauvegarde differee : on attend que la personne ait fini de cliquer
+// plutot que d'ecrire a chaque geste.
+let sauveEnAttente = null;
+function sauverBientot() {
+  if (sauveEnAttente) clearTimeout(sauveEnAttente);
+  sauveEnAttente = setTimeout(function () {
+    sauveEnAttente = null;
+    try {
+      if (typeof autosaveBrickProgress === 'function')
+        autosaveBrickProgress(BRICK_ID, ecran, etatBrut());
+    } catch (e) {}
+  }, 1200);
+}
 let vus = [];
 let ouvert = null;
 let reponsesChk = {};
@@ -554,6 +567,7 @@ function buildMotifs() {
   h.querySelectorAll('[data-motif]').forEach(function (b) {
     b.addEventListener('click', function () {
       A.motif = b.dataset.motif;
+      sauverBientot();
       h.querySelectorAll('[data-motif]').forEach(function (x) {
         const sel = x === b;
         x.classList.toggle('on', sel);
@@ -627,15 +641,25 @@ const NOTIONS = {
 };
 /* L'ordre des satellites suit ce que la personne a dit : celui qui la
    concerne le plus vient en premier et porte une marque. */
-function satsOrdonnes() {
-  const base = ['paiement','decouvert','epargne','credit'];
+// Ce que la situation rend prioritaire. Peut etre vide : dans ce cas aucune
+// notion n'est mise en avant, et rien ne porte la pastille.
+function prioritaires() {
   const prio = [];
   if (A.findemois === 'souvent' || A.motif === 'decouvert') prio.push('decouvert');
-  if (A.logement === 'seul') prio.push('paiement');
-  if (A.motif === 'premier') prio.push('paiement');
+  // « Payer » porte l'IBAN, l'autorisation de prelevement et sa revocation :
+  // c'est la notion attendue par qui vient pour ne pas se faire avoir.
+  if (A.logement === 'seul' || A.motif === 'premier' || A.motif === 'arnaque') {
+    if (prio.indexOf('paiement') === -1) prio.push('paiement');
+  }
+  return prio;
+}
+function satsOrdonnes() {
+  const base = ['paiement','decouvert','epargne','credit'];
+  const prio = prioritaires();
   return prio.concat(base.filter(function (k) { return prio.indexOf(k) === -1; }));
 }
-function estPrioritaire(k) { return satsOrdonnes().indexOf(k) === 0 && !!A.findemois; }
+// La pastille ne s'affiche que pour une notion reellement mise en avant.
+function estPrioritaire(k) { return prioritaires()[0] === k; }
 
 let notionIdx = 0;   // position dans la sequence
 
@@ -708,7 +732,7 @@ function buildComprendre() {
         return;
       }
       notionIdx = Math.max(0, Math.min(seq.length - 1, notionIdx + parseInt(v, 10)));
-      buildComprendre(); buildControle(); majSticky();
+      buildComprendre(); buildControle(); majSticky(); sauverBientot();
       document.querySelector('.nt').scrollIntoView({ behavior:'smooth', block:'start' });
     });
   });
@@ -762,7 +786,7 @@ function buildControle() {
   hote.querySelectorAll('[data-chk]').forEach(function (b) {
     b.addEventListener('click', function () {
       reponsesChk[b.dataset.chk] = b.dataset.v;
-      buildControle(); majSticky();
+      buildControle(); majSticky(); sauverBientot();
     });
   });
 }
@@ -810,6 +834,7 @@ function buildToi() {
         x.setAttribute('aria-checked', String(sel));
       });
       const r = b.closest('.qr'); if (r) r.classList.add('ok');
+      sauverBientot();
       majPortrait(); majSticky();
     });
   });
@@ -1093,6 +1118,7 @@ function buildScreen4() {
   document.querySelectorAll('[data-eng]').forEach(function (el) {
     const choisir = function () {
       engagementChoisi = el.dataset.eng;
+      sauverBientot();
       buildScreen4();   // le choix remonte en tete, les autres se replient
     };
     el.addEventListener('click', choisir);
@@ -1221,6 +1247,16 @@ async function terminer() {
   } catch (err) { console.error('completeBrickFull:', err); }
   window.location.href = 'dashboard.html';
 }
+
+// Si l'onglet se ferme pendant le delai, on ecrit tout de suite.
+window.addEventListener('pagehide', function () {
+  if (!sauveEnAttente) return;
+  clearTimeout(sauveEnAttente); sauveEnAttente = null;
+  try {
+    if (typeof autosaveBrickProgress === 'function')
+      autosaveBrickProgress(BRICK_ID, ecran, etatBrut());
+  } catch (e) {}
+});
 
 /* ═══ Init ═══ */
 (async function init() {
