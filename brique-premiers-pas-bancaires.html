@@ -484,7 +484,7 @@ html.dark .reco::after{color:rgba(139,92,246,.13)}
     <aside class="brique-side-panel">
       <div class="side"><p class="side-k">O&ugrave; tu en es</p><div id="side-steps"></div></div>
       <div class="side" id="side-portrait" style="display:none">
-        <p class="side-k">Ton portrait</p><div id="portrait" aria-live="polite"></div>
+        <p class="side-k">Ton portrait</p><div id="portrait"></div>
       </div>
       <div class="side" id="side-droits">
         <button class="dr-h" type="button" id="dr-toggle" aria-expanded="false">
@@ -587,13 +587,14 @@ function preremplir() {
   if (!A.statut) {
     const carte = { college_lycee:'lycee', etudiant:'etudiant', indep_tpe:'autre',
                     sal_ouvrier_employe:'emploi', sal_prof_inter:'emploi',
-                    cadre_prof_lib:'emploi', chomeur_inactif:'autre', retraite:'autre' };
+                    cadre_prof_lib:'emploi', chomeur_inactif:'autre', retraite:'autre',
+                    autre:'autre' };
     if (st && carte[st]) { A.statut = carte[st]; prerempli.push('statut'); }
     else if (age === '15_17') { A.statut = 'lycee'; prerempli.push('statut'); }
   }
   if (!A.logement && log) {
     const carteL = { chez_parents:'parents', colocation:'seul', locataire:'seul',
-                     proprietaire:'seul', heberge_autre:'parents' };
+                     proprietaire:'seul' };
     if (carteL[log]) { A.logement = carteL[log]; prerempli.push('logement'); }
   }
 }
@@ -857,7 +858,8 @@ const PORTRAIT = {
 
 function majPortrait() {
   const panneau = document.getElementById('side-portrait');
-  panneau.style.display = (ecran >= 2) ? '' : 'none';
+  const cote = window.matchMedia('(min-width:901px)').matches;
+  panneau.style.display = (ecran >= 2 || (ecran === 1 && cote)) ? '' : 'none';
   const lignes = QUESTIONS.map(function (q) {
     const v = A[q.cle];
     const p = v && PORTRAIT[q.cle] ? PORTRAIT[q.cle][v] : null;
@@ -1256,6 +1258,11 @@ window.addEventListener('pagehide', function () {
     if (typeof autosaveBrickProgress === 'function')
       autosaveBrickProgress(BRICK_ID, ecran, etatBrut());
   } catch (e) {}
+});
+
+// Le portrait suit la largeur : on reevalue si la fenetre change de camp.
+window.addEventListener('resize', function () {
+  try { if (ecran >= 1) majPortrait(); } catch (e) {}
 });
 
 /* ═══ Init ═══ */
