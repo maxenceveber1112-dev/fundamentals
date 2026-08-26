@@ -634,9 +634,14 @@
     .rv-item--first .rv-head,
     .rv-item--first .rv-tag { padding-left:2.4rem; }
     .rv-item--first .rv-name { font-size:15.5px; }
-    .rv-badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.07em;
-      text-transform:uppercase; color:var(--accent-strong); white-space:nowrap; }
+    .rv-badge { display:inline-block; font-family:inherit; font-size:10px; font-weight:700;
+      letter-spacing:0.07em; text-transform:uppercase; color:var(--accent-strong);
+      white-space:nowrap; cursor:pointer; border:1px solid transparent;
+      background:none; padding:0.4rem 0.65rem; border-radius:var(--r-full);
+      transition:background 160ms ease, border-color 160ms ease; }
+    .rv-badge:hover { background:var(--accent-soft); border-color:var(--accent-strong); }
     html.dark .rv-badge { color:#C4B5FD; }
+    html.dark .rv-badge:hover { border-color:#C4B5FD; }
 
     @media (max-width:900px) {
       .rv-cols { grid-template-columns:minmax(0,1fr); gap:1.5rem; }
@@ -1910,7 +1915,8 @@ function revealPlan() {
       retard = Math.min(retard + 55, 900);
       var premier = rang === 1;
       var droite = premier
-        ? '<span class="rv-badge">On commence ici</span>'
+        ? '<button type="button" class="rv-badge" onclick="goToDashboard()"'
+          + ' aria-label="Commencer : ' + esc(m.nom).replace(/"/g, '&quot;') + '">On commence ici</button>'
         : (notes[id] ? '<span class="rv-note">' + esc(notes[id]) + '</span>'
                      : '<span class="rv-duree">' + esc(m.duree || '') + '</span>');
       var pourquoi = RV_RAISONS[id]
