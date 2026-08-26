@@ -144,7 +144,7 @@
       position: relative;
       display:flex; flex-direction:column;
       justify-content:center;
-      padding:3rem;
+      padding:clamp(1.15rem, 3.1vh, 3rem) 3rem;
       overflow:hidden;
       background-color: var(--left-bg);
       background-image: radial-gradient(circle, var(--left-dot-color) 1px, transparent 1px);
@@ -154,7 +154,8 @@
     .auth-left-content {
       position: relative;
       z-index: 2;
-      display:flex; flex-direction:column; justify-content:space-between; gap:1.5rem;
+      display:flex; flex-direction:column; justify-content:space-between;
+      gap:clamp(0.5rem, 1.7vh, 1.5rem);
     }
 
     /* ── THEME TOGGLE ── */
@@ -188,17 +189,17 @@
     /* ── RIGHT PANEL ── */
     .auth-right {
       display:flex; flex-direction:column; align-items:center; justify-content:center;
-      padding:3rem;
+      padding:clamp(1rem, 2.6vh, 3rem) 3rem;
       background: var(--bg);
       transition: background 0.3s ease;
     }
     .auth-card {
       width:100%; max-width:400px;
-      display:flex; flex-direction:column; gap:1.5rem;
+      display:flex; flex-direction:column; gap:clamp(0.85rem, 2.2vh, 1.5rem);
       background:var(--bg-elevated);
       border:1px solid var(--border-mid);
       border-radius:var(--r-xl);
-      padding:2.25rem;
+      padding:clamp(1.4rem, 3.6vh, 2.25rem) 2.25rem;
       box-shadow: var(--shadow-card);
       animation:slideInUp 0.4s var(--ease-out) both;
       transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
@@ -208,24 +209,24 @@
     /* ── LEFT HEADLINE ── */
     .auth-kicker {
       font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500;
-      color:var(--text-muted); margin-bottom:1.25rem;
+      color:var(--text-muted); margin-bottom:clamp(0.5rem, 1.3vh, 1.25rem);
       transition: color 0.3s ease;
     }
     .auth-headline {
-      font-size:clamp(2rem, 3.5vw, 2.8rem);
+      font-size:min(clamp(2rem, 3.5vw, 2.8rem), 4.3vh);
       font-family:'Fraunces','Instrument Serif',Georgia,serif;
       font-style:italic; font-weight:400;
       color:var(--text); line-height:1.1;
-      margin-bottom:1.25rem;
+      margin-bottom:clamp(0.6rem, 1.3vh, 1.25rem);
       transition: color 0.3s ease;
     }
     .auth-sub {
       font-size:15px; color:var(--text-secondary); max-width:38ch; line-height:1.65;
-      margin-bottom:1rem;
+      margin-bottom:clamp(0.35rem, 1.1vh, 1rem);
       transition: color 0.3s ease;
     }
 
-    .auth-features { display:flex; flex-direction:column; gap:1.25rem; margin-top:auto; }
+    .auth-features { display:flex; flex-direction:column; gap:clamp(0.65rem, 1.4vh, 1.25rem); margin-top:auto; }
     .auth-feat { display:flex; align-items:flex-start; gap:0.75rem; padding-left:0.875rem; border-left:2px solid var(--accent-strong); transition: border-color 0.3s ease; }
     .auth-feat.feat-teal { border-left-color:#14B8A6; }
     .auth-feat.feat-amber { border-left-color:#F59E0B; }
@@ -259,7 +260,7 @@
     .tab-underline.active::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background: linear-gradient(90deg, #8B5CF6, #6366F1); border-radius:999px; }
 
     /* ── SOCIAL BUTTONS ── */
-    .social-btns { display:flex; flex-direction:column; gap:0.625rem; }
+    .social-btns { display:flex; flex-direction:column; gap:clamp(0.4rem, 1.1vh, 0.625rem); }
     .btn-social {
       display:flex; align-items:center; gap:0.75rem;
       padding:0.8rem 1.25rem;
@@ -284,7 +285,7 @@
     .divider span { font-size:0.72rem; color:var(--text-faint); white-space:nowrap; transition: color 0.3s ease; }
 
     /* ── FORM ── */
-    .form-fields { display:flex; flex-direction:column; gap:0.875rem; }
+    .form-fields { display:flex; flex-direction:column; gap:clamp(0.55rem, 1.5vh, 0.875rem); }
     .form-group { display:flex; flex-direction:column; gap:0.35rem; }
     label { font-size:0.78rem; font-weight:600; color:var(--text-muted); transition: color 0.3s ease; }
     .input-wrap { position:relative; }
@@ -327,6 +328,21 @@
     @keyframes spin { to { transform:rotate(360deg); } }
 
     /* ── RESPONSIVE ── */
+    /* Fenetre basse : le temoignage se resserre pour que tout tienne
+       sans defilement, plutot que de disparaitre. */
+    @media(max-height:880px) {
+      .auth-quote-stars { display:none; }
+      .auth-quote p:first-of-type {
+        font-size:14px!important; line-height:1.4!important; margin-bottom:.35rem!important;
+      }
+    }
+
+    /* Plus bas encore, la carte de connexion occupe presque toute la hauteur :
+       le temoignage s'efface plutot que d'imposer un defilement. */
+    @media(max-height:760px) {
+      .auth-quote { display:none; }
+    }
+
     @media(max-width:820px) {
       .auth-layout { grid-template-columns:1fr; }
       .auth-left { display:none; }
@@ -362,7 +378,8 @@
     .mark-sq{fill:#8B93B8;} html.dark .mark-sq{fill:#17172e;}
     .mark-f{fill:#fff;} html.dark .mark-f{fill:#8F8CD4;}
     .wordmark .name{font-size:17px;}
-    .auth-features{position:relative;display:flex;flex-direction:column;gap:1.7rem;margin-top:2.25rem;}
+    .auth-features{position:relative;display:flex;flex-direction:column;
+      gap:clamp(0.6rem, 1.9vh, 1.7rem);margin-top:clamp(0.6rem, 2vh, 2.25rem);}
     .auth-features::before{content:'';position:absolute;left:5px;top:.6em;bottom:.6em;width:2px;border-radius:2px;background:linear-gradient(to bottom,#8B5CF6,#3B82F6,#14B8A6);opacity:.55;}
     .auth-feat{position:relative;display:block!important;padding:0 0 0 28px!important;background:none!important;border:none!important;border-left:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;transition:none;}
     .auth-feat:hover{transform:none;}
@@ -373,7 +390,8 @@
     .auth-feat-icon{display:none!important;}
     .auth-feat strong{display:block;font-family:'Fraunces','Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;font-size:20px;line-height:1.25;color:var(--text);margin-bottom:4px;}
     .auth-feat span{display:block;font-size:13.5px;line-height:1.5;color:var(--text-muted);}
-    .auth-quote{padding:1.15rem 1.25rem!important;border-radius:16px;border:1px solid rgba(255,255,255,.09)!important;background:rgba(255,255,255,.04);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);margin-top:2rem!important;}
+    .auth-quote{padding:clamp(.75rem, 1.8vh, 1.15rem) 1.25rem!important;border-radius:16px;border:1px solid rgba(255,255,255,.09)!important;background:rgba(255,255,255,.04);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+      margin-top:clamp(0.6rem, 2vh, 2rem)!important;}
     html:not(.dark) .auth-quote{background:rgba(255,255,255,.4);border-color:rgba(255,255,255,.6)!important;}
     .btn-primary{position:relative;overflow:hidden;}
     .btn-primary::after{content:'';position:absolute;top:0;left:-60%;width:45%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-20deg);}
@@ -384,7 +402,7 @@
        Le panneau conclut la colonne editoriale, toujours deplie : texte
        a gauche, action a droite, raccourcis sur une rangee. La marque le
        traverse en filigrane, comme ailleurs sur la plateforme. */
-    .try { position:relative; width:100%; margin-top:.75rem;
+    .try { position:relative; width:100%; margin-top:clamp(0.35rem, 0.9vh, .75rem);
       border-radius:var(--r-xl); overflow:hidden;
       background:var(--bg-elevated); border:1px solid var(--border-mid);
       box-shadow:0 18px 48px rgba(20,16,60,.16);
@@ -401,8 +419,9 @@
       pointer-events:none; user-select:none; }
     html.dark .try::after { color:rgba(143,140,212,.26); }
 
-    .try-body { position:relative; z-index:1; padding:1.35rem 1.5rem 1.15rem; }
-    .try-head { display:flex; align-items:center; flex-wrap:wrap; gap:1.15rem 2rem; }
+    .try-body { position:relative; z-index:1;
+      padding:clamp(.85rem, 2vh, 1.35rem) 1.5rem clamp(.7rem, 1.7vh, 1.15rem); }
+    .try-head { display:flex; align-items:center; flex-wrap:wrap; gap:clamp(.7rem, 1.7vh, 1.15rem) 2rem; }
     .try-txt { flex:1 1 300px; min-width:0; }
     .try-title { font-family:'Fraunces','Instrument Serif',Georgia,serif; font-style:italic;
       font-weight:400; font-size:1.22rem; line-height:1.18; color:var(--text); }
@@ -416,8 +435,8 @@
     .try-cta:hover { transform:translateY(-1px); box-shadow:0 8px 22px rgba(99,102,241,.35); }
 
     .try-links { display:grid; grid-template-columns:1fr 1fr; column-gap:2rem;
-      margin-top:1rem; border-top:1px solid var(--border-subtle); }
-    .try-link { display:flex; align-items:center; gap:.6rem; padding:.6rem 0;
+      margin-top:clamp(.55rem, 1.5vh, 1rem); border-top:1px solid var(--border-subtle); }
+    .try-link { display:flex; align-items:center; gap:.6rem; padding:clamp(.35rem, .9vh, .6rem) 0;
       text-decoration:none; font-size:.78rem; font-weight:500; color:var(--text-muted);
       transition:color .18s ease; }
     .try-link:hover { color:var(--text); }
@@ -493,7 +512,7 @@
   <!-- LEFT PANEL -->
   <div class="auth-left">
     <div class="auth-left-content" style="height:100%;min-height:600px;">
-      <a href="dashboard.html" class="wordmark" aria-label="Fundamental" style="margin-bottom:3rem;">
+      <a href="dashboard.html" class="wordmark" aria-label="Fundamental" style="margin-bottom:clamp(1rem, 2.6vh, 3rem);">
         <span class="mark" aria-hidden="true"><svg viewBox="0 0 40 40"><rect class="mark-sq" x="0" y="0" width="40" height="40" rx="11"/><text class="mark-f" x="21" y="30" text-anchor="middle" font-family="Fraunces,serif" font-style="italic" font-weight="500" font-size="30">f</text></svg></span>
         <span class="name">Fundamental</span>
       </a>
