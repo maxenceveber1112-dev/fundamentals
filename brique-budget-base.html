@@ -257,7 +257,14 @@
     padding:0.5rem 0.625rem; border-radius:0.625rem;
     color:var(--v3-text-faint); font-size:13px;
     transition:background .15s, color .15s;
+    /* c'est un <button> : on retire l'apparence native */
+    width:100%; text-align:left; border:none; background:none;
+    font-family:inherit; cursor:default;
   }
+  /* Seules les etapes deja franchies ramenent en arriere. */
+  .bpc-step.done { cursor:pointer; }
+  .bpc-step.done:hover { background:var(--v3-accent-soft); color:var(--v3-text); }
+  .bpc-step:disabled { cursor:default; }
   .bpc-step.active { background:var(--v3-accent-soft); color:var(--v3-text); }
   .bpc-step.done   { color:var(--v3-text-muted); }
   .bpc-step-num {
@@ -371,7 +378,7 @@
   .btn-hero-primary {
     display:inline-flex; align-items:center; gap:0.5rem;
     padding:0.75rem 1.375rem; border-radius:9999px;
-    background:var(--accent); color:var(--accent-pill-text);
+    background:var(--accent-fill); color:var(--accent-pill-text);
     font-size:0.875rem; font-weight:600; border:none; cursor:pointer;
     transition:filter 0.2s ease, transform 0.12s ease;
   }
@@ -838,6 +845,49 @@
     color:var(--text); margin-bottom:1.5rem;
   }
 
+  /* Feuille d'explication d'un conseil */
+  .lev-sheet-kicker {
+    font-size:0.6875rem; font-weight:700; letter-spacing:0.09em;
+    text-transform:uppercase; color:var(--text-faint); margin-bottom:0.4rem;
+  }
+  .lev-sheet-emoji { font-size:1.75rem; display:block; margin-bottom:0.6rem; }
+  .lev-bloc { margin-bottom:1.15rem; }
+  .lev-bloc-titre {
+    font-size:0.72rem; font-weight:700; letter-spacing:0.07em;
+    text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.3rem;
+  }
+  html.dark .lev-bloc-titre { color:#C4B5FD; }
+  .lev-bloc-texte { font-size:0.875rem; line-height:1.6; color:var(--text-secondary); }
+  .lev-bloc-texte b { color:var(--text); font-weight:600; }
+  .lev-chiffre {
+    background:var(--surface-2); border:1px solid var(--border-subtle);
+    border-radius:0.875rem; padding:0.9rem 1rem; margin-bottom:1.15rem;
+  }
+  .lev-suite {
+    margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border-subtle);
+    font-size:0.8125rem; color:var(--text-muted); line-height:1.55;
+  }
+  .lev-suite b { color:var(--text); }
+
+  /* Le conseil s'ouvre : on le signale sans crier. */
+  .levier-card { cursor:pointer; }
+  .levier-card:hover { border-color:var(--accent-strong); }
+  .levier-loupe {
+    margin-left:auto; align-self:center; flex-shrink:0;
+    width:22px; height:22px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent-soft); color:var(--accent-strong);
+    font-size:0.7rem; font-weight:700;
+    animation:levPouls 2.4s ease-in-out infinite;
+  }
+  html.dark .levier-loupe { color:#C4B5FD; }
+  .levier-card:hover .levier-loupe { animation:none; background:var(--accent-strong); color:#fff; }
+  @keyframes levPouls {
+    0%, 62%, 100% { transform:scale(1); box-shadow:0 0 0 0 rgba(139,92,246,0.35); }
+    76%           { transform:scale(1.12); box-shadow:0 0 0 5px rgba(139,92,246,0); }
+  }
+  @media(prefers-reduced-motion:reduce) { .levier-loupe { animation:none; } }
+
   /* Checklist abonnements */
   .abo-list { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.25rem; }
   .abo-item {
@@ -900,20 +950,25 @@
   }
   .abo-frais-card-icon { font-size:1rem; margin-right:0.375rem; }
 
-  /* CTA ajouter premiers-pas-bancaires */
+  /* Suggestion secondaire, rattachee au conseil : elle ne doit pas
+     concurrencer l'action de validation. */
   .abo-add-brique {
-    display:flex; align-items:center; gap:0.75rem;
-    margin-top:1rem; padding:0.875rem 1rem;
+    display:inline-flex; align-items:center; gap:0.4rem;
+    margin-top:0.7rem; padding:0.4rem 0.85rem;
     border-radius:9999px; cursor:pointer;
-    background:var(--accent); color:var(--accent-pill-text);
-    font-size:0.875rem; font-weight:600;
-    transition:filter 0.2s ease;
-    border:none; font-family:inherit; width:100%; justify-content:center;
+    background:none; color:var(--accent-strong);
+    border:1px solid var(--accent-strong);
+    font-size:0.78rem; font-weight:600;
+    font-family:inherit; transition:background 0.2s ease, color 0.2s ease;
   }
-  html.dark .abo-add-brique { box-shadow:0 6px 20px -8px rgba(99,102,241,0.5); }
-  .abo-add-brique:hover { filter:brightness(0.95); }
-  html.dark .abo-add-brique:hover { filter:brightness(1.08); }
-  .abo-add-brique.added { background:rgba(34,197,94,0.12); color:var(--green); cursor:default; filter:none; }
+  html.dark .abo-add-brique { color:#C4B5FD; border-color:rgba(196,181,253,0.5); }
+  .abo-add-brique:hover { background:var(--accent-soft); }
+  .abo-add-brique.added {
+    background:rgba(34,197,94,0.12); color:var(--green);
+    border-color:rgba(34,197,94,0.35); cursor:default;
+  }
+  /* L'action de l'ecran, detachee du bloc de conseil. */
+  .abo-valider { margin-top:1.5rem; }
 
   /* Bouton fermer popup */
   .popup-close { position:absolute; top:1.25rem; right:1.25rem; font-size:1.25rem; color:var(--text-faint); cursor:pointer; transition:color var(--t); }
@@ -1468,30 +1523,36 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
 
           <!-- Steps list -->
           <div class="bpc-steps" id="bpc-steps-list">
-            <div class="bpc-step" id="bpc-step-0">
-              <div class="bpc-step-num">0</div>
-              <div class="bpc-step-label">Introduction</div>
-            </div>
-            <div class="bpc-step" id="bpc-step-1">
-              <div class="bpc-step-num">1</div>
-              <div class="bpc-step-label">Ce qui rentre et ce qui part</div>
-            </div>
-            <div class="bpc-step" id="bpc-step-2">
-              <div class="bpc-step-num">2</div>
-              <div class="bpc-step-label">Tes engagements financiers</div>
-            </div>
-            <div class="bpc-step" id="bpc-step-3">
-              <div class="bpc-step-num">3</div>
-              <div class="bpc-step-label">Ton argent en clair</div>
-            </div>
-            <div class="bpc-step" id="bpc-step-4">
-              <div class="bpc-step-num">4</div>
-              <div class="bpc-step-label">Ta prochaine action</div>
-            </div>
-            <div class="bpc-step" id="bpc-step-5">
-              <div class="bpc-step-num">✓</div>
-              <div class="bpc-step-label">C'est noté.</div>
-            </div>
+            <button type="button" class="bpc-step" id="bpc-step-0" disabled
+                    onclick="revenirEtape(0)">
+              <span class="bpc-step-num">0</span>
+              <span class="bpc-step-label">Introduction</span>
+            </button>
+            <button type="button" class="bpc-step" id="bpc-step-1" disabled
+                    onclick="revenirEtape(1)">
+              <span class="bpc-step-num">1</span>
+              <span class="bpc-step-label">Ce qui rentre et ce qui part</span>
+            </button>
+            <button type="button" class="bpc-step" id="bpc-step-2" disabled
+                    onclick="revenirEtape(2)">
+              <span class="bpc-step-num">2</span>
+              <span class="bpc-step-label">Tes engagements financiers</span>
+            </button>
+            <button type="button" class="bpc-step" id="bpc-step-3" disabled
+                    onclick="revenirEtape(3)">
+              <span class="bpc-step-num">3</span>
+              <span class="bpc-step-label">Ton argent en clair</span>
+            </button>
+            <button type="button" class="bpc-step" id="bpc-step-4" disabled
+                    onclick="revenirEtape(4)">
+              <span class="bpc-step-num">4</span>
+              <span class="bpc-step-label">Ta prochaine action</span>
+            </button>
+            <button type="button" class="bpc-step" id="bpc-step-5" disabled
+                    onclick="revenirEtape(5)">
+              <span class="bpc-step-num">✓</span>
+              <span class="bpc-step-label">C'est noté.</span>
+            </button>
           </div>
 
           <!-- Nav links -->
@@ -1568,20 +1629,19 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
       <div class="abo-eco-sub">Si tu supprimes les abonnements non utilisés</div>
     </div>
 
-    <!-- Card frais bancaires -->
+    <!-- Conseil frais bancaires, et la brique qui va avec -->
     <div class="abo-frais-card">
       <span class="abo-frais-card-icon">💡</span>
       Cherche <strong>"récapitulatif annuel des frais"</strong> dans ton appli bancaire.
       Plus de 80 €/an hors incidents ? Il est temps de comparer.
+      <button type="button" class="abo-add-brique" id="abo-add-ppb-btn"
+              onclick="ajouterPremiersPasBancaires()">
+        Ajouter « Premiers pas bancaires » à mon parcours
+      </button>
     </div>
 
-    <!-- CTA premiers pas bancaires (bientôt disponible) -->
-    <button class="abo-add-brique" id="abo-add-ppb-btn" disabled style="opacity:0.4;cursor:not-allowed;pointer-events:none;" title="Bientôt disponible">
-      Premiers pas bancaires (bientôt disponible)
-    </button>
-
-    <!-- Bouton valider -->
-    <div style="margin-top:1.25rem;">
+    <!-- L'action de l'ecran : seule pastille pleine -->
+    <div class="abo-valider">
       <button class="btn-hero-primary" style="width:100%;" onclick="validerPopupAbo()">
         Valider mes abonnements →
       </button>
@@ -1589,6 +1649,16 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
 
   </div>
 </div><!-- /popup-abo -->
+
+<!-- ── Explication d'un conseil ──────────────────────── -->
+<div class="popup-overlay" id="popup-levier" role="dialog" aria-modal="true"
+     aria-labelledby="popup-levier-title">
+  <div class="popup-sheet" style="position:relative;">
+    <button class="popup-close" onclick="fermerLevier()" aria-label="Fermer">×</button>
+    <div class="popup-handle" aria-hidden="true"></div>
+    <div id="popup-levier-corps"></div>
+  </div>
+</div>
 
 <!-- ── Modale de fin ─────────────────────────────────── -->
 <div class="modal-fin-overlay" id="modal-fin" role="dialog" aria-modal="true" aria-labelledby="modal-fin-title" style="display:none;">
@@ -1989,7 +2059,16 @@ function updateProgressPanel(screenIdx) {
     step.classList.remove('active','done');
     if (i < screenIdx) step.classList.add('done');
     else if (i === screenIdx) step.classList.add('active');
+    // Une etape non franchie ne doit etre ni cliquable ni atteignable au clavier.
+    step.disabled = !(i < screenIdx);
+    step.setAttribute('aria-current', i === screenIdx ? 'step' : 'false');
   }
+}
+
+// Retour a une etape deja franchie depuis le panneau lateral.
+function revenirEtape(n) {
+  if (typeof currentScreen === 'number' && n >= currentScreen) return;
+  goToScreen(n);
 }
 
 // ── Exemple (screen 0) ────────────────────────────────────────
@@ -2375,6 +2454,176 @@ function buildMsgCards() {
   container.appendChild(card);
 }
 
+
+/* ── Explication des conseils ─────────────────────────────────
+   v : { totalRev, reste, epargneDeclaree, margeReelle, ratio, bd }
+   Les fonctions recoivent v et renvoient du texte deja personnalise.   */
+const EXPLICATIONS_LEVIERS = {
+
+  charges_coupables: {
+    quoi: "Une charge « coupable », c’est une dépense fixe qui part chaque mois sans que tu l’aies rechoisie : assurance jamais renégociée, forfait trop grand, service oublié.",
+    toi: v => `Tes charges fixes pèsent <b>${formatEuro(v.bd.total_besoins)}</b> par mois sur <b>${formatEuro(v.totalRev)}</b> de revenus. Comme il te manque <b>${formatEuro(Math.abs(v.reste))}</b> chaque mois, c’est là qu’il faut chercher en premier.`,
+    implique: "Une charge fixe se réduit <b>une seule fois</b> et l’effet se répète tous les mois. Contrairement aux dépenses variables, tu ne renonces à rien au quotidien : tu paies moins pour le même service.",
+    suite: "On reprendra ligne par ligne dans la brique <b>Premiers pas bancaires</b>, qui montre où lire ce que tu paies vraiment."
+  },
+
+  suspendre_abos: {
+    quoi: "Un abonnement se prélève tout seul. C’est sa force quand tu t’en sers, et son piège quand tu ne t’en sers plus : rien ne te le rappelle.",
+    toi: v => v.bd.abonnements_total > 0
+      ? `Tu as déclaré <b>${formatEuro(v.bd.abonnements_total)}</b> d’abonnements par mois, soit <b>${formatEuro(v.bd.abonnements_total * 12)}</b> sur l’année. Avec un déficit de <b>${formatEuro(Math.abs(v.reste))}</b>, c’est le levier le plus rapide à activer.`
+      : `Tu n’as pas encore chiffré tes abonnements. C’est souvent le poste où l’on trouve le plus vite, parce qu’il se remplit sans décision.`,
+    implique: "Suspendre n’est pas résilier : la plupart des services se mettent en pause et se reprennent quand tu veux. L’effet est immédiat dès le mois suivant.",
+    suite: "Le détail par service se remplit à l’étape <b>Ce qui rentre et ce qui part</b>."
+  },
+
+  dettes_couteuses: {
+    quoi: "Toutes les dettes ne se valent pas. Un crédit renouvelable ou un découvert coûtent beaucoup plus cher qu’un prêt classique, et ils se rechargent au lieu de s’éteindre.",
+    toi: v => (v.bd.total_dettes_mensuel || 0) > 0
+      ? `Tu rembourses <b>${formatEuro(v.bd.total_dettes_mensuel)}</b> par mois, soit <b>${formatEuro(v.bd.total_dettes_mensuel * 12)}</b> sur l’année. Tant que ces mensualités tournent, elles prennent la place de ton épargne.`
+      : `Tu n’as pas déclaré de mensualités de crédit. Le découvert compte aussi : s’il revient chaque mois, il se comporte comme une dette permanente.`,
+    implique: "L’ordre de remboursement change le coût total. On commence par le taux le plus élevé, pas par le montant le plus gros : c’est ce qui arrête l’hémorragie le plus vite.",
+    suite: "C’est tout l’objet de la brique <b>Gestion des dettes</b>, qui pose l’ordre et le rythme."
+  },
+
+  charges_depassent: {
+    quoi: "Ton budget tient, mais seulement parce que ton épargne comble le trou. Ce n’est pas un équilibre : c’est un report.",
+    toi: v => `Hors épargne, il te manque <b>${formatEuro(Math.abs(v.reste))}</b> par mois. Ce sont tes <b>${formatEuro(v.epargneDeclaree)}</b> mis de côté qui absorbent l’écart, donc ton épargne recule au lieu de monter.`,
+    implique: "Tant que l’écart existe, chaque mois entame la réserve. Le jour où elle est vide, le même budget produit un découvert. Mieux vaut agir maintenant, sur les charges fixes.",
+    suite: "On regardera où se situe ton coussin dans la brique <b>Épargne de précaution</b>."
+  },
+
+  optimiser_abos: {
+    quoi: "Optimiser ne veut pas dire tout couper. Il s’agit de repérer les doublons, les offres devenues trop grandes, et ce que tu paies à deux endroits.",
+    toi: v => v.bd.abonnements_total > 0
+      ? `Tes abonnements représentent <b>${formatEuro(v.bd.abonnements_total)}</b> par mois. Sur tes <b>${formatEuro(v.totalRev)}</b> de revenus, c’est <b>${Math.round(v.bd.abonnements_total / Math.max(1, v.totalRev) * 100)} %</b> qui partent avant même que tu décides quoi que ce soit.`
+      : `Tes abonnements ne sont pas encore chiffrés. Les lister est le moyen le plus simple de voir ce qui part tout seul.`,
+    implique: "Un abonnement partagé, une offre familiale, un forfait ramené à ton usage réel : ce sont des gains qui ne se voient pas dans ton quotidien.",
+    suite: "Tu peux les détailler un par un à l’étape <b>Ce qui rentre et ce qui part</b>."
+  },
+
+  proteger_epargne: {
+    quoi: "L’épargne de précaution n’est pas un placement. C’est la somme qui te permet d’encaisser un imprévu sans passer par le découvert ou le crédit.",
+    toi: v => v.margeReelle > 0
+      ? `Tu dégages <b>${formatEuro(v.margeReelle)}</b> de marge nette par mois. La priorité est de la protéger : ne pas y toucher vaut mieux que de l’augmenter.`
+      : `Ta marge nette est nulle. La priorité n’est pas d’épargner plus, c’est de ne plus puiser dans ce que tu as déjà mis de côté.`,
+    implique: "Un mois de charges de côté change la nature des imprévus : une panne devient un ennui au lieu d’un découvert, puis de frais.",
+    suite: "La brique <b>Épargne de précaution</b> pose le montant à viser selon tes charges."
+  },
+
+  epargne_1_mois: {
+    quoi: "Un mois de charges de côté, c’est le premier palier. Pas un objectif d’épargnant : un amortisseur.",
+    toi: v => `Tes charges tournent autour de <b>${formatEuro(v.bd.total_besoins)}</b> par mois. Avec <b>${formatEuro(v.margeReelle)}</b> de marge réelle, ce palier se construit progressivement, sans forcer.`,
+    implique: "En dessous de ce seuil, le moindre imprévu se paie à crédit. Au-dessus, il se paie sur ta réserve — et ne coûte rien de plus.",
+    suite: "On calculera ton palier exact dans la brique <b>Épargne de précaution</b>."
+  },
+
+  reduire_variables_10: {
+    quoi: "Les dépenses variables sont celles sur lesquelles tu décides encore : courses, sorties, achats. Elles bougent sans décision administrative.",
+    toi: v => `Tes dépenses variables représentent <b>${formatEuro(v.bd.total_envies)}</b> par mois. En viser 10 % de moins libère <b>${formatEuro(Math.round(v.bd.total_envies * 0.1))}</b> chaque mois.`,
+    implique: "10 %, c’est un ajustement, pas une privation. C’est aussi le seul poste qui répond tout de suite : l’effet se voit dès le mois en cours.",
+    suite: "On verra comment tenir ce rythme sans y penser à l’étape <b>Ta prochaine action</b>."
+  },
+
+  automatiser_epargne: {
+    quoi: "Automatiser, c’est mettre un virement en place le jour où tu es payé. L’épargne part avant que le mois ne la consomme.",
+    toi: v => `Tu mets <b>${formatEuro(v.epargneDeclaree)}</b> de côté par mois, soit <b>${Math.round(v.epargneDeclaree / Math.max(1, v.totalRev) * 100)} %</b> de tes revenus. Le repère courant se situe autour de 20 % : tu as <b>${formatEuro(v.margeReelle)}</b> de marge réelle pour t’en approcher.`,
+    implique: "Ce qui reste en fin de mois dépend de l’humeur du mois. Ce qui part le 2 ne dépend de rien. C’est le même montant, mais il arrive à destination.",
+    suite: "La brique <b>Épargne de précaution</b> aide à fixer le montant et le jour."
+  },
+
+  reduire_1_poste: {
+    quoi: "Un seul poste, choisi par toi. C’est plus tenable que de rogner partout un peu, et c’est mesurable.",
+    toi: v => `Sur <b>${formatEuro(v.bd.total_envies)}</b> de dépenses variables, réduire un seul poste de 15 % libère <b>${formatEuro(Math.round(v.bd.total_envies * 0.15))}</b> par mois, soit <b>${formatEuro(Math.round(v.bd.total_envies * 0.15) * 12)}</b> sur l’année.`,
+    implique: "Un objectif unique se tient. Trois objectifs simultanés s’abandonnent ensemble au bout de deux semaines.",
+    suite: "Tu choisiras lequel à l’étape suivante, <b>Ta prochaine action</b>."
+  },
+
+  frais_bancaires: {
+    quoi: "Les frais bancaires se prélèvent en petites lignes : tenue de compte, cotisation de carte, frais d’incident. Isolément ils paraissent négligeables ; cumulés sur un an, beaucoup moins.",
+    toi: v => `Ton budget tient — c’est le bon moment pour regarder ce poste, parce qu’il ne demande aucun effort quotidien. Chaque euro récupéré ici s’ajoute directement à tes <b>${formatEuro(v.margeReelle)}</b> de marge.`,
+    implique: "Ta banque doit t’envoyer un récapitulatif annuel des frais prélevés. C’est le seul document qui dit ce que tu paies vraiment : trois lignes suffisent à le lire.",
+    suite: "La brique <b>Premiers pas bancaires</b> montre où le trouver et quoi comparer."
+  },
+
+  epargne_1er_mois: {
+    quoi: "Le principe est simple : l’épargne part en début de mois, avant les dépenses. Tu vis sur ce qui reste, au lieu d’épargner ce qui reste.",
+    toi: v => `Avec <b>${formatEuro(v.margeReelle)}</b> de marge réelle, tu peux fixer un virement automatique sans tendre ton mois. Tu mets déjà <b>${formatEuro(v.epargneDeclaree)}</b> de côté.`,
+    implique: "L’ordre change tout. Épargner le reste donne un montant différent chaque mois ; épargner d’abord donne un montant stable, sur lequel on peut construire.",
+    suite: "On posera le montant et la date dans la brique <b>Épargne de précaution</b>."
+  },
+
+  commencer_investir: {
+    quoi: "Investir, c’est accepter que l’argent soit indisponible un moment en échange d’un rendement espéré. Ce n’est pas de l’épargne : le capital peut baisser.",
+    toi: v => `Tu dégages <b>${formatEuro(v.margeReelle)}</b> par mois. Une fois ton épargne de précaution constituée, une part de cette marge peut aller plus loin — la régularité compte davantage que le montant.`,
+    implique: "L’ordre est important : le coussin de sécurité d’abord, l’investissement ensuite. Investir sans réserve oblige à vendre au mauvais moment quand l’imprévu arrive.",
+    suite: "On verra les enveloppes et le rythme dans les briques d’<b>investissement</b>, plus tard dans ton parcours."
+  },
+
+  projet_moyen_terme: {
+    quoi: "Un projet à moyen terme — véhicule, déménagement, voyage, formation — se finance mieux quand il est nommé à l’avance : on sait combien mettre de côté et jusqu’à quand.",
+    toi: v => `Avec <b>${formatEuro(v.margeReelle)}</b> de marge mensuelle, un projet chiffré devient un calcul simple : le montant divisé par le nombre de mois. Sans projet nommé, cette marge se dissout dans le quotidien.`,
+    implique: "Anticiper évite le crédit à la consommation, qui est le mode de financement le plus cher pour ce type de dépense.",
+    suite: "Les briques <b>projets</b> de ton parcours reprennent ce calcul, projet par projet."
+  },
+
+  investir_part_fixe: {
+    quoi: "Investir une part fixe, c’est verser le même montant à intervalle régulier, quoi qu’il arrive sur les marchés. On ne cherche pas le bon moment : on le lisse.",
+    toi: v => `Avec <b>${formatEuro(v.margeReelle)}</b> de capacité mensuelle, en consacrer environ 40 % représente <b>${formatEuro(Math.round(v.margeReelle * 0.4))}</b> par mois.`,
+    implique: "La régularité retire la décision — donc l’erreur de calendrier. C’est la durée qui fait le résultat, pas le montant de départ.",
+    suite: "Les briques d’<b>investissement</b> détailleront les supports et le rythme."
+  },
+
+  projet_immobilier: {
+    quoi: "L’accès au crédit immobilier ne dépend pas que de tes revenus : la banque regarde ta capacité d’épargne, sa régularité, et l’absence d’incidents.",
+    toi: v => `Tu dégages <b>${formatEuro(v.margeReelle)}</b> par mois. C’est précisément ce chiffre qu’une banque examine : il montre ce que tu peux consacrer à une mensualité sans tendre ton budget.`,
+    implique: "Ce que tu fais maintenant compte pour plus tard : les mois qui précèdent une demande de prêt sont ceux que la banque regarde.",
+    suite: "La brique <b>Projet immobilier</b> pose la capacité d’emprunt et l’apport."
+  },
+
+  fiscalite: {
+    quoi: "Une enveloppe fiscale — PEA, assurance-vie, PER — est un contenant. Ce que tu mets dedans reste ton choix ; l’enveloppe change la façon dont les gains sont imposés et la disponibilité de l’argent.",
+    toi: v => `À <b>${formatEuro(v.totalRev)}</b> de revenus mensuels et <b>${formatEuro(v.margeReelle)}</b> de marge, le choix de l’enveloppe commence à peser autant que le choix des supports.`,
+    implique: "Chaque enveloppe a ses conditions de durée et de retrait, et les règles évoluent. On ne choisit pas une enveloppe pour son avantage fiscal seul, mais pour l’horizon du projet.",
+    suite: "Les briques d’<b>investissement</b> et de <b>préparation de la retraite</b> reprendront chacune en détail, avec les règles à jour."
+  }
+
+};
+
+// Ouvre l'explication d'un conseil par-dessus la brique.
+function ouvrirLevier(id) {
+  const e = EXPLICATIONS_LEVIERS[id];
+  const corps = document.getElementById('popup-levier-corps');
+  const overlay = document.getElementById('popup-levier');
+  if (!e || !corps || !overlay) return;
+
+  const src = (leviersConfig_dernier || []).find(l => l.id === id) || {};
+  const v = Object.assign({}, getBudgetSituation(budgetData), { bd: budgetData });
+
+  corps.innerHTML =
+    '<span class="lev-sheet-emoji" aria-hidden="true">' + (src.icon || '') + '</span>' +
+    '<div class="lev-sheet-kicker">Le conseil, en clair</div>' +
+    '<h2 class="popup-title" id="popup-levier-title">' + (src.title || '') + '</h2>' +
+    '<div class="lev-bloc"><div class="lev-bloc-titre">De quoi on parle</div>' +
+      '<p class="lev-bloc-texte">' + e.quoi + '</p></div>' +
+    '<div class="lev-chiffre"><div class="lev-bloc-titre">Chez toi</div>' +
+      '<p class="lev-bloc-texte">' + e.toi(v) + '</p></div>' +
+    '<div class="lev-bloc"><div class="lev-bloc-titre">Ce que ça change</div>' +
+      '<p class="lev-bloc-texte">' + e.implique + '</p></div>' +
+    '<p class="lev-suite">' + e.suite + '</p>';
+
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function fermerLevier() {
+  const overlay = document.getElementById('popup-levier');
+  if (overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Memorise les conseils affiches, pour retrouver titre et emoji a l'ouverture.
+let leviersConfig_dernier = [];
+
 // ── Leviers adaptatifs ────────────────────────────────────────
 function buildLeviers() {
   const container = document.getElementById('leviers-grid');
@@ -2406,34 +2655,34 @@ function buildLeviers() {
   // Leviers selon situation
   const leviersConfig = {
     deficit: [
-      { icon:'\u{1F6A8}', title:'Identifier les charges coupables', sub:`Ton budget est en d\u00e9ficit de ${formatEuro(Math.abs(reste))}/mois. Commence par lister les charges r\u00e9ductibles.`, color:'#EF4444', cta:null, ctaLabel:'G\u00e9rer mon d\u00e9couvert', bientot:true },
-      { icon:'\u{1F4F5}', title:'Suspendre les abonnements non essentiels', sub: budgetData.abonnements_total > 0 ? `Tes abonnements (${formatEuro(budgetData.abonnements_total)}/mois) sont le levier le plus rapide.` : 'Les abonnements sont souvent le levier le plus rapide \u00e0 activer.', color:'#F97316' },
-      { icon:'\u{1F4B3}', title:'Prioriser le remboursement des dettes co\u00fbteuses', sub:'D\u00e9couvert, cr\u00e9dit renouvelable \u2014 ce sont eux qui creusent le trou. Voir la brique d\u00e9di\u00e9e.', color:'#EF4444', cta:'brique-plan-desendettement.html', ctaLabel:'Voir la brique dettes' },
+      { icon:'\u{1F6A8}', id:'charges_coupables', title:'Identifier les charges coupables', sub:`Ton budget est en d\u00e9ficit de ${formatEuro(Math.abs(reste))}/mois. Commence par lister les charges r\u00e9ductibles.`, color:'#EF4444', cta:null, ctaLabel:'G\u00e9rer mon d\u00e9couvert', bientot:true },
+      { icon:'\u{1F4F5}', id:'suspendre_abos', title:'Suspendre les abonnements non essentiels', sub: budgetData.abonnements_total > 0 ? `Tes abonnements (${formatEuro(budgetData.abonnements_total)}/mois) sont le levier le plus rapide.` : 'Les abonnements sont souvent le levier le plus rapide \u00e0 activer.', color:'#F97316' },
+      { icon:'\u{1F4B3}', id:'dettes_couteuses', title:'Prioriser le remboursement des dettes co\u00fbteuses', sub:'D\u00e9couvert, cr\u00e9dit renouvelable \u2014 ce sont eux qui creusent le trou. Voir la brique d\u00e9di\u00e9e.', color:'#EF4444', cta:'brique-plan-desendettement.html', ctaLabel:'Voir la brique dettes' },
     ],
     deficit_couvert: [
-      { icon:'\u2696\uFE0F', title:'Identifier les charges qui d\u00e9passent tes revenus', sub:`Hors \u00e9pargne, tu es \u00e0 ${formatEuro(Math.abs(reste))}/mois de d\u00e9ficit. Liste les charges fixes r\u00e9ductibles \u2014 loyer, abonnements, cr\u00e9dits.`, color:'#F97316', cta:null },
-      { icon:'\u{1F50D}', title:'Optimiser les abonnements', sub: budgetData.abonnements_total > 0 ? `${formatEuro(budgetData.abonnements_total)}/mois d'abonnements \u2014 y a-t-il des doublons ou inutilis\u00e9s ?` : 'Les abonnements sont souvent le levier le plus rapide \u00e0 activer.', color:'#EAB308', cta:null },
-      { icon:'\u{1F3AF}', title:'Prot\u00e9ger ton \u00e9pargne de pr\u00e9caution', sub: margeReelle > 0 ? `Tu as ${formatEuro(margeReelle)}/mois de marge nette. Commence par s\u00e9curiser l'\u00e9quivalent de 1 mois de charges.` : `Ta marge nette est nulle \u2014 priorit\u00e9 absolue : ne pas puiser dans ton \u00e9pargne existante.`, color:'#14b8a6', cta:'brique-fonds-urgence.html', ctaLabel:'Commencer l\'\u00e9pargne de pr\u00e9caution' },
+      { icon:'\u2696\uFE0F', id:'charges_depassent', title:'Identifier les charges qui d\u00e9passent tes revenus', sub:`Hors \u00e9pargne, tu es \u00e0 ${formatEuro(Math.abs(reste))}/mois de d\u00e9ficit. Liste les charges fixes r\u00e9ductibles \u2014 loyer, abonnements, cr\u00e9dits.`, color:'#F97316', cta:null },
+      { icon:'\u{1F50D}', id:'optimiser_abos', title:'Optimiser les abonnements', sub: budgetData.abonnements_total > 0 ? `${formatEuro(budgetData.abonnements_total)}/mois d'abonnements \u2014 y a-t-il des doublons ou inutilis\u00e9s ?` : 'Les abonnements sont souvent le levier le plus rapide \u00e0 activer.', color:'#EAB308', cta:null },
+      { icon:'\u{1F3AF}', id:'proteger_epargne', title:'Prot\u00e9ger ton \u00e9pargne de pr\u00e9caution', sub: margeReelle > 0 ? `Tu as ${formatEuro(margeReelle)}/mois de marge nette. Commence par s\u00e9curiser l'\u00e9quivalent de 1 mois de charges.` : `Ta marge nette est nulle \u2014 priorit\u00e9 absolue : ne pas puiser dans ton \u00e9pargne existante.`, color:'#14b8a6', cta:'brique-fonds-urgence.html', ctaLabel:'Commencer l\'\u00e9pargne de pr\u00e9caution' },
     ],
     tendu: [
-      { icon:'\u{1F50D}', title:'Optimiser les abonnements', sub: budgetData.abonnements_total > 0 ? `${formatEuro(budgetData.abonnements_total)}/mois d'abonnements \u2014 y a-t-il des doublons ou inutilis\u00e9s ?` : 'Passe en revue tes abonnements r\u00e9currents.', color:'#F97316' },
-      { icon:'\u{1F3AF}', title:'Viser une \u00e9pargne de pr\u00e9caution de 1 mois', sub:`Avec ${formatEuro(margeReelle)}/mois de marge r\u00e9elle, commence par mettre de c\u00f4t\u00e9 l'\u00e9quivalent d'un mois de charges.`, color:'#EAB308', cta:'brique-fonds-urgence.html', ctaLabel:'Commencer l\'\u00e9pargne de pr\u00e9caution' },
-      { icon:'\u{1F4CA}', title:'R\u00e9duire les d\u00e9penses variables de 10%', sub:`Un gain de ${formatEuro(Math.round(budgetData.total_envies * 0.1))}/mois est r\u00e9aliste sans impacter ton confort.`, color:'#8B5CF6' },
+      { icon:'\u{1F50D}', id:'optimiser_abos', title:'Optimiser les abonnements', sub: budgetData.abonnements_total > 0 ? `${formatEuro(budgetData.abonnements_total)}/mois d'abonnements \u2014 y a-t-il des doublons ou inutilis\u00e9s ?` : 'Passe en revue tes abonnements r\u00e9currents.', color:'#F97316' },
+      { icon:'\u{1F3AF}', id:'epargne_1_mois', title:'Viser une \u00e9pargne de pr\u00e9caution de 1 mois', sub:`Avec ${formatEuro(margeReelle)}/mois de marge r\u00e9elle, commence par mettre de c\u00f4t\u00e9 l'\u00e9quivalent d'un mois de charges.`, color:'#EAB308', cta:'brique-fonds-urgence.html', ctaLabel:'Commencer l\'\u00e9pargne de pr\u00e9caution' },
+      { icon:'\u{1F4CA}', id:'reduire_variables_10', title:'R\u00e9duire les d\u00e9penses variables de 10%', sub:`Un gain de ${formatEuro(Math.round(budgetData.total_envies * 0.1))}/mois est r\u00e9aliste sans impacter ton confort.`, color:'#8B5CF6' },
     ],
     equilibre: [
-      { icon:'\u{1F3E6}', title:'Automatiser une \u00e9pargne de pr\u00e9caution', sub: buildEpargneLevierSub(), color:'#22C55E', cta:epargneLevierCta, ctaLabel:epargneLevierCtaLabel },
-      { icon:'\u{1F4C9}', title:'R\u00e9duire 1 poste de d\u00e9penses variables', sub:`Choisir un seul poste \u00e0 r\u00e9duire de 15% lib\u00e8re ${formatEuro(Math.round(budgetData.total_envies * 0.15))}/mois.`, color:'#8B5CF6' },
-      { icon:'\u{1F4A1}', title:'V\u00e9rifier tes frais bancaires', sub:'Carte, d\u00e9couvert autoris\u00e9, assurances redondantes \u2014 souvent 15 \u00e0 30\u20ac/mois invisibles.', color:'#6366F1', cta:null, ctaLabel:'Optimiser mes frais', bientot:true },
+      { icon:'\u{1F3E6}', id:'automatiser_epargne', title:'Automatiser une \u00e9pargne de pr\u00e9caution', sub: buildEpargneLevierSub(), color:'#22C55E', cta:epargneLevierCta, ctaLabel:epargneLevierCtaLabel },
+      { icon:'\u{1F4C9}', id:'reduire_1_poste', title:'R\u00e9duire 1 poste de d\u00e9penses variables', sub:`Choisir un seul poste \u00e0 r\u00e9duire de 15% lib\u00e8re ${formatEuro(Math.round(budgetData.total_envies * 0.15))}/mois.`, color:'#8B5CF6' },
+      { icon:'\u{1F4A1}', id:'frais_bancaires', title:'V\u00e9rifier tes frais bancaires', sub:'Carte, d\u00e9couvert autoris\u00e9, assurances redondantes \u2014 souvent 15 \u00e0 30\u20ac/mois invisibles.', color:'#6366F1', cta:null, ctaLabel:'Optimiser mes frais', bientot:true },
     ],
     aise: [
-      { icon:'\u{1F4B0}', title:'Automatiser l\'\u00e9pargne d\u00e8s le 1er du mois', sub: buildEpargneLevierSub(), color:'#22C55E', cta:epargneLevierCta, ctaLabel:epargneLevierCtaLabel },
-      { icon:'\u{1F4C8}', title:'Commencer \u00e0 investir', sub:`Avec ${formatEuro(margeReelle)}/mois de marge r\u00e9elle, m\u00eame 50\u20ac/mois investi r\u00e9guli\u00e8rement cr\u00e9e un effet boule de neige.`, color:'#6366F1' },
-      { icon:'\u{1F3E0}', title:'Anticiper un projet moyen terme', sub:'Immobilier, v\u00e9hicule, voyage \u2014 planifier maintenant optimise le financement.', color:'#8B5CF6' },
+      { icon:'\u{1F4B0}', id:'epargne_1er_mois', title:'Automatiser l\'\u00e9pargne d\u00e8s le 1er du mois', sub: buildEpargneLevierSub(), color:'#22C55E', cta:epargneLevierCta, ctaLabel:epargneLevierCtaLabel },
+      { icon:'\u{1F4C8}', id:'commencer_investir', title:'Commencer \u00e0 investir', sub:`Avec ${formatEuro(margeReelle)}/mois de marge r\u00e9elle, m\u00eame 50\u20ac/mois investi r\u00e9guli\u00e8rement cr\u00e9e un effet boule de neige.`, color:'#6366F1' },
+      { icon:'\u{1F3E0}', id:'projet_moyen_terme', title:'Anticiper un projet moyen terme', sub:'Immobilier, v\u00e9hicule, voyage \u2014 planifier maintenant optimise le financement.', color:'#8B5CF6' },
     ],
     confortable: [
-      { icon:'\u{1F4C8}', title:'Investir une part fixe chaque mois', sub:`${formatEuro(Math.round(margeReelle * 0.4))}/mois investis r\u00e9guli\u00e8rement = un capital solide \u00e0 10 ans.`, color:'#22C55E' },
-      { icon:'\u{1F3E0}', title:'R\u00e9fl\u00e9chir \u00e0 un projet immobilier', sub:`Avec ${formatEuro(margeReelle)}/mois de capacit\u00e9 d'\u00e9pargne, l'acc\u00e8s au cr\u00e9dit immobilier est r\u00e9aliste.`, color:'#6366F1' },
-      { icon:'\u{1F6E1}\uFE0F', title:'Optimiser ta fiscalit\u00e9', sub:'PEA, assurance-vie, PER \u2014 les enveloppes fiscales font une vraie diff\u00e9rence \u00e0 ce niveau de revenus.', color:'#8B5CF6' },
+      { icon:'\u{1F4C8}', id:'investir_part_fixe', title:'Investir une part fixe chaque mois', sub:`${formatEuro(Math.round(margeReelle * 0.4))}/mois investis r\u00e9guli\u00e8rement = un capital solide \u00e0 10 ans.`, color:'#22C55E' },
+      { icon:'\u{1F3E0}', id:'projet_immobilier', title:'R\u00e9fl\u00e9chir \u00e0 un projet immobilier', sub:`Avec ${formatEuro(margeReelle)}/mois de capacit\u00e9 d'\u00e9pargne, l'acc\u00e8s au cr\u00e9dit immobilier est r\u00e9aliste.`, color:'#6366F1' },
+      { icon:'\u{1F6E1}\uFE0F', id:'fiscalite', title:'Optimiser ta fiscalit\u00e9', sub:'PEA, assurance-vie, PER \u2014 les enveloppes fiscales font une vraie diff\u00e9rence \u00e0 ce niveau de revenus.', color:'#8B5CF6' },
     ],
   };
 
@@ -2449,10 +2698,13 @@ function buildLeviers() {
     kicker.style.display = 'block';
   }
 
+  leviersConfig_dernier = leviers;
+
   leviers.forEach(l => {
     const card = document.createElement('div');
     card.className = 'levier-card';
     const ctaHtml = l.bientot ? `<span class="levier-cta" style="opacity:0.4;cursor:not-allowed;pointer-events:none;">${l.ctaLabel} (bientôt)</span>` : l.cta ? `<a href="${l.cta}" class="levier-cta">${l.ctaLabel} \u2192</a>` : '';
+    const ouvrable = !!EXPLICATIONS_LEVIERS[l.id];
     card.innerHTML = `
       <div class="levier-icon" style="color:${l.color};">${l.icon}</div>
       <div class="levier-body">
@@ -2460,13 +2712,41 @@ function buildLeviers() {
         <div class="levier-sub">${l.sub}</div>
         ${ctaHtml}
       </div>
+      ${ouvrable ? '<span class="levier-loupe" aria-hidden="true">?</span>' : ''}
     `;
+    // Le conseil s'ouvre au clic ; le lien de la carte garde sa destination.
+    if (ouvrable) {
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', l.title + ' \u2014 comprendre ce conseil');
+      const ouvrir = (ev) => { if (ev.target.closest('a')) return; ouvrirLevier(l.id); };
+      card.addEventListener('click', ouvrir);
+      card.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ouvrirLevier(l.id); }
+      });
+    }
     container.appendChild(card);
   });
 }
 
 // Options de rendu communes aux deux onglets (design aéré P3)
 const SANKEY_OPTS = { catGap:14, barW:30, H_BASE:380, innerGap:165, bands:true };
+
+// L'ecart entre colonnes se deduit de la place reellement disponible. En
+// dessous de 72px les rubans deviennent trop verticaux pour se suivre, au
+// dessus de 165 on retrouve l'aeration d'origine sur grand ecran.
+function sankeyOpts() {
+  const hote = document.querySelector('.sankey-scroll');
+  const dispo = hote ? hote.clientWidth : 0;
+  if (!dispo) return SANKEY_OPTS;
+  const nCol = (typeof sankeyMode !== 'undefined' && sankeyMode === 'detail') ? 5 : 3;
+  // Place prise par les etiquettes de part et d'autre, et par les barres.
+  const reserve = 320 + nCol * SANKEY_OPTS.barW;
+  const ecart = Math.round((dispo - reserve) / Math.max(1, nCol - 1));
+  return Object.assign({}, SANKEY_OPTS, {
+    innerGap: Math.max(72, Math.min(SANKEY_OPTS.innerGap, ecart))
+  });
+}
 
 // ── Sankey simplifié : moteur budget-sankey.js (postes regroupés) ──
 function _renderSankeyHTML(budgetData) {
@@ -2490,7 +2770,7 @@ function _renderSankeyHTML(budgetData) {
   if (reste>=Math.max(20, totalRev*0.02)) outflows.push({name:'Reste à vivre', val:reste, kind:'reste'});
 
   const isDark = document.documentElement.classList.contains('dark');
-  const res = renderBudgetSankey({income:income, outflows:outflows}, isDark, SANKEY_OPTS);
+  const res = renderBudgetSankey({income:income, outflows:outflows}, isDark, sankeyOpts());
   if (!res) return null;
   return { html:res.html, viewBox:res.viewBox, W:res.W, legendItems:[] };
 }
@@ -2562,7 +2842,7 @@ function _renderSankeyDetailedHTML(budgetData) {
   if(reste>=Math.max(20, totalRev*0.02)) outflows.push({name:'Reste à vivre', val:reste, kind:'reste'});
 
   const isDark=document.documentElement.classList.contains('dark');
-  const res=renderBudgetSankey({income:income, outflows:outflows}, isDark, SANKEY_OPTS);
+  const res=renderBudgetSankey({income:income, outflows:outflows}, isDark, sankeyOpts());
   if(!res) return null;
   return { html:res.html, viewBox:res.viewBox, W:res.W, legendItems:[] };
 }
@@ -2583,7 +2863,11 @@ function buildSankeyFlow() {
   if (wrap) wrap.style.display = '';
 
   svg.setAttribute('viewBox', result.viewBox);
-  svg.style.minWidth = result.W ? (Math.min(result.W, 760) + 'px') : '';
+  // Jamais plus large que la colonne : s'il reste un ecart, le viewBox met
+  // a l'echelle. Mieux vaut un dessin legerement reduit qu'un dessin coupe.
+  const hote = svg.closest('.sankey-scroll');
+  const place = hote ? hote.clientWidth : 0;
+  svg.style.minWidth = (result.W && place) ? (Math.min(result.W, place) + 'px') : '';
   svg.innerHTML = result.html;
 
   if (legend) {
