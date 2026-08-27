@@ -595,9 +595,14 @@
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
       margin-bottom: 0.5rem;
-      align-items: start;
+      /* Toutes les cartes a la meme hauteur : sans cela, celles qui ont une
+         valeur pre-calculee depassaient les autres de pres de 60px. */
+      align-items: stretch;
+      grid-auto-rows: 1fr;
     }
-    @media (max-width: 640px) { .explorer-simulateurs { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) {
+      .explorer-simulateurs { grid-template-columns: 1fr; grid-auto-rows: auto; }
+    }
 
     .explorer-parcours {
       display: grid;
@@ -638,9 +643,13 @@
       transition: box-shadow 0.15s, border-color 0.15s;
       position: relative;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
+    /* Rien a ouvrir ici : le curseur ne doit pas promettre une action. */
+    .sim-card--off { cursor: default; }
+    .sim-card--off:hover { box-shadow: none; border-color: var(--border); }
     .sim-card:hover { box-shadow: 0 4px 16px rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); }
-    .sim-card.open { border-color: rgba(139,92,246,0.4); }
     html.dark .sim-card { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); }
     html.dark .sim-card:hover { border-color: rgba(139,92,246,0.4); }
 
@@ -687,26 +696,18 @@
       color: var(--text-muted);
       margin-top: 0.125rem;
     }
-    .sim-card-chevron {
-      color: var(--text-muted);
-      transition: transform 0.2s;
-      flex-shrink: 0;
-      margin-top: 0.25rem;
-    }
-    .sim-card.open .sim-card-chevron { transform: rotate(180deg); }
-
-    /* Expanded panel simulateur */
-    .sim-card-body {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.25s ease;
-    }
-    .sim-card.open .sim-card-body { max-height: 400px; }
+    /* Detail du simulateur — visible en permanence */
     .sim-card-body-inner {
       padding-top: 1rem;
       border-top: 1px solid var(--border);
       margin-top: 1rem;
     }
+    .sim-card-attente {
+      font-size: 0.8125rem; color: var(--text-muted); margin: 0;
+    }
+    /* L'action se cale en bas : les cartes s'alignent malgre des contenus
+       de longueurs differentes. */
+    .sim-card-foot { margin-top: auto; padding-top: 1rem; }
     .sim-row {
       display: flex;
       justify-content: space-between;
@@ -719,8 +720,9 @@
     .sim-row-label { color: var(--text-muted); }
     .sim-row-val { font-weight: 600; color: var(--text-primary, var(--text)); }
     .sim-cta {
-      display: inline-block;
-      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
       font-size: 0.8125rem;
       font-weight: 600;
       color: #8b5cf6;
@@ -1806,10 +1808,10 @@
 
   function makeSimCard(cfg) {
     const card = document.createElement('div');
-    card.className = 'sim-card';
+    card.className = 'sim-card' + (cfg.ctaDisabled ? ' sim-card--off' : '');
     card.id = cfg.id;
 
-    const chevronSVG = `<svg class="sim-card-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
+    const fleche = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
 
     card.innerHTML = `
       <div class="sim-card-header">
@@ -1819,28 +1821,30 @@
           <div class="sim-card-sub">${cfg.sub}</div>
           ${cfg.value ? `<div class="sim-card-value">${cfg.value}</div><div class="sim-card-value-label">${cfg.valueLabel}</div>` : ''}
         </div>
-        ${chevronSVG}
       </div>
       <div class="sim-card-body">
         <div class="sim-card-body-inner">
           ${cfg.rows.map(r => `<div class="sim-row"><span class="sim-row-label">${r.label}</span><span class="sim-row-val">${r.val}</span></div>`).join('')}
-          ${cfg.rows.length === 0 ? '<p style="font-size:0.8125rem;color:var(--text-muted);margin:0 0 0.75rem;">Complète tes briques pour voir un résultat pré-calculé.</p>' : ''}
-          ${cfg.ctaDisabled
-            ? `<span class="sim-cta-disabled">${cfg.ctaLabel}</span>`
-            : `<a class="sim-cta" href="${cfg.ctaHref}">${cfg.ctaLabel}</a>`
-          }
+          ${cfg.rows.length === 0 ? '<p class="sim-card-attente">Complète tes briques pour voir un résultat pré-calculé.</p>' : ''}
         </div>
+      </div>
+      <div class="sim-card-foot">
+        ${cfg.ctaDisabled
+          ? `<span class="sim-cta-disabled">${cfg.ctaLabel}</span>`
+          : `<a class="sim-cta" href="${cfg.ctaHref}">${cfg.ctaLabel} ${fleche}</a>`
+        }
       </div>
     `;
 
-    // Toggle accordion
-    card.addEventListener('click', function(e) {
-      if (e.target.closest('a')) return; // ne pas fermer si clic sur lien
-      const isOpen = card.classList.contains('open');
-      // Fermer tous les autres
-      document.querySelectorAll('.sim-card.open').forEach(c => c.classList.remove('open'));
-      if (!isOpen) card.classList.add('open');
-    });
+    // Toute la carte mene au simulateur : le lien reste la cible clavier et
+    // conserve clic-milieu et ouverture dans un onglet.
+    if (!cfg.ctaDisabled && cfg.ctaHref) {
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;   // le lien fait deja le travail
+        if (window.getSelection && String(window.getSelection()).length) return;
+        window.location.href = cfg.ctaHref;
+      });
+    }
 
     return card;
   }
