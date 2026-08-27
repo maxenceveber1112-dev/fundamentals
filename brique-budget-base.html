@@ -1051,20 +1051,70 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
 .modal-fin-dashboard{display:block;text-align:center;font-size:0.8125rem;color:var(--text-muted);text-decoration:none;padding-top:0.25rem;transition:color 0.15s;}
 .modal-fin-dashboard:hover{color:var(--text);}
 @media print {
+  @page { margin: 14mm; }
   body > *:not(#print-bilan){display:none!important;}
-  #print-bilan{display:block!important;font-family:'Inter',system-ui,sans-serif;color:#1C1917;background:#fff;max-width:680px;margin:0 auto;padding:2rem;}
-  #print-bilan h1{font-family:Georgia,serif;font-size:1.5rem;margin-bottom:0.25rem;}
-  #print-bilan .pb-date{font-size:0.8rem;color:#78716C;margin-bottom:1.5rem;}
-  #print-bilan .pb-section{margin-bottom:1.25rem;}
-  #print-bilan .pb-section-title{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#A8A29E;margin-bottom:0.5rem;border-bottom:1px solid #E7E5E4;padding-bottom:0.25rem;}
-  #print-bilan .pb-row{display:flex;justify-content:space-between;font-size:0.875rem;padding:0.2rem 0;}
+  #print-bilan{
+    display:block!important; font-family:'Inter',system-ui,sans-serif;
+    color:#1C1917; background:#fff; max-width:700px; margin:0 auto;
+    -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  /* En-tete : la marque, comme partout ailleurs */
+  #print-bilan .pb-head{display:flex;align-items:center;gap:0.5rem;margin-bottom:1.5rem;}
+  #print-bilan .pb-mark{width:22px;height:22px;border-radius:6px;background:#5B21B6;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;
+    font-style:italic;font-size:13px;font-weight:600;}
+  #print-bilan .pb-brand{font-size:13px;font-weight:600;letter-spacing:-0.01em;}
+  #print-bilan h1{font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;
+    font-size:1.75rem;line-height:1.15;margin:0 0 0.2rem;}
+  #print-bilan .pb-date{font-size:0.78rem;color:#78716C;margin-bottom:1.4rem;}
+
+  /* Diagnostic */
+  #print-bilan .pb-diag{border-left:3px solid #5B21B6;padding:0.6rem 0 0.6rem 0.9rem;margin-bottom:1.6rem;}
+  #print-bilan .pb-diag-kicker{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;
+    text-transform:uppercase;margin-bottom:0.2rem;}
+  #print-bilan .pb-diag-txt{font-size:0.9rem;line-height:1.5;color:#1C1917;}
+
+  /* Chiffre principal */
+  #print-bilan .pb-cle{display:flex;gap:1.5rem;margin-bottom:1.6rem;}
+  #print-bilan .pb-cle-bloc{flex:1;}
+  #print-bilan .pb-cle-lab{font-size:0.68rem;font-weight:600;letter-spacing:0.06em;
+    text-transform:uppercase;color:#A8A29E;margin-bottom:0.15rem;}
+  #print-bilan .pb-cle-val{font-family:'Fraunces',Georgia,serif;font-style:italic;
+    font-size:1.5rem;font-weight:600;line-height:1.1;}
+
+  #print-bilan .pb-section{margin-bottom:1.4rem;break-inside:avoid;}
+  #print-bilan .pb-section-title{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;
+    text-transform:uppercase;color:#A8A29E;margin-bottom:0.5rem;
+    border-bottom:1px solid #E7E5E4;padding-bottom:0.25rem;}
+  #print-bilan .pb-row{display:flex;justify-content:space-between;font-size:0.85rem;padding:0.22rem 0;}
+  #print-bilan .pb-row.sub .pb-row-label{padding-left:0.75rem;color:#A8A29E;font-size:0.8rem;}
+  #print-bilan .pb-row.tot{border-top:1px solid #E7E5E4;margin-top:0.25rem;padding-top:0.35rem;font-weight:600;}
   #print-bilan .pb-row-label{color:#57534E;}
   #print-bilan .pb-row-val{font-weight:600;color:#1C1917;}
-  #print-bilan .pb-priorite{margin-bottom:0.625rem;}
-  #print-bilan .pb-priorite-num{font-size:0.7rem;font-weight:700;color:#5B21B6;}
+
+  /* Repartition 50/30/20 */
+  #print-bilan .pb-rep{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:0.5rem 0 0.4rem;}
+  #print-bilan .pb-rep span{display:block;height:100%;}
+  #print-bilan .pb-rep-leg{display:flex;gap:1rem;font-size:0.72rem;color:#57534E;flex-wrap:wrap;}
+  #print-bilan .pb-rep-leg i{display:inline-block;width:8px;height:8px;border-radius:2px;
+    margin-right:0.3rem;vertical-align:middle;font-style:normal;}
+
+  /* Leviers */
+  #print-bilan .pb-levier{margin-bottom:0.7rem;break-inside:avoid;}
+  #print-bilan .pb-levier-t{font-size:0.85rem;font-weight:600;}
+  #print-bilan .pb-levier-s{font-size:0.78rem;color:#57534E;line-height:1.45;}
+
+  #print-bilan .pb-priorite{margin-bottom:0.625rem;break-inside:avoid;}
+  #print-bilan .pb-priorite-num{font-size:0.68rem;font-weight:700;color:#5B21B6;}
   #print-bilan .pb-priorite-titre{font-size:0.875rem;font-weight:600;}
   #print-bilan .pb-priorite-horizon{font-size:0.7rem;color:#78716C;}
-  #print-bilan .pb-footer{margin-top:2rem;font-size:0.72rem;color:#A8A29E;text-align:center;}
+
+  #print-bilan .pb-suite{border:1px solid #E7E5E4;border-radius:10px;padding:0.7rem 0.9rem;
+    font-size:0.8rem;color:#57534E;line-height:1.5;break-inside:avoid;}
+  #print-bilan .pb-suite b{color:#1C1917;}
+  #print-bilan .pb-footer{margin-top:1.8rem;padding-top:0.6rem;border-top:1px solid #E7E5E4;
+    font-size:0.68rem;color:#A8A29E;text-align:center;line-height:1.5;}
+}
 }
 
   /* ── Sankey héros + détail replié (refonte analyse) ── */
@@ -2436,16 +2486,7 @@ function buildMsgCards() {
 
   const { situation } = getBudgetSituation(budgetData);
 
-  const msgMap = {
-    deficit:         { border:'var(--red)',              kicker:'⚠️ DÉFICIT',        text:"Tu dépenses plus que tu gagnes. Avant tout le reste, il faut retrouver l'équilibre." },
-    deficit_couvert: { border:'rgba(245,158,11,0.4)',    kicker:'⚠️ ATTENTION',      text:"Tes charges dépassent tes revenus hors épargne. C'est ton épargne qui équilibre, ce n'est pas tenable sur le long terme." },
-    tendu:           { border:'var(--dot-construction)', kicker:'BUDGET TENDU',      text:"Ton budget est peu flexible. La priorité : retrouver de l'air, pas encore investir." },
-    equilibre:   { border:'var(--dot-construction)', kicker:'BUDGET ÉQUILIBRÉ',  text:"Ton budget tient. L'objectif maintenant : consolider ton épargne." },
-    aise:        { border:'var(--green)',            kicker:'✅ BONNE POSITION',  text:"Tu gères bien. Prochaine étape : faire travailler ton argent." },
-    confortable: { border:'var(--green)',            kicker:'✅ BONNE POSITION',  text:"Tu es en bonne position. L'étape suivante : optimiser et faire travailler ton épargne." },
-  };
-
-  const m = msgMap[situation] || msgMap.equilibre;
+  const m = DIAGNOSTIC[situation] || DIAGNOSTIC.equilibre;
 
   const card = document.createElement('div');
   card.className = 'msg-card';
@@ -2623,6 +2664,17 @@ function fermerLevier() {
 
 // Memorise les conseils affiches, pour retrouver titre et emoji a l'ouverture.
 let leviersConfig_dernier = [];
+
+/* Diagnostic de situation — une seule definition, lue par l'ecran 3 et par
+   le bilan telecharge. */
+const DIAGNOSTIC = {
+  deficit:         { border:'var(--red)',              impr:'#DC2626', kicker:'⚠️ DÉFICIT',       text:"Tu dépenses plus que tu gagnes. Avant tout le reste, il faut retrouver l’équilibre." },
+  deficit_couvert: { border:'rgba(245,158,11,0.4)',    impr:'#EA580C', kicker:'⚠️ ATTENTION',     text:"Tes charges dépassent tes revenus hors épargne. C’est ton épargne qui équilibre, ce n’est pas tenable sur le long terme." },
+  tendu:           { border:'var(--dot-construction)', impr:'#EA580C', kicker:'BUDGET TENDU',     text:"Ton budget est peu flexible. La priorité : retrouver de l’air, pas encore investir." },
+  equilibre:       { border:'var(--dot-construction)', impr:'#CA8A04', kicker:'BUDGET ÉQUILIBRÉ', text:"Ton budget tient. L’objectif maintenant : consolider ton épargne." },
+  aise:            { border:'var(--green)',            impr:'#16A34A', kicker:'✅ BONNE POSITION', text:"Tu gères bien. Prochaine étape : faire travailler ton argent." },
+  confortable:     { border:'var(--green)',            impr:'#16A34A', kicker:'✅ BONNE POSITION', text:"Tu es en bonne position. L’étape suivante : optimiser et faire travailler ton épargne." }
+};
 
 // ── Leviers adaptatifs ────────────────────────────────────────
 function buildLeviers() {
@@ -3369,31 +3421,140 @@ function openModalFin() {
 function imprimerBilan() {
   var el = document.getElementById('print-bilan');
   if (!el) { el = document.createElement('div'); el.id = 'print-bilan'; el.style.display = 'none'; document.body.appendChild(el); }
-  var totalRev    = budgetData.revenus + budgetData.aides;
-  var reste       = budgetData.reste_a_vivre;
-  var totalDettes = budgetData.dettes.reduce(function(s,d){ return s + (d.montant_mensuel||0); }, 0);
-  var now = new Date().toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'});
-  var prioritesHtml = (budgetData.priorites || []).map(function(p,i){
-    return '<div class="pb-priorite"><div class="pb-priorite-num">Priorité '+(i+1)+'</div><div class="pb-priorite-titre">'+p.titre+'</div><div class="pb-priorite-horizon">'+p.horizon+'</div></div>';
+
+  var bd = budgetData;
+  var sit = getBudgetSituation(bd);
+  var d = DIAGNOSTIC[sit.situation] || DIAGNOSTIC.equilibre;
+  var totalRev = bd.revenus + bd.aides;
+  var totalDettes = (bd.dettes || []).reduce(function (t, x) { return t + (x.montant_mensuel || 0); }, 0);
+  var now = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+
+  function ligne(lab, val, cls) {
+    return '<div class="pb-row' + (cls ? ' ' + cls : '') + '">'
+      + '<span class="pb-row-label">' + lab + '</span>'
+      + '<span class="pb-row-val">' + val + '</span></div>';
+  }
+  function poste(lab, montant) {
+    return (montant > 0) ? ligne(lab, formatEuro(montant) + '/mois', 'sub') : '';
+  }
+
+  // ── Repartition reelle, ramenee a 100 pour la barre ──
+  var pB = bd.pct_besoins || 0, pE = bd.pct_envies || 0, pI = bd.pct_investissement || 0;
+  var pR = Math.max(0, 100 - pB - pE - pI);
+  var barre = '<div class="pb-rep">'
+    + '<span style="width:' + pB + '%;background:#8B5CF6"></span>'
+    + '<span style="width:' + pE + '%;background:#6366F1"></span>'
+    + '<span style="width:' + pI + '%;background:#16A34A"></span>'
+    + '<span style="width:' + pR + '%;background:#E7E5E4"></span></div>'
+    + '<div class="pb-rep-leg">'
+    + '<span><i style="background:#8B5CF6"></i>Besoins ' + pB + ' % <span style="color:#A8A29E">(repère 50 %)</span></span>'
+    + '<span><i style="background:#6366F1"></i>Envies ' + pE + ' % <span style="color:#A8A29E">(repère 30 %)</span></span>'
+    + '<span><i style="background:#16A34A"></i>Épargne ' + pI + ' % <span style="color:#A8A29E">(repère 20 %)</span></span>'
+    + (pR > 0 ? '<span><i style="background:#E7E5E4"></i>Non alloué ' + pR + ' %</span>' : '')
+    + '</div>';
+
+  // ── Engagements ──
+  var dettesHtml = '';
+  if (totalDettes > 0) {
+    dettesHtml = '<div class="pb-section"><div class="pb-section-title">Tes engagements</div>'
+      + (bd.dettes || []).filter(function (x) { return (x.montant_mensuel || 0) > 0; })
+          .map(function (x) {
+            var nom = (typeof DETTE_TYPES !== 'undefined'
+              && (DETTE_TYPES.find(function (t) { return t.val === x.type; }) || {}).label)
+              || 'Crédit';
+            var det = formatEuro(x.montant_mensuel) + '/mois'
+                    + (x.taeg ? ' \u00b7 ' + x.taeg + ' % TAEG' : '');
+            return ligne(nom, det);
+          }).join('')
+      + ligne('Total mensualités', formatEuro(totalDettes) + '/mois', 'tot')
+      + '</div>';
+  }
+
+  // ── Les trois leviers, avec leur texte personnalise ──
+  var leviersHtml = '';
+  if (typeof leviersConfig_dernier !== 'undefined' && leviersConfig_dernier.length) {
+    leviersHtml = '<div class="pb-section"><div class="pb-section-title">Tes trois leviers</div>'
+      + leviersConfig_dernier.map(function (l) {
+          return '<div class="pb-levier"><div class="pb-levier-t">' + l.title + '</div>'
+               + '<div class="pb-levier-s">' + String(l.sub).replace(/<[^>]+>/g, '') + '</div></div>';
+        }).join('')
+      + '</div>';
+  }
+
+  // ── Priorites ──
+  var prioritesHtml = (bd.priorites || []).map(function (x, i) {
+    return '<div class="pb-priorite"><div class="pb-priorite-num">Priorité ' + (i + 1) + '</div>'
+      + '<div class="pb-priorite-titre">' + x.titre + '</div>'
+      + '<div class="pb-priorite-horizon">' + x.horizon + '</div></div>';
   }).join('');
-  el.innerHTML = '<h1>Mon bilan budget</h1><div class="pb-date">Établi le '+now+' · Fundamental</div>'
-    +'<div class="pb-section"><div class="pb-section-title">Revenus</div>'
-    +'<div class="pb-row"><span class="pb-row-label">Revenus nets</span><span class="pb-row-val">'+formatEuro(budgetData.revenus||0)+'/mois</span></div>'
-    +(budgetData.aides>0?'<div class="pb-row"><span class="pb-row-label">Aides / allocations</span><span class="pb-row-val">'+formatEuro(budgetData.aides)+'/mois</span></div>':'')
-    +'<div class="pb-row"><span class="pb-row-label">Total revenus</span><span class="pb-row-val">'+formatEuro(totalRev)+'/mois</span></div></div>'
-    +'<div class="pb-section"><div class="pb-section-title">Charges et dépenses</div>'
-    +'<div class="pb-row"><span class="pb-row-label">Charges fixes</span><span class="pb-row-val">'+formatEuro(budgetData.total_besoins||0)+'/mois</span></div>'
-    +'<div class="pb-row"><span class="pb-row-label">Dépenses variables</span><span class="pb-row-val">'+formatEuro(budgetData.total_envies||0)+'/mois</span></div>'
-    +(budgetData.abonnements_total>0?'<div class="pb-row"><span class="pb-row-label">dont abonnements</span><span class="pb-row-val">'+formatEuro(budgetData.abonnements_total)+'/mois</span></div>':'')
-    +(totalDettes>0?'<div class="pb-row"><span class="pb-row-label">Mensualités dettes</span><span class="pb-row-val">'+formatEuro(totalDettes)+'/mois</span></div>':'')
-    +'</div>'
-    +'<div class="pb-section"><div class="pb-section-title">Résultat</div>'
-    +'<div class="pb-row"><span class="pb-row-label">Reste à vivre</span><span class="pb-row-val">'+formatEuro(reste)+'/mois</span></div>'
-    +(budgetData.epargne>0?'<div class="pb-row"><span class="pb-row-label">Épargne mensuelle</span><span class="pb-row-val">'+formatEuro(budgetData.epargne)+'/mois</span></div>':'')
-    +'<div class="pb-row"><span class="pb-row-label">Charges fixes (réf. 50/30/20)</span><span class="pb-row-val">'+(totalRev>0?Math.round((budgetData.total_besoins/totalRev)*100):0)+'% (cible : 50%)</span></div>'
-    +'</div>'
-    +(prioritesHtml?'<div class="pb-section"><div class="pb-section-title">Mes 3 priorités</div>'+prioritesHtml+'</div>':'')
-    +'<div class="pb-footer">Généré par Fundamental · fundamentals-beta.netlify.app · Ce document est à titre indicatif.</div>';
+
+  // ── La suite du parcours ──
+  var suite = '';
+  if (bd.brique_recommandee) {
+    var nomBrique = (typeof BRIQUES_META !== 'undefined' && BRIQUES_META[bd.brique_recommandee])
+      ? BRIQUES_META[bd.brique_recommandee].nom : null;
+    if (nomBrique) suite = '<div class="pb-suite">Prochaine étape de ton parcours : <b>' + nomBrique + '</b>. '
+      + 'Retrouve-la sur ton tableau de bord Fundamental.</div>';
+  }
+
+  el.innerHTML =
+      '<div class="pb-head"><div class="pb-mark">f</div><div class="pb-brand">Fundamental</div></div>'
+    + '<h1>Mon bilan budget</h1>'
+    + '<div class="pb-date">Établi le ' + now + '</div>'
+
+    + '<div class="pb-diag" style="border-left-color:' + d.impr + '">'
+    + '<div class="pb-diag-kicker" style="color:' + d.impr + '">' + d.kicker + '</div>'
+    + '<div class="pb-diag-txt">' + d.text + '</div></div>'
+
+    + '<div class="pb-cle">'
+    + '<div class="pb-cle-bloc"><div class="pb-cle-lab">Ce qui rentre</div>'
+    + '<div class="pb-cle-val">' + formatEuro(totalRev) + '</div></div>'
+    + '<div class="pb-cle-bloc"><div class="pb-cle-lab">Ce qui sort</div>'
+    + '<div class="pb-cle-val">' + formatEuro(bd.total_depenses || 0) + '</div></div>'
+    + '<div class="pb-cle-bloc"><div class="pb-cle-lab">Reste à vivre</div>'
+    + '<div class="pb-cle-val" style="color:' + (sit.reste < 0 ? '#DC2626' : '#16A34A') + '">'
+    + formatEuro(sit.reste) + '</div></div></div>'
+
+    + '<div class="pb-section"><div class="pb-section-title">Ta répartition</div>' + barre + '</div>'
+
+    + '<div class="pb-section"><div class="pb-section-title">Ce qui rentre</div>'
+    + ligne('Revenus nets', formatEuro(bd.revenus || 0) + '/mois')
+    + (bd.aides > 0 ? ligne('Aides / allocations', formatEuro(bd.aides) + '/mois') : '')
+    + ligne('Total', formatEuro(totalRev) + '/mois', 'tot') + '</div>'
+
+    + '<div class="pb-section"><div class="pb-section-title">Charges fixes</div>'
+    + poste('Loyer / logement', bd.loyer)
+    + poste('Assurances', bd.assurances)
+    + poste('Courses', bd.courses)
+    + poste('Transport', bd.transport)
+    + poste('Santé', bd.sante)
+    + poste('Dépenses pro', bd.depenses_pro)
+    + poste('Autres charges fixes', bd.custom_besoins)
+    + (totalDettes > 0 ? poste('Mensualités de crédit', totalDettes) : '')
+    + ligne('Total charges fixes', formatEuro(bd.total_besoins || 0) + '/mois', 'tot') + '</div>'
+
+    + '<div class="pb-section"><div class="pb-section-title">Dépenses variables</div>'
+    + poste('Abonnements', bd.abonnements_total)
+    + poste('Sorties', bd.sorties)
+    + poste('Repas extérieur', bd.repas)
+    + poste('Shopping', bd.shopping)
+    + poste('Transport ponctuel', bd.transport_variable)
+    + poste('Autres', bd.autres)
+    + poste('Autres postes courants', bd.custom_envies)
+    + ligne('Total dépenses variables', formatEuro(bd.total_envies || 0) + '/mois', 'tot') + '</div>'
+
+    + (bd.epargne > 0
+        ? '<div class="pb-section"><div class="pb-section-title">Épargne</div>'
+          + ligne('Mise de côté chaque mois', formatEuro(bd.epargne) + '/mois') + '</div>'
+        : '')
+
+    + dettesHtml
+    + leviersHtml
+    + (prioritesHtml ? '<div class="pb-section"><div class="pb-section-title">Tes priorités</div>' + prioritesHtml + '</div>' : '')
+    + suite
+    + '<div class="pb-footer">Généré par Fundamental \u00b7 fundamentals-beta.netlify.app<br>'
+    + 'Document indicatif, établi à partir des montants que tu as saisis.</div>';
+
   window.print();
 }
 </script>
