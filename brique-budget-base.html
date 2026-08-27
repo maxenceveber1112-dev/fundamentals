@@ -224,7 +224,7 @@
     margin-bottom:0.625rem;
   }
   .bpc-title {
-    font-family:'Fraunces',serif;
+    font-family:var(--font-display);
     font-size:0.9375rem; font-weight:400;
     font-style:italic;
     color:var(--v3-text);
@@ -245,7 +245,7 @@
     transition:stroke-dashoffset 0.8s var(--ease-out);
   }
   .bpc-ring-pct {
-    font-family:'Fraunces',serif;
+    font-family:var(--font-display);
     font-size:1.125rem; font-weight:400;
     fill:var(--v3-text);
   }
@@ -330,7 +330,7 @@
   html.dark .hero-cream { backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); }
   .hero-cream::after {
     content:'f';
-    font-family:'Instrument Serif','Fraunces',Georgia,serif;
+    font-family:'Instrument Serif',Georgia,serif;
     font-style:italic; font-weight:300;
     position:absolute; right:-0.25rem; bottom:-1.5rem;
     font-size:14rem; line-height:1;
@@ -351,7 +351,7 @@
   }
 
   .hero-title {
-    font-family:'Fraunces','Instrument Serif',Georgia,serif;
+    font-family:var(--font-display);
     font-size:clamp(1.5rem, 3.5vw, 2rem);
     font-weight:400; line-height:1.15;
     letter-spacing:-0.02em;
@@ -424,7 +424,7 @@
   html.dark .brick-kicker { color:#A5B4FC; }
 
   .brick-title {
-    font-family:'Fraunces','Instrument Serif',Georgia,serif;
+    font-family:var(--font-display);
     font-size:clamp(1.5rem, 3.5vw, 2rem);
     font-weight:400; font-style:italic;
     line-height:1.15; letter-spacing:-0.02em;
@@ -441,7 +441,6 @@
     font-size:0.82rem; font-weight:600; color:var(--text);
     display:flex; align-items:center; gap:0.5rem;
   }
-  .field-help  { font-size:0.75rem; color:var(--text-faint); margin-top:0.2rem; }
 
   .badge-prefilled {
     font-size:0.6rem; font-weight:600; letter-spacing:0.06em;
@@ -501,20 +500,6 @@
   html.dark .nudge-epargne { color:#A78BFA; background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.2); }
   .nudge-epargne.visible { display:flex; }
 
-  /* ── Séparateur section ── */
-  .section-sep {
-    display:flex; align-items:center; gap:0.75rem;
-    margin:0.25rem 0;
-  }
-  .section-sep-line { flex:1; height:1px; background:var(--border-subtle); }
-  .section-sep-label { font-size:0.75rem; color:var(--text-faint); white-space:nowrap; }
-
-  /* ── Bloc 2 révélé ── */
-  .bloc-revele {
-    display:none; flex-direction:column; gap:1rem;
-    animation:fadeSlideUp 0.4s var(--ease-out) both;
-  }
-  .bloc-revele.visible { display:flex; }
 
   /* ── Bouton affiner ── */
   .affiner-btn {
@@ -549,13 +534,13 @@
     display:flex; flex-direction:column; align-items:center;
   }
   .sticky-bar-val {
-    font-family:'Fraunces',serif;
+    font-family:var(--font-display);
     font-size:1.125rem; font-weight:400; line-height:1;
     transition:color 0.3s ease;
   }
   .sticky-bar-sub { font-size:0.65rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; }
   .sticky-bar-sep { font-size:1.25rem; color:var(--border-mid); line-height:1; }
-  .sticky-bar-ral { font-family:'Fraunces',serif; font-size:1.375rem; font-weight:400; line-height:1; }
+  .sticky-bar-ral { font-family:var(--font-display); font-size:1.375rem; font-weight:400; line-height:1; }
   .sticky-bar-ral.positive { color:var(--green); }
   .sticky-bar-ral.warning  { color:var(--orange); }
   .sticky-bar-ral.negative { color:var(--red); }
@@ -576,12 +561,11 @@
   }
   html.dark .insight-kicker { color:#A78BFA; }
   .insight-figure {
-    font-family:'Fraunces',serif;
+    font-family:var(--font-display);
     font-size:1rem; font-weight:400; line-height:1.55;
     color:var(--text);
   }
   .insight-figure em { font-style:italic; font-weight:300; }
-  .insight-sub { font-size:0.8125rem; color:var(--text-muted); line-height:1.65; margin-top:0.5rem; }
 
   /* ── Messages contextuels (screen 2) ── */
   .msg-card {
@@ -626,7 +610,6 @@
     box-shadow:var(--shadow-card);
     display:flex; align-items:flex-start; gap:0.625rem;
   }
-  .levier-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:5px; }
   .levier-body { flex:1; min-width:0; }
   .levier-title { font-size:0.875rem; font-weight:600; color:var(--text); }
   .levier-sub { font-size:0.78rem; color:var(--text-faint); margin-top:0.15rem; }
@@ -763,7 +746,7 @@
     box-shadow:var(--shadow-card);
   }
   .recap-val {
-    font-family:'Fraunces',serif;
+    font-family:var(--font-display);
     font-size:1.375rem; font-weight:400; line-height:1;
     margin-bottom:0.25rem;
   }
@@ -791,15 +774,17 @@
     pointer-events:none; user-select:none;
   }
   .reco-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.4rem; }
-  .reco-title { font-family:'Fraunces',serif; font-size:1.125rem; font-weight:400; color:var(--text); margin-bottom:0.375rem; }
+  .reco-title { font-family:var(--font-display); font-size:1.125rem; font-weight:400; color:var(--text); margin-bottom:0.375rem; }
   .reco-desc { font-size:0.8125rem; color:var(--text-muted); margin-bottom:1.25rem; line-height:1.55; }
 
   /* ── Priorités personnalisées ── */
   .priorites-kicker { font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.5rem; }
   html.dark .priorites-kicker { color:#A78BFA; }
-  .priorites-list { display:flex; flex-direction:column; gap:0.625rem; margin-bottom:1rem; }
-  .priorite-card { display:flex; align-items:flex-start; gap:0.875rem; padding:0.875rem 1rem; background:var(--surface-2); border-radius:12px; border:1px solid var(--border-subtle); }
-  .priorite-num { font-family:'Fraunces',serif; font-size:1.375rem; font-weight:400; color:var(--accent-strong); line-height:1; flex-shrink:0; min-width:1.25rem; }
+  /* Rien n'est cliquable ici : l'ecart remplace la boite, qui promettait
+     une action inexistante. */
+  .priorites-list { display:flex; flex-direction:column; gap:1.4rem; margin-bottom:1rem; }
+  .priorite-card { display:flex; align-items:flex-start; gap:0.875rem; padding:0; }
+  .priorite-num { font-family:var(--font-display); font-size:1.375rem; font-weight:400; color:var(--accent-strong); line-height:1; flex-shrink:0; min-width:1.25rem; }
   html.dark .priorite-num { color:#A78BFA; }
   .priorite-body { flex:1; min-width:0; }
   .priorite-titre { font-size:0.875rem; font-weight:600; color:var(--text); margin-bottom:0.2rem; }
@@ -840,7 +825,7 @@
     background:var(--border-mid); margin:0 auto 1.25rem;
   }
   .popup-title {
-    font-family:'Fraunces',serif;
+    font-family:var(--font-display);
     font-size:1.25rem; font-weight:400; font-style:italic;
     color:var(--text); margin-bottom:1.5rem;
   }
@@ -936,7 +921,7 @@
   .abo-eco-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.375rem; }
   html.dark .abo-eco-kicker { color:#A78BFA; }
   .abo-eco-val {
-    font-family:'Fraunces',serif; font-style:italic;
+    font-family:var(--font-display); font-style:italic;
     font-size:1.5rem; font-weight:400; color:var(--text);
     animation:countUp 0.4s var(--ease-out) both;
   }
@@ -1021,7 +1006,7 @@
   font-size:1.25rem;font-weight:700;margin-bottom:0.75rem;
 }
 html.dark .modal-fin-check{color:#A78BFA;}
-.modal-fin-title{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:400;color:var(--text);margin:0 0 0.25rem;}
+.modal-fin-title{font-family:var(--font-display);font-size:1.5rem;font-weight:400;color:var(--text);margin:0 0 0.25rem;}
 .modal-fin-sub{font-size:0.875rem;color:var(--text-muted);margin:0;}
 .modal-fin-section{margin-bottom:1.25rem;}
 .modal-fin-section-label{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-faint);margin-bottom:0.625rem;}
@@ -1037,7 +1022,7 @@ html.dark .modal-fin-pdf-btn{color:#A78BFA;border-color:rgba(167,139,250,0.35);b
 .modal-fin-next-card{background:var(--cream-grad);border:1px solid var(--cream-border);border-radius:14px;padding:1rem 1.125rem;}
 .modal-fin-next-kicker{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent-strong);margin-bottom:0.375rem;}
 html.dark .modal-fin-next-kicker{color:#A78BFA;}
-.modal-fin-next-name{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:400;color:var(--text);margin-bottom:0.25rem;}
+.modal-fin-next-name{font-family:var(--font-display);font-size:1.1rem;font-weight:400;color:var(--text);margin-bottom:0.25rem;}
 .modal-fin-next-why{font-size:0.8rem;color:var(--text-muted);line-height:1.5;margin-bottom:0.875rem;}
 .modal-fin-next-cta {
   display:flex;align-items:center;justify-content:center;padding:0.625rem 1rem;border-radius:8px;
@@ -1064,7 +1049,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
     display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;
     font-style:italic;font-size:13px;font-weight:600;}
   #print-bilan .pb-brand{font-size:13px;font-weight:600;letter-spacing:-0.01em;}
-  #print-bilan h1{font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:400;
+  #print-bilan h1{font-family:var(--font-display);font-style:italic;font-weight:400;
     font-size:1.75rem;line-height:1.15;margin:0 0 0.2rem;}
   #print-bilan .pb-date{font-size:0.78rem;color:#78716C;margin-bottom:1.4rem;}
 
@@ -1079,7 +1064,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
   #print-bilan .pb-cle-bloc{flex:1;}
   #print-bilan .pb-cle-lab{font-size:0.68rem;font-weight:600;letter-spacing:0.06em;
     text-transform:uppercase;color:#A8A29E;margin-bottom:0.15rem;}
-  #print-bilan .pb-cle-val{font-family:'Fraunces',Georgia,serif;font-style:italic;
+  #print-bilan .pb-cle-val{font-family:var(--font-display);font-style:italic;
     font-size:1.5rem;font-weight:600;line-height:1.1;}
 
   #print-bilan .pb-section{margin-bottom:1.4rem;break-inside:avoid;}
@@ -1534,7 +1519,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             <!-- Priorités personnalisées -->
             <div>
               <div class="priorites-kicker" id="priorites-kicker"></div>
-              <h3 style="font-family:'Fraunces',serif;font-size:1.25rem;font-weight:400;font-style:italic;color:var(--text);margin-bottom:0.25rem;">Tes 3 priorités pour ce mois.</h3>
+              <h3 style="font-family:var(--font-display);font-size:1.25rem;font-weight:400;font-style:italic;color:var(--text);margin-bottom:0.25rem;">Tes 3 priorités pour ce mois.</h3>
               <p style="font-size:0.8125rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.55;">Basées sur ta situation réelle, dans l'ordre qui fait le plus de différence.</p>
               <div class="priorites-list" id="priorites-list"></div>
             </div>
@@ -1788,6 +1773,10 @@ const budgetData = {
   // 5. Pré-remplir les champs
   prefillFromProfil();
 
+  // 6. Reprendre là où la personne s'était arrêtée. Le profil a servi de
+  //    base ; ce qu'elle a saisi elle-même passe devant.
+  await reprendreProgression();
+
   // 7. Init sticky bar
   initStickyListeners();
 
@@ -1796,6 +1785,52 @@ const budgetData = {
   buildProgDots();
 
 })();
+
+// ── Reprise de progression ────────────────────
+// Les champs du formulaire, associes a la cle qui les porte dans budgetData.
+const CHAMPS_BUDGET = {
+  'f-revenus':'revenus', 'f-aides':'aides', 'f-loyer':'loyer',
+  'f-assurances':'assurances', 'f-courses':'courses', 'f-transport':'transport',
+  'f-sante':'sante', 'f-pro':'depenses_pro', 'f-abonnements':'abonnements_total',
+  'f-sorties':'sorties', 'f-repas':'repas', 'f-shopping':'shopping',
+  'f-autres':'autres', 'f-epargne':'epargne'
+};
+
+async function reprendreProgression() {
+  if (typeof loadBrickState !== 'function') return;
+  let etat = null;
+  try { etat = await loadBrickState(BRICK_ID); } catch (e) { return; }
+  if (!etat || !etat.data) return;
+  const d = etat.data;
+
+  // Un enregistrement vide ne doit pas effacer le pre-remplissage du profil.
+  const aDesMontants = Object.values(CHAMPS_BUDGET)
+    .some(function (k) { return (d[k] || 0) > 0; });
+  if (!aDesMontants) return;
+
+  Object.keys(CHAMPS_BUDGET).forEach(function (id) {
+    const el = document.getElementById(id);
+    const v = d[CHAMPS_BUDGET[id]];
+    if (el && v > 0) {
+      el.value = v;
+      el.classList.remove('prefilled');            // c'est sa saisie, pas une estimation
+      const badge = document.getElementById('badge-' + id.replace('f-', ''));
+      if (badge) badge.style.display = 'none';
+    }
+  });
+
+  // Ce qui ne vit pas dans un champ : dettes, abonnements, engagement.
+  if (Array.isArray(d.dettes) && d.dettes.length) budgetData.dettes = d.dettes;
+  if (d.abonnements_detail) budgetData.abonnements_detail = d.abonnements_detail;
+  if (d.engagement) budgetData.engagement = d.engagement;
+  if (Array.isArray(d.customCats) && d.customCats.length) budgetData.customCats = d.customCats;
+
+  collectBudgetData();
+
+  // On revient a l'ecran quitte, sans depasser le dernier ecran de saisie.
+  const ecran = Math.min(etat.screenCourant || 0, 4);
+  if (ecran > 0) goToScreen(ecran);
+}
 
 // ── Intro variant ─────────────────────────────────────────────
 function applyIntroVariant() {
@@ -2144,17 +2179,43 @@ function maybeOpenPopupAbo() {
   openPopupAbo();
 }
 
-function openPopupAbo() {
-  const overlay = document.getElementById('popup-abo');
-  if (overlay) overlay.classList.add('open');
+/* Comportement commun aux trois feuilles : Echap ferme, un clic sur le fond
+   ferme, et le focus entre dans la feuille pour ne pas rester derriere. */
+let _fermetureCourante = null;
+
+function ouvrirFeuille(id, fermer) {
+  const overlay = document.getElementById(id);
+  if (!overlay) return;
+  overlay.classList.add('open');
+  overlay.style.display = '';
   document.body.style.overflow = 'hidden';
+  _fermetureCourante = fermer;
+  const premier = overlay.querySelector('.popup-close, button, a, input');
+  if (premier) setTimeout(function () { try { premier.focus(); } catch (e) {} }, 60);
 }
 
-function closePopupAbo() {
-  const overlay = document.getElementById('popup-abo');
+function fermerFeuille(id) {
+  const overlay = document.getElementById(id);
   if (overlay) overlay.classList.remove('open');
   document.body.style.overflow = '';
+  _fermetureCourante = null;
 }
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && _fermetureCourante) { e.stopPropagation(); _fermetureCourante(); }
+});
+['popup-abo', 'popup-levier'].forEach(function (id) {
+  const o = document.getElementById(id);
+  if (o) o.addEventListener('mousedown', function (e) {
+    if (e.target === o && _fermetureCourante) _fermetureCourante();
+  });
+});
+
+function openPopupAbo() {
+  ouvrirFeuille('popup-abo', closePopupAbo);
+}
+
+function closePopupAbo() { fermerFeuille('popup-abo'); }
 
 function toggleAbo(el) {
   el.classList.toggle('checked');
@@ -2374,7 +2435,7 @@ function buildDonuts() {
         <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--track)" stroke-width="14"/>
         ${svgPaths}
         <text x="${cx}" y="${cy - 6}" text-anchor="middle" dominant-baseline="middle"
-          style="font-family:'Fraunces',serif;font-size:18px;font-style:italic;fill:var(--text);">${mainPct}%</text>
+          style="font-family:var(--font-display);font-size:18px;font-style:italic;fill:var(--text);">${mainPct}%</text>
         <text x="${cx}" y="${cy + 12}" text-anchor="middle"
           style="font-size:9px;fill:var(--text-faint);font-family:'Inter',sans-serif;letter-spacing:0.05em;text-transform:uppercase;">${data[0]?.label || ''}</text>
       </svg>
@@ -2652,15 +2713,10 @@ function ouvrirLevier(id) {
       '<p class="lev-bloc-texte">' + e.implique + '</p></div>' +
     '<p class="lev-suite">' + e.suite + '</p>';
 
-  overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
+  ouvrirFeuille('popup-levier', fermerLevier);
 }
 
-function fermerLevier() {
-  const overlay = document.getElementById('popup-levier');
-  if (overlay) overlay.classList.remove('open');
-  document.body.style.overflow = '';
-}
+function fermerLevier() { fermerFeuille('popup-levier'); }
 
 // Memorise les conseils affiches, pour retrouver titre et emoji a l'ouverture.
 let leviersConfig_dernier = [];
@@ -2727,7 +2783,7 @@ function buildLeviers() {
       { icon:'\u{1F4A1}', id:'frais_bancaires', title:'V\u00e9rifier tes frais bancaires', sub:'Carte, d\u00e9couvert autoris\u00e9, assurances redondantes \u2014 souvent 15 \u00e0 30\u20ac/mois invisibles.', color:'#6366F1', cta:null, ctaLabel:'Optimiser mes frais', bientot:true },
     ],
     aise: [
-      { icon:'\u{1F4B0}', id:'epargne_1er_mois', title:'Automatiser l\'\u00e9pargne d\u00e8s le 1er du mois', sub: buildEpargneLevierSub(), color:'#22C55E', cta:epargneLevierCta, ctaLabel:epargneLevierCtaLabel },
+      { icon:'\u{1F4B0}', id:'epargne_1er_mois', title:'Automatiser l\u2019\u00e9pargne d\u00e8s le 1er du mois', sub: buildEpargneLevierSub(), color:'#22C55E', cta:epargneLevierCta, ctaLabel:epargneLevierCtaLabel },
       { icon:'\u{1F4C8}', id:'commencer_investir', title:'Commencer \u00e0 investir', sub:`Avec ${formatEuro(margeReelle)}/mois de marge r\u00e9elle, m\u00eame 50\u20ac/mois investi r\u00e9guli\u00e8rement cr\u00e9e un effet boule de neige.`, color:'#6366F1' },
       { icon:'\u{1F3E0}', id:'projet_moyen_terme', title:'Anticiper un projet moyen terme', sub:'Immobilier, v\u00e9hicule, voyage \u2014 planifier maintenant optimise le financement.', color:'#8B5CF6' },
     ],
@@ -3314,7 +3370,7 @@ async function saveThenRedirect(href) {
         dettes:                   budgetData.dettes,
       },
       rawData: budgetData,
-      engagements: budgetData.engagement ? [{ id:'eng_budget_' + Date.now(), type: budgetData.engagement.type, label: budgetData.engagement.label, brique_id: BRICK_ID }] : [],
+      engagements: budgetData.engagement ? [{ id:'eng_budget_base', type: budgetData.engagement.type, label: budgetData.engagement.label, brique_id: BRICK_ID }] : [],
       insights: typeof buildInsights === 'function' ? buildInsights(BRICK_ID, profil, budgetData) : []
     });
   }
