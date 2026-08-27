@@ -5730,6 +5730,65 @@ function syncStateFromScreen(screenIdx) {
   }
 }
 
+
+/* ── Reprise de progression ─────────────────────────
+   Correspondance champ -> cle de S, reprise de syncStateFromScreen. */
+var CHAMPS_S = {
+  'input-revenus':'revenus',
+  'input-revenus-compl':'revenusCompl',
+  'input-aides':'autresEntrees',
+  'input-charges':'charges',
+  'input-credits':'credits',
+  'slider-duree':'duree',
+  'slider-taux':'taux',
+  'input-epargne-totale':'epargneTotale',
+  'input-matelas-actuel':'matelasActuel',
+  'input-matelas-cible':'matelasCible',
+  'input-aide-famille':'aideFamille',
+  'input-epargne-bloquee':'epargneBloquee',
+  'input-reserve':'reserve',
+  'input-prix-bien':'prixBien',
+  'input-frais-notaire':'fraisNotaire',
+  'input-frais-agence':'fraisAgence',
+  'input-frais-garantie':'fraisGarantie',
+  'input-frais-dossier':'fraisDossier',
+  'input-travaux-autres':'travauxAutres',
+  'input-taxe-fonciere':'taxeFonciere',
+  'input-charges-copro':'chargesCopro',
+  'input-entretien':'entretien',
+  'input-loyer-estime-s6':'loyerEstime',
+  'input-vacance-s6':'vacance',
+  'input-charges-loc-s6':'chargesLoc',
+  'input-assurance-pno-s6':'assurancePno',
+  'input-gestion-loc-s6':'gestionLoc'
+};
+
+async function reprendreProgression() {
+  if (typeof loadBrickState !== 'function') return;
+  var etat = null;
+  try { etat = await loadBrickState(BRICK_ID); } catch (e) { return; }
+  if (!etat || !etat.data) return;
+  var d = etat.data;
+
+  // Un enregistrement vide ne doit pas effacer le pre-remplissage.
+  var aDesMontants = Object.keys(CHAMPS_S).some(function (id) {
+    return (d[CHAMPS_S[id]] || 0) > 0;
+  });
+  if (!aDesMontants) return;
+
+  // On ne recopie que les cles connues de S : un etat laisse par une version
+  // anterieure ne doit pas polluer l'objet.
+  Object.keys(d).forEach(function (k) { if (k in S) S[k] = d[k]; });
+
+  Object.keys(CHAMPS_S).forEach(function (id) {
+    var el = $(id), v = S[CHAMPS_S[id]];
+    if (el && v > 0) el.value = v;
+  });
+
+  var idx = Math.min(etat.screenCourant || 0, TOTAL_SCREENS - 1);
+  if (idx > 0) goToScreen(idx);
+}
+
 /* ─── PANEL PROGRESSION ──────────────────────────────────── */
 var SB2_RING_CIRC = 150.8; // 2 * π * r (r=24)
 var SB2_TITLES = [
@@ -8326,6 +8385,9 @@ function validerEtDashboard() {
     // ─── COMMIT 2 — Bandeaux cross-brique ───
     initBannerImport(bData);
     initBannerEpargne(mData, bData);
+
+    // Reprendre la ou la personne s'etait arretee.
+    await reprendreProgression();
   })();
 })();
 

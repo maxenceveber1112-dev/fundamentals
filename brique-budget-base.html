@@ -285,7 +285,7 @@
   .bpc-nav-link {
     display:flex; align-items:center; gap:0.5rem;
     font-size:0.78rem; font-weight:500; color:var(--v3-text-muted);
-    padding:0.3rem 0.25rem; border-radius:0.375rem;
+    padding:0.6rem 0.25rem; min-height:40px; border-radius:0.375rem;
     transition:color .15s;
   }
   .bpc-nav-link:hover { color:var(--v3-text); }
@@ -469,7 +469,9 @@
   /* ── Fourchette revenus (chips) ── */
   .fourchette-link {
     font-size:0.75rem; color:var(--accent-strong); cursor:pointer;
-    margin-top:0.25rem; display:inline-block;
+    margin-top:0.25rem;
+    /* zone de touche confortable, sans changer le poids visuel */
+    display:inline-flex; align-items:center; min-height:40px;
     transition:opacity var(--t);
   }
   html.dark .fourchette-link { color:#A78BFA; }
@@ -897,7 +899,7 @@
   .abo-item-emoji { font-size:1.125rem; flex-shrink:0; }
   .abo-item-name { flex:1; font-size:0.875rem; font-weight:500; color:var(--text); }
   .abo-item-montant {
-    width:70px; padding:0.35rem 0.5rem;
+    width:70px; padding:0.5rem; min-height:40px;
     background:var(--surface-3); border:1px solid var(--border-mid);
     border-radius:var(--r-sm); color:var(--text); font-size:0.85rem;
     font-family:inherit; text-align:right;
@@ -939,7 +941,7 @@
      concurrencer l'action de validation. */
   .abo-add-brique {
     display:inline-flex; align-items:center; gap:0.4rem;
-    margin-top:0.7rem; padding:0.4rem 0.85rem;
+    margin-top:0.7rem; padding:0.55rem 0.9rem; min-height:40px;
     border-radius:9999px; cursor:pointer;
     background:none; color:var(--accent-strong);
     border:1px solid var(--accent-strong);
@@ -956,7 +958,10 @@
   .abo-valider { margin-top:1.5rem; }
 
   /* Bouton fermer popup */
-  .popup-close { position:absolute; top:1.25rem; right:1.25rem; font-size:1.25rem; color:var(--text-faint); cursor:pointer; transition:color var(--t); }
+  .popup-close { position:absolute; top:1rem; right:1rem; width:40px; height:40px;
+    display:flex; align-items:center; justify-content:center;
+    background:none; border:none; font-family:inherit;
+    font-size:1.25rem; color:var(--text-faint); cursor:pointer; transition:color var(--t); }
   .popup-close:hover { color:var(--text); }
 
   /* ── Boutons navigation écrans ── */
@@ -1345,7 +1350,9 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
 
             <!-- Sticky bar -->
             <div class="sticky-bar" id="sticky-bar">
-              <div class="sticky-bar-amounts">
+              <!-- Les montants changent a chaque saisie : sans zone live,
+                   un lecteur d'ecran ne l'apprend jamais. -->
+              <div class="sticky-bar-amounts" aria-live="polite" aria-atomic="true">
                 <div class="sticky-bar-item">
                   <span class="sticky-bar-val" id="sticky-revenus" style="color:var(--green);">0 €</span>
                   <span class="sticky-bar-sub">Revenus</span>
@@ -1741,7 +1748,7 @@ const budgetData = {
   loyer:0, courses:0, transport:0,
   assurances:0, customCats:[], abonnements_total:0, abonnements_detail:{}, abonnements_economies:0,
   sorties:0, epargne:0,
-  repas:0, shopping:0, sante:0, transport_variable:0, depenses_pro:0, autres:0,
+  repas:0, shopping:0, sante:0, depenses_pro:0, autres:0,
   total_besoins:0, total_envies:0, total_depenses:0, reste_a_vivre:0,
   pct_besoins:0, pct_envies:0, pct_investissement:0,
   dettes:[], engagement:null, brique_recommandee:null,
@@ -1939,7 +1946,7 @@ function initStickyListeners() {
   const fieldIds = [
     'f-revenus','f-aides','f-loyer','f-courses','f-transport',
     'f-abonnements','f-sorties','f-epargne','f-assurances',
-    'f-repas','f-shopping','f-sante','f-transport-var','f-pro','f-autres'
+    'f-repas','f-shopping','f-sante','f-pro','f-autres'
   ];
   fieldIds.forEach(id => {
     const el = document.getElementById(id);
@@ -1967,7 +1974,7 @@ function updateStickyBar() {
   const totalRev = rev + aid;
 
   const depFields = ['f-loyer','f-courses','f-transport','f-abonnements','f-sorties','f-epargne','f-assurances',
-    'f-repas','f-shopping','f-sante','f-transport-var','f-pro','f-autres'];
+    'f-repas','f-shopping','f-sante','f-pro','f-autres'];
   let totalDep = 0;
   depFields.forEach(id => { totalDep += parseFloat(document.getElementById(id)?.value) || 0; });
   (budgetData.customCats || []).forEach(c => { totalDep += c.montant || 0; });
@@ -2035,7 +2042,6 @@ function collectBudgetData() {
   budgetData.repas      = parseFloat(document.getElementById('f-repas')?.value)         || 0;
   budgetData.shopping   = parseFloat(document.getElementById('f-shopping')?.value)      || 0;
   budgetData.sante      = parseFloat(document.getElementById('f-sante')?.value)         || 0;
-  budgetData.transport_variable = parseFloat(document.getElementById('f-transport-var')?.value) || 0;
   budgetData.depenses_pro = parseFloat(document.getElementById('f-pro')?.value)         || 0;
   budgetData.autres     = parseFloat(document.getElementById('f-autres')?.value)        || 0;
   budgetData.assurances = parseFloat(document.getElementById('f-assurances')?.value) || 0;
@@ -2047,7 +2053,7 @@ function collectBudgetData() {
   budgetData.custom_besoins = (budgetData.customCats||[]).filter(c=>c.type==='fixe').reduce((s,c)=>s+(c.montant||0),0);
   budgetData.custom_envies  = (budgetData.customCats||[]).filter(c=>c.type==='courante').reduce((s,c)=>s+(c.montant||0),0);
   budgetData.total_besoins   = budgetData.loyer + budgetData.courses + budgetData.transport + budgetData.sante + budgetData.depenses_pro + budgetData.assurances + budgetData.custom_besoins;
-  budgetData.total_envies    = budgetData.abonnements_total + budgetData.sorties + budgetData.repas + budgetData.shopping + budgetData.transport_variable + budgetData.autres + budgetData.custom_envies;
+  budgetData.total_envies    = budgetData.abonnements_total + budgetData.sorties + budgetData.repas + budgetData.shopping + budgetData.autres + budgetData.custom_envies;
   budgetData.total_depenses  = budgetData.total_besoins + budgetData.total_envies + budgetData.epargne;
   budgetData.reste_a_vivre   = totalRev - budgetData.total_depenses;
   // Integrate debt monthly payments into total_besoins
@@ -3594,7 +3600,6 @@ function imprimerBilan() {
     + poste('Sorties', bd.sorties)
     + poste('Repas extérieur', bd.repas)
     + poste('Shopping', bd.shopping)
-    + poste('Transport ponctuel', bd.transport_variable)
     + poste('Autres', bd.autres)
     + poste('Autres postes courants', bd.custom_envies)
     + ligne('Total dépenses variables', formatEuro(bd.total_envies || 0) + '/mois', 'tot') + '</div>'
