@@ -534,6 +534,29 @@
       animation:slideUp 0.35s 0.12s var(--ease-out) both;
     }
 
+    /* -- Ce qu'on a compris : enseignements acquis -- */
+    .ens-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+    @media (max-width:640px) { .ens-grid { grid-template-columns:1fr; } }
+    .ens-card {
+      position:relative; padding:1rem 1.125rem 1rem 1.375rem;
+      background:var(--bg-elevated); border:1px solid var(--border-subtle);
+      border-radius:0.875rem;
+    }
+    html.dark .ens-card { background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); }
+    /* Le filet de gauche porte le registre : alerte, conseil, objectif... */
+    .ens-card::before {
+      content:''; position:absolute; left:0; top:0.875rem; bottom:0.875rem;
+      width:3px; border-radius:0 3px 3px 0; background:var(--ens-teinte,var(--accent-strong));
+    }
+    .ens-tete { display:flex; align-items:center; gap:0.4rem; margin-bottom:0.3rem; }
+    .ens-type {
+      font-size:0.625rem; font-weight:700; letter-spacing:0.08em;
+      text-transform:uppercase; color:var(--ens-teinte,var(--accent-strong));
+    }
+    .ens-source { font-size:0.625rem; color:var(--text-muted); margin-left:auto; }
+    .ens-titre { font-size:0.875rem; font-weight:600; color:var(--text); margin-bottom:0.2rem; }
+    .ens-texte { font-size:0.8125rem; color:var(--text-muted); line-height:1.55; }
+
     .insight-card {
       background:#FFFFFF;
       border:1px solid rgba(28,25,23,0.08);
@@ -1042,6 +1065,15 @@
       <p class="mes-briques-sub">Mis à jour à chaque brique · Objectifs et projets bientôt disponibles</p>
     </div>
     <div class="mes-briques-grid" id="mes-briques-grid"></div>
+  </section>
+
+  <!-- Ce que les briques terminees ont appris -->
+  <section class="mes-briques-section" id="zone-enseignements" style="display:none;">
+    <div class="mes-briques-header">
+      <h2 class="section-title">Ce qu'on a compris</h2>
+      <p class="mes-briques-sub" id="ens-sous-titre"></p>
+    </div>
+    <div class="ens-grid" id="ens-grid"></div>
   </section>
 
   <!-- ════════════════════════════════════════════════════════════
@@ -1673,6 +1705,52 @@
       cta:'Voir la brique', ctaHref:'brique-paiements-fractionnes.html'
     },
   ];
+
+  // Chaque brique terminee depose ce qu'elle a compris dans dash.insights.
+  // Six registres, chacun sa teinte : on lit d'un coup d'oeil si c'est une
+  // alerte ou un objectif.
+  const ENS_REGISTRES = {
+    alerte:     { mot: 'Alerte',     teinte: 'var(--red)' },
+    conseil:    { mot: 'Conseil',    teinte: 'var(--accent-strong)' },
+    info:       { mot: 'Repère',     teinte: 'var(--text-muted)' },
+    chiffre:    { mot: 'Chiffre',    teinte: 'var(--accent-strong)' },
+    projection: { mot: 'Projection', teinte: '#6366F1' },
+    objectif:   { mot: 'Objectif',   teinte: 'var(--green)' }
+  };
+
+  function renderEnseignements() {
+    const zone = document.getElementById('zone-enseignements');
+    const grille = document.getElementById('ens-grid');
+    if (!zone || !grille) return;
+
+    const acquis = (dash.insights || []).filter(function (e) { return e && e.titre; });
+    if (!acquis.length) { zone.style.display = 'none'; return; }
+    zone.style.display = '';
+
+    // Le plus recent d'abord : ce qu'on vient d'apprendre passe devant.
+    const tries = acquis.slice().sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+
+    const sousTitre = document.getElementById('ens-sous-titre');
+    if (sousTitre) {
+      const nb = tries.length;
+      const nbBriques = new Set(tries.map(function (e) { return e.brique_source; })).size;
+      sousTitre.textContent =
+        nb + (nb > 1 ? ' enseignements tirés de ' : ' enseignement tiré de ')
+        + nbBriques + (nbBriques > 1 ? ' briques' : ' brique')
+        + ' · issus de tes réponses';
+    }
+
+    grille.innerHTML = tries.map(function (e) {
+      const reg = ENS_REGISTRES[e.type] || ENS_REGISTRES.info;
+      const meta = (typeof BRIQUES_META !== 'undefined' && BRIQUES_META[e.brique_source]) || null;
+      return '<div class="ens-card" style="--ens-teinte:' + reg.teinte + '">'
+        + '<div class="ens-tete"><span class="ens-type">' + reg.mot + '</span>'
+        + (meta ? '<span class="ens-source">' + meta.nom + '</span>' : '')
+        + '</div>'
+        + '<div class="ens-titre">' + e.titre + '</div>'
+        + '<div class="ens-texte">' + e.contenu + '</div></div>';
+    }).join('');
+  }
 
   function renderInsight() {
     const match = INSIGHTS.find(i => i.trigger(profil, dash));
@@ -2329,7 +2407,8 @@
   function renderAll() {
     // Defensive: ensure dash.briques is always an array
     if (!Array.isArray(dash.briques)) dash.briques = [];
-    var fns = [renderHero, renderBriquesGrid, renderInsight, renderExplorer, renderMesBriques, renderQuizLink];
+    var fns = [renderHero, renderBriquesGrid, renderInsight, renderExplorer, renderMesBriques,
+               renderEnseignements, renderQuizLink];
     fns.forEach(function(fn) { try { fn(); } catch(e) { console.warn('[dashboard] render error in', fn.name, e); } });
   }
 
