@@ -5168,7 +5168,10 @@ async function reprendreProgression() {
     if (el && v > 0) el.value = v;
   });
 
-  var idx = Math.min(etat.screenCourant || 0, TOTAL_SCREENS - 1);
+  // Les derniers ecrans sont des resultats : on revient au dernier ecran
+  // de saisie, pas sur une conclusion qu'on ne se rappelle pas avoir vue.
+  var DERNIER_ECRAN_DE_SAISIE = 5;
+  var idx = Math.min(etat.screenCourant || 0, DERNIER_ECRAN_DE_SAISIE);
   if (idx > 0) goToScreen(idx);
 }
 

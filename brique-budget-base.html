@@ -1780,16 +1780,16 @@ const budgetData = {
   // 5. Pré-remplir les champs
   prefillFromProfil();
 
-  // 6. Reprendre là où la personne s'était arrêtée. Le profil a servi de
-  //    base ; ce qu'elle a saisi elle-même passe devant.
-  await reprendreProgression();
-
-  // 7. Init sticky bar
+  // 6. Init sticky bar
   initStickyListeners();
 
-  // 8. Init progress panel
+  // 7. Init progress panel
   updateProgressPanel(0);
   buildProgDots();
+
+  // 8. Reprendre là où la personne s'était arrêtée — en dernier, pour que
+  //    rien ne vienne ensuite remettre le panneau de progression a zero.
+  await reprendreProgression();
 
 })();
 
@@ -1834,8 +1834,10 @@ async function reprendreProgression() {
 
   collectBudgetData();
 
-  // On revient a l'ecran quitte, sans depasser le dernier ecran de saisie.
-  const ecran = Math.min(etat.screenCourant || 0, 4);
+  // Les ecrans 3 et 4 sont des resultats, recalcules des qu'on avance : on
+  // remet la personne la ou elle saisissait encore, pas sur une conclusion.
+  const DERNIER_ECRAN_DE_SAISIE = 2;
+  const ecran = Math.min(etat.screenCourant || 0, DERNIER_ECRAN_DE_SAISIE);
   if (ecran > 0) goToScreen(ecran);
 }
 
