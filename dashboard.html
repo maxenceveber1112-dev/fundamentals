@@ -612,6 +612,10 @@
     }
     @media (max-width: 640px) { .explorer-parcours { grid-template-columns: 1fr; } }
 
+    .explorer-note {
+      font-size: 0.8125rem; color: var(--text-muted);
+      margin: 0 0 0.875rem; line-height: 1.5;
+    }
     .explorer-section-divider {
       display: flex;
       align-items: center;
@@ -1066,6 +1070,7 @@
       <span class="section-action" style="font-size:0.75rem;color:var(--text-faint);">Briques, simulateurs et parcours</span>
     </div>
     <div class="section-divider"></div>
+    <p class="explorer-note" id="explorer-note" hidden></p>
     <div class="explorer-simulateurs" id="explorer-simulateurs"></div>
     <div class="explorer-section-divider">
       <span class="explorer-section-label">Parcours de vie</span>
@@ -1804,6 +1809,16 @@
       ctaDisabled: true,
     });
     container.appendChild(simCredit);
+
+    // Une seule fois, et seulement tant que rien n'est pre-calcule.
+    const note = document.getElementById('explorer-note');
+    if (note) {
+      const aucunResultat = !container.querySelector('.sim-row');
+      note.hidden = !aucunResultat;
+      note.textContent = aucunResultat
+        ? 'Les simulateurs s\u2019ouvrent librement. Termine une brique et ils s\u2019ouvriront deja remplis avec tes chiffres.'
+        : '';
+    }
   }
 
   function makeSimCard(cfg) {
@@ -1822,12 +1837,11 @@
           ${cfg.value ? `<div class="sim-card-value">${cfg.value}</div><div class="sim-card-value-label">${cfg.valueLabel}</div>` : ''}
         </div>
       </div>
-      <div class="sim-card-body">
+      ${cfg.rows.length ? `<div class="sim-card-body">
         <div class="sim-card-body-inner">
           ${cfg.rows.map(r => `<div class="sim-row"><span class="sim-row-label">${r.label}</span><span class="sim-row-val">${r.val}</span></div>`).join('')}
-          ${cfg.rows.length === 0 ? '<p class="sim-card-attente">Complète tes briques pour voir un résultat pré-calculé.</p>' : ''}
         </div>
-      </div>
+      </div>` : ''}
       <div class="sim-card-foot">
         ${cfg.ctaDisabled
           ? `<span class="sim-cta-disabled">${cfg.ctaLabel}</span>`
