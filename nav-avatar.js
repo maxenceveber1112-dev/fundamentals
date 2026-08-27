@@ -185,6 +185,80 @@
       height: 1px; background: var(--border);
       margin: 0.3rem 0.375rem;
     }
+
+    /* Un menu plat ne dit pas que ses entrees ne jouent pas dans la meme
+       categorie. Deux groupes nommes : ce qui navigue, ce qui touche au compte. */
+    .nav-dd-groupe {
+      padding: 0.45rem 0.75rem 0.2rem;
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--text-faint);
+    }
+
+    /* Le rouge au repos, pas seulement au survol : une action irreversible
+       doit se voir avant d'etre survolee. */
+    .nav-dd-item.destructif { color: var(--red); }
+    .nav-dd-item.destructif:hover { background: rgba(248,113,113,0.10); color: var(--red); }
+    .nav-dd-item.destructif .nav-dd-icon { opacity: 0.85; }
+
+    /* En-tete : l'identite d'abord, l'e-mail ensuite. Un e-mail est un
+       identifiant de connexion, pas un nom. */
+    .nav-dd-ident { display: flex; align-items: center; gap: 0.6rem; }
+    .nav-dd-ident-av {
+      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--indigo-dim); color: var(--violet);
+      font-size: 0.7rem; font-weight: 700;
+    }
+    .nav-dd-ident-txt { min-width: 0; }
+
+    /* Confirmation de l'effacement — autonome, car ce script est injecte
+       sur toutes les pages et ne peut pas supposer le motif popup local. */
+    .nav-wipe-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(15,15,26,0.55); backdrop-filter: blur(2px);
+      display: none; align-items: center; justify-content: center; padding: 1.25rem;
+    }
+    .nav-wipe-overlay.open { display: flex; }
+    .nav-wipe-sheet {
+      width: min(26rem, 100%); padding: 1.5rem;
+      background: var(--bg-elevated, #fff); border-radius: 1rem;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+      animation: navWipeEntre 0.18s ease-out;
+    }
+    @keyframes navWipeEntre { from { opacity:0; transform:translateY(8px) scale(0.98); } to { opacity:1; transform:none; } }
+    .nav-wipe-titre {
+      font-family: var(--font-display, Georgia, serif);
+      font-size: 1.25rem; font-weight: 400; color: var(--text); line-height: 1.3;
+    }
+    .nav-wipe-txt { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-top: 0.6rem; }
+    .nav-wipe-liste {
+      margin: 0.75rem 0 0; padding: 0.75rem 0 0;
+      border-top: 1px solid var(--border); list-style: none;
+    }
+    .nav-wipe-liste li {
+      font-size: 0.8rem; color: var(--text-muted);
+      padding: 0.22rem 0 0.22rem 1rem; position: relative;
+    }
+    .nav-wipe-liste li::before {
+      content: ''; position: absolute; left: 0; top: 0.62rem;
+      width: 4px; height: 4px; border-radius: 50%; background: var(--red);
+    }
+    .nav-wipe-actions { display: flex; gap: 0.5rem; margin-top: 1.25rem; }
+    .nav-wipe-btn {
+      flex: 1; min-height: 42px; padding: 0.6rem 1rem; border-radius: 9999px;
+      font-family: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: all 130ms;
+    }
+    .nav-wipe-annuler {
+      background: var(--bg-subtle, #f4f4f5); color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .nav-wipe-annuler:hover { background: var(--surface-2); }
+    .nav-wipe-confirmer {
+      background: var(--red); color: #fff; border: 1px solid transparent;
+    }
+    .nav-wipe-confirmer:hover { filter: brightness(0.93); }
+    .nav-wipe-confirmer:disabled { opacity: 0.6; cursor: wait; }
   `;
   document.head.appendChild(style);
 
@@ -251,15 +325,22 @@
 
     <div class="nav-avatar-dropdown" id="nav-avatar-dropdown" role="menu">
       <div class="nav-dd-header">
-        <div class="nav-dd-email">${displayEmail}</div>
-        <div class="nav-dd-role">${profileLabel}</div>
+        <div class="nav-dd-ident">
+          <div class="nav-dd-ident-av" aria-hidden="true">${initials}</div>
+          <div class="nav-dd-ident-txt">
+            <div class="nav-dd-email">${profileLabel}</div>
+            <div class="nav-dd-role">${displayEmail}</div>
+          </div>
+        </div>
       </div>
+
+      <div class="nav-dd-groupe">Aller à</div>
 
       <a href="dashboard.html" class="nav-dd-item${isDashboard ? ' active' : ''}" role="menuitem">
         <span class="nav-dd-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
         </span>
-        Dashboard
+        Tableau de bord
       </a>
 
 
@@ -274,23 +355,24 @@
         <span class="nav-dd-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
         </span>
-        Reprendre depuis le début
-      </a>
-
-      <a href="javascript:void(0)" class="nav-dd-item" id="nav-refaire-btn" role="menuitem">
-        <span class="nav-dd-icon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </span>
-        Refaire le questionnaire
+        Revenir à la première brique
       </a>
 
       <div class="nav-dd-sep"></div>
+      <div class="nav-dd-groupe">Compte</div>
 
-      <button class="nav-dd-item danger" onclick="signOut()" role="menuitem">
+      <button class="nav-dd-item" onclick="signOut()" role="menuitem">
         <span class="nav-dd-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </span>
         Se déconnecter
+      </button>
+
+      <button type="button" class="nav-dd-item destructif" id="nav-refaire-btn" role="menuitem">
+        <span class="nav-dd-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </span>
+        Effacer mes données et recommencer
       </button>
     </div>
   `;
@@ -332,18 +414,91 @@
     });
   }
 
-  // Refaire le questionnaire : reset complet + redirect onboarding
+  // Effacer mes donnees : resetUserData() supprime user_dashboard, brick_data
+  // et profiles cote serveur. Irreversible, donc jamais sans confirmation.
   const refaireBtn = wrap.querySelector('#nav-refaire-btn');
   if (refaireBtn) {
-    refaireBtn.addEventListener('click', async () => {
+    refaireBtn.addEventListener('click', () => {
       dropdown.classList.remove('open');
-      refaireBtn.style.opacity = '0.5';
-      refaireBtn.style.pointerEvents = 'none';
+      btn.setAttribute('aria-expanded', 'false');
+      ouvrirConfirmationEffacement();
+    });
+  }
+
+  // ── Confirmation d'effacement ──────────────────────────────
+  let overlayEffacement = null;
+
+  function ouvrirConfirmationEffacement() {
+    if (overlayEffacement) {
+      overlayEffacement.classList.add('open');
+      _armerConfirmation();
+      return;
+    }
+
+    overlayEffacement = document.createElement('div');
+    overlayEffacement.className = 'nav-wipe-overlay open';
+    overlayEffacement.setAttribute('role', 'dialog');
+    overlayEffacement.setAttribute('aria-modal', 'true');
+    overlayEffacement.setAttribute('aria-labelledby', 'nav-wipe-titre');
+    overlayEffacement.innerHTML = `
+      <div class="nav-wipe-sheet">
+        <div class="nav-wipe-titre" id="nav-wipe-titre">Effacer toutes tes données ?</div>
+        <p class="nav-wipe-txt">Tu repartiras du questionnaire, avec un compte vide.
+          Cette action ne peut pas être annulée.</p>
+        <ul class="nav-wipe-liste">
+          <li>Ton budget et tes montants saisis</li>
+          <li>Tes dettes, ton plan et ta date de sortie</li>
+          <li>Ton profil et tes objectifs</li>
+          <li>Toutes tes briques terminées</li>
+        </ul>
+        <div class="nav-wipe-actions">
+          <button type="button" class="nav-wipe-btn nav-wipe-annuler" id="nav-wipe-annuler">Annuler</button>
+          <button type="button" class="nav-wipe-btn nav-wipe-confirmer" id="nav-wipe-confirmer">Effacer définitivement</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlayEffacement);
+
+    const annuler = overlayEffacement.querySelector('#nav-wipe-annuler');
+    const confirmer = overlayEffacement.querySelector('#nav-wipe-confirmer');
+
+    annuler.addEventListener('click', fermerConfirmationEffacement);
+    // Le fond ferme ; la feuille elle-meme ne doit pas propager le clic.
+    overlayEffacement.addEventListener('click', (e) => {
+      if (e.target === overlayEffacement) fermerConfirmationEffacement();
+    });
+
+    confirmer.addEventListener('click', async () => {
+      confirmer.disabled = true;
+      annuler.disabled = true;
+      confirmer.textContent = 'Effacement\u2026';
       try {
         if (typeof resetUserData === 'function') await resetUserData();
-      } catch(e) { console.warn('[nav] resetUserData failed:', e); }
+      } catch (e) { console.warn('[nav] resetUserData failed:', e); }
       window.location.href = 'index.html';
     });
+
+    _armerConfirmation();
+  }
+
+  // Vaut pour toute ouverture, pas seulement la premiere.
+  function _armerConfirmation() {
+    document.addEventListener('keydown', _echapEffacement);
+    // Le focus part sur « Annuler » : jamais une touche Entree reflexe sur le rouge.
+    const annuler = overlayEffacement && overlayEffacement.querySelector('#nav-wipe-annuler');
+    if (annuler) { annuler.disabled = false; annuler.focus(); }
+  }
+
+  function fermerConfirmationEffacement() {
+    if (!overlayEffacement) return;
+    overlayEffacement.classList.remove('open');
+    document.removeEventListener('keydown', _echapEffacement);
+    const btnMenu = document.getElementById('nav-avatar-btn');
+    if (btnMenu) btnMenu.focus();
+  }
+
+  function _echapEffacement(e) {
+    if (e.key === 'Escape') fermerConfirmationEffacement();
   }
 
   document.addEventListener('keydown', (e) => {
