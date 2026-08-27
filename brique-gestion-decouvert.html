@@ -9,9 +9,10 @@
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
   <script>
-    // Brique désactivée — redirection vers dashboard
-    alert('Bientôt disponible');
-    window.location.href = 'dashboard.html';
+    // Brique desactivee : on renvoie au tableau de bord, qui la presente
+    // deja comme « Bientot » dans le catalogue. Pas de boite de dialogue
+    // native : elle bloque le navigateur pour ne rien apprendre.
+    window.location.replace('dashboard.html');
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
