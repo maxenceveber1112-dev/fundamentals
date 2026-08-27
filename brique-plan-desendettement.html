@@ -582,6 +582,82 @@
   .btn-primary:hover { transform:translateY(-1px); box-shadow:var(--shadow-hover); }
   .btn-primary:disabled { opacity:0.45; cursor:not-allowed; transform:none; }
 
+
+  /* ══════════════════════════════════════════════════════════════
+     ÉCRAN 4 — ENGAGEMENT
+  ══════════════════════════════════════════════════════════════ */
+  /* Le plan décidé, relu d'un bloc avant de s'engager. */
+  .s4-plan { display:flex; flex-direction:column; gap:0.75rem; margin:1.25rem 0 0; }
+  .s4-plan-ligne {
+    display:flex; align-items:baseline; gap:0.75rem;
+    padding-bottom:0.75rem; border-bottom:1px solid var(--border-subtle);
+  }
+  .s4-plan-ligne:last-child { border-bottom:none; padding-bottom:0; }
+  .s4-plan-cle {
+    flex:0 0 8.5rem; font-size:0.75rem; font-weight:600; letter-spacing:0.04em;
+    text-transform:uppercase; color:var(--text-faint);
+  }
+  .s4-plan-val { flex:1; font-size:0.9rem; color:var(--text); line-height:1.5; }
+  .s4-plan-val strong { font-family:var(--font-display); font-weight:400; font-size:1.05rem; }
+  /* En étroit, la colonne de clé fixe étranglait la valeur : on empile. */
+  @media (max-width:480px) {
+    .s4-plan-ligne { flex-direction:column; gap:0.2rem; }
+    .s4-plan-cle { flex:none; }
+  }
+
+  /* Les notions : repliées par défaut, la brique n'impose pas un cours. */
+  .s4-notion {
+    border:1px solid var(--border-subtle); border-radius:0.875rem;
+    background:var(--bg-elevated); overflow:hidden;
+  }
+  html.dark .s4-notion { background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); }
+  .s4-notion + .s4-notion { margin-top:0.5rem; }
+  .s4-notion-tete {
+    display:flex; align-items:center; gap:0.75rem; width:100%;
+    padding:0.875rem 1rem; background:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:0.875rem; font-weight:600; color:var(--text);
+    text-align:left; min-height:44px; transition:background var(--t);
+  }
+  .s4-notion-tete:hover { background:var(--bg-subtle); }
+  html.dark .s4-notion-tete:hover { background:rgba(255,255,255,0.04); }
+  .s4-notion-chevron {
+    margin-left:auto; flex:0 0 auto; color:var(--text-faint);
+    transition:transform var(--t) var(--ease-out);
+  }
+  .s4-notion.ouvert .s4-notion-chevron { transform:rotate(180deg); }
+  .s4-notion-corps {
+    display:none; padding:0 1rem 1rem 1rem;
+    font-size:0.8125rem; color:var(--text-muted); line-height:1.65;
+  }
+  .s4-notion.ouvert .s4-notion-corps { display:block; }
+  .s4-notion-corps p + p { margin-top:0.6rem; }
+  .s4-notion-corps strong { color:var(--text); font-weight:600; }
+
+  /* L'engagement : un seul choix, coché. */
+  .s4-eng {
+    display:flex; align-items:flex-start; gap:0.75rem; width:100%;
+    padding:0.875rem 1rem; text-align:left; cursor:pointer;
+    background:var(--bg-elevated); border:1.5px solid var(--border-subtle);
+    border-radius:0.875rem; font-family:inherit; transition:all var(--t) var(--ease-out);
+  }
+  html.dark .s4-eng { background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); }
+  .s4-eng + .s4-eng { margin-top:0.5rem; }
+  .s4-eng:hover { border-color:var(--accent-strong); }
+  .s4-eng.choisi { border-color:var(--accent-strong); background:var(--accent-soft,rgba(196,181,253,0.14)); }
+  .s4-eng-puce {
+    flex:0 0 auto; width:18px; height:18px; margin-top:0.1rem; border-radius:50%;
+    border:2px solid var(--border); display:flex; align-items:center; justify-content:center;
+    transition:all var(--t);
+  }
+  .s4-eng.choisi .s4-eng-puce { border-color:var(--accent-strong); background:var(--accent-strong); }
+  .s4-eng-puce svg { display:none; color:#fff; }
+  .s4-eng.choisi .s4-eng-puce svg { display:block; }
+  .s4-eng-txt { flex:1; display:block; }
+  /* Des <span> dans un <button> : sans display:block, libellé et détail
+     se collent sur la même ligne. */
+  .s4-eng-label { display:block; font-size:0.875rem; font-weight:600; color:var(--text); line-height:1.45; }
+  .s4-eng-detail { display:block; font-size:0.75rem; color:var(--text-muted); margin-top:0.2rem; line-height:1.5; }
+
   /* ══════════════════════════════════════════════════════════════
      SECTION SÉPARATEUR
   ══════════════════════════════════════════════════════════════ */
@@ -722,32 +798,6 @@
   .methode-card.selected .methode-card-tick { display:flex; }
 
   /* Toggle switch entre les deux méthodes */
-  .methode-toggle-wrap {
-    display:flex; align-items:center; justify-content:center;
-    gap:0.75rem; margin-bottom:1.25rem;
-    font-size:0.8125rem;
-  }
-  .methode-toggle-label { color:var(--text-muted); transition:color 0.2s; }
-  .methode-toggle-label.active { color:var(--text); font-weight:600; }
-  /* Toggle switch visuel */
-  .toggle-switch {
-    position:relative; width:44px; height:24px; flex-shrink:0;
-  }
-  .toggle-switch input { opacity:0; width:0; height:0; position:absolute; }
-  .toggle-slider {
-    position:absolute; inset:0;
-    background:var(--accent-strong);
-    border-radius:9999px; cursor:pointer;
-    transition:background 0.2s;
-  }
-  .toggle-slider::before {
-    content:''; position:absolute;
-    width:18px; height:18px; left:3px; bottom:3px;
-    background:#fff; border-radius:50%;
-    transition:transform 0.25s var(--ease-out);
-  }
-  .toggle-switch input:checked + .toggle-slider::before { transform:translateX(20px); }
-  .toggle-switch input:checked + .toggle-slider { background:var(--dette-rouge); }
 
   /* Liste ordonnée des mauvaises dettes */
   .mauvaises-list {
@@ -777,10 +827,23 @@
   .mauvaise-label { font-size:0.875rem; font-weight:600; color:var(--text); }
   .mauvaise-detail { font-size:0.75rem; color:var(--text-muted); }
   .mauvaise-montant {
-    font-family:'Fraunces',Georgia,serif;
+    font-family:var(--font-display);
     font-size:1rem; font-weight:400; color:var(--text);
-    white-space:nowrap;
+    white-space:nowrap; text-align:right; line-height:1.25;
   }
+  /* Un montant sans unité de sens ne veut rien dire : « reste à payer »
+     distingue le capital restant dû de la mensualité, juste au-dessus. */
+  .mauvaise-montant-legende {
+    display:block; font-family:var(--font-body,inherit);
+    font-size:0.625rem; font-weight:500; letter-spacing:0.03em;
+    color:var(--text-faint); text-transform:uppercase;
+  }
+  /* Portée uniquement par la 1re ligne : la méthode ne désigne qu'elle. */
+  .mauvaise-pourquoi {
+    margin-top:0.2rem; font-size:0.6875rem; font-weight:600;
+    color:var(--accent-strong); line-height:1.4;
+  }
+  html.dark .mauvaise-pourquoi { color:#C4B5FD; }
   .mauvaise-tag {
     font-size:0.7rem; font-weight:600; border-radius:9999px;
     padding:0.175rem 0.55rem; white-space:nowrap;
@@ -1186,6 +1249,40 @@
           </div>
         </div>
 
+        <!-- ═══ SAISIE REVENUS (fallback si non dispo dans profil) ═══ -->
+        <div id="revenus-input-bloc" style="display:none; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:0.875rem; padding:0.875rem 1rem; margin-top:0.25rem; margin-bottom:1.5rem;">
+          <div style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem;">Tes revenus nets mensuels</div>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="number" id="input-revenus" placeholder="ex. 2 000" min="0" inputmode="numeric"
+              style="flex:1; background:var(--bg); border:1.5px solid var(--border-subtle); border-radius:0.625rem; padding:0.6rem 0.75rem; font-size:1rem; font-family:inherit; color:var(--text); outline:none;"
+              oninput="onRevenusInput(this.value)" />
+            <span style="font-size:0.9rem; color:var(--text-muted); white-space:nowrap;">€/mois</span>
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-faint); margin-top:0.375rem;">Renseigne tes revenus pour voir ton taux d’endettement.</div>
+        </div>
+
+        <!-- ═══ LISTE DES DETTES ═══ -->
+        <div class="section-label">Tes crédits en cours</div>
+
+        <div class="dettes-list" id="dettes-list">
+          <!-- Dettes injectées par JS -->
+        </div>
+
+        <button class="add-dette-btn" onclick="addDette()">
+          <span style="font-size:1.1rem; line-height:1;">+</span>
+          Ajouter une dette / crédit
+        </button>
+
+        <!-- Tu as oublié quelque chose ? -->
+        <div style="margin-top:0.25rem; font-size:0.78rem; color:var(--text-faint); text-align:center;">
+          Tu as oublié quelque chose dans l'onboarding ?
+          <button style="background:none;border:none;font-size:0.78rem;color:var(--accent-strong);cursor:pointer;font-family:inherit;" onclick="addDette()">+ Ajouter une dette</button>
+        </div>
+
+        <!-- Spacer pour ne pas que la sticky bar cache le contenu -->
+        <div style="height:5.5rem;"></div>
+
+        <!-- Récap sticky -->
         <!-- ═══ SPEEDOMETER — taux d'endettement ═══ -->
         <div class="speedo-wrap">
           <div class="speedo-svg-container">
@@ -1270,18 +1367,6 @@
           </div>
         </div>
 
-        <!-- ═══ SAISIE REVENUS (fallback si non dispo dans profil) ═══ -->
-        <div id="revenus-input-bloc" style="display:none; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:0.875rem; padding:0.875rem 1rem; margin-top:0.25rem; margin-bottom:1.5rem;">
-          <div style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem;">Tes revenus nets mensuels</div>
-          <div style="display:flex; align-items:center; gap:0.5rem;">
-            <input type="number" id="input-revenus" placeholder="ex. 2 000" min="0" inputmode="numeric"
-              style="flex:1; background:var(--bg); border:1.5px solid var(--border-subtle); border-radius:0.625rem; padding:0.6rem 0.75rem; font-size:1rem; font-family:inherit; color:var(--text); outline:none;"
-              oninput="onRevenusInput(this.value)" />
-            <span style="font-size:0.9rem; color:var(--text-muted); white-space:nowrap;">€/mois</span>
-          </div>
-          <div style="font-size:0.75rem; color:var(--text-faint); margin-top:0.375rem;">Renseigne tes revenus pour voir ton taux d’endettement.</div>
-        </div>
-
         <!-- ═══ CARTE PÉDAGOGIQUE 35% ═══ -->
         <div class="peda-card vert" id="peda-card">
           <div class="peda-icon" id="peda-icon">✅</div>
@@ -1295,28 +1380,6 @@
           </div>
         </div>
 
-        <!-- ═══ LISTE DES DETTES ═══ -->
-        <div class="section-label">Tes crédits en cours</div>
-
-        <div class="dettes-list" id="dettes-list">
-          <!-- Dettes injectées par JS -->
-        </div>
-
-        <button class="add-dette-btn" onclick="addDette()">
-          <span style="font-size:1.1rem; line-height:1;">+</span>
-          Ajouter une dette / crédit
-        </button>
-
-        <!-- Tu as oublié quelque chose ? -->
-        <div style="margin-top:0.25rem; font-size:0.78rem; color:var(--text-faint); text-align:center;">
-          Tu as oublié quelque chose dans l'onboarding ?
-          <button style="background:none;border:none;font-size:0.78rem;color:var(--accent-strong);cursor:pointer;font-family:inherit;" onclick="addDette()">+ Ajouter une dette</button>
-        </div>
-
-        <!-- Spacer pour ne pas que la sticky bar cache le contenu -->
-        <div style="height:5.5rem;"></div>
-
-        <!-- Récap sticky -->
         <div class="sticky-recap">
           <div class="sticky-recap-item">
             <div class="sticky-recap-lbl">Mensualités totales</div>
@@ -1406,16 +1469,6 @@
               <div class="methode-card-avantage" id="avalanche-avantage">Moins d'intérêts</div>
             </div>
 
-          </div>
-
-          <!-- Toggle switch : permuter l'ordre de la liste -->
-          <div class="methode-toggle-wrap" id="s2-toggle-wrap">
-            <span class="methode-toggle-label active" id="toggle-label-boule">Boule de neige</span>
-            <label class="toggle-switch" aria-label="Changer de méthode">
-              <input type="checkbox" id="toggle-methode" onchange="onToggleMethode(this.checked)" />
-              <span class="toggle-slider"></span>
-            </label>
-            <span class="methode-toggle-label" id="toggle-label-avalanche">Avalanche</span>
           </div>
 
           <!-- Titre liste ordonnée -->
@@ -1583,13 +1636,39 @@
       </div>
     </section>
 
-    <!-- ─── SCREEN 4 (placeholder) ── -->
+    <!-- ─── SCREEN 4 — ENGAGEMENT ── -->
     <section class="screen" id="screen-4">
+
       <div class="brick-card">
         <div class="brick-kicker">Étape 4 · Engagement</div>
-        <h2 class="brick-title">Ton engagement concret.</h2>
-        <p class="brick-subtitle">À venir — engagement + bridge cross-brique.</p>
+        <h2 class="brick-title">Ton plan, et ce que tu en fais.</h2>
+        <p class="brick-subtitle">Relis ce que tu viens de décider, puis choisis
+          la seule chose que tu t'engages à tenir.</p>
+
+        <div class="s4-plan" id="s4-plan"><!-- rempli par buildScreen4() --></div>
       </div>
+
+      <!-- Comprendre : la brique ne sert à rien si elle ne laisse qu'un chiffre. -->
+      <div class="brick-card">
+        <div class="section-label">Comprendre tes dettes</div>
+        <p class="brick-subtitle" style="margin-bottom:1rem;">Quatre notions qui
+          servent bien au-delà de cette brique. Ouvre celles qui t'intéressent.</p>
+        <div id="s4-notions"><!-- rempli par buildScreen4() --></div>
+      </div>
+
+      <!-- L'engagement -->
+      <div class="brick-card">
+        <div class="section-label">Ton engagement</div>
+        <p class="brick-subtitle" style="margin-bottom:1rem;">Un seul. Il apparaîtra
+          sur ton tableau de bord.</p>
+        <div id="s4-engagements"><!-- rempli par buildScreen4() --></div>
+
+        <button class="btn-primary" id="btn-s4-finir" onclick="onS4Finir()"
+          disabled style="width:100%;margin-top:1.25rem;justify-content:center;">
+          <span id="btn-s4-label">Choisis un engagement</span>
+        </button>
+      </div>
+
       <div class="nav-btns" style="padding:0 0.25rem;">
         <button class="btn-back" onclick="goToScreen(s2Route === 'A' ? 2 : 3)">← Retour</button>
       </div>
@@ -1749,6 +1828,9 @@ function getDureeEstimee(type, ageGroup) {
 /* ══════════════════════════════════════════════════════════════
    ÉTAT LOCAL
 ══════════════════════════════════════════════════════════════ */
+/* Identifiant plateforme — doit correspondre à BRIQUES_META dans shared.js. */
+const BRICK_ID = 'plan_desendettement';
+
 let dettes = [];
 let profil = {}; // rempli après hydrateFromSupabase()
 let detteCounter = 0;
@@ -1824,6 +1906,11 @@ function checkPrerequisitesAndStart() {
   if (typeof requireAuth === 'function') {
     const user = await requireAuth();
     if (!user) return;
+  }
+
+  // 0b. Marquer la brique comme commencée (statut « en cours » au tableau de bord)
+  if (typeof brickStarted === 'function') {
+    try { brickStarted(BRICK_ID); } catch (e) {}
   }
 
   // 1. Hydrater _MEM depuis Supabase (profil + dashboard + brick_data)
@@ -2380,6 +2467,31 @@ function getDetteWithDuree(d) {
 /* ══════════════════════════════════════════════════════════════
    S2 — ÉTAT LOCAL
 ══════════════════════════════════════════════════════════════ */
+/* ── Capital restant dû ───────────────────────────────
+   Personne ne connaît le capital qu'il lui reste à rembourser — mais tout
+   le monde connaît sa mensualité et sa durée. On le déduit :
+     capital = mensualité × (1 − (1+r)^−n) / r     (formule de prêt)
+   Sans TAEG, on retombe sur mensualité × durée, sans intérêts.
+   C'est ce chiffre qui définit « la plus petite dette », donc l'ordre de la
+   méthode boule de neige. */
+function capitalRestant(d) {
+  const dd    = getDetteWithDuree(d);
+  const mens  = parseFloat(d.mensualite) || 0;
+  const taeg  = parseFloat(d.taeg) || null;
+  const duree = dd.duree_effective || 12;
+  if (mens <= 0) return 0;
+  if (taeg && taeg > 0) {
+    const r = (taeg / 100) / 12;
+    if (r > 0) return Math.max(0, mens * (1 - Math.pow(1 + r, -duree)) / r);
+  }
+  return Math.max(0, mens * duree);
+}
+
+/* ── TAEG effectif : celui saisi, sinon l'indicatif du type ── */
+function taegEffectif(d) {
+  return parseFloat(d.taeg) || (DETTE_CONFIG[d.type] || {}).taux || 0;
+}
+
 let methodeChoisie = null;   // 'boule_de_neige' | 'avalanche' | 'route_a'
 let s2Route = null;          // 'A' | 'B'
 let s2MauvaisesDettes = [];  // sous-ensemble des mauvaises dettes (orange/rouge)
@@ -2498,17 +2610,12 @@ function renderMauvaisesList(methode) {
 
   // Trier selon la méthode
   if (methode === 'boule_de_neige') {
-    // Tri par mensualité croissante (plus petite en premier)
-    mauvaises.sort((a, b) => (parseFloat(a.mensualite) || 0) - (parseFloat(b.mensualite) || 0));
+    // Plus petit capital en premier — même critère que le moteur de simulation.
+    mauvaises.sort((a, b) => capitalRestant(a) - capitalRestant(b));
     document.getElementById('s2-liste-label').textContent = 'Ordre d\'attaque — Boule de neige';
   } else {
-    // Tri par TAEG décroissant (le plus élevé en premier)
-    // Si TAEG manquant : on utilise le taux par défaut du DETTE_CONFIG (indicatif)
-    mauvaises.sort((a, b) => {
-      const taegA = parseFloat(a.taeg) || (DETTE_CONFIG[a.type] || {}).taux || 0;
-      const taegB = parseFloat(b.taeg) || (DETTE_CONFIG[b.type] || {}).taux || 0;
-      return taegB - taegA;
-    });
+    // TAEG le plus élevé en premier.
+    mauvaises.sort((a, b) => taegEffectif(b) - taegEffectif(a));
     document.getElementById('s2-liste-label').textContent = 'Ordre d\'attaque — Avalanche';
   }
 
@@ -2521,16 +2628,23 @@ function renderMauvaisesList(methode) {
   }
 
   mauvaises.forEach((d, i) => {
-    const cfg = DETTE_CONFIG[d.type] || DETTE_CONFIG.autre;
+    const cfg  = DETTE_CONFIG[d.type] || DETTE_CONFIG.autre;
     const mens = parseFloat(d.mensualite) || 0;
     const taeg = parseFloat(d.taeg) || null;
-    // Détail selon méthode
-    let detail;
-    if (methode === 'boule_de_neige') {
-      detail = mens > 0 ? `${mens.toFixed(0)} €/mois — solder en premier` : 'Mensualité à renseigner';
-    } else {
-      detail = taeg ? `TAEG ${taeg.toFixed(2)}% — le plus coûteux` : (DETTE_CONFIG[d.type] || {}).taux ? `TAEG indicatif ~${(DETTE_CONFIG[d.type] || {}).taux}%` : 'TAEG inconnu';
-    }
+    const cap  = capitalRestant(d);
+
+    // Le détail dit toujours la même chose : ce que tu paies, à quel taux.
+    const partTaeg = taeg
+      ? `TAEG ${taeg.toFixed(2).replace('.', ',')} %`
+      : (cfg.taux ? `TAEG indicatif ~${String(cfg.taux).replace('.', ',')} %` : 'TAEG inconnu');
+    const detail = (mens > 0 ? `${mens.toFixed(0)} €/mois · ` : '') + partTaeg;
+
+    // La raison du rang ne vaut que pour la première ligne : c'est elle que la
+    // méthode désigne. L'écrire sur chaque ligne revenait à qualifier la dette
+    // la moins chère de « plus coûteuse ».
+    const pourquoi = i > 0 ? '' : (methode === 'boule_de_neige'
+      ? 'La plus petite — soldée en premier, pour la première victoire'
+      : 'La plus chère — attaquée en premier, pour payer moins d\'intérêts');
 
     const row = document.createElement('div');
     row.className = 'mauvaise-row';
@@ -2540,8 +2654,12 @@ function renderMauvaisesList(methode) {
       <div class="mauvaise-info">
         <div class="mauvaise-label">${cfg.label}</div>
         <div class="mauvaise-detail">${detail}</div>
+        ${pourquoi ? `<div class="mauvaise-pourquoi">${pourquoi}</div>` : ''}
       </div>
-      <div class="mauvaise-montant">${mens > 0 ? mens.toFixed(0) + ' €' : 'À renseigner'}</div>
+      <div class="mauvaise-montant">
+        ${cap > 0 ? Math.round(cap).toLocaleString('fr-FR') + ' €' : '—'}
+        <span class="mauvaise-montant-legende">reste à payer</span>
+      </div>
       <div class="mauvaise-tag ${cfg.badge}">${cfg.badgeLabel}</div>
     `;
     list.appendChild(row);
@@ -2562,10 +2680,6 @@ function selectMethode(m) {
   document.getElementById('card-boule').classList.toggle('selected', m === 'boule_de_neige');
   document.getElementById('card-avalanche').classList.toggle('selected', m === 'avalanche');
 
-  // Synchroniser le toggle switch
-  document.getElementById('toggle-methode').checked = (m === 'avalanche');
-  onToggleLabels(m === 'avalanche');
-
   // Re-rendre la liste
   renderMauvaisesList(m);
 
@@ -2582,17 +2696,6 @@ function selectMethode(m) {
 }
 
 /* ─── Toggle switch ─── */
-function onToggleMethode(isAvalanche) {
-  const m = isAvalanche ? 'avalanche' : 'boule_de_neige';
-  // Mettre à jour les cartes + liste sans dupliquer la logique
-  selectMethode(m);
-}
-
-function onToggleLabels(isAvalanche) {
-  document.getElementById('toggle-label-boule').classList.toggle('active', !isAvalanche);
-  document.getElementById('toggle-label-avalanche').classList.toggle('active', isAvalanche);
-}
-
 /* ─── Surplus épargne (cross-brique) ─── */
 function checkSurplusEpargne() {
   try {
@@ -2691,23 +2794,7 @@ function simulateDettes(dettesInput, surplus, methode) {
     const dd = getDetteWithDuree(d);
     const mens = parseFloat(d.mensualite) || 0;
     const taeg = parseFloat(d.taeg) || null;
-    const duree = dd.duree_effective || 12;
-    // Capital initial approché :
-    // Si TAEG connu : capital = mensualité × [(1-(1+r)^-n)/r] formule de prêt
-    // Sinon : capital = mensualité × durée (approximation sans intérêts)
-    let capital;
-    if (taeg && taeg > 0 && mens > 0) {
-      const r = (taeg / 100) / 12;
-      if (r > 0) {
-        capital = mens * (1 - Math.pow(1 + r, -duree)) / r;
-      } else {
-        capital = mens * duree;
-      }
-    } else if (mens > 0) {
-      capital = mens * duree;
-    } else {
-      capital = 0;
-    }
+    const capital = capitalRestant(d);   // même dérivation qu'à l'écran 2
     return {
       ...dd,
       mensualite:     mens,
@@ -2722,8 +2809,10 @@ function simulateDettes(dettesInput, surplus, methode) {
   // Trier selon la méthode
   const sorted = [...enriched];
   if (methode === 'boule_de_neige') {
-    // Plus petite mensualité en premier
-    sorted.sort((a, b) => a.mensualite - b.mensualite);
+    // Plus petit CAPITAL en premier : c'est la dette qu'on solde le plus vite,
+    // donc la première victoire. Trier sur la mensualité donnait un ordre
+    // arbitraire, sans rapport avec la promesse de la méthode.
+    sorted.sort((a, b) => a.capital - b.capital);
   } else {
     // TAEG le plus élevé en premier (avalanche)
     sorted.sort((a, b) => {
@@ -2752,42 +2841,47 @@ function simulateDettes(dettesInput, surplus, methode) {
     courbes.forEach((c, i) => c.push(Math.max(0, capitaux[i])));
     courbeTotal.push(Math.max(0, total));
 
-    // Redistribution du surplus : appliquer en priorité sur la 1re dette non soldée
-    let surplusPool = surplus;           // surplus mensuel à distribuer
-    let mensPool = 0;                    // mensualités récupérées des dettes soldées
-
+    // 1. Intérêts du mois, sur chaque dette encore ouverte.
     for (let i = 0; i < sorted.length; i++) {
-      if (capitaux[i] <= 0) {
-        // Dette déjà soldée : récupérer sa mensualité comme bonus
-        mensPool += sorted[i].mensualite;
-        continue;
-      }
-
-      // Intérêts ce mois (si TAEG connu)
+      if (capitaux[i] <= 0) continue;
       if (sorted[i].taeg && sorted[i].taeg > 0) {
-        const r = (sorted[i].taeg / 100) / 12;
-        const interets = capitaux[i] * r;
+        const taux = (sorted[i].taeg / 100) / 12;
+        const interets = capitaux[i] * taux;
         totalInterets += interets;
         capitaux[i] += interets;
       }
+    }
 
-      // Paiement : mensualité de base + bonus des dettes soldées + surplus
-      const paiement = sorted[i].mensualite + mensPool + surplusPool;
-      mensPool = 0;       // bonus utilisé
-      surplusPool = 0;    // surplus utilisé
+    // 2. L'enveloppe du mois : toutes les mensualités d'origine, plus le
+    //    surplus. Elle ne diminue PAS quand une dette est soldée — c'est
+    //    exactement le principe des deux méthodes : la mensualité libérée
+    //    vient grossir l'effort sur la dette suivante.
+    let pot = surplus;
+    for (let i = 0; i < sorted.length; i++) pot += sorted[i].mensualite;
 
-      const avant = capitaux[i];
-      capitaux[i] = Math.max(0, capitaux[i] - paiement);
-
-      // Si trop payé : reporter le surplus sur la prochaine dette
-      const tropPaye = paiement - avant;
-      if (tropPaye > 0) {
-        surplusPool = tropPaye; // reporter sur la dette suivante
+    // 3. Distribution par ordre de priorité. Chaque dette de rang inférieur
+    //    garde son minimum dû ; la prioritaire absorbe tout le reste.
+    for (let i = 0; i < sorted.length && pot > 0; i++) {
+      if (capitaux[i] <= 0) continue;
+      let reserve = 0;
+      for (let j = i + 1; j < sorted.length; j++) {
+        if (capitaux[j] > 0) reserve += sorted[j].mensualite;
       }
+      const paiement = Math.min(capitaux[i], Math.max(0, pot - reserve));
+      capitaux[i] -= paiement;
+      pot -= paiement;
+      if (capitaux[i] <= 0 && finishMois[i] === null) finishMois[i] = m + 1;
+    }
 
-      if (capitaux[i] <= 0 && finishMois[i] === null) {
-        finishMois[i] = m + 1; // mois de fin (1-based)
-      }
+    // 4. Reliquat : le trop-perçu d'une dette soldée ce mois-ci repart sur la
+    //    prioritaire encore ouverte. Sans ce passage, il se perdait dès que la
+    //    dette soldée était la dernière de l'ordre.
+    for (let i = 0; i < sorted.length && pot > 0; i++) {
+      if (capitaux[i] <= 0) continue;
+      const paiement = Math.min(capitaux[i], pot);
+      capitaux[i] -= paiement;
+      pot -= paiement;
+      if (capitaux[i] <= 0 && finishMois[i] === null) finishMois[i] = m + 1;
     }
   }
 
@@ -3180,6 +3274,225 @@ function onS3Next() {
   goToScreen(4);
 }
 
+
+/* ══════════════════════════════════════════════════════════════
+   S4 — ENGAGEMENT
+   Le seul écran qui écrit dans la plateforme : jusqu'ici la brique
+   n'appelait jamais completeBrickFull et ne déposait donc ni engagement
+   ni enseignement sur le tableau de bord.
+══════════════════════════════════════════════════════════════ */
+let s4Engagement = null;
+
+/* Les notions demandées : à quoi sert une dette, ce qui les distingue,
+   et ce qu'elles changent plus tard. Les ordres de grandeur cités sont
+   ceux déjà portés par DETTE_CONFIG — on n'invente aucun chiffre. */
+const S4_NOTIONS = [
+  {
+    titre: 'Toutes les dettes ne jouent pas le même rôle',
+    corps: '<p>Une dette qui finance quelque chose de durable — un logement, des études — '
+         + 'ne joue pas le même rôle qu\'une dette qui finance une dépense déjà consommée.</p>'
+         + '<p>Ce n\'est pas une question de morale, mais de <strong>garantie</strong>. '
+         + 'Un crédit immobilier a un taux bas parce que la banque a le bien en face. '
+         + 'Un découvert n\'a rien en face : il se paie donc beaucoup plus cher.</p>'
+  },
+  {
+    titre: 'Le TAEG : le seul chiffre qui permet de comparer',
+    corps: '<p>Un crédit ne se juge pas à sa mensualité. Une mensualité basse peut simplement '
+         + 'cacher une durée longue — et un coût total plus élevé.</p>'
+         + '<p>Le <strong>TAEG</strong> (taux annuel effectif global) réunit le taux, les frais '
+         + 'de dossier et l\'assurance obligatoire en un seul pourcentage. C\'est le seul chiffre '
+         + 'qui met deux offres côte à côte, et il doit figurer sur toute offre de crédit.</p>'
+  },
+  {
+    titre: 'Pourquoi le découvert et le renouvelable coûtent autant',
+    corps: '<p>Ordres de grandeur indicatifs : crédit immobilier autour de '
+         + String(DETTE_CONFIG.credit_immo.taux).replace('.', ',') + ' %, crédit conso autour de '
+         + String(DETTE_CONFIG.credit_conso.taux).replace('.', ',') + ' %, découvert autour de '
+         + String(DETTE_CONFIG.decouvert_regulier.taux).replace('.', ',') + ' %, crédit renouvelable autour de '
+         + String(DETTE_CONFIG.credit_renouvelable.taux).replace('.', ',') + ' %.</p>'
+         + '<p>Le renouvelable a une particularité : la réserve <strong>se reconstitue</strong> '
+         + 'à mesure que tu rembourses. Sans effort dédié, on tourne en boucle sans jamais '
+         + 'voir le capital baisser. C\'est ce qui le rend si difficile à solder.</p>'
+  },
+  {
+    titre: 'Ce que tes dettes changent pour la suite',
+    corps: '<p>Le jour où tu demanderas un crédit immobilier, la banque regardera ton '
+         + '<strong>taux d\'endettement</strong> : la part de tes revenus qui part déjà en '
+         + 'mensualités. La référence usuelle se situe autour de 35 %, assurance comprise.</p>'
+         + '<p>Chaque mensualité soldée aujourd\'hui libère de la capacité d\'emprunt demain. '
+         + 'C\'est le lien direct entre cette brique et un projet d\'achat.</p>'
+  }
+];
+
+function buildScreen4() {
+  const sim   = s3SimResult;
+  const prem  = sim && sim.sorted && sim.sorted.length ? sim.sorted[0] : null;
+  const cfgP  = prem ? (DETTE_CONFIG[prem.type] || DETTE_CONFIG.autre) : null;
+  const nomMethode = methodeChoisie === 'avalanche' ? 'Avalanche' : 'Boule de neige';
+  const totalMens = (sim ? sim.sorted : []).reduce((a, d) => a + d.mensualite, 0);
+
+  /* ─── Le plan relu ─── */
+  const lignes = [];
+  lignes.push(['Méthode', nomMethode + (methodeChoisie === 'avalanche'
+    ? ' — la dette la plus chère d\'abord'
+    : ' — la plus petite dette d\'abord')]);
+  if (prem) {
+    lignes.push(['Tu attaques', '<strong>' + cfgP.label + '</strong> — '
+      + Math.round(prem.capital).toLocaleString('fr-FR') + ' € restants']);
+  }
+  lignes.push(['Effort mensuel', '<strong>'
+    + Math.round(totalMens + s3SurplusMensuel).toLocaleString('fr-FR') + ' €</strong>/mois'
+    + (s3SurplusMensuel > 0
+        ? ' — dont ' + s3SurplusMensuel + ' € que tu ajoutes'
+        : ' — tes mensualités actuelles')]);
+  if (sim) {
+    lignes.push(['Libre en', '<strong>' + moisToDateLiberte(sim.moisLiberte) + '</strong> — dans '
+      + sim.moisLiberte + ' mois']);
+    if (sim.hasTaeg) {
+      lignes.push(['Intérêts restants', Math.round(sim.totalInterets).toLocaleString('fr-FR')
+        + ' € si tu tiens ce rythme']);
+    }
+  }
+  document.getElementById('s4-plan').innerHTML = lignes.map(l =>
+    '<div class="s4-plan-ligne"><div class="s4-plan-cle">' + l[0] + '</div>'
+    + '<div class="s4-plan-val">' + l[1] + '</div></div>').join('');
+
+  /* ─── Les notions ─── */
+  document.getElementById('s4-notions').innerHTML = S4_NOTIONS.map((n, i) =>
+    '<div class="s4-notion" id="notion-' + i + '">'
+    + '<button type="button" class="s4-notion-tete" aria-expanded="false"'
+    + ' aria-controls="notion-corps-' + i + '" onclick="toggleNotion(' + i + ')">'
+    + '<span>' + n.titre + '</span>'
+    + '<svg class="s4-notion-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"'
+    + ' stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>'
+    + '</button>'
+    + '<div class="s4-notion-corps" id="notion-corps-' + i + '">' + n.corps + '</div></div>').join('');
+
+  /* ─── Les engagements possibles, selon ce qui a été décidé ─── */
+  const opts = [];
+  if (s3SurplusMensuel > 0 && prem) {
+    opts.push({
+      id: 'surplus',
+      label: 'Je mets ' + s3SurplusMensuel + ' €/mois de plus sur ' + cfgP.label.toLowerCase(),
+      detail: 'Le geste qui produit la date de ' + moisToDateLiberte(sim.moisLiberte) + '.'
+    });
+  }
+  opts.push({
+    id: 'pas_de_credit',
+    label: 'Je ne souscris aucun nouveau crédit pendant 3 mois',
+    detail: 'Le plan ne tient que si la dette ne repart pas à la hausse.'
+  });
+  opts.push({
+    id: 'verifier_taeg',
+    label: 'Je regarde le TAEG avant de signer quoi que ce soit',
+    detail: 'Y compris un paiement en plusieurs fois.'
+  });
+  document.getElementById('s4-engagements').innerHTML = opts.map(o =>
+    '<button type="button" class="s4-eng" id="eng-' + o.id + '"'
+    + ' aria-pressed="false" onclick="choisirEngagement(\'' + o.id + '\')">'
+    + '<span class="s4-eng-puce"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"'
+    + ' stroke="currentColor" stroke-width="4" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>'
+    + '<span class="s4-eng-txt"><span class="s4-eng-label">' + o.label + '</span>'
+    + '<span class="s4-eng-detail">' + o.detail + '</span></span></button>').join('');
+  s4Options = opts;
+}
+
+let s4Options = [];
+
+function toggleNotion(i) {
+  const el = document.getElementById('notion-' + i);
+  if (!el) return;
+  const ouvert = el.classList.toggle('ouvert');
+  const tete = el.querySelector('.s4-notion-tete');
+  if (tete) tete.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+}
+
+function choisirEngagement(id) {
+  s4Engagement = s4Options.find(o => o.id === id) || null;
+  s4Options.forEach(o => {
+    const el = document.getElementById('eng-' + o.id);
+    if (!el) return;
+    const actif = o.id === id;
+    el.classList.toggle('choisi', actif);
+    el.setAttribute('aria-pressed', actif ? 'true' : 'false');
+  });
+  const btn = document.getElementById('btn-s4-finir');
+  btn.disabled = false;
+  document.getElementById('btn-s4-label').textContent = 'Je m\'engage — terminer la brique →';
+}
+
+/* ─── Terminer : la brique écrit enfin dans la plateforme ─── */
+async function onS4Finir() {
+  const btn = document.getElementById('btn-s4-finir');
+  if (btn) btn.disabled = true;
+
+  const sim  = s3SimResult;
+  const prem = sim && sim.sorted && sim.sorted.length ? sim.sorted[0] : null;
+  const totalMens = (sim ? sim.sorted : []).reduce((a, d) => a + d.mensualite, 0);
+
+  const rawData = {
+    dettes: dettes.map(d => ({
+      type:           d.type,
+      montant_mensuel: parseFloat(d.mensualite) || 0,
+      taeg:           parseFloat(d.taeg) || null,
+      duree_restante: parseInt(d.duree_restante) || null,
+      capital_estime: Math.round(capitalRestant(d))
+    })),
+    methode:            methodeChoisie,
+    surplus_mensuel:    s3SurplusMensuel,
+    mois_liberte:       sim ? sim.moisLiberte : null,
+    date_liberte:       sim ? moisToDateLiberte(sim.moisLiberte) : null,
+    interets_totaux:    sim && sim.hasTaeg ? Math.round(sim.totalInterets) : null,
+    dettes_mensuel_total: Math.round(totalMens),
+    premiere_dette:     prem ? prem.type : null
+  };
+
+  const profileFields = {
+    dettes:                   rawData.dettes,
+    dettes_methode:           methodeChoisie,
+    dettes_mensuel_total:     Math.round(totalMens),
+    dettes_date_liberte:      rawData.date_liberte,
+    total_dettes_mensuel:     Math.round(totalMens)
+  };
+
+  const eng = {
+    id:         'eng_plan_desendettement',
+    type:       'desendettement',
+    label:      'Plan de désendettement',
+    detail:     s4Engagement ? s4Engagement.label : 'Plan établi',
+    montant_actuel: null,
+    montant_cible:  null,
+    versement:  s3SurplusMensuel > 0 ? s3SurplusMensuel : null,
+    brique_id:  BRICK_ID,
+    atteint:    false
+  };
+
+  const insights = typeof buildInsights === 'function'
+    ? buildInsights(BRICK_ID, profil || {}, rawData) : [];
+
+  try {
+    if (typeof completeBrickFull === 'function') {
+      await completeBrickFull(BRICK_ID, {
+        profileFields: profileFields,
+        rawData:       rawData,
+        engagements:   [eng],
+        insights:      insights
+      });
+    }
+  } catch (e) { /* la redirection reste due même si l'écriture distante échoue */ }
+
+  try {
+    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    existing.data = Object.assign({}, existing.data || {}, rawData);
+    existing.screen = 4;
+    existing.completed = true;
+    existing.ts = Date.now();
+    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+  } catch (e) {}
+
+  setTimeout(function () { window.location.href = 'dashboard.html'; }, 200);
+}
+
 /* ══════════════════════════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════════════════════════ */
@@ -3191,6 +3504,29 @@ function goToScreen(n) {
   // Builders spécifiques par écran
   if (n === 2) buildScreen2();
   if (n === 3) buildScreen3();
+  if (n === 4) buildScreen4();
+
+  sauverProgression(n);
+}
+
+/* Progression vers la plateforme (donc vers Supabase) à chaque écran.
+   La sauvegarde locale détaillée reste assurée par autosaveS1/S2/S3. */
+function sauverProgression(n) {
+  if (typeof autosaveBrickProgress !== 'function') return;
+  try {
+    autosaveBrickProgress(BRICK_ID, n, {
+      dettes: dettes.map(function (d) {
+        return {
+          type:            d.type,
+          montant_mensuel: parseFloat(d.mensualite) || 0,
+          taeg:            parseFloat(d.taeg) || null,
+          duree_restante:  parseInt(d.duree_restante) || null
+        };
+      }),
+      methode:         methodeChoisie,
+      surplus_mensuel: s3SurplusMensuel
+    });
+  } catch (e) {}
 }
 
 function updateProgressPanel(screenIdx) {

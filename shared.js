@@ -535,6 +535,31 @@ function buildInsights(brickId, profil, data) {
         contenu: `Tu as parcouru ${notions} notions sur 5. Compte, moyens de paiement, découvert, épargne, crédit : tu sais désormais à quoi sert chaque pièce.` });
     }
   }
+  if (brickId === 'plan_desendettement') {
+    const mois    = data.mois_liberte || 0;
+    const dateLib = data.date_liberte || null;
+    const interets = data.interets_totaux || 0;
+    const methode = data.methode === 'avalanche' ? 'Avalanche' : 'Boule de neige';
+    const surplus = data.surplus_mensuel || 0;
+
+    if (mois > 0 && dateLib) {
+      ins.push({ id: 'ins_dettes_liberte', type: 'projection',
+        titre: 'Ta date de sortie de dette',
+        contenu: `Au rythme que tu as choisi, tu es libre en ${dateLib} — dans ${mois} mois. Cette date bouge dès que tu changes l'effort mensuel.` });
+    }
+    if (interets > 0) {
+      ins.push({ id: 'ins_dettes_interets', type: 'chiffre',
+        titre: 'Ce que la dette te coûte encore',
+        contenu: `Il te reste ${formatEuro(interets)} d'intérêts à payer sur tes crédits en cours. C'est le montant que tu réduis en remboursant plus vite.` });
+    }
+    if (data.methode) {
+      ins.push({ id: 'ins_dettes_methode', type: 'conseil',
+        titre: `Méthode retenue : ${methode}`,
+        contenu: data.methode === 'avalanche'
+          ? `Tu attaques la dette au TAEG le plus élevé d'abord : c'est l'ordre qui coûte le moins cher au total.${surplus > 0 ? ` Tu y consacres ${formatEuro(surplus)} de plus par mois.` : ''}`
+          : `Tu soldes la plus petite dette d'abord : c'est l'ordre qui donne une victoire rapide, et la mensualité libérée vient grossir la suivante.${surplus > 0 ? ` Tu y consacres ${formatEuro(surplus)} de plus par mois.` : ''}` });
+    }
+  }
   if (brickId === 'gestion_decouvert') {
     const cout = data.decouvert_cout_mensuel || 0;
     if (cout > 0) {
