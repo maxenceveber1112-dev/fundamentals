@@ -3397,7 +3397,7 @@ async function validerEngagement() {
         dettes:                   budgetData.dettes,
       },
       rawData: budgetData,
-      engagements: [{ id:'eng_budget_' + Date.now(), type: budgetData.engagement.type, label: budgetData.engagement.label, brique_id: BRICK_ID }],
+      engagements: [{ id:'eng_budget_base', type: budgetData.engagement.type, label: budgetData.engagement.label, brique_id: BRICK_ID }],
       insights: typeof buildInsights === 'function' ? buildInsights(BRICK_ID, profil, budgetData) : []
     });
   }
