@@ -444,16 +444,24 @@ async function completeBrickFull(brickId, { profileFields = {}, rawData = {}, en
   if (engagements.length > 0) {
     dash.engagements = dash.engagements || [];
     engagements.forEach(e => {
-      if (!dash.engagements.find(x => x.id === e.id)) dash.engagements.push(e);
+      // Remplacer, pas ignorer : refaire la brique doit mettre a jour le
+      // montant et le libelle, pas conserver ceux du premier passage.
+      const i = dash.engagements.findIndex(x => x.id === e.id);
+      if (i >= 0) dash.engagements[i] = e; else dash.engagements.push(e);
     });
   }
-  if (insights.length > 0) {
-    dash.insights = dash.insights || [];
-    insights.forEach(ins => {
-      if (!dash.insights.find(x => x.id === ins.id))
-        dash.insights.push({ ...ins, brique_source: brickId, ts: Date.now() });
-    });
-  }
+
+  // Une brique qui se termine REMPLACE ce qu'elle avait compris.
+  // Avant, on n'ajoutait que si l'id était absent et on ne retirait jamais
+  // rien : les trois branches du budget ayant trois ids distincts, un passage
+  // à 800 € de marge laissait « Marge disponible » à côté du « Marge très
+  // serrée » du passage suivant. Deux enseignements contradictoires, même
+  // brique, affichés ensemble — et un chiffre modifié sous un id identique
+  // n'était jamais rafraîchi.
+  dash.insights = (dash.insights || []).filter(x => x.brique_source !== brickId);
+  insights.forEach(ins => {
+    dash.insights.push({ ...ins, brique_source: brickId, ts: Date.now() });
+  });
 
   dash.derniere_activite = new Date().toISOString();
   saveToStorage('fund_dashboard', dash);
@@ -499,19 +507,32 @@ function updateBrickProgress(brickId, progression) {
 function buildInsights(brickId, profil, data) {
   const ins = [];
   if (brickId === 'budget_base') {
-    const ral = data.reste_a_vivre || 0;
-    if (ral < 0) {
+    // On raisonne sur la marge AVANT épargne. reste_a_vivre retranche
+    // l'épargne : s'en servir revenait à dire « marge très serrée, pense à
+    // constituer un coussin » à quelqu'un qui met déjà 1 750 € de côté.
+    const marge   = data.marge_avant_epargne
+                 ?? ((data.revenus || 0) + (data.aides || 0) - (data.total_besoins || 0) - (data.total_envies || 0));
+    const epargne = data.epargne || 0;
+    const revenus = (data.revenus || 0) + (data.aides || 0);
+    const taux    = revenus > 0 ? Math.round(epargne / revenus * 100) : 0;
+
+    if (marge < 0) {
       ins.push({ id: 'ins_budget_negatif', type: 'alerte',
         titre: 'Budget en déficit',
-        contenu: `Ton reste-à-vivre est négatif (${formatEuro(ral)}). Regarde la brique “Sortir du rouge” pour identifier les leviers.` });
-    } else if (ral < 200) {
+        contenu: `Tes dépenses dépassent tes revenus de ${formatEuro(Math.abs(marge))} par mois. Regarde la brique “Sortir du rouge” pour identifier les leviers.` });
+    } else if (epargne > 0 && taux >= 15) {
+      // Gros épargnant : lui parler de coussin n'a aucun sens.
+      ins.push({ id: 'ins_budget_epargnant', type: 'objectif',
+        titre: 'Tu épargnes beaucoup',
+        contenu: `Tu mets ${formatEuro(epargne)} de côté chaque mois, soit ${taux} % de tes revenus. Une fois ton coussin d'urgence couvert, la question devient où placer ce flux.` });
+    } else if (marge < 200) {
       ins.push({ id: 'ins_budget_serre', type: 'conseil',
         titre: 'Marge très serrée',
-        contenu: `Il te reste ${formatEuro(ral)} en fin de mois. Pense à constituer un petit coussin avant tout investissement.` });
+        contenu: `Une fois tes dépenses payées, il te reste ${formatEuro(marge)} par mois. Pense à constituer un petit coussin avant tout investissement.` });
     } else {
       ins.push({ id: 'ins_budget_ok', type: 'info',
         titre: 'Marge disponible',
-        contenu: `Tu as ${formatEuro(ral)} de marge mensuelle. C'est une base solide pour construire ton coussin d'urgence.` });
+        contenu: `Une fois tes dépenses payées, il te reste ${formatEuro(marge)} par mois. C'est une base solide pour construire ton coussin d'urgence.` });
     }
   }
   if (brickId === 'premiers_pas_bancaires') {

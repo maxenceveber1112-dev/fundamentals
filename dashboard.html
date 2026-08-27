@@ -535,6 +535,7 @@
     }
 
     /* -- Ce qu'on a compris : enseignements acquis -- */
+    /* Filet : ne sert plus qu'aux enseignements sans carte d'accueil. */
     .ens-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
     @media (max-width:640px) { .ens-grid { grid-template-columns:1fr; } }
     .ens-card {
@@ -556,6 +557,69 @@
     .ens-source { font-size:0.625rem; color:var(--text-muted); margin-left:auto; }
     .ens-titre { font-size:0.875rem; font-weight:600; color:var(--text); margin-bottom:0.2rem; }
     .ens-texte { font-size:0.8125rem; color:var(--text-muted); line-height:1.55; }
+
+    /* ── Design B : l'enseignement vit dans la carte de données ───────── */
+    .mb-ens { margin-top:0.75rem; border-top:1px solid var(--border-subtle); }
+    .mb-ens-tete {
+      display:flex; align-items:center; gap:0.45rem; width:100%;
+      padding:0.6rem 0 0.1rem; min-height:38px;
+      background:none; border:none; font-family:inherit; cursor:pointer;
+      font-size:0.75rem; font-weight:600; color:var(--accent-strong); text-align:left;
+    }
+    html.dark .mb-ens-tete { color:#C4B5FD; }
+    .mb-ens-chevron { flex:0 0 auto; transition:transform var(--t) var(--ease-out); }
+    .mb-ens.ouvert .mb-ens-chevron { transform:rotate(180deg); }
+    /* Aperçu replié : une pastille par enseignement, à sa teinte de registre.
+       Dit ce qui attend derrière le pli, là où un « 3 » ne disait qu'un nombre. */
+    .mb-ens-pastilles {
+      margin-left:auto; display:flex; align-items:center; gap:3px;
+      transition:opacity var(--t) var(--ease-out), transform var(--t) var(--ease-out);
+    }
+    .mb-ens-pastille {
+      width:5px; height:5px; border-radius:9999px;
+      background:var(--ens-teinte,var(--accent-strong));
+      transition:width 0.22s var(--ease-out);
+    }
+    .mb-ens-tete:hover .mb-ens-pastille { width:11px; }
+    /* Ouvert, elles n'ont plus rien à annoncer. */
+    .mb-ens.ouvert .mb-ens-pastilles { opacity:0; transform:translateX(4px); }
+
+    /* 0fr -> 1fr : anime une hauteur inconnue sans la mesurer en JS. */
+    .mb-ens-corps {
+      display:grid; grid-template-rows:0fr;
+      transition:grid-template-rows 0.32s var(--ease-out);
+    }
+    .mb-ens.ouvert .mb-ens-corps { grid-template-rows:1fr; }
+    .mb-ens-corps-inner { overflow:hidden; }
+    .mb-ens.ouvert .mb-ens-corps-inner { padding:0.15rem 0 0.35rem; }
+
+    .mb-ens-item {
+      position:relative; padding:0.4rem 0 0.4rem 0.7rem;
+      opacity:0; transform:translateY(-4px);
+      transition:opacity 0.26s var(--ease-out), transform 0.26s var(--ease-out);
+    }
+    .mb-ens.ouvert .mb-ens-item { opacity:1; transform:none; }
+    /* En cascade : les enseignements se posent l'un après l'autre. */
+    .mb-ens.ouvert .mb-ens-item:nth-child(2) { transition-delay:0.06s; }
+    .mb-ens.ouvert .mb-ens-item:nth-child(3) { transition-delay:0.12s; }
+    .mb-ens.ouvert .mb-ens-item:nth-child(n+4) { transition-delay:0.18s; }
+    .mb-ens-item + .mb-ens-item { border-top:1px dashed var(--border-subtle); }
+
+    @media (prefers-reduced-motion:reduce) {
+      .mb-ens-corps, .mb-ens-item, .mb-ens-pastille, .mb-ens-pastilles,
+      .mb-ens-chevron { transition:none; }
+      .mb-ens-item { opacity:1; transform:none; }
+    }
+    .mb-ens-item::before {
+      content:''; position:absolute; left:0; top:0.55rem; bottom:0.55rem;
+      width:2px; border-radius:2px; background:var(--ens-teinte,var(--accent-strong));
+    }
+    .mb-ens-registre {
+      font-size:0.5875rem; font-weight:700; letter-spacing:0.08em;
+      text-transform:uppercase; color:var(--ens-teinte,var(--accent-strong));
+    }
+    .mb-ens-titre { font-size:0.78rem; font-weight:600; color:var(--text); margin-top:0.1rem; }
+    .mb-ens-texte { font-size:0.72rem; color:var(--text-muted); line-height:1.55; margin-top:0.15rem; }
 
     .insight-card {
       background:#FFFFFF;
@@ -947,6 +1011,11 @@
     .mb-card-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; }
     .mb-card-row-label { color: var(--text-muted); }
     .mb-card-row-val { font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+    /* Le montant derrière le pourcentage : présent, jamais concurrent. */
+    .mb-card-row-note {
+      margin-left: 0.4rem; font-weight: 400; font-size: 0.72rem;
+      color: var(--text-faint); white-space: nowrap;
+    }
     .mb-card-row-val.green { color: var(--green); }
     .mb-card-row-val.orange { color: #F97316; }
     .mb-card-row-val.red { color: #EF4444; }
@@ -1718,12 +1787,79 @@
     objectif:   { mot: 'Objectif',   teinte: 'var(--green)' }
   };
 
+  // Les briques dont une carte « Mes donnees » a affiche les enseignements
+  // pendant ce rendu. La section autonome s'en sert pour ne montrer que ce
+  // qui n'a trouve aucun hote.
+  let _briquesServies = new Set();
+
+  function enseignementsDe(briqueId) {
+    if (!briqueId) return [];
+    return (dash.insights || []).filter(function (e) {
+      return e && e.titre && e.brique_source === briqueId;
+    });
+  }
+
+  /* Le pli d'une carte : replie par defaut, la carte reste une carte. */
+  function plisEnseignements(briqueId, i) {
+    const acquis = enseignementsDe(briqueId);
+    if (!acquis.length) return '';
+    _briquesServies.add(briqueId);
+
+    const corps = acquis.map(function (e) {
+      const reg = ENS_REGISTRES[e.type] || ENS_REGISTRES.info;
+      return '<div class="mb-ens-item" style="--ens-teinte:' + reg.teinte + '">'
+        + '<div class="mb-ens-registre">' + reg.mot + '</div>'
+        + '<div class="mb-ens-titre">' + e.titre + '</div>'
+        + '<div class="mb-ens-texte">' + e.contenu + '</div></div>';
+    }).join('');
+
+    // Une pastille par enseignement, à sa teinte : l'aperçu dit de quoi il
+    // s'agit avant l'ouverture. Purement visuel, d'où le aria-hidden — le
+    // nombre part dans le nom accessible du bouton.
+    const pastilles = acquis.map(function (e) {
+      const reg = ENS_REGISTRES[e.type] || ENS_REGISTRES.info;
+      return '<span class="mb-ens-pastille" style="--ens-teinte:' + reg.teinte + '"></span>';
+    }).join('');
+
+    const nom = acquis.length > 1
+      ? 'Ce qu\'on en a compris — ' + acquis.length + ' enseignements'
+      : 'Ce qu\'on en a compris — 1 enseignement';
+
+    return '<div class="mb-ens" id="mb-ens-' + i + '">'
+      + '<button type="button" class="mb-ens-tete" aria-expanded="false"'
+      + ' aria-label="' + nom + '"'
+      + ' aria-controls="mb-ens-corps-' + i + '" onclick="basculerPliEns(' + i + ')">'
+      + '<svg class="mb-ens-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none"'
+      + ' stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">'
+      + '<polyline points="6 9 12 15 18 9"/></svg>'
+      + '<span>Ce qu\'on en a compris</span>'
+      + '<span class="mb-ens-pastilles" aria-hidden="true">' + pastilles + '</span>'
+      + '</button>'
+      + '<div class="mb-ens-corps" id="mb-ens-corps-' + i + '">'
+      + '<div class="mb-ens-corps-inner">' + corps + '</div></div></div>';
+  }
+
+  function basculerPliEns(i) {
+    const el = document.getElementById('mb-ens-' + i);
+    if (!el) return;
+    const ouvert = el.classList.toggle('ouvert');
+    const tete = el.querySelector('.mb-ens-tete');
+    if (tete) tete.setAttribute('aria-expanded', ouvert ? 'true' : 'false');
+  }
+  window.basculerPliEns = basculerPliEns;
+
   function renderEnseignements() {
     const zone = document.getElementById('zone-enseignements');
     const grille = document.getElementById('ens-grid');
     if (!zone || !grille) return;
 
-    const acquis = (dash.insights || []).filter(function (e) { return e && e.titre; });
+    // Design B : les enseignements vivent dans les cartes de donnees. Cette
+    // section ne rattrape que les orphelins — une brique terminee dont aucune
+    // carte n'a pris en charge les enseignements. En marche normale elle
+    // reste masquee ; elle existe pour qu'aucun texte ne se perde en silence.
+    const acquis = (dash.insights || []).filter(function (e) {
+      return e && e.titre && !_briquesServies.has(e.brique_source);
+    });
     if (!acquis.length) { zone.style.display = 'none'; return; }
     zone.style.display = '';
 
@@ -2078,16 +2214,25 @@
     const budgetData = budgetRaw?.data || budgetRaw || null;
     if (budgetData && (budgetData.revenus > 0 || budgetData.total_besoins > 0)) {
       const revenus      = (budgetData.revenus || 0) + (budgetData.aides || 0);
-      const reste        = budgetData.reste_a_vivre ?? (revenus - (budgetData.total_besoins || 0) - (budgetData.total_envies || 0));
+      // La marge, c'est ce qui reste une fois les dépenses payées — avant de
+      // décider quoi en épargner. reste_a_vivre retranche aussi l'épargne :
+      // s'en servir ici revenait à traiter un choix comme une charge subie, et
+      // à annoncer « Budget serré » à quelqu'un qui met la moitié de côté.
+      // Le ?? couvre les budgets enregistrés avant l'ajout du champ.
+      const marge        = budgetData.marge_avant_epargne
+                        ?? (revenus - (budgetData.total_besoins || 0) - (budgetData.total_envies || 0));
       const pctBesoins   = revenus > 0 ? Math.round((budgetData.total_besoins || 0) / revenus * 100) : 0;
-      const situation    = reste < 0 ? 'deficit'
-                         : reste < revenus * 0.10 ? 'tendu'
-                         : reste < revenus * 0.20 ? 'equilibre'
-                         : reste < revenus * 0.35 ? 'aise' : 'confortable';
+      const situation    = marge < 0 ? 'deficit'
+                         : marge < revenus * 0.10 ? 'tendu'
+                         : marge < revenus * 0.20 ? 'equilibre'
+                         : marge < revenus * 0.35 ? 'aise' : 'confortable';
       const situationLabels = { deficit:'Déficit', tendu:'Budget serré', equilibre:'À l\'équilibre', aise:'À l\'aise', confortable:'Confortable' };
-      const resteColor   = reste < 0 ? 'red' : reste < revenus * 0.1 ? 'orange' : 'green';
-      const epargne = revenus - (budgetData.total_besoins || 0) - (budgetData.total_envies || 0);
-      const tauxEpargne = revenus > 0 ? Math.max(0, Math.round(epargne / revenus * 100)) : 0;
+      const margeColor   = marge < 0 ? 'red' : marge < revenus * 0.1 ? 'orange' : 'green';
+      // Le taux d'épargne doit refléter ce qui est réellement mis de côté.
+      // L'ancien calcul prenait le reliquat : quelqu'un qui n'épargne rien mais
+      // finit le mois avec 800 € se voyait créditer d'un taux de 22 %.
+      const epargne      = budgetData.epargne ?? Math.max(0, marge);
+      const tauxEpargne  = revenus > 0 ? Math.max(0, Math.round(epargne / revenus * 100)) : 0;
 
       cards.push({
         title: 'Budget mensuel',
@@ -2098,8 +2243,10 @@
         valueLabel: '/ mois',
         rows: [
           { label: 'Dépenses totales', val: formatEuro((budgetData.total_besoins || 0) + (budgetData.total_envies || 0)) + '/mois', color: '' },
-          { label: 'Reste à vivre',    val: formatEuro(reste) + '/mois', color: resteColor },
-          { label: 'Taux d\'épargne',  val: tauxEpargne + '%', color: tauxEpargne >= 10 ? 'green' : tauxEpargne >= 5 ? 'orange' : 'red' },
+          { label: 'Reste à vivre',    val: formatEuro(marge) + '/mois', color: margeColor },
+          // Un pourcentage seul ne se rattache à rien : on donne le montant.
+          { label: 'Taux d\'épargne',  val: tauxEpargne + '%', color: tauxEpargne >= 10 ? 'green' : tauxEpargne >= 5 ? 'orange' : 'red',
+            note: 'soit ' + formatEuro(epargne) + '/mois' },
         ],
         progress: null,
         cta: { href: 'brique-budget-base.html', label: 'Voir le budget' }
@@ -2169,7 +2316,7 @@
       });
       cards.push({
         title: 'Dettes en cours',
-        brique: 'dettes',
+        brique: 'plan_desendettement',
         status: 'en-cours',
         statusLabel: nbDettes > 0 ? nbDettes + ' dette' + (nbDettes > 1 ? 's' : '') : 'Actives',
         value: formatEuro(totalMensualites),
@@ -2354,6 +2501,10 @@
 
     section.style.display = 'block';
 
+    // Chaque rendu repart de zero : sinon une brique servie une fois resterait
+    // marquee servie meme si sa carte disparait.
+    _briquesServies = new Set();
+
     grid.innerHTML = cards.map((card, i) => `
       <div class="mb-card mb-card-animate" style="--i:${i}">
         <div class="mb-card-header">
@@ -2366,7 +2517,7 @@
             ${card.rows.map(r => `
               <div class="mb-card-row">
                 <span class="mb-card-row-label">${r.label}</span>
-                <span class="mb-card-row-val ${r.color || ''}">${r.val}</span>
+                <span class="mb-card-row-val ${r.color || ''}">${r.val}${r.note ? `<span class="mb-card-row-note">${r.note}</span>` : ''}</span>
               </div>
             `).join('')}
           </div>
@@ -2384,6 +2535,7 @@
             ` : ''}
           </div>
         ` : ''}
+        ${plisEnseignements(card.brique, i)}
         ${card.cta ? `<a href="${card.cta.href}" class="mb-card-cta">${card.cta.label} →</a>` : ''}
       </div>
     `).join('');
@@ -2400,6 +2552,9 @@
   window.addEventListener('storage', function(e) {
     if (e.key && e.key.startsWith('fund_brick_')) {
       renderMesBriques();
+      // Les cartes reconstruites repartagent les enseignements : le filet
+      // des orphelins doit se recalculer dans la foulee.
+      try { renderEnseignements(); } catch (err) {}
     }
   });
 

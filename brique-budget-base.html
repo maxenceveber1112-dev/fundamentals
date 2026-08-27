@@ -1108,7 +1108,59 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
 }
 
   /* ── Sankey héros + détail replié (refonte analyse) ── */
-  #sankey-wrap { margin:0.25rem 0 1.25rem; padding:1.25rem 1.25rem 1rem; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:1rem; box-shadow:var(--shadow-card); }
+  #sankey-wrap { position:relative; margin:0.25rem 0 1.25rem; padding:1.25rem 1.25rem 1rem; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:1rem; box-shadow:var(--shadow-card); }
+
+  /* ── Témoin de déficit ───────────────────────────────────
+     Absent tant que le budget tient. En déficit : une pastille qui respire,
+     et se déplie sur demande. Pas de bannière — l'écart se lit déjà sur le
+     graphe, la pastille ne fait que le nommer. */
+  .deficit-chip {
+    display:none; align-items:center; gap:0.4rem;
+    padding:0.3rem 0.7rem; border-radius:9999px; min-height:32px;
+    background:rgba(239,68,68,0.10); border:1px solid rgba(239,68,68,0.30);
+    color:#DC2626; font-family:inherit; font-size:0.75rem; font-weight:600;
+    cursor:pointer; transition:background var(--t), border-color var(--t);
+  }
+  html.dark .deficit-chip { background:rgba(239,68,68,0.14); border-color:rgba(239,68,68,0.38); color:#FCA5A5; }
+  .deficit-chip.on { display:inline-flex; }
+  .deficit-chip:hover { background:rgba(239,68,68,0.18); }
+  .deficit-chip-dot {
+    width:7px; height:7px; border-radius:50%; background:#EF4444; flex:0 0 auto;
+    animation:deficitPouls 2.4s ease-in-out infinite;
+  }
+  @keyframes deficitPouls {
+    0%,100% { transform:scale(1);   opacity:1; box-shadow:0 0 0 0 rgba(239,68,68,0.45); }
+    50%     { transform:scale(1.1); opacity:.9; box-shadow:0 0 0 5px rgba(239,68,68,0); }
+  }
+  @media (prefers-reduced-motion:reduce) { .deficit-chip-dot { animation:none; } }
+  .deficit-chip-chevron { transition:transform var(--t) var(--ease-out); }
+  .deficit-chip[aria-expanded="true"] .deficit-chip-chevron { transform:rotate(180deg); }
+
+  /* L'ancre porte le positionnement : le panneau suit la pastille où
+     qu'elle atterrisse quand la barre d'onglets se réorganise. */
+  .deficit-ancre { position:relative; display:none; }
+  .deficit-ancre.on { display:block; }
+  .deficit-panneau {
+    display:none; position:absolute; z-index:20; left:0; top:calc(100% + 0.45rem);
+    width:19rem; max-width:min(19rem, 78vw);
+    padding:0.95rem 1.05rem; border-radius:0.875rem;
+    background:var(--bg-elevated); border:1px solid rgba(239,68,68,0.28);
+    box-shadow:0 12px 32px rgba(0,0,0,0.16);
+  }
+  html.dark .deficit-panneau { background:#1C1C2E; box-shadow:0 12px 32px rgba(0,0,0,0.5); }
+  .deficit-panneau.on { display:block; animation:deficitEntre .18s var(--ease-out); }
+  @keyframes deficitEntre { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:none; } }
+  .deficit-panneau-montant {
+    font-family:var(--font-display); font-size:1.5rem; font-weight:400;
+    color:#DC2626; line-height:1.1;
+  }
+  html.dark .deficit-panneau-montant { color:#FCA5A5; }
+  .deficit-panneau-sur { font-size:0.7rem; color:var(--text-faint); margin-top:0.15rem; }
+  .deficit-panneau-txt {
+    font-size:0.8rem; color:var(--text-muted); line-height:1.6;
+    margin-top:0.7rem; padding-top:0.7rem; border-top:1px solid var(--border-subtle);
+  }
+  .deficit-panneau-txt strong { color:var(--text); font-weight:600; }
   .sankey-head { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.875rem; }
   #sankey-wrap .sankey-title { margin-bottom:0; }
   .sankey-dl-btn { display:inline-flex; align-items:center; gap:0.375rem; font-size:0.75rem; font-weight:600; color:var(--text-secondary); background:transparent; border:1px solid var(--border-subtle); border-radius:9999px; padding:0.35rem 0.8rem; cursor:pointer; transition:color var(--t),border-color var(--t),background var(--t); }
@@ -1465,6 +1517,24 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                   <span class="sankey-hint-txt">👈 Le détail, poste par poste</span>
                   <button class="sankey-hint-x" type="button" onclick="dismissSankeyHint()" aria-label="Fermer l'indice">×</button>
                 </div>
+
+                <!-- N'apparaît qu'en déficit -->
+                <div class="deficit-ancre" id="deficit-ancre">
+                  <button type="button" class="deficit-chip" id="deficit-chip"
+                    aria-expanded="false" aria-controls="deficit-panneau"
+                    onclick="basculerDeficit()">
+                    <span class="deficit-chip-dot" aria-hidden="true"></span>
+                    <span id="deficit-chip-txt">—</span>
+                    <svg class="deficit-chip-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                  </button>
+
+                  <div class="deficit-panneau" id="deficit-panneau" role="region" aria-label="Détail du dépassement">
+                    <div class="deficit-panneau-montant" id="deficit-panneau-montant">—</div>
+                    <div class="deficit-panneau-sur" id="deficit-panneau-sur"></div>
+                    <div class="deficit-panneau-txt" id="deficit-panneau-txt"></div>
+                  </div>
+                </div>
               </div>
               <div class="sankey-scroll">
               <svg id="sankey-svg" class="sankey-svg" viewBox="0 0 460 300" role="img" aria-label="Flux de ton budget : revenus, charges et disponible"></svg>
@@ -1750,6 +1820,7 @@ const budgetData = {
   sorties:0, epargne:0,
   repas:0, shopping:0, sante:0, depenses_pro:0, autres:0,
   total_besoins:0, total_envies:0, total_depenses:0, reste_a_vivre:0,
+  marge_avant_epargne:0,
   pct_besoins:0, pct_envies:0, pct_investissement:0,
   dettes:[], engagement:null, brique_recommandee:null,
   prefilled_fields:[], modified_prefilled:[],
@@ -2065,6 +2136,13 @@ function collectBudgetData() {
   budgetData.total_dettes_mensuel = totalMensualitesDettes;
   budgetData.total_depenses  = budgetData.total_besoins + budgetData.total_envies + budgetData.epargne;
   budgetData.reste_a_vivre   = totalRev - budgetData.total_depenses;
+
+  // Ce qui reste AVANT d'épargner — la vraie marge de manoeuvre.
+  // reste_a_vivre retranche aussi l'épargne : il mesure le non-alloué, ce qui
+  // n'est pas la même chose. Quelqu'un qui met 1 750 € de côté et garde 5 €
+  // de rab n'a pas « une marge de 5 € » : il a choisi d'en placer la quasi-
+  // totalité, et peut revenir sur ce choix quand il veut.
+  budgetData.marge_avant_epargne = totalRev - budgetData.total_besoins - budgetData.total_envies;
 
   budgetData.pct_besoins     = totalRev > 0 ? Math.round(budgetData.total_besoins / totalRev * 100) : 0;
   budgetData.pct_envies      = totalRev > 0 ? Math.round(budgetData.total_envies  / totalRev * 100) : 0;
@@ -2871,14 +2949,21 @@ function _renderSankeyHTML(budgetData) {
   if (totalRev <= 0) return null;
   if (typeof renderBudgetSankey !== 'function') return null;
 
-  const besoins = Math.min(budgetData.total_besoins||0, totalRev);
-  const envies  = Math.min(budgetData.total_envies||0, Math.max(0, totalRev-besoins));
-  const epargne = Math.min(budgetData.epargne||0, Math.max(0, totalRev-besoins-envies));
-  const reste   = Math.max(0, totalRev-besoins-envies-epargne);
+  // Montants reels, sans borne : tronquer aux revenus dessinait un budget
+  // equilibre qui n'existe pas.
+  const besoins = budgetData.total_besoins||0;
+  const envies  = budgetData.total_envies||0;
+  const epargne = budgetData.epargne||0;
+  const sorties = besoins + envies + epargne;
+  const decouvert = Math.max(0, sorties - totalRev);   // ce que les revenus ne couvrent pas
+  const reste     = Math.max(0, totalRev - sorties);
 
   const income = [];
   if (revenus>0) income.push({name:'Revenus', val:revenus, color:'#16A34A'});
   if (aides>0)   income.push({name:'Aides', val:aides, color:'#4ADE80'});
+  // L'ecart vient forcement de quelque part : decouvert, epargne entamee,
+  // credit. Le nommer en entree equilibre le diagramme sans le falsifier.
+  if (decouvert>0) income.push({name:'Non couvert', val:decouvert, color:'#EF4444'});
   const outflows = [];
   if (besoins>0) outflows.push({name:'Charges fixes', val:besoins, color:'#8B5CF6'});
   if (envies>0)  outflows.push({name:'Dépenses variables', val:envies, color:'#6366F1'});
@@ -2888,7 +2973,75 @@ function _renderSankeyHTML(budgetData) {
   const isDark = document.documentElement.classList.contains('dark');
   const res = renderBudgetSankey({income:income, outflows:outflows}, isDark, sankeyOpts());
   if (!res) return null;
+  majTemoinDeficit(decouvert, totalRev);
   return { html:res.html, viewBox:res.viewBox, W:res.W, legendItems:[] };
+}
+
+/* ── Témoin de déficit ────────────────────────────────────
+   Appelé à chaque rendu du graphe. Ne montre rien tant que les revenus
+   couvrent les sorties. */
+function majTemoinDeficit(decouvert, totalRev) {
+  const chip = document.getElementById('deficit-chip');
+  const panneau = document.getElementById('deficit-panneau');
+  if (!chip || !panneau) return;
+
+  const ancre = document.getElementById('deficit-ancre');
+  if (!(decouvert > 0)) {
+    chip.classList.remove('on');
+    if (ancre) ancre.classList.remove('on');
+    fermerDeficit();
+    return;
+  }
+
+  chip.classList.add('on');
+  if (ancre) ancre.classList.add('on');
+  document.getElementById('deficit-chip-txt').textContent =
+    '−' + formatEuro(Math.round(decouvert)) + ' non couverts';
+  document.getElementById('deficit-panneau-montant').textContent =
+    '−' + formatEuro(Math.round(decouvert)) + ' / mois';
+
+  const pct = totalRev > 0 ? Math.round(decouvert / totalRev * 100) : 0;
+  document.getElementById('deficit-panneau-sur').textContent =
+    'soit ' + pct + ' % de tes revenus, chaque mois';
+
+  document.getElementById('deficit-panneau-txt').innerHTML =
+    'Cet argent vient forcément de quelque part : <strong>découvert</strong>, '
+    + '<strong>épargne entamée</strong> ou <strong>crédit</strong>. '
+    + 'C\'est la barre rouge à gauche du graphe. On regardera ensemble par où '
+    + 'reprendre la main.';
+}
+
+function basculerDeficit() {
+  const panneau = document.getElementById('deficit-panneau');
+  if (!panneau) return;
+  panneau.classList.contains('on') ? fermerDeficit() : ouvrirDeficit();
+}
+
+function ouvrirDeficit() {
+  const chip = document.getElementById('deficit-chip');
+  const panneau = document.getElementById('deficit-panneau');
+  if (!chip || !panneau) return;
+  panneau.classList.add('on');
+  chip.setAttribute('aria-expanded', 'true');
+  document.addEventListener('keydown', _deficitEchap);
+  setTimeout(function () { document.addEventListener('click', _deficitDehors); }, 0);
+}
+
+function fermerDeficit() {
+  const chip = document.getElementById('deficit-chip');
+  const panneau = document.getElementById('deficit-panneau');
+  if (panneau) panneau.classList.remove('on');
+  if (chip) chip.setAttribute('aria-expanded', 'false');
+  document.removeEventListener('keydown', _deficitEchap);
+  document.removeEventListener('click', _deficitDehors);
+}
+
+function _deficitEchap(e) { if (e.key === 'Escape') fermerDeficit(); }
+function _deficitDehors(e) {
+  const chip = document.getElementById('deficit-chip');
+  const panneau = document.getElementById('deficit-panneau');
+  if (!panneau || !chip) return;
+  if (!panneau.contains(e.target) && !chip.contains(e.target)) fermerDeficit();
 }
 
 let sankeyMode = 'simple';
@@ -2956,6 +3109,11 @@ function _renderSankeyDetailedHTML(budgetData) {
   const outflows=outNormal.slice();
   if(epargne>0) outflows.push({name:'Épargne', val:epargne, kind:'epargne'});
   if(reste>=Math.max(20, totalRev*0.02)) outflows.push({name:'Reste à vivre', val:reste, kind:'reste'});
+  // Meme logique qu'en vue simplifiee : l'ecart non couvert devient une entree.
+  var sortiesD = outflows.reduce(function(a,o){ return a + (o.val||0); }, 0);
+  var decouvertD = Math.max(0, sortiesD - totalRev);
+  if (decouvertD > 0) income.push({name:'Non couvert', val:decouvertD, color:'#EF4444'});
+  majTemoinDeficit(decouvertD, totalRev);
 
   const isDark=document.documentElement.classList.contains('dark');
   const res=renderBudgetSankey({income:income, outflows:outflows}, isDark, sankeyOpts());
@@ -3373,6 +3531,7 @@ async function saveThenRedirect(href) {
         depenses_variables_total: budgetData.total_envies,
         epargne_mensuelle:        budgetData.epargne,
         reste_a_vivre:            budgetData.reste_a_vivre,
+        marge_avant_epargne:      budgetData.marge_avant_epargne,
         abonnements_economies:    budgetData.abonnements_economies,
         engagement_budget:        budgetData.engagement,
         dettes:                   budgetData.dettes,
@@ -3400,6 +3559,7 @@ async function validerEngagement() {
         depenses_variables_total: budgetData.total_envies,
         epargne_mensuelle:        budgetData.epargne,
         reste_a_vivre:            budgetData.reste_a_vivre,
+        marge_avant_epargne:      budgetData.marge_avant_epargne,
         abonnements_economies:    budgetData.abonnements_economies,
         engagement_budget:        budgetData.engagement,
         dettes:                   budgetData.dettes,
