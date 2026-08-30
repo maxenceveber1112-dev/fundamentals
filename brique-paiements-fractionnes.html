@@ -2318,7 +2318,14 @@ document.getElementById('btn-s5-validate').addEventListener('click', () => {
       // directe de profil.revenus_nets_mensuel renvoyait souvent null.
       bnpl_taux_effort:             tauxEffort(totalTout)
     },
-    rawData: { payments: payments, selectedEngagement: selectedEngagement },
+    rawData: {
+      payments: payments,
+      selectedEngagement: selectedEngagement,
+      // Champs attendus par la carte du tableau de bord (dashboard.html).
+      total_fractionne:   totalFrac,
+      nb_fractionnes:     paiementsLegers().length,
+      fractionnes_soldes: totalFrac === 0
+    },
     engagements: engagements,
     insights: buildInsights(BRICK_ID, profil, {
       bnpl_mensualite_fractionnes: totalFrac,
