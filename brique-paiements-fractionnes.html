@@ -201,16 +201,8 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
     main{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:2rem 1.5rem 6rem;}
 
     /* ── Progress bar ── */
-    .brick-progress{display:flex;gap:0.35rem;margin-bottom:2rem;}
-    .bp-dot{flex:1;height:4px;border-radius:var(--r-full);background:var(--surface-3);transition:background 0.3s var(--ease-out);}
-    .bp-dot.done{background:linear-gradient(90deg,var(--indigo),var(--purple));}
-    .bp-dot.active{background:var(--violet);box-shadow:0 0 8px rgba(129,140,248,0.4);}
 
     /* ── Screen container ── */
-
-    /* ── Indicateur Étape X/Y ── */
-    .step-indicator{font-size:0.72rem;font-weight:600;color:var(--text-faint);letter-spacing:0.05em;margin-bottom:0.75rem;display:none;}
-    .screen.active-screen .step-indicator{display:block;}
 
     .screen{animation:fadeSlideUp 0.35s var(--ease-out) both;}
     @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
@@ -220,10 +212,22 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
     .brick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
 
     /* ── Titles ── */
-    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.5rem;}
+    /* Aligne sur les autres briques : Fraunces italique, couleur de theme.
+       Ici c'etait Inter 800 en blanc code en dur — invisible en clair, et un
+       registre typographique etranger au reste du produit. */
+    .brick-title{
+      font-family:var(--font-display);
+      font-size:clamp(1.5rem,3.5vw,2rem);
+      font-weight:400;font-style:italic;
+      line-height:1.15;letter-spacing:-0.02em;
+      color:var(--text);margin-bottom:0.625rem;
+    }
     .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5;}
 
     /* ── Reassurance ── */
+    .badge-gratuit{background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+    .strategy-vide{padding:1.125rem;border:1px dashed var(--border);border-radius:var(--r-lg);
+      font-size:0.85rem;color:var(--text-muted);line-height:1.6;text-align:center;}
     .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-dim);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green);margin-bottom:1.25rem;}
 
     /* ── Input fields ── */
@@ -278,59 +282,17 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
     .info-banner strong{color:var(--violet);}
 
     /* ── Stats blocks (screen 2) ── */
-    .stats-grid{display:grid;grid-template-columns:1fr;gap:0.75rem;margin-bottom:1.5rem;}
-    .stat-block{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;}
-    .stat-block-label{font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.375rem;}
-    .stat-block-value{font-size:1.4rem;font-weight:800;color:#fff;}
-    .stat-block-sub{font-size:0.78rem;color:var(--text-faint);margin-top:0.2rem;}
-    .stat-block.highlight{background:var(--indigo-dim);border-color:rgba(99,102,241,0.3);}
-    .stat-block.highlight .stat-block-value{background:linear-gradient(135deg,var(--violet),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .stat-block.liberation{background:var(--green-dim);border-color:var(--green-border);}
-    .stat-block.liberation .stat-block-label{color:var(--green);}
-    .stat-block.liberation .stat-block-value{color:var(--green);}
 
     /* ── Bar chart ── */
-    .chart-wrap{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem;}
-    .chart-title{font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:1rem;}
-    .chart-bars{display:flex;flex-direction:column;gap:0.625rem;}
-    .chart-bar-row{display:flex;align-items:center;gap:0.75rem;}
-    .chart-bar-label{font-size:0.78rem;color:var(--text-muted);width:80px;flex-shrink:0;text-align:right;}
-    .chart-bar-track{flex:1;height:20px;background:var(--surface-3);border-radius:var(--r-full);overflow:hidden;}
-    .chart-bar-fill{height:100%;border-radius:var(--r-full);transition:width 0.6s var(--ease-out);}
-    .chart-bar-amount{font-size:0.78rem;font-weight:600;color:var(--text);width:50px;flex-shrink:0;}
 
     /* ── Timeline ── */
-    .timeline-wrap{margin-bottom:1.5rem;}
-    .timeline-title{font-size:0.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.75rem;}
-    .timeline-items{display:flex;flex-direction:column;gap:0.5rem;}
-    .timeline-item{display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.875rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
-    .timeline-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-    .timeline-name{font-size:0.85rem;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    .timeline-end{font-size:0.78rem;color:var(--text-muted);white-space:nowrap;}
 
     /* ── Strategy cards (screen 3) ── */
-    .strategy-cards{display:flex;flex-direction:column;gap:0.875rem;margin-bottom:1.5rem;}
-    .strategy-card{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;cursor:pointer;transition:border-color var(--t),background var(--t);position:relative;}
-    .strategy-card:hover{border-color:var(--border-hover);background:var(--surface-3);}
-    .strategy-card.selected{border-color:var(--indigo);background:var(--indigo-dim);}
-    .strategy-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-bottom:0.5rem;}
-    .strategy-card-title{font-size:0.9rem;font-weight:700;color:#fff;line-height:1.3;}
     .strategy-badge{flex-shrink:0;font-size:0.68rem;font-weight:700;padding:0.25rem 0.625rem;border-radius:var(--r-full);text-transform:uppercase;letter-spacing:0.06em;}
     .badge-rapide{background:var(--orange-dim);border:1px solid var(--orange-border);color:var(--orange);}
     .badge-durable{background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.3);color:var(--violet);}
-    .strategy-card-desc{font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:0.75rem;}
-    .strategy-card-impact{display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;font-weight:600;}
-    .impact-before{color:var(--text-faint);text-decoration:line-through;}
-    .impact-arrow{color:var(--green);}
-    .impact-after{color:var(--green);}
-    .strategy-radio{position:absolute;top:1.25rem;right:1.25rem;width:18px;height:18px;border-radius:50%;border:2px solid var(--border-hover);background:var(--surface);transition:border-color var(--t),background var(--t);flex-shrink:0;}
-    .strategy-card.selected .strategy-radio{border-color:var(--indigo);background:var(--indigo);}
 
     /* ── Pedagogy cards (screen 4) ── */
-    .peda-cards{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem;}
-    .peda-card{display:flex;align-items:flex-start;gap:1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;}
-    .peda-icon{font-size:1.5rem;flex-shrink:0;margin-top:0.1rem;}
-    .peda-text{font-size:0.875rem;color:var(--text);font-weight:600;line-height:1.4;}
 
     /* ── Engagement options (screen 5) ── */
     .engagement-options{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem;}
@@ -348,12 +310,18 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
 
     /* ── Exit screen ── */
     .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
-    .exit-icon{font-size:2.5rem;margin-bottom:1rem;}
-    .exit-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
+    /* Le geste de fin, dans l'idiome SVG du reste de la plateforme. */
+    .exit-icon{
+      width:52px;height:52px;margin:0 auto 1rem;
+      display:flex;align-items:center;justify-content:center;
+      border-radius:50%;background:var(--green-dim);
+      border:1px solid var(--green-border);color:var(--green);
+    }
+    .exit-title{font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:0.5rem;}
     .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
     .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
     .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
-    .exit-item-icon{flex-shrink:0;margin-top:0.1em;}
+    .exit-item-icon{flex-shrink:0;margin-top:0.15rem;color:var(--violet);}
     .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
     .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
     .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
@@ -362,8 +330,6 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
     .exit-next-name{font-size:0.9rem;font-weight:600;color:var(--text);}
 
     /* ── Nudge/tip ── */
-    .nudge{display:flex;align-items:flex-start;gap:0.625rem;padding:0.875rem 1rem;background:var(--orange-dim);border:1px solid var(--orange-border);border-radius:var(--r-md);font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:1rem;}
-    .nudge strong{color:var(--orange);}
 
     /* ── Skip help message ── */
     .skip-msg{display:none;font-size:0.82rem;color:var(--text-muted);text-align:center;padding:0.75rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);margin-top:0.5rem;line-height:1.5;animation:fadeSlideUp 0.25s var(--ease-out) both;}
@@ -380,10 +346,438 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
       main{padding:1.5rem 1rem 5rem;}
       .brick-card{padding:1.5rem;}
       .form-row{grid-template-columns:1fr;}
-      .chart-bar-label{width:60px;font-size:0.72rem;}
+    }
+    /* Une etape franchie se reclique : sans marque, rien ne le laisse voir. */
+    .bpc-step.cliquable{
+      width:100%;text-align:left;background:none;border:none;font-family:inherit;
+      cursor:pointer;transition:background 140ms,transform 140ms;
+    }
+    .bpc-step.cliquable:hover{background:var(--surface-2);transform:translateX(2px);}
+    .bpc-step.cliquable:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+    /* ── Premier écran : la carte crème des autres briques ──────
+       Ailleurs, le premier écran annonce le pack et la durée en petites
+       capitales, pose un grand titre serif et signe d'un filigrane. Ici
+       c'était une carte ordinaire : même produit, deux entrées en matière. */
+    .hero-cream{
+      background:var(--cream-grad);
+      border:1px solid var(--cream-border);
+      border-radius:1.375rem;
+      padding:2.75rem 3rem 2.5rem;
+      position:relative;overflow:hidden;
+      transition:background 0.3s ease,border-color 0.3s ease;
+    }
+    html.dark .hero-cream{-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);}
+    .hero-cream::after{
+      content:'f';
+      font-family:'Instrument Serif',Georgia,serif;
+      font-style:italic;font-weight:300;
+      position:absolute;right:-0.25rem;bottom:-1.5rem;
+      font-size:14rem;line-height:1;
+      color:rgba(196,181,253,0.18);
+      pointer-events:none;user-select:none;
+    }
+    .hero-cream > *{position:relative;z-index:1;}
+    .hero-kicker{
+      font-size:0.6875rem;font-weight:600;
+      letter-spacing:0.14em;text-transform:uppercase;
+      color:var(--text-muted);margin-bottom:1.125rem;
+      display:flex;align-items:center;gap:0.5rem;
+    }
+    html.dark .hero-kicker{color:#A5B4FC;}
+    .hero-kicker .dot-cat{
+      width:6px;height:6px;border-radius:50%;
+      background:#f87171;flex-shrink:0;
+    }
+    @media (max-width:520px){
+      .hero-cream{padding:1.75rem 1.5rem 1.5rem;}
+      .hero-cream::after{font-size:9rem;bottom:-1rem;}
+    }
+    /* Dire ce qui manque, plutot qu'ajouter une ligne a la place de la
+       personne. */
+    .s1-alerte{
+      margin-top:1rem;padding:0.85rem 1rem;
+      background:var(--orange-soft,rgba(234,88,12,0.10));
+      border:1px solid var(--orange-border,rgba(234,88,12,0.32));
+      border-radius:var(--r-md);
+      font-size:0.82rem;color:var(--text);line-height:1.55;
     }
   </style>
   <link rel="stylesheet" href="theme.css">
+  <style>
+    /* Ces deux tokens n'existent pas dans theme.css : chaque brique les
+       definit chez elle. Valeurs reprises telles quelles de budget-base,
+       achat-immobilier et fonds-urgence pour que le premier ecran ait
+       exactement le meme creme partout.
+       Le bloc est apres theme.css, sinon il serait ecrase. */
+    :root{
+      --cream-grad:linear-gradient(180deg,#F6F1E8 0%,#EFE7D8 100%);
+      --cream-border:rgba(184,159,113,0.18);
+    }
+    html.dark{
+      --cream-grad:linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+      --cream-border:rgba(255,255,255,0.08);
+    }
+    /* Les segments de la barre du mois. Le credit conso n'est pas vert :
+       un vert sur la plus grosse dette se lit comme un feu vert. */
+    :root{ --seg-credit:#A8A29E; --seg-reste:#E7E5E4; }
+    html.dark{ --seg-credit:#6B7280; --seg-reste:#2A2D45; }
+
+    /* ── Retour discret, motif .nav-btns de la plateforme ──────────
+       .btn-primary fait width:100% ; dans une rangee il doit se
+       contenter de la place restante. */
+    .nav-btns{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:1rem;margin-top:1.5rem;
+    }
+    .nav-btns .btn-primary{width:auto;flex:1;margin-top:0;}
+    .btn-back{
+      display:inline-flex;align-items:center;gap:0.375rem;
+      background:none;border:none;padding:0.5rem 0;
+      font-size:0.875rem;color:var(--text-muted);cursor:pointer;
+      white-space:nowrap;transition:color 0.15s;
+    }
+    .btn-back:hover{color:var(--text);}
+    @media(max-width:420px){
+      .nav-btns{flex-wrap:wrap-reverse;}
+      .nav-btns .btn-primary{flex:1 1 100%;}
+    }
+
+    /* Ce qui vient d'ailleurs doit se voir : sinon la personne doute de sa
+       propre memoire. */
+    .payment-card.est-repris{animation:fadeSlideUp 0.42s var(--ease-out) both;}
+    @media(prefers-reduced-motion:reduce){
+      .payment-card.est-repris{animation:none;}
+    }
+
+    .bandeau-reprise{
+      display:flex;align-items:center;gap:0.75rem;
+      margin-bottom:1rem;padding:0.5rem 0 0.5rem 0.875rem;
+      border-left:2px solid var(--violet);
+    }
+    /* Le nombre traite comme les autres chiffres de la plateforme, pas
+       comme un compteur technique. */
+    .reprise-nb{
+      font-family:var(--font-display,Georgia,serif);
+      font-style:italic;font-weight:400;
+      font-size:1.75rem;line-height:1;color:var(--violet);
+      font-variant-numeric:tabular-nums;flex-shrink:0;
+    }
+    .reprise-txt{display:flex;flex-direction:column;gap:0.1rem;min-width:0;}
+    .reprise-txt strong{
+      font-size:0.82rem;font-weight:600;color:var(--text);
+    }
+    .reprise-txt span{font-size:0.75rem;line-height:1.45;color:var(--text-muted);}
+
+    /* Passer la main a la brique dettes, sans en faire une alerte : ce
+       n'est pas un probleme, juste un autre sujet. */
+    .renvoi-dettes{
+      margin-top:0.875rem;padding:0.875rem 1rem;
+      border:1px dashed var(--border);border-radius:var(--r-lg);
+      font-size:0.8rem;line-height:1.6;color:var(--text-muted);
+    }
+    .renvoi-dettes strong{color:var(--text);font-weight:600;}
+    .lien-brique{color:var(--violet);text-decoration:underline;text-underline-offset:2px;}
+    .lien-brique:hover{color:var(--purple);}
+
+    /* ══ Ecran 4 ══════════════════════════════════════════════════
+       A. L'encours. Le fractionne ne montre jamais ce nombre : chaque
+       achat s'annonce seul, en petites mensualites. On le traite donc
+       comme une declaration, pas comme une statistique de plus. */
+    .encours{
+      position:relative;overflow:hidden;
+      padding:1.75rem 1.5rem;margin-bottom:1.5rem;
+      border:1px solid var(--border);border-radius:var(--r-xl);
+      background:
+        radial-gradient(120% 140% at 88% 8%, var(--indigo-dim) 0%, transparent 62%),
+        var(--surface-2);
+    }
+    .encours-label{
+      font-size:0.72rem;font-weight:600;letter-spacing:0.1em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem;
+    }
+    .encours-val{
+      font-family:var(--font-display,Georgia,serif);
+      font-style:italic;font-weight:400;
+      font-size:clamp(2.4rem,8vw,3.4rem);line-height:1;
+      letter-spacing:-0.02em;color:var(--text);
+      font-variant-numeric:tabular-nums;
+    }
+    .encours-sub{
+      margin-top:0.6rem;font-size:0.8rem;line-height:1.6;color:var(--text-muted);
+    }
+    .encours-sub strong{color:var(--text);font-weight:600;}
+
+    /* B. L'enchainement. Le titre de l'ecran promet l'accumulation :
+       on la dessine, avec ses chiffres a elle. */
+    .accum{
+      border:1px solid var(--border);border-radius:var(--r-xl);
+      padding:1.25rem;background:var(--surface);
+    }
+    .accum-head{margin-bottom:0.875rem;}
+    .accum-titre{
+      font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:0.75rem;
+    }
+    .accum-seg{
+      display:flex;flex-wrap:wrap;gap:0.375rem;
+    }
+    .accum-opt{
+      padding:0.4rem 0.75rem;border-radius:var(--r-full);
+      border:1px solid var(--border);background:transparent;
+      font-size:0.74rem;font-weight:500;color:var(--text-muted);
+      cursor:pointer;transition:color 160ms,border-color 160ms,background 160ms;
+    }
+    .accum-opt:hover{color:var(--text);border-color:var(--border-hover);}
+    .accum-opt.actif{
+      color:var(--text);border-color:transparent;
+      background:var(--indigo-dim);font-weight:600;
+    }
+    .accum-svg{
+      display:block;width:100%;height:auto;margin-top:0.25rem;
+      opacity:0;transform:translateY(6px);
+    }
+    .accum-svg.anime{
+      opacity:1;transform:none;
+      transition:opacity 380ms var(--ease-out),transform 380ms var(--ease-out);
+    }
+    .accum-sol{stroke:var(--border);stroke-width:1;}
+    .accum-aire{stroke:none;}
+    .accum-trait{fill:none;stroke:var(--violet);stroke-width:2.5;
+      stroke-linejoin:round;stroke-linecap:round;}
+    /* Le scenario est une hypothese : le pointille le dit sans un mot. */
+    .accum-scen{fill:none;stroke:var(--orange);stroke-width:2;
+      stroke-dasharray:5 4;stroke-linecap:round;}
+    .accum-axe-x,.accum-axe-y{
+      fill:var(--text-faint);font-size:13px;font-family:'Inter',sans-serif;
+    }
+    .accum-legende{
+      display:flex;flex-wrap:wrap;gap:0.25rem 1rem;margin-top:0.5rem;
+    }
+    .accum-legende .lg{
+      display:inline-flex;align-items:center;gap:0.4rem;
+      font-size:0.72rem;color:var(--text-muted);
+    }
+    .accum-legende i{width:16px;height:0;flex-shrink:0;border-top-width:2.5px;}
+    .accum-legende .lg-plein{border-top:2.5px solid var(--violet);}
+    .accum-legende .lg-tirets{border-top:2px dashed var(--orange);}
+    .accum-desc{
+      margin-top:0.5rem;font-size:0.82rem;line-height:1.65;color:var(--text-muted);
+    }
+    .accum-desc strong{color:var(--text);font-weight:600;}
+
+    /* ══ Ecran 2 ══════════════════════════════════════════════════
+       A. La barre du mois. Trois cartes empilees disaient le montant, le
+       nombre et la date ; aucune ne repondait a « est-ce que c'est
+       beaucoup ? ». Une barre le dit d'un coup d'oeil : la part prise sur
+       ce que la personne gagne, avant qu'elle ait decide quoi que ce soit. */
+    .mois{
+      padding:1.5rem;margin-bottom:1rem;
+      border:1px solid var(--border);border-radius:var(--r-xl);
+      background:
+        radial-gradient(130% 150% at 92% 0%, var(--indigo-dim) 0%, transparent 60%),
+        var(--surface-2);
+    }
+    .mois-tete{
+      display:flex;align-items:flex-start;justify-content:space-between;
+      gap:1rem;margin-bottom:1.125rem;
+    }
+    .mois-total{
+      font-family:var(--font-display,Georgia,serif);
+      font-style:italic;font-weight:400;
+      font-size:clamp(1.7rem,5.5vw,2.25rem);line-height:1.05;
+      letter-spacing:-0.02em;color:var(--text);
+      font-variant-numeric:tabular-nums;
+    }
+    .mois-sub{margin-top:0.3rem;font-size:0.78rem;color:var(--text-muted);}
+    .mois-effort{text-align:right;flex-shrink:0;}
+    .mois-pct{
+      display:block;font-size:1.45rem;font-weight:800;line-height:1.1;
+      color:var(--text);font-variant-numeric:tabular-nums;
+    }
+    .mois-effort.tendu .mois-pct{color:var(--orange);}
+    .mois-effort.fort  .mois-pct{color:var(--red);}
+    .mois-pct-note{
+      display:block;font-size:0.68rem;color:var(--text-muted);
+      max-width:7.5rem;line-height:1.35;margin-top:0.15rem;
+    }
+
+    .mois-barre{
+      display:flex;gap:2px;height:18px;padding:2px;margin-bottom:0.75rem;
+      border:1px solid var(--border);border-radius:var(--r-full);
+      background:var(--surface);
+      clip-path:inset(0 100% 0 0);
+      transition:clip-path 620ms var(--ease-out);
+    }
+    .mois-barre.ouvert{clip-path:inset(0 0 0 0);}
+    .mois-seg{border-radius:var(--r-full);min-width:3px;}
+    .seg-frac{background:linear-gradient(90deg,var(--indigo),var(--purple));}
+    .seg-credit{background:var(--seg-credit);}
+    .seg-reste{background:var(--seg-reste);}
+
+    .mois-legende{display:flex;flex-wrap:wrap;gap:0.3rem 1rem;margin-bottom:0.75rem;}
+    .mois-lg{
+      display:inline-flex;align-items:center;gap:0.4rem;
+      font-size:0.73rem;color:var(--text-muted);
+    }
+    .mois-lg b{color:var(--text);font-weight:600;}
+    .pastille{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    /* Le mois entier : dit, mais pas mis en vedette. Un credit auto a
+       240 EUR ecraserait les 105 EUR dont on est venu parler. */
+    .mois-tout{
+      font-size:0.78rem;line-height:1.55;color:var(--text-muted);
+      padding-bottom:0.5rem;margin-bottom:0.5rem;
+      border-bottom:1px solid var(--border);
+    }
+    .mois-tout strong{color:var(--text);font-weight:600;}
+    .mois-note{font-size:0.79rem;line-height:1.6;color:var(--text-muted);}
+
+    /* B. Le calendrier. La piste dit la duree restante : on lit l'ordre
+       d'extinction sans comparer des dates entre elles. */
+    .fin{
+      padding:1.25rem;border:1px solid var(--border);
+      border-radius:var(--r-xl);background:var(--surface);
+    }
+    .fin-titre{
+      font-size:0.7rem;font-weight:600;letter-spacing:0.1em;
+      text-transform:uppercase;color:var(--text-muted);margin-bottom:0.875rem;
+    }
+    .fin-item{
+      display:grid;grid-template-columns:8px minmax(0,1fr) 1.1fr auto;
+      align-items:center;gap:0.625rem;padding:0.5rem 0;
+    }
+    .fin-item + .fin-item{border-top:1px solid var(--border);}
+    .fin-dot{width:8px;height:8px;border-radius:50%;}
+    .fin-nom{
+      font-size:0.83rem;color:var(--text);font-weight:500;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+    .fin-piste{
+      height:6px;border-radius:var(--r-full);
+      background:var(--seg-reste);border:1px solid var(--border);
+      overflow:hidden;
+    }
+    .fin-piste i{
+      display:block;height:100%;border-radius:var(--r-full);
+      background:linear-gradient(90deg,var(--indigo),var(--purple));
+    }
+    .fin-quand{font-size:0.75rem;color:var(--text-muted);white-space:nowrap;}
+    .fin-pied{
+      margin-top:0.875rem;padding-top:0.875rem;
+      border-top:1px solid var(--border);
+      font-size:0.8rem;line-height:1.6;color:var(--text-muted);
+    }
+    .fin-pied strong{color:var(--text);font-weight:600;}
+
+    /* ══ Ecran 3 : l'axe ══════════════════════════════════════════
+       Les deux options disaient la meme chose a deux horizons : « ce qui
+       se termine deja » est le premier palier, « ne plus en reprendre » le
+       dernier. Deux cartes de prose effacaient ce lien. Sur un axe, ce sont
+       deux arrets du meme trajet — et on choisit jusqu'ou aller. */
+    .axe{
+      padding:1.375rem;margin-bottom:1rem;
+      border:1px solid var(--border);border-radius:var(--r-xl);
+      background:
+        radial-gradient(130% 150% at 90% 0%, var(--indigo-dim) 0%, transparent 58%),
+        var(--surface-2);
+    }
+    .axe-tete{
+      display:flex;align-items:baseline;justify-content:space-between;
+      flex-wrap:wrap;gap:0.375rem 1rem;margin-bottom:0.25rem;
+    }
+    .axe-titre{font-size:0.72rem;font-weight:600;letter-spacing:0.09em;
+      text-transform:uppercase;color:var(--text-muted);}
+    /* Le resultat vit ici, a cote du montant actuel : il n'a plus son
+       propre bloc sous les options. */
+    .axe-chiffres{display:flex;align-items:baseline;gap:0.5rem;}
+    .axe-maintenant{font-size:0.95rem;color:var(--text-muted);font-variant-numeric:tabular-nums;}
+    .axe-vers{color:var(--violet);font-weight:700;visibility:hidden;}
+    .axe-cible{
+      font-family:var(--font-display,Georgia,serif);font-style:italic;
+      font-size:1.5rem;line-height:1;color:var(--text);
+      font-variant-numeric:tabular-nums;
+    }
+
+    .axe-svg{display:block;width:100%;height:auto;margin:0.25rem 0 0.5rem;
+      opacity:0;transform:translateY(4px);}
+    .axe-svg.anime{opacity:1;transform:none;
+      transition:opacity 320ms var(--ease-out),transform 320ms var(--ease-out);}
+    .axe-sol{stroke:var(--border);stroke-width:1;}
+    /* Un escalier, pas une aire : la charge ne descend pas progressivement,
+       elle tombe d'un cran quand un paiement finit. L'ecran 4 montre une
+       aire — deux lectures differentes, deux formes differentes. */
+    .axe-trace{fill:none;stroke:var(--border-hover);stroke-width:2;
+      stroke-linejoin:round;stroke-linecap:round;}
+    .axe-trace-vif{fill:none;stroke:var(--violet);stroke-width:2.75;
+      stroke-linejoin:round;stroke-linecap:round;}
+    .axe-guide{stroke:var(--violet);stroke-width:1;stroke-dasharray:3 3;opacity:0.5;}
+    /* Solder, c'est descendre d'un coup au lieu d'attendre. */
+    .axe-chute{stroke:var(--violet);stroke-width:2.5;stroke-dasharray:4 3;stroke-linecap:round;}
+    .axe-pt{fill:var(--surface);stroke:var(--border-hover);stroke-width:2;
+      transition:r 180ms var(--ease-out);}
+    .axe-pt.actif{fill:var(--violet);stroke:var(--surface);stroke-width:3;}
+    .axe-x,.axe-y{fill:var(--text-faint);font-size:13px;font-family:'Inter',sans-serif;}
+
+    /* Des lignes a cocher, pas des cartes : c'est une liste de choix. */
+    .axe-choix{display:flex;flex-direction:column;}
+    .axe-opt{
+      display:flex;align-items:center;gap:0.625rem;flex-wrap:wrap;
+      width:100%;text-align:left;padding:0.75rem 0.75rem 0.75rem 0.625rem;
+      background:none;border:none;border-left:2px solid transparent;
+      border-radius:var(--r-md);cursor:pointer;font-family:inherit;
+      transition:background 160ms,border-color 160ms;
+    }
+    .axe-opt + .axe-opt{margin-top:0.125rem;}
+    .axe-opt:hover{background:var(--surface-3);}
+    .axe-opt.actif{background:var(--indigo-dim);border-left-color:var(--violet);}
+    .axe-opt:focus-visible{outline:2px solid var(--violet);outline-offset:2px;}
+    .axe-opt-radio{
+      width:16px;height:16px;border-radius:50%;flex-shrink:0;
+      border:2px solid var(--border-hover);background:var(--surface);
+      transition:border-color 160ms,background 160ms,box-shadow 160ms;
+    }
+    .axe-opt.actif .axe-opt-radio{
+      border-color:var(--indigo);background:var(--indigo);
+      box-shadow:inset 0 0 0 3px var(--surface);
+    }
+    .axe-opt-corps{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:0.15rem;}
+    .axe-opt-titre{font-size:0.86rem;font-weight:600;color:var(--text);}
+    .axe-opt-meta{font-size:0.75rem;color:var(--text-muted);}
+    .axe-opt-sep{margin:0 0.4rem;color:var(--text-faint);}
+    .axe-opt-gain{font-weight:700;color:var(--text);}
+    .axe-opt-cout{color:var(--text-muted);}
+    .axe-choix .strategy-badge{flex-shrink:0;margin-left:auto;}
+
+    .axe-detail{
+      margin-top:0.625rem;padding-top:0.75rem;
+      border-top:1px solid var(--border);
+      font-size:0.82rem;line-height:1.6;color:var(--text-muted);
+    }
+    .axe-detail strong{color:var(--text);font-weight:600;}
+
+    @media(prefers-reduced-motion:reduce){ .axe-svg{opacity:1;transform:none;} }
+    @media(max-width:520px){
+      .axe{padding:1rem 0.875rem;}
+      .axe-opt{padding:0.625rem 0.5rem;}
+      .axe-choix .strategy-badge{margin-left:2.25rem;}
+    }
+
+    @media(max-width:520px){
+      .mois{padding:1.125rem;}
+      .mois-tete{flex-direction:column;gap:0.5rem;}
+      .mois-effort{text-align:left;}
+      .mois-pct-note{max-width:none;}
+      .fin-item{grid-template-columns:8px minmax(0,1fr) auto;}
+      .fin-piste{display:none;}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      .accum-svg{opacity:1;transform:none;}
+    }
+    @media(max-width:520px){
+      .encours{padding:1.375rem 1.125rem;}
+      .accum{padding:1rem 0.875rem;}
+      .accum-opt{font-size:0.7rem;padding:0.35rem 0.625rem;}
+    }
+  </style>
 </head>
 <body data-brick-name="Paiements fractionnés">
 <canvas id="bg-canvas"></canvas>
@@ -395,27 +789,23 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   <!-- Colonne gauche 60% — contenu de la brique -->
   <main class="brique-main-col">
   <!-- Progress bar: 6 dots -->
-  <div class="brick-progress" id="brick-progress">
-    <div class="bp-dot active" data-idx="0"></div>
-    <div class="bp-dot" data-idx="1"></div>
-    <div class="bp-dot" data-idx="2"></div>
-    <div class="bp-dot" data-idx="3"></div>
-    <div class="bp-dot" data-idx="4"></div>
-    <div class="bp-dot" data-idx="5"></div>
-  </div>
 
   <!-- ─────────────────────────────────────────────
        SCREEN 0 — Intro
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-0">
-    <div class="brick-card">
-      <div class="reassurance">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Aucune donnée envoyée — tout reste ici
+    <div class="hero-cream">
+      <div class="hero-kicker">
+        <span class="dot-cat"></span>
+        LE PIÈGE DES MINICRÉDITS · Survie &amp; stabilité · 8 min
       </div>
       <h1 class="brick-title" id="s0-title">Pris un par un, ça paraît léger. Ensemble, ça peut étouffer un mois.</h1>
       <p class="brick-subtitle">On va regrouper tes paiements en plusieurs fois pour voir leur vrai poids.</p>
       <div class="profile-variant" id="s0-profile-variant" style="display:none;"></div>
+      <div class="reassurance">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Enregistré sur ton compte, pour que tu le retrouves
+      </div>
       <button class="btn-primary" id="btn-s0-next">
         Lister mes paiements
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -428,11 +818,11 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-1" style="display:none;">
     <div class="brick-card">
-      <div class="step-indicator">Étape 1 / 4</div>
       <h1 class="brick-title">Qu'est-ce qui est encore en cours&nbsp;?</h1>
       <p class="brick-subtitle">Ajoute seulement ce dont tu te souviens. On peut compléter plus tard.</p>
 
       <div id="special-state-banner" style="display:none;"></div>
+      <div class="bandeau-reprise" id="bandeau-reprise" style="display:none;"></div>
 
       <div class="payment-list" id="payment-list"></div>
 
@@ -441,10 +831,15 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
         Ajouter un autre paiement
       </button>
 
-      <button class="btn-primary" id="btn-s1-next" style="margin-top:1.25rem;">
-        Voir le total
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
+      <div class="s1-alerte" id="s1-alerte" role="status" style="display:none;"></div>
+
+      <div class="nav-btns" style="margin-top:1.25rem;">
+        <button class="btn-back" type="button" onclick="showScreen(0)">← Retour</button>
+        <button class="btn-primary" id="btn-s1-next">
+          Voir le total
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
       <button class="btn-secondary" id="btn-s1-skip">Je ne connais pas tout</button>
       <div class="skip-msg" id="skip-msg">Ajoute au moins les 2 ou 3 plus présents dans ton mois.</div>
     </div>
@@ -455,50 +850,38 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-2" style="display:none;">
     <div class="brick-card">
-      <div class="step-indicator">Étape 2 / 4</div>
       <h1 class="brick-title">Voilà ce que ces paiements prennent ensemble.</h1>
       <p class="brick-subtitle">C'est souvent ça qui rend le mois flou.</p>
 
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-block highlight">
-          <div class="stat-block-label">Charge BNPL / crédits légers ce mois-ci</div>
-          <div class="stat-block-value" id="stat-total-monthly"></div>
-          <div class="stat-block-sub">mensualités en cours</div>
-        </div>
-        <div class="stat-block">
-          <div class="stat-block-label">Engagements en cours</div>
-          <div class="stat-block-value" id="stat-count"></div>
-          <div class="stat-block-sub" id="stat-count-sub"></div>
-        </div>
-        <div class="stat-block liberation">
-          <div class="stat-block-label">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline;margin-right:0.25rem;"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            Date de libération estimée
+      <!-- A. La barre du mois : la part prise avant toute décision -->
+      <div class="mois">
+        <div class="mois-tete">
+          <div class="mois-bloc">
+            <div class="mois-total" id="mois-total">—</div>
+            <div class="mois-sub" id="mois-sub"></div>
           </div>
-          <div class="stat-block-value" id="stat-liberation-date"></div>
-          <div class="stat-block-sub">si tu n'ajoutes aucun nouveau paiement fractionné</div>
+          <div class="mois-effort" id="mois-effort"></div>
         </div>
+        <div class="mois-barre" id="mois-barre" role="img" aria-labelledby="mois-note"></div>
+        <div class="mois-legende" id="mois-legende"></div>
+        <p class="mois-tout" id="mois-tout"></p>
+        <p class="mois-note" id="mois-note"></p>
       </div>
 
-      <div class="chart-wrap" id="chart-wrap">
-        <div class="chart-title">Répartition par type</div>
-        <div class="chart-bars" id="chart-bars"></div>
+      <!-- B. Le calendrier, qui porte la libération une seule fois -->
+      <div class="fin">
+        <div class="fin-titre">Quand ça s'arrête</div>
+        <div class="fin-liste" id="fin-liste"></div>
+        <div class="fin-pied" id="fin-pied"></div>
       </div>
 
-      <div class="timeline-wrap">
-        <div class="timeline-title">Calendrier de fin</div>
-        <div class="timeline-items" id="timeline-items"></div>
+      <div class="nav-btns">
+        <button class="btn-back" type="button" onclick="showScreen(1)">← Retour</button>
+        <button class="btn-primary" id="btn-s2-next">
+          Tester une stratégie
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
       </div>
-
-      <div class="nudge" id="nudge-liberation">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:0.1rem;color:var(--orange)"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span></span>
-      </div>
-
-      <button class="btn-primary" id="btn-s2-next">
-        Tester une stratégie
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
     </div>
   </div>
 
@@ -507,21 +890,32 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-3" style="display:none;">
     <div class="brick-card">
-      <div class="step-indicator">Étape 3 / 4</div>
-      <h1 class="brick-title">Lequel te libère le plus vite&nbsp;?</h1>
-      <p class="brick-subtitle">On cherche un premier allègement crédible, pas une solution parfaite.</p>
+      <h1 class="brick-title">Est-ce que ça vaut le coup d'en solder un&nbsp;?</h1>
+      <p class="brick-subtitle">Avancer de l'argent ne fait pas toujours économiser quelque chose. Ça dépend de ce que le paiement te coûte.</p>
 
-      <div class="strategy-cards" id="strategy-cards"></div>
-
-      <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.125rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;">
-        <span style="font-size:0.82rem;color:var(--text-muted);">Impact sur ta mensualité</span>
-        <span style="font-size:1.1rem;font-weight:800;" id="impact-display">—</span>
+      <div class="axe" id="axe">
+        <div class="axe-tete">
+          <div class="axe-titre">Ta charge de paiements fractionnés</div>
+          <div class="axe-chiffres">
+            <span class="axe-maintenant" id="axe-maintenant">—</span>
+            <span class="axe-vers" id="axe-vers" aria-hidden="true">→</span>
+            <span class="axe-cible" id="axe-cible"></span>
+          </div>
+        </div>
+        <svg class="axe-svg" id="axe-svg" viewBox="0 0 640 150" role="img" aria-labelledby="axe-detail"></svg>
+        <div class="axe-choix" id="axe-choix" role="radiogroup" aria-label="Par quoi commencer"></div>
+        <p class="axe-detail" id="axe-detail"></p>
       </div>
 
-      <button class="btn-primary" id="btn-s3-next" disabled>
-        Choisir ma stratégie
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
+      <div id="zone-renvoi"></div>
+
+      <div class="nav-btns">
+        <button class="btn-back" type="button" onclick="showScreen(2)">← Retour</button>
+        <button class="btn-primary" id="btn-s3-next" disabled>
+          Choisir ma stratégie
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -530,29 +924,38 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-4" style="display:none;">
     <div class="brick-card">
-      <div class="step-indicator">Étape 4 / 4</div>
-      <h1 class="brick-title">Le vrai piège, ce n'est pas un paiement. C'est l'accumulation.</h1>
-      <p class="brick-subtitle">Le "ça va" répété 4 fois finit souvent par manger tout le reste-à-vivre.</p>
+      <h1 class="brick-title">Le vrai piège, ce n'est pas un paiement. C'est l'enchaînement.</h1>
+      <p class="brick-subtitle">Chaque achat s'annonce en petites mensualités. Voilà ce que ça fait mis bout à bout.</p>
 
-      <div class="peda-cards">
-        <div class="peda-card">
-          <div class="peda-icon">💡</div>
-          <div class="peda-text">Petit montant ≠ petite conséquence</div>
-        </div>
-        <div class="peda-card">
-          <div class="peda-icon">🌫</div>
-          <div class="peda-text">Plus il y en a, moins ton mois est lisible</div>
-        </div>
-        <div class="peda-card">
-          <div class="peda-icon">🔑</div>
-          <div class="peda-text">Le meilleur levier est souvent d'arrêter d'en ajouter</div>
-        </div>
+      <!-- A. Le nombre que le fractionné ne montre jamais -->
+      <div class="encours" id="encours">
+        <div class="encours-label">Ce qu'il te reste à verser en tout</div>
+        <div class="encours-val" id="encours-val">—</div>
+        <div class="encours-sub" id="encours-sub"></div>
       </div>
 
-      <button class="btn-primary" id="btn-s4-next">
-        Passer à mon engagement
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
+      <!-- B. L'enchaînement, dessiné -->
+      <div class="accum" id="accum">
+        <div class="accum-head">
+          <div class="accum-titre">Ta charge de paiements fractionnés, mois après mois</div>
+          <div class="accum-seg" id="accum-seg" role="radiogroup" aria-label="Scénario">
+            <button type="button" class="accum-opt actif" data-rythme="0" role="radio" aria-checked="true">Je n'en reprends aucun</button>
+            <button type="button" class="accum-opt" data-rythme="3" role="radio" aria-checked="false">Un tous les 3 mois</button>
+            <button type="button" class="accum-opt" data-rythme="2" role="radio" aria-checked="false">Un tous les 2 mois</button>
+          </div>
+        </div>
+        <svg class="accum-svg" id="accum-svg" viewBox="0 0 640 240" role="img" aria-labelledby="accum-desc"></svg>
+        <div class="accum-legende" id="accum-legende"></div>
+        <p class="accum-desc" id="accum-desc"></p>
+      </div>
+
+      <div class="nav-btns">
+        <button class="btn-back" type="button" onclick="showScreen(3)">← Retour</button>
+        <button class="btn-primary" id="btn-s4-next">
+          Passer à mon engagement
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -582,10 +985,13 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
         </div>
       </div>
 
-      <button class="btn-primary" id="btn-s5-validate" disabled>
-        Valider
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-      </button>
+      <div class="nav-btns">
+        <button class="btn-back" type="button" onclick="showScreen(4)">← Retour</button>
+        <button class="btn-primary" id="btn-s5-validate" disabled>
+          Valider
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        </button>
+      </div>
       <div class="confirm-msg" id="confirm-msg">
         Parfait. On va s'appuyer là-dessus pour alléger ton mois.
       </div>
@@ -597,7 +1003,9 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-exit" style="display:none;">
     <div class="exit-card">
-      <div class="exit-icon">✅</div>
+      <div class="exit-icon" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
       <div class="exit-title">Paiements fractionnés — fait !</div>
       <div class="exit-subtitle" id="exit-subtitle">Tu as fait le point sur tes engagements en cours.</div>
       <div class="exit-summary" id="exit-summary"></div>
@@ -651,28 +1059,145 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
 ══════════════════════════════════════════════ */
 initBgCanvas('bg-canvas');
 
+/* La garde vivait en fin de fichier : brickStarted et loadBrickState
+   partaient avant elle, et le contenu s'affichait brièvement à quelqu'un
+   qui n'a pas de session. requireAuth() redirige s'il n'y en a pas. */
+if (typeof requireAuth === 'function') { requireAuth(); }
+
 const BRICK_ID = 'paiements_fractionnes';
 const TOTAL_SCREENS = 6; // 0-5 (exit is separate)
 
-let profil = loadFromStorage('profil') || getMockProfile();
+// La plateforme stocke le profil sous 'fund_profil'. Lire 'profil' renvoyait
+// toujours null, donc toujours le mock : taux d'effort jamais calcule et
+// variantes personnalisees jamais affichees.
+let profil = loadFromStorage('fund_profil') || {};
+
+/* Le revenu net ne vit pas sous une cle unique : chaque brique l'a ecrit a
+   sa maniere. On reprend la cascade de la brique dettes. */
+function revenuMensuel() {
+  const bb = (loadFromStorage('fund_brick_budget_base') || {}).data || {};
+  const v = parseFloat(profil.revenus_nets_mensuel)
+         || parseFloat(profil.revenus_nets_mensuel_saisi)
+         || parseFloat(profil.revenusMensuels)
+         || parseFloat(profil.revenus)
+         || parseFloat(profil.revenus_nets)
+         || parseFloat(bb.revenus)
+         || 0;
+  return v > 0 ? v : 0;
+}
+
+/* ── Hydratation depuis la brique budget ────────────────────────
+   La brique budget type ses dettes. Deux de ses types sont le sujet d'ici ;
+   les autres appartiennent a la brique dettes et n'ont rien a faire dans
+   cette liste. */
+const TYPES_REPRIS = {
+  paiement_fractionne: { vers: 'fractione', nom: 'Paiement en plusieurs fois' },
+  credit_renouvelable: { vers: 'mini',      nom: 'Cr\u00e9dit renouvelable' }
+};
+
+function dettesConnues() {
+  /* Deux magasins coexistent : loadFromStorage lit une copie en memoire
+     (hydratee depuis Supabase), localStorage garde la trace locale. La
+     brique dettes interroge les deux ; on fait pareil. */
+  const sources = [];
+  const memo = (typeof loadFromStorage === 'function'
+    ? loadFromStorage('fund_brick_budget_base') : null) || {};
+  let local = null;
+  try { local = JSON.parse(localStorage.getItem('fund_brick_budget_base') || 'null'); } catch (e) {}
+
+  [memo, local].forEach(function (src) {
+    const d = src && src.data ? src.data.dettes : null;
+    if (Array.isArray(d)) sources.push(d);
+  });
+  if (Array.isArray(profil.dettes)) sources.push(profil.dettes);
+
+  const repris = [];
+  const vus = {};
+  sources.forEach(function (liste) {
+    liste.forEach(function (d) {
+      const cle = d.type || d.classification;
+      const map = TYPES_REPRIS[cle];
+      if (!map) return;                                  // autre brique
+      const montant = parseFloat(d.montant_mensuel) || 0;
+      if (montant <= 0) return;                          // ligne vide
+      const duree = parseInt(d.duree_mois) || '';
+      // Deux sources peuvent decrire la meme dette : on ne la prend qu'une fois.
+      const signature = cle + '|' + montant + '|' + duree;
+      if (vus[signature]) return;
+      vus[signature] = true;
+      repris.push({
+        id: ++paymentIdCounter,
+        name: map.nom,
+        amount: String(montant),
+        months: duree === '' ? '' : String(duree),
+        type: map.vers,
+        taeg: parseFloat(d.taeg) > 0 ? parseFloat(d.taeg) : null,
+        repris: true
+      });
+    });
+  });
+  return repris;
+}
+
+/* Le chiffre qui personnalise tout. Rendu null quand le revenu est inconnu :
+   mieux vaut ne rien dire qu'inventer un pourcentage. */
+function tauxEffort(total) {
+  const rev = revenuMensuel();
+  return rev > 0 ? Math.round(total / rev * 100) : null;
+}
 brickStarted(BRICK_ID);
-  // ── Reprise d'état depuis Supabase ──
-  (async function resumeIfNeeded() {
-    const saved = await loadBrickState('paiements_fractionnes');
-    if (saved && saved.data && Object.keys(saved.data).length > 0) {
-      // Restaurer les données dans l'état local
-      if (typeof restoreState === 'function') restoreState(saved.data);
-      // Ne pas sauter l'écran de démarrage si la brique est déjà terminée
-      if (!saved.completed && saved.screenCourant > 0) {
-        console.log('[Fund] Reprise brique paiements_fractionnes écran', saved.screenCourant);
-        // showScreen/goTo sera appelé après hydrateFromSupabase
-        window._brickResume_paiements_fractionnes = saved.screenCourant;
+  /* ── Reprise d'état ──────────────────────────────────────
+     L'ancienne version passait l'état à restoreState(), une fonction qui
+     n'existe nulle part : protégée par un typeof toujours faux, elle ne
+     restaurait rien. Et l'écran mémorisé était écrit dans une variable que
+     personne ne lisait. La brique relisait son état pour le jeter. */
+  (async function reprendre() {
+    let etat = null;
+    try { etat = await loadBrickState(BRICK_ID); } catch (e) { etat = null; }
+
+    const liste = (etat && etat.data && Array.isArray(etat.data.payments))
+      ? etat.data.payments : [];
+
+    /* Rien de saisi ici : on propose ce que la brique budget sait deja.
+       On n'ecrase jamais une saisie existante. */
+    if (!liste.length) {
+      const connues = dettesConnues();
+      if (connues.length) {
+        payments = connues;
+        renderPaymentList();
+        annoncerReprise(connues.length);
       }
+      return;
+    }
+    if (!etat || !etat.data) return;
+
+    if (liste.length) {
+      payments = liste.map(function (x, i) {
+        return {
+          id: ++paymentIdCounter,
+          name:   x.name   || '',
+          amount: x.amount || '',
+          months: x.months || '',
+          type:   x.type   || 'fractione',
+          // Sans lui, l'arbitrage de l'ecran 3 retombe sur des suppositions.
+          taeg:   parseFloat(x.taeg) > 0 ? parseFloat(x.taeg) : null,
+          repris: !!x.repris
+        };
+      });
+      renderPaymentList();
+    }
+    if (etat.data.selectedEngagement) selectedEngagement = etat.data.selectedEngagement;
+
+    // On ne reprend jamais au-delà du dernier écran de saisie utile : revenir
+    // sur un écran de résultat sans avoir revu ses chiffres n'aide personne.
+    if (!etat.completed && etat.screenCourant > 0 && liste.length) {
+      showScreen(Math.min(etat.screenCourant, 2));
     }
   })();
 
 /* ── State ── */
 let currentScreen = 0;
+let paymentIdCounter = 0;
 let payments = []; // {id, name, amount, months, type}
 let selectedStrategy = null;
 let selectedEngagement = null;
@@ -683,9 +1208,8 @@ const TYPE_CONFIG = {
   'fractione': { label: 'Paiement 3x/4x',  color: '#818cf8' },
   'carte':     { label: 'Carte magasin',    color: '#c084fc' },
   'mini':      { label: 'Mini crédit',      color: '#60a5fa' },
-  'conso':     { label: 'Crédit conso',     color: '#4ade80' },
+  'conso':     { label: 'Crédit conso',     color: '#a8a29e', lourd: true },
 };
-const TYPE_COLORS = Object.values(TYPE_CONFIG).map(c => c.color);
 
 /* ══════════════════════════════════════════════
    NAVIGATION
@@ -708,23 +1232,20 @@ function showScreen(idx) {
     currentScreen = idx;
     updateProgress(idx);
     screenViewed(BRICK_ID, idx);
-    autosaveBrickProgress(BRICK_ID, typeof idx === 'number' ? idx : (typeof n === 'number' ? n : currentScreen), { payments: payments });
+    // idx est toujours un nombre ici : isExit est faux.
+    autosaveBrickProgress(BRICK_ID, idx, { payments: payments });
     // Screen-specific setup
     if (idx === 1) setupScreen1();
     if (idx === 2) setupScreen2();
     if (idx === 3) setupScreen3();
+    if (idx === 4) setupScreen4();
     if (idx === 5) setupScreen5();
   }
 }
 
-function updateProgress(idx) {
-  const dots = document.querySelectorAll('.bp-dot');
-  dots.forEach((dot, i) => {
-    dot.classList.remove('done', 'active');
-    if (i < idx) dot.classList.add('done');
-    else if (i === idx) dot.classList.add('active');
-  });
-}
+/* La progression vit dans le panneau lateral, comme dans les autres
+   briques. La barre de points qu'elle doublait a ete retiree. */
+function updateProgress() {}
 
 /* ══════════════════════════════════════════════
    SCREEN 0 — Intro
@@ -758,7 +1279,7 @@ function updateProgress(idx) {
 /* ══════════════════════════════════════════════
    SCREEN 1 — Guided inventory
 ══════════════════════════════════════════════ */
-let paymentIdCounter = 0;
+
 
 function addNewPayment() {
   const id = ++paymentIdCounter;
@@ -783,8 +1304,11 @@ function renderPaymentList() {
 
 function createPaymentCard(p, idx) {
   const div = document.createElement('div');
-  div.className = 'payment-card';
+  div.className = 'payment-card' + (p.repris ? ' est-repris' : '');
   div.dataset.id = p.id;
+  // Les lignes qui viennent d'ailleurs se posent l'une apres l'autre :
+  // c'est la, sur les cartes, que la reprise se voit.
+  if (p.repris) div.style.animationDelay = (idx * 90) + 'ms';
 
   const dot = getColorForType(p.type);
   const summaryLabel = p.name || `Paiement ${idx + 1}`;
@@ -831,10 +1355,14 @@ function createPaymentCard(p, idx) {
         <div class="field-group">
           <label class="field-label">Type</label>
           <select class="field-input" name="type">
-            <option value="fractione" ${p.type === 'fractione' ? 'selected' : ''}>Paiement en 3x/4x</option>
-            <option value="carte"     ${p.type === 'carte'     ? 'selected' : ''}>Carte magasin</option>
-            <option value="mini"      ${p.type === 'mini'      ? 'selected' : ''}>Mini crédit</option>
-            <option value="conso"     ${p.type === 'conso'     ? 'selected' : ''}>Crédit conso</option>
+            <optgroup label="Paiements fractionnés">
+              <option value="fractione" ${p.type === 'fractione' ? 'selected' : ''}>Paiement en 3x/4x</option>
+              <option value="carte"     ${p.type === 'carte'     ? 'selected' : ''}>Carte magasin</option>
+              <option value="mini"      ${p.type === 'mini'      ? 'selected' : ''}>Mini crédit</option>
+            </optgroup>
+            <optgroup label="Autre crédit">
+              <option value="conso"     ${p.type === 'conso'     ? 'selected' : ''}>Crédit conso (auto, travaux…)</option>
+            </optgroup>
           </select>
         </div>
       </div>
@@ -949,14 +1477,53 @@ document.getElementById('btn-add-payment').addEventListener('click', () => {
 });
 
 document.getElementById('btn-s1-next').addEventListener('click', () => {
-  const valid = payments.filter(p => p.amount && parseFloat(p.amount) > 0);
-  if (valid.length === 0) {
-    addNewPayment();
+  // Meme regle que l'aval : sans duree, un paiement ne produit ni date de
+  // fin, ni calendrier, ni strategie. Laisser passer menait a un ecran vide.
+  const prets = getValidPayments();
+  if (prets.length > 0) {
+    masquerAlerteS1();
+    fieldCompleted(BRICK_ID, 'payments_list');
+    showScreen(2);
     return;
   }
-  fieldCompleted(BRICK_ID, 'payments_list');
-  showScreen(2);
+
+  // On distingue « rien du tout » de « il manque la duree » : ce n'est pas
+  // le meme geste a faire.
+  const avecMontant = payments.filter(p => p.amount && parseFloat(p.amount) > 0);
+  afficherAlerteS1(avecMontant.length
+    ? 'Il manque la dur\u00e9e restante\u00a0: sans elle, on ne peut ni dater la fin, '
+      + 'ni calculer ce qui se lib\u00e8re. Indique-la, m\u00eame approximativement.'
+    : 'Ajoute au moins un paiement avec son montant mensuel et le nombre de '
+      + 'mois restants. Une estimation suffit.');
 });
+
+/* Une ligne pre-remplie sans explication ressemble a une erreur. On dit
+   d'ou elle vient, et qu'elle se corrige. */
+function annoncerReprise(n) {
+  const zone = document.getElementById('bandeau-reprise');
+  if (!zone) return;
+  /* Une raison plutot qu'une consigne : « corrige si ca a bouge » dit
+     pourquoi regarder. « Verifie les montants et les durees » ne disait
+     que quoi faire. */
+  zone.innerHTML =
+      '<span class="reprise-nb">' + n + '</span>'
+    + '<span class="reprise-txt">'
+    +   '<strong>d\u00e9j\u00e0 connu' + (n > 1 ? 's' : '') + '</strong>'
+    +   '<span>repris de ton budget \u2014 corrige si \u00e7a a boug\u00e9</span>'
+    + '</span>';
+  zone.style.display = 'flex';
+}
+
+function afficherAlerteS1(texte) {
+  const el = document.getElementById('s1-alerte');
+  if (!el) return;
+  el.textContent = texte;
+  el.style.display = 'block';
+}
+function masquerAlerteS1() {
+  const el = document.getElementById('s1-alerte');
+  if (el) el.style.display = 'none';
+}
 
 document.getElementById('btn-s1-skip').addEventListener('click', () => {
   const msg = document.getElementById('skip-msg');
@@ -975,87 +1542,168 @@ function getTotalMonthly() {
   return getValidPayments().reduce((s, p) => s + parseFloat(p.amount), 0);
 }
 
-function getMaxMonths() {
-  const vp = getValidPayments();
-  if (!vp.length) return 0;
-  return Math.max(...vp.map(p => parseInt(p.months)));
+/* Un credit conso structure n'est pas un paiement fractionne : il ne repond
+   ni au meme reflexe, ni au meme conseil. On le compte a part. */
+const TYPES_LEGERS = ['fractione', 'carte', 'mini'];
+
+function paiementsLegers() {
+  return getValidPayments().filter(p => TYPES_LEGERS.indexOf(p.type) !== -1);
+}
+function paiementsLourds() {
+  return getValidPayments().filter(p => TYPES_LEGERS.indexOf(p.type) === -1);
+}
+function totalLegers() {
+  return paiementsLegers().reduce((s, p) => s + parseFloat(p.amount), 0);
 }
 
-function getLiberationDate() {
-  const maxMonths = getMaxMonths();
-  if (!maxMonths) return '—';
+/* La date de liberation ne porte que sur les fractionnes : sinon un credit
+   auto sur 26 mois la repousse de deux ans et le message de la brique
+   devient absurde. */
+function dateLiberationLegers() {
+  const lg = paiementsLegers();
+  if (!lg.length) return null;
+  const maxi = Math.max(...lg.map(p => parseInt(p.months)));
   const d = new Date();
-  d.setMonth(d.getMonth() + maxMonths);
-  return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  d.setDate(1);
+  d.setMonth(d.getMonth() + maxi);
+  return { texte: d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }), mois: maxi };
 }
 
-function getTypeBreakdown() {
-  const breakdown = {};
-  getValidPayments().forEach(p => {
-    const t = p.type || 'fractione';
-    breakdown[t] = (breakdown[t] || 0) + parseFloat(p.amount);
-  });
-  return breakdown;
+/* Ce que coute le solde d'un paiement : ce qu'il reste a verser. La brique
+   recommandait de solder sans jamais dire le prix. */
+function coutSolde(p) {
+  return parseFloat(p.amount) * parseInt(p.months);
 }
 
 function setupScreen2() {
   resultViewed(BRICK_ID);
-  const vp = getValidPayments();
-  const total = getTotalMonthly();
+  const vp     = getValidPayments();
+  const total  = getTotalMonthly();
+  const legers = paiementsLegers();
+  const lourds = paiementsLourds();
+  const tLegers = totalLegers();
+  const tLourds = total - tLegers;
+  const rev = revenuMensuel();
 
-  document.getElementById('stat-total-monthly').textContent = formatEuro(total);
-  document.getElementById('stat-count').textContent = vp.length;
-  document.getElementById('stat-count-sub').textContent =
-    vp.length === 1 ? 'engagement actif' : 'engagements actifs';
-  document.getElementById('stat-liberation-date').textContent = getLiberationDate();
+  /* ── En tete : le sujet de la brique, pas le plus gros poste ──
+     Un credit auto a 240 EUR ecraserait les 105 EUR de fractionnes dont on
+     est venu parler. Le total tous credits confondus est dit juste en
+     dessous : il compte pour le mois, mais il n'est pas le sujet. */
+  const aDesDeux = legers.length > 0 && lourds.length > 0;
+  const vedette  = legers.length ? tLegers : total;
 
-  // Bar chart by type
-  const breakdown = getTypeBreakdown();
-  const chartBars = document.getElementById('chart-bars');
-  chartBars.innerHTML = '';
-  const maxAmt = Math.max(...Object.values(breakdown), 1);
-  Object.entries(breakdown).forEach(([type, amt]) => {
-    const cfg = TYPE_CONFIG[type] || { label: type, color: '#818cf8' };
-    const pct = Math.round((amt / maxAmt) * 100);
-    const row = document.createElement('div');
-    row.className = 'chart-bar-row';
-    row.innerHTML = `
-      <div class="chart-bar-label">${cfg.label}</div>
-      <div class="chart-bar-track">
-        <div class="chart-bar-fill" style="width:0%;background:${cfg.color};" data-pct="${pct}"></div>
-      </div>
-      <div class="chart-bar-amount">${formatEuro(amt)}</div>
-    `;
-    chartBars.appendChild(row);
-  });
-  // Animate bars
-  setTimeout(() => {
-    document.querySelectorAll('.chart-bar-fill').forEach(bar => {
-      bar.style.width = bar.dataset.pct + '%';
-    });
-  }, 100);
+  document.getElementById('mois-total').textContent = formatEuro(vedette) + '/mois';
+  document.getElementById('mois-sub').textContent = legers.length
+    ? (legers.length === 1 ? 'de paiement fractionn\u00e9' : 'de paiements fractionn\u00e9s')
+    : (vp.length === 1 ? '1 cr\u00e9dit en cours' : vp.length + ' cr\u00e9dits en cours');
 
-  // Timeline
-  const timeline = document.getElementById('timeline-items');
-  timeline.innerHTML = '';
-  const sorted = [...vp].sort((a, b) => parseInt(a.months) - parseInt(b.months));
-  sorted.forEach(p => {
+  const tauxVedette = tauxEffort(vedette);
+  const tauxTotal   = tauxEffort(total);
+  const effortEl = document.getElementById('mois-effort');
+  const noteEl   = document.getElementById('mois-note');
+  const toutEl   = document.getElementById('mois-tout');
+
+  if (tauxVedette === null) {
+    effortEl.style.display = 'none';
+    noteEl.textContent = 'Renseigne tes revenus dans ton profil pour savoir ce que \u00e7a p\u00e8se '
+      + 'r\u00e9ellement : le m\u00eame montant n\u2019a pas le m\u00eame sens \u00e0 900\u00a0\u20ac ou \u00e0 3\u00a0200\u00a0\u20ac.';
+  } else {
+    effortEl.style.display = '';
+    effortEl.className = 'mois-effort' + (tauxVedette >= 20 ? ' fort' : tauxVedette >= 10 ? ' tendu' : '');
+    effortEl.innerHTML = '<span class="mois-pct">' + tauxVedette + '\u00a0%</span>'
+      + '<span class="mois-pct-note">de ce que tu gagnes</span>';
+
+    /* Le verdict porte sur ce qui contraint reellement le mois : le total
+       quand il y a d'autres credits, la vedette sinon. On dit lequel. */
+    const juge = aDesDeux ? tauxTotal : tauxVedette;
+    const corps = juge >= 20
+      ? 'au-del\u00e0 de 20\u00a0% de tes revenus, le mois devient difficile \u00e0 tenir \u2014 ce qui reste '
+        + 'doit encore couvrir le loyer, les courses et les impr\u00e9vus.'
+      : juge >= 10
+        ? 'c\u2019est notable sans \u00eatre alarmant. La part est visible, mais elle laisse de la marge.'
+        : 'c\u2019est contenu. Ces paiements ne d\u00e9terminent pas ton mois.';
+    // Sans prefixe, le corps ouvre la phrase : il lui faut sa majuscule.
+    noteEl.textContent = aDesDeux
+      ? 'Tous cr\u00e9dits confondus\u00a0: ' + corps
+      : corps.charAt(0).toUpperCase() + corps.slice(1);
+  }
+
+  /* La ligne du dessous : le mois entier, dit une fois, sans en faire le
+     titre. */
+  if (aDesDeux) {
+    toutEl.innerHTML = 'Avec tes autres cr\u00e9dits\u00a0: <strong>' + formatEuro(total) + '/mois</strong>'
+      + (tauxTotal !== null ? ', soit <strong>' + tauxTotal + '\u00a0%</strong> de tes revenus' : '') + '.';
+    toutEl.style.display = '';
+  } else {
+    toutEl.style.display = 'none';
+  }
+
+  /* ── La barre : la part prise sur ce que tu gagnes ──
+     Sans revenu connu, la barre montre la composition seule : afficher un
+     \u00ab reste \u00bb qu\u2019on ne conna\u00eet pas serait inventer. */
+  const barre = document.getElementById('mois-barre');
+  const legende = document.getElementById('mois-legende');
+  const base = rev > 0 ? rev : total;
+  const reste = rev > 0 ? Math.max(0, rev - total) : 0;
+
+  const segments = [];
+  if (tLegers > 0) segments.push({ cle: 'frac',   val: tLegers, label: 'Paiements fractionn\u00e9s' });
+  if (tLourds > 0) segments.push({ cle: 'credit', val: tLourds, label: 'Autres cr\u00e9dits' });
+  if (reste  > 0)  segments.push({ cle: 'reste',  val: reste,   label: 'Ce qui te reste' });
+
+  barre.innerHTML = segments.map(function (sg) {
+    return '<span class="mois-seg seg-' + sg.cle + '" style="flex:' + sg.val.toFixed(2) + ';" '
+         + 'title="' + sg.label + '\u00a0: ' + formatEuro(Math.round(sg.val)) + '"></span>';
+  }).join('');
+
+  legende.innerHTML = segments.map(function (sg) {
+    return '<span class="mois-lg"><i class="pastille seg-' + sg.cle + '"></i>'
+         + sg.label + '<b>' + formatEuro(Math.round(sg.val)) + '</b></span>';
+  }).join('');
+
+  /* La barre s'ouvre depuis la gauche : on voit la part se prendre.
+     Un clip sur le conteneur, plutot qu'une transition par segment qui
+     donnerait trois animations concurrentes. */
+  barre.classList.remove('ouvert');
+  void barre.offsetWidth;
+  setTimeout(function () { barre.classList.add('ouvert'); }, 40);
+
+  /* ── Le calendrier ── */
+  const liste = document.getElementById('fin-liste');
+  liste.innerHTML = '';
+  const ordre = vp.slice().sort(function (a, b) { return parseInt(a.months) - parseInt(b.months); });
+  const plusLoin = Math.max.apply(null, ordre.map(function (x) { return parseInt(x.months); }));
+
+  ordre.forEach(function (pmt) {
     const d = new Date();
-    d.setMonth(d.getMonth() + parseInt(p.months));
-    const dateStr = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-    const item = document.createElement('div');
-    item.className = 'timeline-item';
-    item.innerHTML = `
-      <div class="timeline-dot" style="background:${getColorForType(p.type)}"></div>
-      <div class="timeline-name">${escHtml(p.name || 'Paiement')}</div>
-      <div class="timeline-end">${formatEuro(parseFloat(p.amount))}/mois · fin ${dateStr}</div>
-    `;
-    timeline.appendChild(item);
+    d.setDate(1);
+    d.setMonth(d.getMonth() + parseInt(pmt.months));
+    const quand = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    const mois = parseInt(pmt.months);
+
+    const li = document.createElement('div');
+    li.className = 'fin-item';
+    /* La barre dit la duree restante : on lit l'ordre d'extinction d'un
+       coup d'oeil, sans comparer des dates. */
+    li.innerHTML =
+        '<span class="fin-dot" style="background:' + getColorForType(pmt.type) + '"></span>'
+      + '<span class="fin-nom">' + escHtml(pmt.name || 'Paiement') + '</span>'
+      + '<span class="fin-piste"><i style="width:' + Math.round(mois / plusLoin * 100) + '%"></i></span>'
+      + '<span class="fin-quand">' + quand + '</span>';
+    liste.appendChild(li);
   });
 
-  // Nudge
-  const nudgeSpan = document.querySelector('#nudge-liberation span');
-  nudgeSpan.innerHTML = `<strong>Date de libération&nbsp;:</strong> si tu n'ajoutes aucun nouveau paiement fractionné, ton budget sera allégé de <strong>${formatEuro(total)}/mois</strong> à partir de ${getLiberationDate()}.`;
+  /* ── La liberation, dite une seule fois, en pied ── */
+  const lib = dateLiberationLegers();
+  const pied = document.getElementById('fin-pied');
+  if (lib) {
+    pied.innerHTML = '<strong>' + formatEuro(tLegers) + '/mois</strong> te reviennent en <strong>'
+      + lib.texte + '</strong>, quand tes paiements fractionn\u00e9s se terminent'
+      + (lourds.length ? '. Tes autres cr\u00e9dits continuent au-del\u00e0.' : ', si tu n\u2019en ajoutes aucun.');
+    pied.style.display = '';
+  } else {
+    pied.style.display = 'none';
+  }
 }
 
 document.getElementById('btn-s2-next').addEventListener('click', () => showScreen(3));
@@ -1064,134 +1712,509 @@ document.getElementById('btn-s2-next').addEventListener('click', () => showScree
    SCREEN 3 — Priority simulator
 ══════════════════════════════════════════════ */
 function setupScreen3() {
-  const vp = getValidPayments();
-  const total = getTotalMonthly();
-  const cards = document.getElementById('strategy-cards');
-  cards.innerHTML = '';
+  const vp     = getValidPayments();
+  const legers = paiementsLegers();
+  const lourds = paiementsLourds();
+  const charge = totalLegers();
+  const axe    = document.getElementById('axe');
+  const choix  = document.getElementById('axe-choix');
+  const renvoi = document.getElementById('zone-renvoi');
+
   selectedStrategy = null;
   document.getElementById('btn-s3-next').disabled = true;
-  document.getElementById('impact-display').textContent = '—';
+  renvoi.innerHTML = '';
 
-  // Build strategies
-  const strategies = [];
+  /* Un credit amortissable ne se solde pas comme un 3x : c'est le sujet de
+     la brique dettes. On le dit, apres les options, pas avant. */
+  if (lourds.length) {
+    renvoi.innerHTML = '<div class="renvoi-dettes"><strong>'
+      + escHtml(lourds.map(function (x) { return x.name || 'ton cr\u00e9dit'; }).join(', '))
+      + '</strong> n\u2019appara\u00eet pas ici\u00a0: un cr\u00e9dit amortissable se rembourse par '
+      + 'anticipation, pas en \u00ab\u00a0soldant\u00a0\u00bb. Il compte dans ton total et ton taux '
+      + 'd\u2019effort, mais c\u2019est la brique <a href="brique-plan-desendettement.html" '
+      + 'class="lien-brique">Gestion des dettes</a> qui l\u2019outille.</div>';
+  }
 
-  // Strategy 1: smallest payment first
-  if (vp.length > 0) {
-    const smallest = [...vp].sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount))[0];
-    const saving = parseFloat(smallest.amount);
-    strategies.push({
-      id: 's1',
-      title: 'Solder le plus petit d\'abord',
-      desc: `Commencer par <strong>${escHtml(smallest.name || 'le plus petit')}</strong> (${formatEuro(parseFloat(smallest.amount))}/mois sur ${smallest.months} mois). C'est souvent le plus rapide à solder.`,
-      badge: 'rapide',
-      before: total,
-      after: total - saving,
-      saving,
+  if (!legers.length) {
+    axe.style.display = 'none';
+    choix.innerHTML = '';
+    if (!lourds.length) {
+      renvoi.innerHTML = '<div class="strategy-vide">Aucun paiement renseign\u00e9 pour '
+        + 'l\u2019instant\u00a0: reviens \u00e0 l\u2019\u00e9tape 1 pour en ajouter au moins un, m\u00eame de '
+        + 'm\u00e9moire.</div>';
+    }
+    return;
+  }
+  axe.style.display = '';
+
+  /* ── Ce que chaque paiement coute vraiment ───────────────────
+     C'est le seul angle qui transforme cet ecran en decision. Un 3x/4x
+     sans frais ne s'economise pas : on paie la meme somme, plus tot. Un
+     renouvelable a 19,9 %, si.
+     Le TAEG vient de la brique budget quand il existe. Quand il manque, on
+     ne l'invente pas : on dit le general et on invite a verifier. */
+  function fraisAvere(x) { return parseFloat(x.taeg) > 0; }
+  function fraisProbable(x) { return x.type === 'mini' || x.type === 'carte'; }
+
+  const avecFrais = legers.filter(fraisAvere)
+                          .sort(function (a,b){ return parseFloat(b.taeg) - parseFloat(a.taeg); });
+  const suspects  = legers.filter(function (x){ return !fraisAvere(x) && fraisProbable(x); });
+
+  const parFin    = legers.slice().sort(function (a,b){ return parseInt(a.months)-parseInt(b.months); });
+  const plusProche = parFin[0];
+  const options = [];
+
+  /* 1. Le seul geste qui peut faire economiser : solder ce qui porte des
+        interets. Propose uniquement quand il y a une raison de le faire. */
+  const cible = avecFrais[0] || suspects[0];
+  if (cible) {
+    const m = parseFloat(cible.amount);
+    const certain = fraisAvere(cible);
+    options.push({
+      id: 's1', cible: cible, titre: 'Solder ' + escHtml(cible.name || 'ce paiement'),
+      badge: 'rapide', badgeTexte: certain ? '\u00c9conomise vraiment' : '\u00c0 v\u00e9rifier',
+      mois: 0, libere: m, cout: coutSolde(cible),
+      meta: formatEuro(coutSolde(cible)) + ' \u00e0 avancer'
+          + (certain ? '  \u00b7  ' + String(cible.taeg).replace('.', ',') + '\u00a0% de TAEG' : ''),
+      phrase: certain
+        ? '<strong>' + escHtml(cible.name || 'Ce paiement') + '</strong> porte des int\u00e9r\u00eats ('
+          + String(cible.taeg).replace('.', ',') + '\u00a0% de TAEG). C\u2019est le seul de tes paiements '
+          + 'o\u00f9 avancer de l\u2019argent te fait r\u00e9ellement \u00e9conomiser\u00a0: chaque mois gagn\u00e9 est '
+          + 'un mois d\u2019int\u00e9r\u00eats en moins.'
+        : '<strong>' + escHtml(cible.name || 'Ce paiement') + '</strong> est du type qui porte souvent '
+          + 'des frais. V\u00e9rifie son TAEG sur ton contrat\u00a0: s\u2019il est au-dessus de z\u00e9ro, c\u2019est '
+          + 'par l\u00e0 qu\u2019il faut commencer. S\u2019il est \u00e0 z\u00e9ro, le solder ne t\u2019\u00e9conomise rien.'
     });
   }
 
-  // Strategy 2: one that ends soonest (closest to finish)
-  if (vp.length > 0) {
-    const soonest = [...vp].sort((a, b) => parseInt(a.months) - parseInt(b.months))[0];
-    const saving = parseFloat(soonest.amount);
-    strategies.push({
-      id: 's2',
-      title: 'Solder celui qui finit presque',
-      desc: `<strong>${escHtml(soonest.name || 'Ce paiement')}</strong> se termine dans ${soonest.months} mois (${formatEuro(parseFloat(soonest.amount))}/mois). Il est presque fini — autant en finir maintenant.`,
-      badge: 'rapide',
-      before: total,
-      after: total - saving,
-      saving,
+  /* 2. Ne rien avancer. C'est une decision, et c'est souvent la bonne :
+        elle protege la tresorerie sans rien couter. */
+  if (plusProche) {
+    const m = parseInt(plusProche.months);
+    const gratuits = legers.filter(function (x){ return !fraisAvere(x) && !fraisProbable(x); });
+    options.push({
+      id: 's2', titre: 'Ne rien avancer',
+      badge: 'gratuit', badgeTexte: 'Garde ta tr\u00e9sorerie',
+      mois: m, libere: parseFloat(plusProche.amount), cout: 0,
+      meta: escHtml(plusProche.name || 'Le premier') + ' se termine '
+          + (m <= 1 ? 'le mois prochain' : 'dans ' + m + ' mois'),
+      phrase: (gratuits.length
+        ? 'Tes paiements en plusieurs fois ne co\u00fbtent rien de plus\u00a0: les solder te ferait '
+          + 'payer <strong>la m\u00eame somme, simplement plus t\u00f4t</strong>. Aucun gain. '
+        : '')
+        + 'Sans rien avancer, <strong>' + escHtml(plusProche.name || 'le premier') + '</strong> '
+        + 's\u2019arr\u00eate ' + (m <= 1 ? 'le mois prochain' : 'dans ' + m + ' mois') + ' et te rend '
+        + formatEuro(parseFloat(plusProche.amount)) + '/mois. Garde ton \u00e9pargne pour un impr\u00e9vu\u00a0: '
+        + 'c\u2019est elle qui t\u2019\u00e9vitera d\u2019en reprendre un.'
     });
   }
 
-  // Strategy 3: stop adding new ones until liberation date
-  const libDate = getLiberationDate();
-  strategies.push({
-    id: 's3',
-    title: `Ne plus en ajouter jusqu'au ${libDate}`,
-    desc: `Sans nouveaux engagements fractionnés, tu retrouves <strong>${formatEuro(total)}/mois</strong> de marge à partir de ${libDate}.`,
-    badge: 'durable',
-    before: total,
-    after: 0,
-    saving: total,
-    isFuture: true,
+  /* 3. Le seul levier durable. */
+  const lib = dateLiberationLegers();
+  if (lib) {
+    options.push({
+      id: 's3', titre: 'N\u2019en reprendre aucun',
+      badge: 'durable', badgeTexte: 'Impact durable',
+      mois: lib.mois, libere: charge, cout: 0, habitude: true,
+      meta: 'plus rien \u00e0 payer d\u2019ici ' + lib.texte,
+      phrase: 'C\u2019est le seul levier qui vaut pour tous les paiements \u00e0 la fois. '
+            + 'Chaque mensualit\u00e9 qui se lib\u00e8re donne l\u2019impression qu\u2019on peut se permettre '
+            + 'un nouvel achat\u00a0: c\u2019est pr\u00e9cis\u00e9ment le moment o\u00f9 l\u2019on en reprend un. '
+            + 'T\u2019en tenir \u00e0 l\u2019\u00e9cart te rend <strong>' + formatEuro(charge) + '/mois</strong> '
+            + 'd\u2019ici <strong>' + lib.texte + '</strong>.'
+    });
+  }
+
+  /* ── L'en-tete ── */
+  document.getElementById('axe-maintenant').textContent = formatEuro(charge) + '/mois';
+  document.getElementById('axe-vers').style.visibility = 'hidden';
+  document.getElementById('axe-cible').textContent = '';
+  document.getElementById('axe-detail').innerHTML =
+    'Choisis un arr\u00eat\u00a0: chacun te dit ce que devient ton mois, et \u00e0 quel prix.';
+
+  /* ── Les puces de choix ── */
+  choix.innerHTML = '';
+  options.forEach(function (o, idx) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'axe-opt';
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', 'false');
+    b.dataset.idx = idx;
+    b.innerHTML =
+        '<span class="axe-opt-radio" aria-hidden="true"></span>'
+      + '<span class="axe-opt-corps">'
+      +   '<span class="axe-opt-titre">' + o.titre + '</span>'
+      // On n'affiche plus « +X EUR/mois » sur ce qui arrive de toute facon :
+      // ca se lisait comme le benefice du choix, alors qu'on l'obtient sans
+      // rien decider. La meta dit ce qui distingue reellement l'option.
+      +   '<span class="axe-opt-meta">' + o.meta + '</span>'
+      + '</span>'
+      + '<span class="strategy-badge badge-' + o.badge + '">' + o.badgeTexte + '</span>';
+    b.addEventListener('click', function () { choisirOption(options, idx); });
+    choix.appendChild(b);
   });
 
-  strategies.forEach((s, idx) => {
-    const card = document.createElement('div');
-    card.className = 'strategy-card';
-    card.dataset.strategy = idx;
-
-    const badgeClass = s.badge === 'rapide' ? 'badge-rapide' : 'badge-durable';
-    const badgeLabel = s.badge === 'rapide' ? 'Impact rapide' : 'Impact durable';
-
-    card.innerHTML = `
-      <div class="strategy-radio"></div>
-      <div class="strategy-card-header">
-        <div class="strategy-card-title">${s.title}</div>
-        <div class="strategy-badge ${badgeClass}">${badgeLabel}</div>
-      </div>
-      <div class="strategy-card-desc">${s.desc}</div>
-      <div class="strategy-card-impact">
-        <span class="impact-before">${formatEuro(s.before)}/mois</span>
-        <span class="impact-arrow">→</span>
-        <span class="impact-after">${s.isFuture ? formatEuro(0) : formatEuro(s.after)}/mois libéré</span>
-      </div>
-    `;
-
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.strategy-card').forEach(c => {
-        c.classList.remove('selected');
-        c.setAttribute('aria-checked', 'false');
-      });
-      card.classList.add('selected');
-      card.setAttribute('aria-checked', 'true');
-      selectedStrategy = { idx, ...s };
-
-      // Animate impact display
-      animateImpact(s.before, s.after, s.isFuture);
-      document.getElementById('btn-s3-next').disabled = false;
-      // Auto-avance après sélection stratégie
-      setTimeout(() => { document.getElementById('btn-s3-next').click(); }, 400);
-
-      // Pre-fill engagement option 2 with the strategy
-      const priorityInput = document.getElementById('priority-input');
-      if (priorityInput) {
-        if (s.id !== 's3') {
-          const item = s.id === 's1'
-            ? [...vp].sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount))[0]
-            : [...vp].sort((a, b) => parseInt(a.months) - parseInt(b.months))[0];
-          priorityInput.value = item ? (item.name || 'ce paiement') : '';
-        }
-      }
-    });
-
-    cards.appendChild(card);
-  });
+  _axeOptions = options;
+  dessinerAxe(options, null);
 }
 
-function animateImpact(from, to, isFuture) {
-  const el = document.getElementById('impact-display');
-  const saving = from - to;
-  el.style.animation = 'none';
-  void el.offsetWidth;
-  el.style.animation = 'countUp 0.3s ease-out both';
-  if (isFuture) {
-    el.textContent = `${formatEuro(from)}/mois libéré à terme`;
-    el.style.color = 'var(--green)';
-  } else {
-    el.textContent = `${formatEuro(from)} → ${formatEuro(to)}/mois`;
-    el.style.color = 'var(--green)';
+/* La trajectoire et les arrets. Un escalier, pas une courbe : la charge ne
+   descend pas progressivement, elle tombe d'un cran quand un paiement finit.
+   (L'ecran 4 montre une aire ; ici on montre des marches, pour que les deux
+   lectures ne se confondent pas.) */
+let _axeOptions = [];
+
+function dessinerAxe(options, choisi) {
+  const svg = document.getElementById('axe-svg');
+  const legers = paiementsLegers();
+  if (!legers.length) { svg.innerHTML = ''; return; }
+
+  const horizon = Math.max(2, Math.max.apply(null, legers.map(function (x){ return parseInt(x.months); })));
+  const charge = function (m) {
+    return legers.reduce(function (t,x){ return t + (parseInt(x.months) > m ? parseFloat(x.amount) : 0); }, 0);
+  };
+  const haut = Math.max(charge(0), 1) * 1.25;
+
+  const W=640, H=150, gL=52, gR=18, gT=14, gB=32;
+  const X = function (m) { return gL + (m / horizon) * (W - gL - gR); };
+  const Y = function (v) { return H - gB - (v / haut) * (H - gT - gB); };
+
+  /* L'escalier : palier horizontal, puis chute verticale. */
+  let d = 'M ' + X(0) + ' ' + Y(charge(0));
+  for (let m = 1; m <= horizon; m++) {
+    d += ' L ' + X(m) + ' ' + Y(charge(m - 1)) + ' L ' + X(m) + ' ' + Y(charge(m));
   }
+
+  /* Le remplissage s'arrete a l'arret choisi : on voit la part du chemin
+     deja parcourue par le choix. Deux morceaux distincts, l'un dans <defs>,
+     l'autre dans le corps. */
+  let defs = '', traceVif = '', chute = '';
+  if (choisi !== null && options[choisi]) {
+    const o = options[choisi];
+    if (o.habitude) {
+      /* Une habitude, pas une echeance : c'est tout le trajet qui compte. */
+      traceVif = '<path class="axe-trace-vif" d="' + d + '"/>';
+    } else if (o.cout > 0) {
+      /* Solder : on ne parcourt rien, on paie pour descendre maintenant. */
+      const restant = Math.max(0, charge(0) - o.libere);
+      chute = '<line class="axe-chute" x1="' + X(0.35) + '" y1="' + Y(charge(0))
+            + '" x2="' + X(0.35) + '" y2="' + Y(restant) + '"/>';
+    } else {
+      /* Attendre : le trace epouse l'escalier jusqu'au palier choisi. */
+      defs = '<defs><clipPath id="axe-clip"><rect x="0" y="0" width="'
+           + X(o.mois) + '" height="' + H + '"/></clipPath></defs>';
+      traceVif = '<path class="axe-trace-vif" d="' + d + '" clip-path="url(#axe-clip)"/>';
+    }
+  }
+
+  /* Reperes de mois */
+  const pas = horizon > 12 ? 6 : horizon > 6 ? 3 : 1;
+  let axes = '';
+  for (let m = 0; m <= horizon; m += pas) {
+    axes += '<text class="axe-x" x="' + X(m) + '" y="' + (H - 10) + '" text-anchor="middle">'
+          + (m === 0 ? 'auj.' : moisNom(m)) + '</text>';
+  }
+  axes += '<text class="axe-y" x="' + (gL - 8) + '" y="' + (Y(charge(0)) + 4) + '" text-anchor="end">'
+        + Math.round(charge(0)) + '\u00a0\u20ac</text>'
+        + '<text class="axe-y" x="' + (gL - 8) + '" y="' + (Y(0) + 4) + '" text-anchor="end">0</text>';
+
+  /* Les arrets */
+  let pts = '';
+  options.forEach(function (o, idx) {
+    // Pas de marqueur pour l'habitude : elle n'a pas de date propre, et le
+    // sien se superposerait a celui du dernier paiement.
+    if (o.habitude) return;
+    const actif = idx === choisi;
+    const restant = Math.max(0, charge(0) - o.libere);
+    const cx = X(Math.max(0.35, o.mois)), cy = Y(restant);
+    if (actif && o.mois > 0) {
+      pts += '<line class="axe-guide" x1="' + cx + '" y1="' + cy + '" x2="' + cx + '" y2="' + Y(0) + '"/>';
+    }
+    pts += '<circle class="axe-pt' + (actif ? ' actif' : '') + '" cx="' + cx + '" cy="' + cy + '" r="' + (actif ? 7 : 5) + '"/>';
+  });
+
+  svg.innerHTML = defs
+    + '<line class="axe-sol" x1="' + gL + '" y1="' + Y(0) + '" x2="' + (W - gR) + '" y2="' + Y(0) + '"/>'
+    + axes
+    + '<path class="axe-trace" d="' + d + '"/>'
+    + traceVif
+    + chute
+    + pts;
+
+  svg.classList.remove('anime');
+  void svg.getBoundingClientRect();
+  svg.classList.add('anime');
 }
+
+function choisirOption(options, idx) {
+  const o = options[idx];
+  const charge = totalLegers();
+  selectedStrategy = { idx: idx, id: o.id, cible: o.cible, libere: o.libere,
+                       cout: o.cout, differe: o.mois, title: o.titre,
+                       sansChiffre: !!o.habitude };
+
+  document.querySelectorAll('.axe-opt').forEach(function (b, i) {
+    const actif = i === idx;
+    b.classList.toggle('actif', actif);
+    b.setAttribute('aria-checked', actif ? 'true' : 'false');
+  });
+
+  /* Le resultat s'affiche dans l'en-tete, a cote du montant actuel : plus
+     de bloc separe sous les options. */
+  const restant = Math.max(0, charge - o.libere);
+  const cible = document.getElementById('axe-cible');
+  document.getElementById('axe-vers').style.visibility = 'visible';
+  cible.textContent = formatEuro(restant) + '/mois';
+  cible.style.animation = 'none';
+  void cible.offsetWidth;
+  cible.style.animation = 'countUp 0.34s var(--ease-out) both';
+
+  document.getElementById('axe-detail').innerHTML = o.phrase;
+  dessinerAxe(options, idx);
+
+  document.getElementById('btn-s3-next').disabled = false;
+  /* « Ne rien avancer » ne designe personne : laisser un nom dans le champ
+     ferait proposer a l'ecran 5 l'inverse de ce qui vient d'etre choisi. */
+  const pi = document.getElementById('priority-input');
+  if (pi) pi.value = o.cible ? (o.cible.name || 'ce paiement') : '';
+}
+
+
 
 document.getElementById('btn-s3-next').addEventListener('click', () => showScreen(4));
 
 /* ══════════════════════════════════════════════
    SCREEN 4 — Pedagogy
 ══════════════════════════════════════════════ */
+document.getElementById('accum-seg').addEventListener('click', (e) => {
+  const b = e.target.closest('.accum-opt');
+  if (!b) return;
+  rythmeChoisi = parseInt(b.dataset.rythme) || 0;
+  document.querySelectorAll('.accum-opt').forEach(function (o) {
+    const actif = o === b;
+    o.classList.toggle('actif', actif);
+    o.setAttribute('aria-checked', actif ? 'true' : 'false');
+  });
+  dessinerAccum();
+});
+
 document.getElementById('btn-s4-next').addEventListener('click', () => showScreen(5));
+
+/* ══════════════════════════════════════════════
+   SCREEN 4 — L'enchaînement, chiffré
+   ══════════════════════════════════════════════
+   Deux choses qu'aucun autre écran ne dit :
+   l'encours total, et ce que devient la charge si l'on reprend un
+   paiement à chaque fois qu'un se termine. */
+
+let rythmeChoisi = 0;
+
+/* Ce qu'un paiement coûte encore : mensualité × mois restants. */
+function encoursDe(liste) {
+  return liste.reduce(function (t, p) { return t + coutSolde(p); }, 0);
+}
+
+/* La charge au mois m : un paiement de n mois pèse sur les mois 0..n-1. */
+function chargeAuMois(liste, m) {
+  return liste.reduce(function (t, p) {
+    return t + (parseInt(p.months) > m ? parseFloat(p.amount) : 0);
+  }, 0);
+}
+
+/* La série des charges mensuelles. rythme = 0 : rien de nouveau. Sinon on
+   ajoute un paiement tous les `rythme` mois, au montant et à la durée
+   moyens de ceux déjà déclarés — pas un chiffre inventé, le sien. */
+function serieCharge(liste, rythme, horizon) {
+  const serie = [];
+  for (let m = 0; m <= horizon; m++) serie.push(chargeAuMois(liste, m));
+  if (!rythme || !liste.length) return serie;
+
+  const moyMontant = liste.reduce(function (t, p) { return t + parseFloat(p.amount); }, 0) / liste.length;
+  const moyDuree = Math.max(2, Math.round(
+    liste.reduce(function (t, p) { return t + parseInt(p.months); }, 0) / liste.length));
+
+  for (let debut = rythme; debut <= horizon; debut += rythme) {
+    for (let m = debut; m < Math.min(serie.length, debut + moyDuree); m++) serie[m] += moyMontant;
+  }
+  return serie;
+}
+
+function moisNom(decalage) {
+  const d = new Date();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + decalage);
+  return d.toLocaleDateString('fr-FR', { month: 'short' });
+}
+function moisAnnee(decalage) {
+  const d = new Date();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + decalage);
+  return d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+}
+
+function setupScreen4() {
+  const legers = paiementsLegers();
+  const tous = getValidPayments();
+
+  /* ── A. L'encours ── */
+  const encTout   = encoursDe(tous);
+  const encLegers = encoursDe(legers);
+  /* Comme ailleurs : le sujet de la brique en tete. Un credit auto sur
+     36 mois ferait un encours de 8 640 EUR qui n'a rien a voir avec le 3x
+     dont on est venu parler. */
+  const enc = legers.length ? encLegers : encTout;
+  const valEl = document.getElementById('encours-val');
+  const subEl = document.getElementById('encours-sub');
+
+  animerNombre(valEl, enc);
+
+  const bouts = [];
+  bouts.push(legers.length
+    ? 'sur tes paiements fractionnés'
+    : 'sur tes crédits en cours');
+  const rev = revenuMensuel();
+  if (rev > 0) {
+    bouts.push('soit <strong>' + (enc / rev).toFixed(1).replace('.', ',') + ' mois</strong> de tes revenus');
+  }
+  if (legers.length && encTout !== encLegers) {
+    bouts.push('avec tes autres crédits\u00a0: <strong>' + formatEuro(Math.round(encTout)) + '</strong>');
+  }
+  subEl.innerHTML = bouts.join('  ·  ');
+
+  /* ── B. L'enchaînement ── */
+  rythmeChoisi = 0;
+  document.querySelectorAll('.accum-opt').forEach(function (b) {
+    const actif = b.dataset.rythme === '0';
+    b.classList.toggle('actif', actif);
+    b.setAttribute('aria-checked', actif ? 'true' : 'false');
+  });
+  dessinerAccum();
+}
+
+/* Compte jusqu'au montant : le nombre mérite qu'on le regarde arriver.
+   Respecte prefers-reduced-motion. */
+function animerNombre(el, cible) {
+  const exact = formatEuro(Math.round(cible));
+  // La valeur d'abord : rien ne doit dependre de l'animation pour s'afficher.
+  el.textContent = exact;
+
+  const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduit || cible <= 0) return;
+
+  const duree = 750, debut = performance.now();
+  function pas(t) {
+    const k = Math.min(1, (t - debut) / duree);
+    el.textContent = formatEuro(Math.round(cible * (1 - Math.pow(1 - k, 3))));
+    if (k < 1) requestAnimationFrame(pas);
+  }
+  requestAnimationFrame(pas);
+
+  // Filet : requestAnimationFrame s'arrete si l'onglet cesse de composer, et
+  // le compteur resterait fige sur un montant faux. setTimeout, lui, part
+  // meme en arriere-plan.
+  clearTimeout(el._filet);
+  el._filet = setTimeout(function () { el.textContent = exact; }, duree + 120);
+}
+
+function dessinerAccum() {
+  const svg = document.getElementById('accum-svg');
+  const desc = document.getElementById('accum-desc');
+  const bloc = document.getElementById('accum');
+  const legers = paiementsLegers();
+
+  if (!legers.length) {
+    bloc.style.display = 'none';
+    return;
+  }
+  bloc.style.display = '';
+
+  const maxMois = Math.max.apply(null, legers.map(function (p) { return parseInt(p.months); }));
+  const horizon = Math.min(24, Math.max(12, maxMois + 6));
+
+  const base = serieCharge(legers, 0, horizon);
+  const scen = serieCharge(legers, rythmeChoisi, horizon);
+  const haut = Math.max.apply(null, base.concat(scen)) * 1.18 || 1;
+
+  const W = 640, H = 240, gL = 46, gR = 14, gT = 14, gB = 30;
+  const X = function (m) { return gL + (m / horizon) * (W - gL - gR); };
+  const Y = function (v) { return H - gB - (v / haut) * (H - gT - gB); };
+
+  /* Aire pleine = ce qui s'éteint tout seul. */
+  let aire = 'M ' + X(0) + ' ' + Y(base[0]);
+  for (let m = 1; m <= horizon; m++) aire += ' L ' + X(m) + ' ' + Y(base[m]);
+  aire += ' L ' + X(horizon) + ' ' + Y(0) + ' L ' + X(0) + ' ' + Y(0) + ' Z';
+
+  let trait = 'M ' + X(0) + ' ' + Y(base[0]);
+  for (let m = 1; m <= horizon; m++) trait += ' L ' + X(m) + ' ' + Y(base[m]);
+
+  /* Pointillé = ce que devient la charge si l'on reprend. */
+  let scenTrait = '';
+  if (rythmeChoisi) {
+    scenTrait = 'M ' + X(0) + ' ' + Y(scen[0]);
+    for (let m = 1; m <= horizon; m++) scenTrait += ' L ' + X(m) + ' ' + Y(scen[m]);
+  }
+
+  /* Repères d'axe : quelques mois, pas tous. */
+  const pas = horizon > 18 ? 6 : horizon > 10 ? 3 : 2;
+  let axes = '';
+  for (let m = 0; m <= horizon; m += pas) {
+    axes += '<text class="accum-axe-x" x="' + X(m) + '" y="' + (H - 10) + '" text-anchor="middle">'
+          + (m === 0 ? 'auj.' : moisNom(m)) + '</text>';
+  }
+  axes += '<text class="accum-axe-y" x="' + (gL - 8) + '" y="' + (Y(0) + 4) + '" text-anchor="end">0</text>'
+        + '<text class="accum-axe-y" x="' + (gL - 8) + '" y="' + (Y(haut / 1.18) + 4) + '" text-anchor="end">'
+        + Math.round(haut / 1.18) + '\u00a0€</text>';
+
+  svg.innerHTML =
+      '<defs><linearGradient id="grad-accum" x1="0" y1="0" x2="0" y2="1">'
+    + '<stop offset="0%" stop-color="var(--violet)" stop-opacity="0.34"/>'
+    + '<stop offset="100%" stop-color="var(--violet)" stop-opacity="0.02"/>'
+    + '</linearGradient></defs>'
+    + '<line class="accum-sol" x1="' + gL + '" y1="' + Y(0) + '" x2="' + (W - gR) + '" y2="' + Y(0) + '"/>'
+    + axes
+    + '<path class="accum-aire" d="' + aire + '" fill="url(#grad-accum)"/>'
+    + '<path class="accum-trait" d="' + trait + '"/>'
+    + (scenTrait ? '<path class="accum-scen" d="' + scenTrait + '"/>' : '');
+
+  svg.classList.remove('anime');
+  void svg.getBoundingClientRect();
+  svg.classList.add('anime');
+
+  document.getElementById('accum-legende').innerHTML =
+      '<span class="lg"><i class="lg-plein"></i>Tes paiements actuels</span>'
+    + (rythmeChoisi ? '<span class="lg"><i class="lg-tirets"></i>Avec un paiement de plus tous les '
+        + rythmeChoisi + ' mois</span>' : '');
+
+  /* ── La phrase, avec ses chiffres ── */
+  const sur12 = function (serie) {
+    let t = 0;
+    for (let m = 0; m < Math.min(12, serie.length); m++) t += serie[m];
+    return Math.round(t);
+  };
+
+  if (!rythmeChoisi) {
+    let fin = -1;
+    for (let m = 0; m <= horizon; m++) { if (base[m] === 0) { fin = m; break; } }
+    desc.innerHTML = fin >= 0
+      ? 'Sans nouveau paiement fractionné, ta charge s’éteint en <strong>' + moisAnnee(fin)
+        + '</strong>. Sur les 12 prochains mois, tu verseras <strong>' + formatEuro(sur12(base)) + '</strong>.'
+      : 'Sur les 12 prochains mois, tu verseras <strong>' + formatEuro(sur12(base))
+        + '</strong> de paiements fractionnés.';
+    return;
+  }
+
+  /* Le plancher : à partir du moment où le premier ajout entre, la charge
+     ne redescend plus en dessous. C'est ça, l'enchaînement. */
+  let plancher = Infinity;
+  for (let m = rythmeChoisi; m <= horizon; m++) plancher = Math.min(plancher, scen[m]);
+  const ecart = sur12(scen) - sur12(base);
+
+  desc.innerHTML = 'En reprenant un paiement tous les ' + rythmeChoisi
+    + ' mois, ta charge ne redescend jamais sous <strong>' + formatEuro(Math.round(plancher))
+    + '/mois</strong>\u00a0: tu ne te libères plus. Sur 12 mois, cela fait <strong>'
+    + formatEuro(Math.abs(ecart)) + '</strong> de plus qu’en n’en reprenant aucun.';
+}
 
 /* ══════════════════════════════════════════════
    SCREEN 5 — Engagement
@@ -1260,14 +2283,22 @@ document.getElementById('btn-s5-validate').addEventListener('click', () => {
   document.getElementById('btn-s5-validate').disabled = true;
 
   // Build engagements array for completeBrick
+  /* Ce qui sort de la brique. On ne compte que les paiements valides : une
+     carte vide n'est pas un engagement. Et la date de liberation ne porte
+     que sur les fractionnes — un credit amortissable court bien au-dela. */
+  const valides   = getValidPayments();
+  const totalTout = getTotalMonthly();
+  const totalFrac = totalLegers();
+  const libFrac   = dateLiberationLegers();
+
   const engagements = [
     {
       type: 'paiements_fractionnes',
       label: engagementText,
       details: {
-        totalMonthly: getTotalMonthly(),
-        paymentsCount: getValidPayments().length,
-        liberationDate: getLiberationDate(),
+        totalMonthly: totalTout,
+        paymentsCount: valides.length,
+        liberationDate: libFrac ? libFrac.texte : null,
         strategy: selectedStrategy ? selectedStrategy.title : null,
       },
     }
@@ -1276,18 +2307,23 @@ document.getElementById('btn-s5-validate').addEventListener('click', () => {
   setTimeout(() => {
     completeBrickFull(BRICK_ID, {
     profileFields: {
-      bnpl_mensualite_total:  payments.reduce((a,p) => a + (parseFloat(p.amount)||0), 0),
-      bnpl_engagement_count:  payments.length,
-      bnpl_date_liberation:   window._bnplDateLiberation || null,
-      bnpl_strategie_choisie: selectedEngagement || null,
-      bnpl_taux_effort:       profil.revenus_nets_mensuel
-                                ? Math.round(payments.reduce((a,p) => a+(parseFloat(p.amount)||0),0)
-                                  / profil.revenus_nets_mensuel * 100)
-                                : null
+      bnpl_mensualite_total:        totalTout,
+      bnpl_mensualite_fractionnes:  totalFrac,
+      bnpl_engagement_count:        valides.length,
+      bnpl_date_liberation:         libFrac ? libFrac.texte : null,
+      // selectedEngagement vaut 0, 1 ou 2 : `|| null` effacait le premier choix.
+      bnpl_strategie_choisie:       (selectedEngagement === null || selectedEngagement === undefined)
+                                      ? null : selectedEngagement,
+      // tauxEffort() porte la cascade des cles de revenu ; la lecture
+      // directe de profil.revenus_nets_mensuel renvoyait souvent null.
+      bnpl_taux_effort:             tauxEffort(totalTout)
     },
     rawData: { payments: payments, selectedEngagement: selectedEngagement },
     engagements: engagements,
-    insights: buildInsights(BRICK_ID, profil, { bnpl_mensualite_total: payments.reduce((a,p)=>a+(parseFloat(p.amount)||0),0), bnpl_date_liberation: window._bnplDateLiberation })
+    insights: buildInsights(BRICK_ID, profil, {
+      bnpl_mensualite_fractionnes: totalFrac,
+      bnpl_date_liberation:        libFrac ? libFrac.texte : null
+    })
   });
     setupExitScreen(engagementText);
     showScreen('exit');
@@ -1300,23 +2336,28 @@ document.getElementById('btn-s5-validate').addEventListener('click', () => {
 function setupExitScreen(eng) {
   const total = getTotalMonthly();
   const count = getValidPayments().length;
-  const libDate = getLiberationDate();
+  /* La liberation ne concerne que les fractionnes : annoncer la fin d'un
+     credit auto comme « date de liberation » de cette brique serait faux. */
+  const lib = dateLiberationLegers();
+  const frac = totalLegers();
 
   document.getElementById('exit-subtitle').textContent =
     `${count} paiement${count > 1 ? 's' : ''} recensé${count > 1 ? 's' : ''} · ${formatEuro(total)}/mois ce mois-ci.`;
 
+  const puce = 'width="14" height="14" viewBox="0 0 24 24" fill="none" '
+             + 'stroke="currentColor" stroke-width="2.5" stroke-linecap="round"';
   const summary = document.getElementById('exit-summary');
   summary.innerHTML = `
     <div class="exit-item">
-      <span class="exit-item-icon">📋</span>
+      <svg class="exit-item-icon" ${puce}><path d="M4 6h16M4 12h16M4 18h10"/></svg>
       <span class="exit-item-text">${count} engagement${count > 1 ? 's' : ''} en cours — ${formatEuro(total)}/mois au total</span>
     </div>
+    ${lib ? `<div class="exit-item">
+      <svg class="exit-item-icon" ${puce}><path d="M8 7V3m8 4V3M5 11h14M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <span class="exit-item-text">Libéré de tes paiements fractionnés en ${lib.texte} — ${formatEuro(frac)}/mois</span>
+    </div>` : ''}
     <div class="exit-item">
-      <span class="exit-item-icon">📅</span>
-      <span class="exit-item-text">Date de libération estimée : ${libDate}</span>
-    </div>
-    <div class="exit-item">
-      <span class="exit-item-icon">🎯</span>
+      <svg class="exit-item-icon" ${puce}><path d="M20 6L9 17l-5-5"/></svg>
       <span class="exit-item-text">${escHtml(eng)}</span>
     </div>
   `;
@@ -1351,73 +2392,74 @@ function escAttr(str) {
 
 // ── PANEL PROGRESSION V3 ────────────────────────────────────────
 (function setupProgressPanel() {
-  // Récupère les noms d'écrans depuis les titres .brick-title ou .screen-title
-  function getScreenLabels() {
-    const screens = document.querySelectorAll('.screen');
-    const labels = [];
-    screens.forEach((s, i) => {
-      const t = s.querySelector('.brick-title, .screen-title, h2, h3');
-      labels.push(t ? t.textContent.trim().slice(0, 32) : 'Étape ' + (i + 1));
-    });
-    return labels;
-  }
+  /* Libelles ecrits, pas derives des titres : un titre de page (« Voila ce
+     que ces paiements prennent ensemble. ») tronque a 32 caracteres ne fait
+     pas un libelle d'etape. L'ecran de sortie n'en est pas une. */
+  const ETAPES = [
+    'Introduction',
+    'Tes paiements',
+    'Ce qu\u2019ils p\u00e8sent',
+    'Par quoi commencer',
+    'Le vrai pi\u00e8ge',
+    'Ton engagement'
+  ];
 
-  function updatePanel(activeIdx) {
-    const screens = document.querySelectorAll('.screen');
-    const total = screens.length;
-    const labels = getScreenLabels();
-    const pct = total > 1 ? Math.round((activeIdx / (total - 1)) * 100) : 0;
-    const clampedPct = Math.min(pct, 100);
+  function updatePanel(actif) {
+    const total = ETAPES.length;
+    // Sur l'ecran de sortie, la brique est finie : 100 %, tout coche.
+    const fini = actif >= total;
+    const idx = fini ? total - 1 : Math.max(0, Math.min(actif, total - 1));
+    const pct = fini ? 100 : Math.round((idx / (total - 1)) * 100);
 
-    // Ring
     const arc = document.getElementById('bpc-ring-arc');
-    const pctEl = document.getElementById('bpc-ring-pct');
     if (arc) {
       const circ = 188.5;
-      arc.setAttribute('stroke-dashoffset', String(circ - (circ * clampedPct / 100)));
+      arc.setAttribute('stroke-dashoffset', String(circ - (circ * pct / 100)));
     }
-    if (pctEl) pctEl.textContent = clampedPct + '%';
+    const pctEl = document.getElementById('bpc-ring-pct');
+    if (pctEl) pctEl.textContent = pct + '%';
 
-    // Title
     const titleEl = document.getElementById('bpc-step-title');
-    if (titleEl) titleEl.textContent = labels[activeIdx] || 'Étape ' + (activeIdx + 1);
+    if (titleEl) titleEl.textContent = fini ? 'Termin\u00e9' : ETAPES[idx];
 
-    // Steps list
     const list = document.getElementById('bpc-steps-list');
-    if (list) {
-      list.innerHTML = '';
-      labels.slice(0, 7).forEach((label, i) => {
-        const div = document.createElement('div');
-        div.className = 'bpc-step' + (i < activeIdx ? ' done' : i === activeIdx ? ' active' : '');
-        const isDone = i < activeIdx;
-        const numContent = isDone
-          ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
-          : String(i + 1);
-        div.innerHTML = '<span class="bpc-step-num">' + numContent + '</span><span class="bpc-step-label">' + label + '</span>';
-        list.appendChild(div);
-      });
-    }
+    if (!list) return;
+    list.innerHTML = '';
+    ETAPES.forEach(function (label, i) {
+      const faite = fini || i < idx;
+      // Seul ce qui est deja franchi se reclique : revenir sur un ecran deja
+      // vu est legitime, sauter sur un ecran non renseigne ne l'est pas.
+      const cliquable = faite;
+      const el = document.createElement(cliquable ? 'button' : 'div');
+      if (cliquable) { el.type = 'button'; el.setAttribute('aria-label', 'Revenir \u00e0\u00a0: ' + label); }
+      el.className = 'bpc-step' + (faite ? ' done' : i === idx ? ' active' : '')
+                   + (cliquable ? ' cliquable' : '');
+      const num = faite
+        ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+        : String(i + 1);
+      el.innerHTML = '<span class="bpc-step-num">' + num + '</span>'
+        + '<span class="bpc-step-label">' + label + '</span>';
+      if (cliquable) {
+        el.addEventListener('click', function () {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          showScreen(i);
+        });
+      }
+      list.appendChild(el);
+    });
   }
 
-  // Observer l'écran actif
-  function getCurrentScreenIdx() {
-    const screens = Array.from(document.querySelectorAll('.screen'));
-    for (let i = 0; i < screens.length; i++) {
-      if (screens[i].style.display !== 'none') return i;
-    }
-    return 0;
-  }
+  /* Cette brique navigue avec showScreen(), pas avec goNext/goToScreen : le
+     panneau surchargeait des fonctions qui n'existent pas ici et ne bougeait
+     donc jamais. On enveloppe la vraie. */
+  const original = window.showScreen;
+  window.showScreen = function (idx) {
+    if (original) original.apply(this, arguments);
+    const n = (idx === 'exit') ? ETAPES.length : parseInt(idx, 10) || 0;
+    updatePanel(n);
+  };
 
-  // Patch les fonctions de navigation existantes
-  const origGoNext = window.goNext;
-  const origGoBack = window.goBack;
-  const origGoToScreen = window.goToScreen;
-  window.goNext = function() { if (origGoNext) origGoNext.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
-  window.goBack = function() { if (origGoBack) origGoBack.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
-  window.goToScreen = function() { if (origGoToScreen) origGoToScreen.apply(this, arguments); setTimeout(() => updatePanel(getCurrentScreenIdx()), 50); };
-
-  // Init
-  document.addEventListener('DOMContentLoaded', () => setTimeout(() => updatePanel(getCurrentScreenIdx()), 100));
+  updatePanel(0);
 })();
 </script>
 <script>
@@ -1469,9 +2511,7 @@ function escAttr(str) {
   // Cette page n'a pas d'initialisation asynchrone ou se greffer : la
   // garde vit seule. requireAuth() redirige s'il n'y a pas de session,
   // et ne fait rien sinon.
-  (async function () {
-    try { if (typeof requireAuth === 'function') await requireAuth(); } catch (e) {}
-  })();
+
 </script>
 </body>
 </html>

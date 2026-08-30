@@ -591,11 +591,14 @@ function buildInsights(brickId, profil, data) {
   }
   if (brickId === 'paiements_fractionnes') {
     const liberation = data.bnpl_date_liberation;
-    const mensualite = data.bnpl_mensualite_total || 0;
+    // Ce qui revient a cette date, ce sont les paiements fractionnes seuls :
+    // un credit amortissable continue bien au-dela. L'ancien champ reste en
+    // repli pour les etats deja enregistres.
+    const mensualite = data.bnpl_mensualite_fractionnes || data.bnpl_mensualite_total || 0;
     if (liberation && mensualite > 0) {
       ins.push({ id: 'ins_bnpl_liberation', type: 'projection',
         titre: 'Date de libération BNPL',
-        contenu: `À partir du ${liberation}, tu récupères ${formatEuro(mensualite)}/mois de marge — si tu n'ajoutes pas de nouveaux paiements.` });
+        contenu: `À partir de ${liberation}, tu récupères ${formatEuro(mensualite)}/mois de marge — si tu n'ajoutes pas de nouveaux paiements.` });
     }
   }
   if (brickId === 'fonds_urgence') {
@@ -623,6 +626,10 @@ const BRICK_FILES = {
 function getNextBrick(currentBrickId) {
   let dash = loadFromStorage('fund_dashboard') || getMockDashboard();
   const currentIdx = dash.briques.findIndex(br => br.id === currentBrickId);
+  // Brique absente du parcours (pas encore publiee) : findIndex renvoie -1,
+  // et `i > -1` est vrai des le premier element — on proposait alors la
+  // premiere brique de la liste comme suite. Mieux vaut ne rien proposer.
+  if (currentIdx === -1) return null;
   const next = dash.briques.find((br, i) => i > currentIdx && br.statut !== 'terminee');
   if (!next) return null;
   const meta = BRIQUES_META[next.id];
