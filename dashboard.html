@@ -91,7 +91,6 @@
     @media(prefers-reduced-motion:reduce){ *,*::before,*::after{ animation-duration:.01ms!important; transition-duration:.01ms!important; } }
 
     .serif { font-family:var(--font-display); }
-    .instrument { font-family:var(--font-ornement); }
 
     @keyframes slideUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
     @keyframes shimmer { to { background-position:-400% 0; } }
@@ -114,66 +113,13 @@
       transition: background 0.3s ease, border-color 0.3s ease;
     }
 
-    .nav-left { display:flex; align-items:center; gap:2.5rem; }
 
     /* Logo sobre — cercle + point, sans glow */
-    .logo {
-      display:flex; align-items:center; gap:0.5rem;
-      font-weight:700; font-size:0.9375rem;
-      color: var(--text);
-      letter-spacing:-0.02em;
-      text-decoration:none;
-      transition: opacity 0.15s;
-    }
-    .logo:hover { opacity:0.75; }
-    .logo-mark circle.dot { fill: var(--accent-strong); transition: fill 0.3s ease; }
-    html.dark .logo-mark circle.dot { fill: #A78BFA; }
 
     /* Liens nav — texte simple, état actif = poids + couleur, pas de pilule */
-    .nav-links { display:flex; align-items:center; gap:1.75rem; }
-    .nav-link {
-      font-size:0.8125rem; font-weight:500;
-      color: var(--text-muted);
-      text-decoration:none;
-      transition: color var(--t);
-      padding:0;
-      border:none; background:none;
-    }
-    .nav-link:hover { color: var(--text); }
-    .nav-link.active { color: var(--text); font-weight:600; }
 
-    .nav-right { display:flex; align-items:center; gap:1rem; }
 
     /* Toggle theme pill */
-    .theme-toggle {
-      position:relative; width:52px; height:26px; border-radius:9999px;
-      background:#E7E5E4; border:1px solid rgba(28,25,23,0.08);
-      cursor:pointer; flex-shrink:0;
-      transition: background 0.25s ease, border-color 0.25s ease;
-    }
-    html.dark .theme-toggle {
-      background:rgba(255,255,255,0.08);
-      border-color:rgba(255,255,255,0.10);
-    }
-    .theme-toggle .knob {
-      position:absolute; top:2px; left:2px;
-      width:20px; height:20px; border-radius:9999px;
-      background:#FFFFFF;
-      box-shadow:0 1px 3px rgba(0,0,0,0.18);
-      transition: transform 200ms cubic-bezier(0.4,0,0.2,1), background 0.25s ease;
-    }
-    html.dark .theme-toggle .knob {
-      background:#1C1B33; transform:translateX(26px);
-    }
-    .theme-toggle .ico {
-      position:absolute; top:50%; transform:translateY(-50%);
-      color:var(--text-muted);
-      transition: opacity 0.25s ease; pointer-events:none;
-    }
-    .theme-toggle .ico-sun { left:6px; opacity:1; }
-    .theme-toggle .ico-moon { right:6px; opacity:0.4; }
-    html.dark .theme-toggle .ico-sun { opacity:0.35; }
-    html.dark .theme-toggle .ico-moon { opacity:1; color:#C4B5FD; }
 
     /* ══════════════════════════════════════════════════════════════
        LAYOUT
@@ -226,17 +172,6 @@
     }
 
     /* Kicker uppercase */
-    .hero-kicker {
-      font-size:0.6875rem; font-weight:600;
-      letter-spacing:0.14em; text-transform:uppercase;
-      color:var(--text-muted); margin-bottom:1.125rem;
-      display:flex; align-items:center; gap:0.5rem;
-    }
-    html.dark .hero-kicker { color:#A5B4FC; }
-    .hero-kicker-sep {
-      display:inline-block; width:3px; height:3px;
-      border-radius:50%; background:currentColor; opacity:0.5;
-    }
 
     /* Titre serif italic */
     .hero-title {
@@ -299,13 +234,6 @@
     html.dark .btn-hero-primary:hover { filter:brightness(1.08); }
     .btn-hero-primary:active { transform:scale(0.98); }
 
-    .btn-hero-secondary {
-      font-size:0.8125rem; font-weight:500;
-      color:var(--text-muted);
-      text-decoration:none;
-      transition: color var(--t);
-    }
-    .btn-hero-secondary:hover { color:var(--text); }
 
     /* Completed banner */
     .completed-banner {
@@ -356,7 +284,6 @@
     /* Séparateur section */
     /* Remplace par le rail : l'en-tete colle porte desormais sa propre
        separation, et seulement quand elle sert. */
-    .section-divider { display:none; }
 
     /* ══════════════════════════════════════════════════════════════
        ZONE 2 — MES BRIQUES (cartes compactes)
@@ -453,10 +380,6 @@
     .bq-dash { font-size:0.6875rem; color:var(--text-faint); flex-shrink:0; }
 
     /* Compat legacy (non utilisé mais évite erreur) */
-    .bq-info { display:none; }
-    .bq-badge-done { display:none; }
-    .bq-badge-soon { display:none; }
-    .bq-pack { display:none; }
 
     /* Sous-section "Bientôt" */
     /* Sous-titre de phase (vue depliee du parcours) */
@@ -467,16 +390,6 @@
     .phase-header .phase-count { color:var(--text-faint); font-weight:500; }
 
     /* Voir tout bouton */
-    .voir-tout-btn {
-      display:flex; align-items:center; justify-content:center; gap:0.375rem;
-      width:100%; padding:0.75rem;
-      border-radius:0.875rem;
-      border:1px dashed var(--border-mid);
-      font-size:0.78rem; font-weight:500; color:var(--text-muted);
-      cursor:pointer; transition: border-color var(--t), color var(--t), background var(--t);
-      margin-top:0.5rem;
-    }
-    .voir-tout-btn:hover { border-color:var(--border-hover); color:var(--text); background:var(--surface-2); }
 
     /* ══════════════════════════════════════════════════════════════
        ZONE 3 — INSIGHT CARD (style image-4)
@@ -651,18 +564,6 @@
     }
     @media (max-width: 640px) { .explorer-parcours { grid-template-columns: 1fr; } }
 
-    .explorer-section-divider {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 1.5rem 0 1rem;
-    }
-    .explorer-section-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
 
     /* Card simulateur */
     .sim-card {
@@ -847,20 +748,6 @@
       padding: 4px 12px;
       cursor: default;
     }
-    .pv-badge-bientot {
-      display: inline-block;
-      font-size: 0.625rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.1rem 0.4rem;
-      margin-left: 0.5rem;
-      vertical-align: middle;
-    }
 
     /* ── ADD ENGAGEMENT MODAL ── */
     .modal-overlay {
@@ -915,7 +802,6 @@
     @media(max-width:768px) {
       nav { padding:0 1.25rem; }
       main { padding:0 1.25rem 5rem; }
-      .nav-links { display:none; }
       .zone-hero { padding-top:2.5rem; }
       /* briques-grid is now a horizontal carousel — no grid override needed */
       .hero-title { font-size:1.875rem; }
@@ -1154,7 +1040,6 @@
     .groupe-fleche:focus-visible { outline:2px solid var(--accent-strong); outline-offset:2px; }
     /* L'etiquette des parcours ne colle plus aux cartes qu'elle annonce. */
     .explorer-groupe { margin:2.25rem 0 1rem; }
-    .explorer-section-divider { display:none; }
 
     /* Le bord droit du carrousel s'estompe : on voit qu'il continue. */
     .briques-grid {
@@ -1305,41 +1190,6 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="eng-modal-overlay">
-  <div class="modal" id="eng-modal">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
-      <h3 style="font-size:1rem;font-weight:700;">Ajouter un engagement</h3>
-      <button style="width:28px;height:28px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text-muted);" onclick="closeEngModal()">×</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:0.875rem;">
-      <div>
-        <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Type</label>
-        <select id="eng-type" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;">
-          <option value="fonds_urgence">Mini épargne de précaution</option>
-          <option value="decouvert">Plafond de découvert</option>
-          <option value="remboursement">Remboursement mensuel</option>
-          <option value="epargne">Épargne mensuelle</option>
-          <option value="autre">Autre objectif</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Libellé</label>
-        <input id="eng-label" type="text" placeholder="Ex. : Ne pas dépasser –100 € ce mois-ci" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;outline:none;" />
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
-        <div>
-          <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Cible (€)</label>
-          <input id="eng-cible" type="number" placeholder="300" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;outline:none;" />
-        </div>
-        <div>
-          <label style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Actuel (€)</label>
-          <input id="eng-actuel" type="number" placeholder="0" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;outline:none;" />
-        </div>
-      </div>
-      <button style="display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.875rem;border-radius:var(--r-full);background:linear-gradient(135deg,#8B5CF6,#6366F1);font-size:0.9rem;font-weight:700;color:#fff;border:none;" onclick="saveEngagement()">Enregistrer</button>
-    </div>
-  </div>
-</div>
 
 <script src="sidebar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1349,15 +1199,6 @@
   /* ─── Init BG canvas (no-op en V2 — canvas masqué) ─── */
   if (typeof initBgCanvas === 'function') initBgCanvas('bg-canvas');
 
-  /* ─── Theme toggle ───────────────────────────────────── */
-  (function() {
-    var btn = document.getElementById('theme-toggle-btn');
-    if (!btn) return;
-    btn.addEventListener('click', function() {
-      var isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('fundamental-theme', isDark ? 'dark' : 'light');
-    });
-  })();
 
   /* ─── STATE ─────────────────────────────────────────── */
   let currentUser = null;
@@ -2047,11 +1888,11 @@
     container.innerHTML = '';
 
     // Lire les données disponibles
-    const immoRaw = loadFromStorage('fund_brick_achat_immobilier');
+    const immoRaw = lireBrique('fund_brick_achat_immobilier');
     const immoData = immoRaw?.data || immoRaw || null;
-    const budgetRaw = loadFromStorage('fund_brick_budget_base');
+    const budgetRaw = lireBrique('fund_brick_budget_base');
     const budgetData = budgetRaw?.data || budgetRaw || null;
-    const fondsRaw = loadFromStorage('fund_brick_fonds_urgence');
+    const fondsRaw = lireBrique('fund_brick_fonds_urgence');
     const fondsData = fondsRaw?.data || fondsRaw || null;
 
     // 1. Capacité d'emprunt
@@ -2094,7 +1935,7 @@
     container.appendChild(simBudget);
 
     // 2. Visualiser mes dettes
-    const dettesSimData = loadFromStorage('fund_brick_plan_desendettement');
+    const dettesSimData = lireBrique('fund_brick_plan_desendettement');
     const dettesSimRaw = dettesSimData?.data || dettesSimData || null;
     const creditsMens = dettesSimRaw?.rawData?.credits_mensuel
       || dettesSimRaw?.credits_mensuel
@@ -2196,7 +2037,7 @@
     if (!container) return;
     container.innerHTML = '';
 
-    const immoRaw = loadFromStorage('fund_brick_achat_immobilier');
+    const immoRaw = lireBrique('fund_brick_achat_immobilier');
     const hasImmo = !!(immoRaw?.data || immoRaw);
 
     // 1. Préparer un achat immobilier
@@ -2216,7 +2057,7 @@
     container.appendChild(pvImmo);
 
     // 1bis. Investir dans le locatif
-    const locRawPv = loadFromStorage('fund_brick_immo_locatif');
+    const locRawPv = lireBrique('fund_brick_immo_locatif');
     const hasLoc = !!(locRawPv?.data || locRawPv);
     const pvLocatif = makePvCard({
       name: 'Investir dans le locatif',
@@ -2286,36 +2127,10 @@
     return icons[type] || icons.home;
   }
 
-  function addToPlan(id, btn) {
-    if (dash.briques.find(b => b.id === id)) return;
-    dash.briques.push({ id, statut: 'a_faire', progression: 0 });
-    save();
-    if (btn) { btn.classList.add('added'); btn.innerHTML = '✓'; btn.style.pointerEvents = 'none'; }
-    renderBriquesGrid();
-  }
 
-  /* ─── ENGAGEMENT MODAL ───────────────────────────────── */
-  function addEngagement() {
-    document.getElementById('eng-modal-overlay').classList.add('open');
-  }
-  function closeEngModal() {
-    document.getElementById('eng-modal-overlay').classList.remove('open');
-  }
   document.getElementById('adj-modal-overlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) closeAdjust();
   });
-  document.getElementById('eng-modal-overlay').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeEngModal();
-  });
-  function saveEngagement() {
-    const type   = document.getElementById('eng-type').value;
-    const label  = document.getElementById('eng-label').value.trim() || 'Nouvel engagement';
-    const cible  = parseInt(document.getElementById('eng-cible').value) || null;
-    const actuel = parseInt(document.getElementById('eng-actuel').value) || 0;
-    dash.engagements = dash.engagements || [];
-    dash.engagements.push({ id:'e'+Date.now(), type, label, montant_cible:cible, montant_actuel:actuel, atteint:false, brique_id:dash.brique_active_id });
-    save(); closeEngModal();
-  }
 
   // ── Mes briques / Mes données ─────────────────────────────
   function renderMesBriques() {
@@ -2326,7 +2141,7 @@
     const cards = [];
 
     // ── BRIQUE BUDGET BASE ──────────────────────────────────
-    const budgetRaw = loadFromStorage('fund_brick_budget_base');
+    const budgetRaw = lireBrique('fund_brick_budget_base');
     const budgetData = budgetRaw?.data || budgetRaw || null;
     if (budgetData && (budgetData.revenus > 0 || budgetData.total_besoins > 0)) {
       const revenus      = (budgetData.revenus || 0) + (budgetData.aides || 0);
@@ -2370,7 +2185,7 @@
     }
 
     // ── BRIQUE FONDS URGENCE / MATELAS ─────────────────────
-    const fondsRaw  = loadFromStorage('fund_brick_fonds_urgence');
+    const fondsRaw  = lireBrique('fund_brick_fonds_urgence');
     const fondsData = fondsRaw?.data || fondsRaw || null;
     if (fondsData && (fondsData.fonds_urgence_objectif > 0 || fondsData.fonds_urgence_actuel >= 0)) {
       const objectif = fondsData.fonds_urgence_objectif || fondsData.matelas_palier_solide || fondsData.matelas_palier_utile || 0;
@@ -2406,9 +2221,9 @@
 
     // ── DETTES EN COURS ─────────────────────────────────────
     // Lire en priorité depuis fund_brick_plan_desendettement, fallback sur budget
-    const dettesWidgetBrick = loadFromStorage('fund_brick_plan_desendettement');
+    const dettesWidgetBrick = lireBrique('fund_brick_plan_desendettement');
     const dettesWidgetRaw = dettesWidgetBrick?.data?.rawData || dettesWidgetBrick?.rawData || null;
-    const budgetForDettes = loadFromStorage('fund_brick_budget_base');
+    const budgetForDettes = lireBrique('fund_brick_budget_base');
     const budgetDettesData = budgetForDettes?.data || budgetForDettes || null;
     // Données dettes : source prioritaire = brique dettes complétée, fallback = budget
     const dettesRaw = dettesWidgetRaw?.dettes || budgetDettesData?.dettes || [];
@@ -2444,7 +2259,7 @@
     }
 
     // ── BRIQUE PREMIERS PAS BANCAIRES ───────────────────────
-    const ppbRaw  = loadFromStorage('fund_brick_premiers_pas_bancaires');
+    const ppbRaw  = lireBrique('fund_brick_premiers_pas_bancaires');
     const ppbData = ppbRaw?.data || ppbRaw || null;
     if (ppbData && ppbData.carte_courte) {
       const ppbNotions = (ppbData.notions_lues || []).length;
@@ -2466,7 +2281,7 @@
     }
 
     // ── BRIQUE GESTION DECOUVERT ────────────────────────────
-    const decouvertRaw  = loadFromStorage('fund_brick_gestion_decouvert');
+    const decouvertRaw  = lireBrique('fund_brick_gestion_decouvert');
     const decouvertData = decouvertRaw?.data || decouvertRaw || null;
     if (decouvertData && !decouvertData.decouvert_atteint && decouvertData.decouvert_montant > 0) {
       const montant  = decouvertData.decouvert_montant || 0;
@@ -2491,7 +2306,7 @@
     }
 
     // ── BRIQUE PAIEMENTS FRACTIONNES ────────────────────────
-    const fractRaw  = loadFromStorage('fund_brick_paiements_fractionnes');
+    const fractRaw  = lireBrique('fund_brick_paiements_fractionnes');
     const fractData = fractRaw?.data || fractRaw || null;
     if (fractData && !fractData.fractionnes_soldes && fractData.total_fractionne > 0) {
       cards.push({
@@ -2510,7 +2325,7 @@
     }
 
     // ── BRIQUE ACHAT IMMOBILIER ─────────────────────────────
-    const immoRaw  = loadFromStorage('fund_brick_achat_immobilier');
+    const immoRaw  = lireBrique('fund_brick_achat_immobilier');
     const immoData = immoRaw?.data || immoRaw || null;
     if (immoData && immoData.financing && immoData.financing.borrowingCapacity > 0) {
       const borrowing  = immoData.financing.borrowingCapacity || 0;
@@ -2565,7 +2380,7 @@
     }
 
     // ── BRIQUE INVESTISSEMENT LOCATIF ───────────────────────
-    const locRaw  = loadFromStorage('fund_brick_immo_locatif');
+    const locRaw  = lireBrique('fund_brick_immo_locatif');
     const locData = locRaw?.data || locRaw || null;
     // Brique terminée dès que le rawData (investment) est présent — même sans loyer saisi.
     if (locData && locData.investment) {
@@ -2667,6 +2482,8 @@
 
   window.addEventListener('storage', function(e) {
     if (e.key && e.key.startsWith('fund_brick_')) {
+      // Le cache de rendu doit tomber : c'est justement une brique qui change.
+      _cacheBriques = {};
       renderMesBriques();
       // Les cartes reconstruites repartagent les enseignements : le filet
       // des orphelins doit se recalculer dans la foulee.
@@ -2728,7 +2545,7 @@
     }
     var c2 = document.getElementById('chiffre-donnees');
     if (c2) {
-      var bd = (loadFromStorage('fund_brick_budget_base') || {}).data || {};
+      var bd = (lireBrique('fund_brick_budget_base') || {}).data || {};
       var rev = (bd.revenus || 0) + (bd.aides || 0);
       c2.textContent = rev > 0 ? formatEuro(rev) : '';
     }
@@ -2759,9 +2576,23 @@
     el.innerHTML = bouts.join('<span class="meta-sep">\u00b7</span>');
   }
 
+
+  /* ─── Lecture des briques ──────────────────────────────────
+     Memoisee pour la duree d'un rendu : fund_brick_budget_base etait relu
+     et re-parse quatre fois par passe. Le cache est vide au debut de chaque
+     rendu, sinon le tableau de bord cesserait de voir les changements. */
+  var _cacheBriques = {};
+  function lireBrique(cle) {
+    if (!(cle in _cacheBriques)) {
+      _cacheBriques[cle] = (typeof loadFromStorage === 'function' ? loadFromStorage(cle) : null) || null;
+    }
+    return _cacheBriques[cle];
+  }
+
   function renderAll() {
     // Defensive: ensure dash.briques is always an array
     if (!Array.isArray(dash.briques)) dash.briques = [];
+    _cacheBriques = {};   // une passe de rendu = une lecture par cle
     var fns = [renderHero, renderBriquesGrid, renderInsight, renderExplorer, renderMesBriques,
                renderEnseignements, renderQuizLink,
                majChiffresRail, majMetaExplorer, installerRail];

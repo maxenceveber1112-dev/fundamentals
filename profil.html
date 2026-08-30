@@ -330,6 +330,102 @@
       cursor: pointer;
     }
     .btn-cancel:hover { border-color: var(--border-hover); color: var(--text); }
+
+  /* ── Mes engagements ────────────────────────────────────────
+     Depose par chaque brique a sa fin. La forme varie selon la source :
+     certains portent une cible chiffree, d'autres un versement mensuel,
+     d'autres une simple phrase. Le rendu s'adapte plutot que d'imposer un
+     gabarit unique. */
+  .eng-section { margin: 0 0 2rem; }
+  .eng-entete { display:flex; align-items:baseline; gap:0.6rem; margin-bottom:0.2rem; }
+  .eng-titre {
+    font-family:var(--font-display); font-size:1.35rem; font-weight:400;
+    color:var(--text); margin:0;
+  }
+  .eng-compte {
+    font-family:var(--font-display); font-size:1rem; color:var(--accent-strong);
+  }
+  html.dark .eng-compte { color:#C4B5FD; }
+  .eng-compte-fond { color:var(--text-faint); }
+  .eng-sous-titre { font-size:0.8125rem; color:var(--text-muted); margin:0 0 1rem; }
+
+  .eng-liste { display:flex; flex-direction:column; gap:0.5rem; }
+  .eng-item {
+    display:flex; align-items:flex-start; gap:0.75rem;
+    padding:0.85rem 1rem;
+    background:var(--bg-elevated); border:1px solid var(--border-subtle);
+    border-radius:0.875rem;
+  }
+  html.dark .eng-item { background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); }
+  .eng-etat {
+    flex:0 0 auto; width:18px; height:18px; margin-top:0.1rem;
+    border-radius:50%; border:2px solid var(--border-hover);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; transition:all var(--t);
+  }
+  .eng-item.tenu .eng-etat { background:var(--green); border-color:var(--green); }
+  .eng-etat svg { display:none; }
+  .eng-item.tenu .eng-etat svg { display:block; }
+  .eng-corps { flex:1; min-width:0; }
+  .eng-label { font-size:0.875rem; font-weight:600; color:var(--text); line-height:1.4; }
+  .eng-item.tenu .eng-label { color:var(--text-muted); }
+  .eng-detail { font-size:0.78rem; color:var(--text-muted); margin-top:0.15rem; line-height:1.5; }
+  .eng-source { font-size:0.625rem; color:var(--text-faint); margin-top:0.3rem; letter-spacing:0.03em; }
+  /* La jauge n'apparait que si la brique a fourni une cible. */
+  .eng-jauge { margin-top:0.5rem; }
+  .eng-jauge-piste { height:3px; border-radius:9999px; background:var(--track); overflow:hidden; }
+  .eng-jauge-part { height:100%; border-radius:9999px; background:var(--accent-fill); }
+  .eng-jauge-txt {
+    display:flex; justify-content:space-between;
+    font-size:0.6875rem; color:var(--text-faint); margin-top:0.25rem;
+    font-variant-numeric:tabular-nums;
+  }
+  .eng-versement {
+    flex:0 0 auto; font-family:var(--font-display); font-size:0.95rem;
+    color:var(--accent-strong); white-space:nowrap;
+  }
+  html.dark .eng-versement { color:#C4B5FD; }
+
+
+  /* La page n'avait pas de modale : les styles arrivent avec elle. */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.45);
+    -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+    z-index:200; display:flex; align-items:center; justify-content:center; padding:1rem;
+    opacity:0; pointer-events:none; transition:opacity 0.2s;
+  }
+  html.dark .modal-overlay { background:rgba(0,0,0,0.7); }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal {
+    background:var(--bg-elevated); border:1px solid var(--border-mid);
+    border-radius:1.5rem; padding:1.75rem; width:100%; max-width:440px;
+    color:var(--text); box-shadow:var(--shadow-hover);
+    transform:translateY(20px); transition:transform 0.3s var(--ease-out);
+  }
+  html.dark .modal { background:#161824; }
+  .modal-overlay.open .modal { transform:translateY(0); }
+
+  .eng-ajouter {
+    margin-left:auto; background:none; border:1px solid var(--border-subtle);
+    font-family:inherit; padding:0 0.75rem; min-height:34px;
+    display:inline-flex; align-items:center; border-radius:9999px;
+    font-size:0.72rem; color:var(--text-muted); cursor:pointer;
+    transition:all var(--t); white-space:nowrap;
+  }
+  .eng-ajouter:hover { color:var(--text); border-color:var(--border-hover); }
+  .eng-ajouter:focus-visible { outline:2px solid var(--accent-strong); outline-offset:2px; }
+
+  .eng-enregistrer {
+    display:flex; align-items:center; justify-content:center; gap:0.5rem;
+    padding:0.875rem; border-radius:var(--r-full); border:none; cursor:pointer;
+    background:var(--accent-fill); color:var(--accent-pill-text);
+    font-family:inherit; font-size:0.9rem; font-weight:600;
+  }
+  html.dark .eng-enregistrer { background:linear-gradient(135deg,#6D28D9,#4F46E5); color:#fff; }
+  .eng-enregistrer:hover { filter:brightness(1.04); }
+
+  .eng-vide { font-size:0.8125rem; color:var(--text-faint); margin:0; line-height:1.6; }
+
   </style>
   <link rel="stylesheet" href="theme.css">
 </head>
@@ -339,6 +435,17 @@
   <p class="profil-kicker">Mon compte</p>
   <h1 class="profil-title">Profil & Objectifs</h1>
   <p class="profil-subtitle">Ton espace personnel arrive bient&ocirc;t.</p>
+
+  <!-- Ce que la personne s'est promis au fil de ses briques -->
+  <section class="eng-section" id="zone-engagements" style="display:none;">
+    <div class="eng-entete">
+      <h2 class="eng-titre">Mes engagements</h2>
+      <span class="eng-compte" id="eng-compte"></span>
+      <button type="button" class="eng-ajouter" onclick="addEngagement()">+ Ajouter</button>
+    </div>
+    <p class="eng-sous-titre" id="eng-sous-titre"></p>
+    <div class="eng-liste" id="eng-liste"></div>
+  </section>
 
   <div class="profil-card">
     <!-- SVG decorative icon — shield/star stylized -->
@@ -440,6 +547,133 @@
     }
   })();
 
+
+  /* ─── Mes engagements ──────────────────────────────────────
+     La page n'hydratait rien jusqu'ici : sans cet appel, dash resterait vide
+     et la section ne s'afficherait jamais. */
+  async function renderEngagements() {
+    if (typeof hydrateFromSupabase === 'function') {
+      try { await hydrateFromSupabase(); } catch (e) {}
+    }
+    const dash = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_dashboard') : null) || {};
+    const pris = (dash.engagements || []).filter(function (e) { return e && e.label; });
+
+    const zone = document.getElementById('zone-engagements');
+    const liste = document.getElementById('eng-liste');
+    if (!zone || !liste) return;
+    // Toujours visible : sans cela, impossible de creer son premier
+    // engagement puisque le bouton vit dans l'en-tete de la section.
+    zone.style.display = '';
+    if (!pris.length) {
+      liste.innerHTML = '<p class="eng-vide">Aucun engagement pour l\u2019instant. '
+        + 'Termine une brique, ou ajoute-en un toi-m\u00eame.</p>';
+      const c0 = document.getElementById('eng-compte');
+      if (c0) c0.textContent = '';
+      const s0 = document.getElementById('eng-sous-titre');
+      if (s0) s0.textContent = '';
+      return;
+    }
+
+    // Les engagements encore ouverts d'abord : c'est sur eux qu'on peut agir.
+    const tries = pris.slice().sort(function (a, b) {
+      return (a.atteint ? 1 : 0) - (b.atteint ? 1 : 0);
+    });
+
+    const tenus = pris.filter(function (e) { return e.atteint; }).length;
+    const cpt = document.getElementById('eng-compte');
+    if (cpt) cpt.innerHTML = tenus + '<span class="eng-compte-fond">/' + pris.length + '</span>';
+    const sous = document.getElementById('eng-sous-titre');
+    if (sous) {
+      sous.textContent = pris.length > 1
+        ? 'Ce que tu t\u2019es promis au fil de tes briques'
+        : 'Ce que tu t\u2019es promis en terminant ta brique';
+    }
+
+    liste.innerHTML = tries.map(function (e) {
+      const meta = (typeof BRIQUES_META !== 'undefined' && BRIQUES_META[e.brique_id]) || null;
+
+      let jauge = '';
+      const cible = parseFloat(e.montant_cible) || 0;
+      const actuel = parseFloat(e.montant_actuel) || 0;
+      if (cible > 0) {
+        const pct = Math.max(0, Math.min(100, Math.round(actuel / cible * 100)));
+        jauge = '<div class="eng-jauge">'
+          + '<div class="eng-jauge-piste"><div class="eng-jauge-part" style="width:' + pct + '%"></div></div>'
+          + '<div class="eng-jauge-txt"><span>' + formatEuro(actuel) + '</span>'
+          + '<span>' + formatEuro(cible) + '</span></div></div>';
+      }
+
+      const versement = (parseFloat(e.versement) || 0) > 0
+        ? '<div class="eng-versement">' + formatEuro(e.versement)
+          + '<span style="font-size:0.7rem;color:var(--text-faint)">/mois</span></div>'
+        : '';
+
+      return '<div class="eng-item' + (e.atteint ? ' tenu' : '') + '">'
+        + '<span class="eng-etat" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"'
+        + ' stroke="currentColor" stroke-width="4" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>'
+        + '<div class="eng-corps">'
+        + '<div class="eng-label">' + e.label + '</div>'
+        + (e.detail ? '<div class="eng-detail">' + e.detail + '</div>' : '')
+        + (meta ? '<div class="eng-source">' + meta.nom + '</div>' : '')
+        + jauge
+        + '</div>' + versement + '</div>';
+    }).join('');
+  }
+  renderEngagements();
+
+
+  /* ─── Ajouter un engagement ────────────────────────────────
+     saveEngagement s'appuyait sur `dash` et save(), propres au tableau de
+     bord. Ici on lit et on ecrit fund_dashboard directement. */
+  function addEngagement() {
+    const ov = document.getElementById('eng-modal-overlay');
+    if (!ov) return;
+    ov.classList.add('open');
+    document.addEventListener('keydown', _engEchap);
+    const premier = document.getElementById('eng-type');
+    if (premier) premier.focus();
+  }
+
+  function closeEngModal() {
+    const ov = document.getElementById('eng-modal-overlay');
+    if (ov) ov.classList.remove('open');
+    document.removeEventListener('keydown', _engEchap);
+  }
+
+  function _engEchap(e) { if (e.key === 'Escape') closeEngModal(); }
+
+  function saveEngagement() {
+    const type   = document.getElementById('eng-type').value;
+    const label  = document.getElementById('eng-label').value.trim() || 'Nouvel engagement';
+    const cible  = parseInt(document.getElementById('eng-cible').value, 10) || null;
+    const actuel = parseInt(document.getElementById('eng-actuel').value, 10) || 0;
+
+    const d = (typeof loadFromStorage === 'function' ? loadFromStorage('fund_dashboard') : null)
+            || (typeof getMockDashboard === 'function' ? getMockDashboard() : {});
+    d.engagements = d.engagements || [];
+    d.engagements.push({
+      id: 'e' + Date.now(), type: type, label: label,
+      montant_cible: cible, montant_actuel: actuel,
+      atteint: false, brique_id: d.brique_active_id || null
+    });
+    if (typeof saveToStorage === 'function') saveToStorage('fund_dashboard', d);
+
+    // Les champs ne doivent pas rester remplis pour la prochaine ouverture.
+    document.getElementById('eng-label').value = '';
+    document.getElementById('eng-cible').value = '';
+    document.getElementById('eng-actuel').value = '';
+
+    closeEngModal();
+    renderEngagements();
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const ov = document.getElementById('eng-modal-overlay');
+    if (ov) ov.addEventListener('click', function (e) {
+      if (e.target === ov) closeEngModal();
+    });
+  });
+
   function showDeleteConfirm() {
     document.getElementById('delete-confirm-box').style.display = 'block';
     document.getElementById('btn-delete-init').style.display = 'none';
@@ -467,5 +701,42 @@
   }
 </script>
 <script src="theme.js"></script>
+<!-- Creer un engagement a la main, en plus de ceux deposes par les briques -->
+<div class="modal-overlay" id="eng-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="eng-modal-titre">
+  <div class="modal" id="eng-modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <h3 id="eng-modal-titre" style="font-size:1rem;font-weight:700;">Ajouter un engagement</h3>
+      <button type="button" aria-label="Fermer" style="width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:none;display:flex;align-items:center;justify-content:center;color:var(--text-muted);cursor:pointer;font-size:1.1rem;" onclick="closeEngModal()">&times;</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.875rem;">
+      <div>
+        <label for="eng-type" style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Type</label>
+        <select id="eng-type" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;">
+          <option value="fonds_urgence">Mini &eacute;pargne de pr&eacute;caution</option>
+          <option value="decouvert">Plafond de d&eacute;couvert</option>
+          <option value="remboursement">Remboursement mensuel</option>
+          <option value="epargne">&Eacute;pargne mensuelle</option>
+          <option value="autre">Autre objectif</option>
+        </select>
+      </div>
+      <div>
+        <label for="eng-label" style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Libell&eacute;</label>
+        <input id="eng-label" type="text" placeholder="Ex. : Ne pas d&eacute;passer &ndash;100 &euro; ce mois-ci" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;outline:none;" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div>
+          <label for="eng-cible" style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Cible (&euro;)</label>
+          <input id="eng-cible" type="number" inputmode="numeric" placeholder="300" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;outline:none;" />
+        </div>
+        <div>
+          <label for="eng-actuel" style="font-size:0.8rem;color:var(--text-muted);display:block;margin-bottom:0.4rem;">Actuel (&euro;)</label>
+          <input id="eng-actuel" type="number" inputmode="numeric" placeholder="0" style="width:100%;padding:0.7rem;background:var(--surface-2);border:1px solid var(--border-mid);border-radius:var(--r-md);color:var(--text);font-size:0.875rem;font-family:inherit;outline:none;" />
+        </div>
+      </div>
+      <button type="button" class="eng-enregistrer" onclick="saveEngagement()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
