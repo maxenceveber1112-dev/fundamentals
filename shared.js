@@ -618,6 +618,7 @@ const BRICK_FILES = {
   premiers_pas_bancaires: 'brique-premiers-pas-bancaires.html',
   budget_base:          'brique-budget-base.html',
   fonds_urgence:        'brique-fonds-urgence.html',
+  paiements_fractionnes:'brique-paiements-fractionnes.html',
   achat_immobilier:     'brique-achat-immobilier.html',
   immo_locatif:         'brique-immo-locatif.html',
   plan_desendettement:  'brique-plan-desendettement.html'
