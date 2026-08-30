@@ -355,11 +355,9 @@
     .section-legende { font-size:0.75rem; color:var(--text-faint); }
 
     /* Séparateur section */
-    .section-divider {
-      height:1px; background:var(--border-subtle);
-      margin-bottom:1.5rem;
-      transition: background 0.3s ease;
-    }
+    /* Remplace par le rail : l'en-tete colle porte desormais sa propre
+       separation, et seulement quand elle sert. */
+    .section-divider { display:none; }
 
     /* ══════════════════════════════════════════════════════════════
        ZONE 2 — MES BRIQUES (cartes compactes)
@@ -462,11 +460,6 @@
     .bq-pack { display:none; }
 
     /* Sous-section "Bientôt" */
-    .soon-header {
-      font-size:0.6875rem; font-weight:600;
-      letter-spacing:0.1em; text-transform:uppercase;
-      color:var(--text-faint); margin:1.25rem 0 0.625rem;
-    }
     /* Sous-titre de phase (vue depliee du parcours) */
     .phase-header { display:flex; align-items:center; gap:0.45rem;
       font-size:0.7rem; font-weight:600; color:var(--text-muted);
@@ -1032,6 +1025,122 @@
     /* Renforce le verre existant cote sombre */
     html.dark .hero-cream{background:rgba(22,22,42,.34)!important;border-color:rgba(255,255,255,.09)!important;-webkit-backdrop-filter:blur(28px) saturate(1.4);backdrop-filter:blur(28px) saturate(1.4);}
     html.dark .insight-card{background:rgba(22,22,42,.34)!important;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);}
+  
+    /* ══════════════════════════════════════════════════════════════
+       LE RAIL — en-tetes de section
+       Au repos : le titre et son complement, sans filet ni ornement.
+       En defilement : l'en-tete s'accroche sous la barre de contexte,
+       se compacte, revele son chiffre, puis le suivant le pousse dehors.
+
+       Tous les etats passent par des variables declarees sur .section-head :
+       une seule regle pose chaque propriete, donc aucune bataille de
+       specificite possible.
+    ══════════════════════════════════════════════════════════════ */
+    .section-head {
+      --rail-titre:   1.55rem;
+      --rail-chiffre: 0;
+      --rail-decale:  -6px;
+      --rail-pad-h:   0.8rem;
+      --rail-pad-b:   0.55rem;
+      --rail-ombre:   none;
+
+      position:sticky; top:var(--rail-haut, 0px); z-index:6;
+      display:flex; align-items:baseline; justify-content:space-between;
+      gap:1.5rem; margin-bottom:0.4rem;
+      background:var(--bg);
+      padding:var(--rail-pad-h) 0 var(--rail-pad-b);
+      box-shadow:var(--rail-ombre);
+      transition:padding 0.22s var(--ease-out), box-shadow 0.22s var(--ease-out);
+    }
+    .section-head.collee {
+      --rail-titre:   1.05rem;
+      --rail-chiffre: 1;
+      --rail-decale:  0px;
+      --rail-pad-h:   0.6rem;
+      --rail-pad-b:   0.6rem;
+      --rail-ombre:   0 1px 0 var(--border-mid), 0 10px 18px -14px rgba(0,0,0,0.26);
+    }
+
+    .section-titre-bloc { display:flex; align-items:baseline; gap:0.6rem; min-width:0; }
+    .section-head .section-title {
+      font-size:var(--rail-titre);
+      transition:font-size 0.22s var(--ease-out);
+    }
+
+    /* Le chiffre dort au repos : on veut le titre nu. Il parait quand
+       l'en-tete se colle, la ou il renseigne sans encombrer. */
+    .section-chiffre {
+      font-family:var(--font-display); font-size:1.05rem; white-space:nowrap;
+      color:var(--accent-strong);
+      opacity:var(--rail-chiffre);
+      transform:translateX(var(--rail-decale));
+      transition:opacity 0.24s var(--ease-out), transform 0.24s var(--ease-out);
+    }
+    html.dark .section-chiffre { color:#C4B5FD; }
+    .chiffre-fond { color:var(--text-faint); }
+
+    /* Le complement s'escamote au collage : c'est ce qui rend le bandeau
+       compact, au lieu de figer un gros bloc en haut de l'ecran. */
+    .section-sub {
+      --sub-opacite: 1;
+      --sub-haut:    6rem;
+      --sub-marge:   1.4rem;
+      font-size:0.8125rem; color:var(--text-muted);
+      line-height:1.55; max-width:38rem;
+      margin:0 0 var(--sub-marge);
+      max-height:var(--sub-haut); opacity:var(--sub-opacite); overflow:hidden;
+      transition:opacity 0.2s var(--ease-out), max-height 0.24s var(--ease-out),
+                 margin 0.24s var(--ease-out);
+    }
+    .section-head.collee + .section-sub { --sub-opacite:0; --sub-haut:0; --sub-marge:0; }
+    .section-sub:empty { display:none; }
+
+    /* Les nombres de la meta Explorer, dans la fonte d'affichage. */
+    .meta-nombre { font-family:var(--font-display); font-size:0.95rem; color:var(--text); }
+    .meta-sep { color:var(--text-faint); margin:0 0.5rem; }
+
+    /* Les deux commandes sont de meme nature : elles voyagent ensemble.
+       Avant, space-between sur trois enfants ejectait « Voir tout » au
+       milieu de la ligne, loin d'« Ajuster ». */
+    .section-outils { display:flex; align-items:center; gap:0.4rem; flex-shrink:0; }
+
+    /* Une seule etiquette de groupe, la ou il y en avait trois. */
+    .groupe-label {
+      font-size:0.6875rem; font-weight:600; letter-spacing:0.1em;
+      text-transform:uppercase; color:var(--text-faint);
+      margin:1.4rem 0 0.75rem;
+    }
+    .groupe-label-pilote { display:flex; align-items:center; gap:0.75rem; }
+    .groupe-filet { flex:1; height:1px; background:var(--border-mid); }
+    .groupe-fleches { display:flex; gap:0.3rem; }
+    .groupe-fleche {
+      /* Le cercle reste a 30px : 40 seraient lourds a cote d'une etiquette
+         en petites capitales. La zone de touche, elle, est etendue a 40 par
+         un pseudo-element transparent. */
+      position:relative;
+      width:30px; height:30px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      background:none; border:1px solid var(--border-subtle);
+      color:var(--text-muted); cursor:pointer; transition:all var(--t);
+    }
+    .groupe-fleche::after { content:''; position:absolute; inset:-5px; border-radius:50%; }
+    .groupe-fleche:hover { color:var(--text); border-color:var(--border-hover); background:var(--bg-elevated); }
+    .groupe-fleche:focus-visible { outline:2px solid var(--accent-strong); outline-offset:2px; }
+    /* L'etiquette des parcours ne colle plus aux cartes qu'elle annonce. */
+    .explorer-groupe { margin:2.25rem 0 1rem; }
+    .explorer-section-divider { display:none; }
+
+    /* Le bord droit du carrousel s'estompe : on voit qu'il continue. */
+    .briques-grid {
+      -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 3rem),transparent);
+      mask-image:linear-gradient(90deg,#000 calc(100% - 3rem),transparent);
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .section-head, .section-head .section-title,
+      .section-chiffre, .section-sub { transition:none; }
+    }
+
   </style>
   <link rel="stylesheet" href="theme.css">
 </head>
@@ -1087,29 +1196,38 @@
   ════════════════════════════════════════════════════════════ -->
   <div class="section-wrap" id="zone-briques">
     <div class="section-head">
-      <h2 class="section-title">Mes briques à venir</h2>
-      <button type="button" class="section-action" id="briques-voir-tout-action" onclick="toggleAllBriques()" style="display:none;">Voir tout →</button>
-      <button type="button" class="section-action" id="briques-ajuster-action" onclick="openAdjust()" style="margin-left:0.9rem;">Ajuster</button>
+      <div class="section-titre-bloc">
+        <h2 class="section-title">Mes briques à venir</h2>
+        <span class="section-chiffre" id="chiffre-briques"></span>
+      </div>
+      <div class="section-outils">
+        <button type="button" class="section-action" id="briques-voir-tout-action" onclick="toggleAllBriques()" style="display:none;">Voir tout →</button>
+        <button type="button" class="section-action" id="briques-ajuster-action" onclick="openAdjust()">Ajuster</button>
+      </div>
     </div>
-    <div class="section-divider"></div>
     <div id="briques-sections"></div>
   </div>
 
   <!-- ── Mes données (premier bloc après hero) ──────────── -->
   <section class="mes-briques-section" id="mes-briques-section" style="display:none;">
-    <div class="mes-briques-header">
-      <h2 class="section-title">Mes données</h2>
-      <p class="mes-briques-sub">Mis à jour à chaque brique · Objectifs et projets bientôt disponibles</p>
+    <div class="section-head">
+      <div class="section-titre-bloc">
+        <h2 class="section-title">Mes données</h2>
+        <span class="section-chiffre" id="chiffre-donnees"></span>
+      </div>
     </div>
+    <p class="section-sub">Mis à jour à chaque brique · Objectifs et projets bientôt disponibles</p>
     <div class="mes-briques-grid" id="mes-briques-grid"></div>
   </section>
 
   <!-- Ce que les briques terminees ont appris -->
   <section class="mes-briques-section" id="zone-enseignements" style="display:none;">
-    <div class="mes-briques-header">
-      <h2 class="section-title">Ce qu'on a compris</h2>
-      <p class="mes-briques-sub" id="ens-sous-titre"></p>
+    <div class="section-head">
+      <div class="section-titre-bloc">
+        <h2 class="section-title">Ce qu'on a compris</h2>
+      </div>
     </div>
+    <p class="section-sub" id="ens-sous-titre"></p>
     <div class="ens-grid" id="ens-grid"></div>
   </section>
 
@@ -1132,14 +1250,15 @@
   ════════════════════════════════════════════════════════════ -->
   <div class="section-wrap" id="explorer-section">
     <div class="section-head">
-      <h2 class="section-title">Explorer</h2>
-      <span class="section-legende">Briques, simulateurs et parcours</span>
+      <div class="section-titre-bloc">
+        <h2 class="section-title">Explorer</h2>
+        <span class="section-chiffre" id="chiffre-explorer"></span>
+      </div>
     </div>
-    <div class="section-divider"></div>
-    <p class="explorer-note" id="explorer-note" hidden></p>
+    <p class="section-sub" id="explorer-meta"></p>
     <div class="explorer-simulateurs" id="explorer-simulateurs"></div>
-    <div class="explorer-section-divider">
-      <span class="explorer-section-label">Parcours de vie</span>
+    <div class="groupe-label groupe-label-pilote explorer-groupe">
+      <span>Parcours de vie</span><span class="groupe-filet"></span>
     </div>
     <div class="explorer-parcours" id="explorer-parcours"></div>
   </div>
@@ -1613,9 +1732,15 @@
 
     /* Grid disponibles — toujours toutes affichées, à gauche */
     if (disponibles.length > 0) {
-      const hdrDispo = document.createElement('p');
-      hdrDispo.className = 'soon-header';
-      hdrDispo.textContent = 'Disponibles';
+      const hdrDispo = document.createElement('div');
+      hdrDispo.className = 'groupe-label groupe-label-pilote';
+      hdrDispo.innerHTML = '<span>Disponibles</span><span class="groupe-filet"></span>'
+        + '<span class="groupe-fleches">'
+        + '<button type="button" class="groupe-fleche" data-sens="-1" aria-label="Faire d\u00e9filer vers la gauche">'
+        + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg></button>'
+        + '<button type="button" class="groupe-fleche" data-sens="1" aria-label="Faire d\u00e9filer vers la droite">'
+        + '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></button>'
+        + '</span>';
       container.appendChild(hdrDispo);
       const grid = document.createElement('div');
       grid.className = 'briques-grid'; grid.setAttribute('role', 'list');
@@ -1624,11 +1749,17 @@
         grid.appendChild(makeBriqueCard(item, meta, activeId));
       });
       container.appendChild(grid);
-      if (disponibles.length > 2) {
-        const scrollHint = document.createElement('p');
-        scrollHint.style.cssText = 'font-size:0.68rem;color:var(--text-faint);margin:0.25rem 0 0;text-align:right;';
-        scrollHint.textContent = '← Faire défiler →';
-        container.appendChild(scrollHint);
+      // Les fleches ne servent que s'il y a matiere a defiler.
+      const fleches = hdrDispo.querySelector('.groupe-fleches');
+      if (disponibles.length <= 2) {
+        if (fleches) fleches.style.display = 'none';
+      } else if (fleches) {
+        fleches.querySelectorAll('.groupe-fleche').forEach(function (b) {
+          b.addEventListener('click', function () {
+            grid.scrollBy({ left: parseInt(b.dataset.sens, 10) * Math.round(grid.clientWidth * 0.8),
+                            behavior: 'smooth' });
+          });
+        });
       }
     }
 
@@ -1636,7 +1767,7 @@
        Contient les briques ouvrables hors parcours et celles a venir. */
     if (briquesExpanded && bientot.length > 0) {
       const hdr = document.createElement('p');
-      hdr.className = 'soon-header'; hdr.textContent = 'Le reste du parcours';
+      hdr.className = 'groupe-label'; hdr.textContent = 'Le reste du parcours';
       container.appendChild(hdr);
       /* Groupe par phase : la vue depliee sert de vue d'ensemble du parcours */
       const PHASES = ['Survie & stabilit\u00e9', 'Construction & projets', 'Investissement & long terme'];
@@ -1677,7 +1808,7 @@
     /* Deja terminees — ouvrables pour les relire */
     if (briquesExpanded && realisees.length > 0) {
       const hdrFin = document.createElement('p');
-      hdrFin.className = 'soon-header';
+      hdrFin.className = 'groupe-label';
       hdrFin.textContent = 'Déjà terminées';
       container.appendChild(hdrFin);
       const gridFin = document.createElement('div');
@@ -1989,15 +2120,6 @@
     });
     container.appendChild(simCredit);
 
-    // Une seule fois, et seulement tant que rien n'est pre-calcule.
-    const note = document.getElementById('explorer-note');
-    if (note) {
-      const aucunResultat = !container.querySelector('.sim-row');
-      note.hidden = !aucunResultat;
-      note.textContent = aucunResultat
-        ? 'Les simulateurs s\u2019ouvrent librement. Termine une brique et ils s\u2019ouvriront deja remplis avec tes chiffres.'
-        : '';
-    }
   }
 
   function makeSimCard(cfg) {
@@ -2527,11 +2649,96 @@
   });
 
   /* ─── RENDER ALL ─────────────────────────────────────── */
+
+  /* ─── LE RAIL ─────────────────────────────────────────────── */
+
+  /* La ligne de collage, c'est le bas de la barre de contexte que sidebar.js
+     injecte. On la mesure : la coder en dur decale le rail si la barre change
+     de hauteur, et le fait flotter si elle est absente. */
+  function railHaut() {
+    var bar = document.getElementById('f-ctx-header');
+    var h = bar ? Math.round(bar.getBoundingClientRect().height) : 0;
+    document.documentElement.style.setProperty('--rail-haut', h + 'px');
+    return h;
+  }
+
+  /* Un en-tete est colle quand il a atteint la ligne de collage et que sa
+     section occupe encore l'ecran. */
+  function majRail() {
+    var haut = railHaut();
+    document.querySelectorAll('.section-head').forEach(function (tete) {
+      var r = tete.getBoundingClientRect();
+      var p = tete.parentElement.getBoundingClientRect();
+      var vivante = p.height > 0;
+      tete.classList.toggle('collee',
+        vivante && r.top <= haut + 1 && p.bottom > r.height + haut);
+    });
+  }
+
+  function installerRail() {
+    if (window.__railBranche) { majRail(); return; }
+    window.__railBranche = true;
+    var enAttente = false;
+    function auDefilement() {
+      if (enAttente) return;
+      enAttente = true;
+      requestAnimationFrame(function () { enAttente = false; majRail(); });
+    }
+    window.addEventListener('scroll', auDefilement, { passive: true });
+    document.addEventListener('scroll', auDefilement, { passive: true, capture: true });
+    window.addEventListener('resize', auDefilement, { passive: true });
+    majRail();
+  }
+
+  /* Le chiffre du rail n'apparait que la ou il en existe un vrai : les
+     sections sans donnee se collent sans rien afficher plutot que
+     d'inventer un nombre. */
+  function majChiffresRail() {
+    var c1 = document.getElementById('chiffre-briques');
+    if (c1) {
+      var total = (dash.briques || []).length;
+      var faites = (dash.briques || []).filter(function (b) { return b.statut === 'terminee'; }).length;
+      c1.innerHTML = total ? faites + '<span class="chiffre-fond">/' + total + '</span>' : '';
+    }
+    var c2 = document.getElementById('chiffre-donnees');
+    if (c2) {
+      var bd = (loadFromStorage('fund_brick_budget_base') || {}).data || {};
+      var rev = (bd.revenus || 0) + (bd.aides || 0);
+      c2.textContent = rev > 0 ? formatEuro(rev) : '';
+    }
+    var c3 = document.getElementById('chiffre-explorer');
+    if (c3) {
+      var n = document.querySelectorAll('#explorer-simulateurs .sim-card').length;
+      c3.textContent = n ? n + ' simulateur' + (n > 1 ? 's' : '') : '';
+    }
+  }
+
+  /* Ce que la section Explorer contient, compte a l'appui. Remplace le
+     paragraphe qui expliquait son fonctionnement : une interface montre,
+     elle ne raconte pas. */
+  function majMetaExplorer() {
+    var el = document.getElementById('explorer-meta');
+    if (!el) return;
+    var sims = document.querySelectorAll('#explorer-simulateurs .sim-card').length;
+    var parcours = document.querySelectorAll('#explorer-parcours .pv-card').length;
+    var bouts = [];
+    if (sims) bouts.push('<span class="meta-nombre">' + sims + '</span> simulateur' + (sims > 1 ? 's' : ''));
+    if (parcours) bouts.push('<span class="meta-nombre">' + parcours + '</span> parcours de vie');
+    // Tant que rien n'est pre-calcule, on le dit — en trois mots, pas en
+    // deux phrases.
+    var sim = document.getElementById('explorer-simulateurs');
+    if (sim && !sim.querySelector('.sim-row')) {
+      bouts.push('se remplissent avec tes chiffres');
+    }
+    el.innerHTML = bouts.join('<span class="meta-sep">\u00b7</span>');
+  }
+
   function renderAll() {
     // Defensive: ensure dash.briques is always an array
     if (!Array.isArray(dash.briques)) dash.briques = [];
     var fns = [renderHero, renderBriquesGrid, renderInsight, renderExplorer, renderMesBriques,
-               renderEnseignements, renderQuizLink];
+               renderEnseignements, renderQuizLink,
+               majChiffresRail, majMetaExplorer, installerRail];
     fns.forEach(function(fn) { try { fn(); } catch(e) { console.warn('[dashboard] render error in', fn.name, e); } });
   }
 
