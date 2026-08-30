@@ -1032,6 +1032,7 @@
          et n'occupe que la largeur du titre. */
       --pilule-fond:   transparent;
       --pilule-pad:    0;
+      --pilule-pad-outils: 0 0.15rem;
       --pilule-ombre:  none;
       --pilule-flou:   none;
 
@@ -1052,6 +1053,7 @@
       --rail-pad-b:   0.5rem;
       --pilule-fond:  var(--pilule-teinte);
       --pilule-pad:   0.4rem 0.95rem;
+      --pilule-pad-outils: 0 0.7rem;
       --pilule-ombre: 0 2px 12px -6px rgba(0,0,0,0.22);
       --pilule-flou:  blur(12px);
     }
@@ -1113,7 +1115,20 @@
     /* Les deux commandes sont de meme nature : elles voyagent ensemble.
        Avant, space-between sur trois enfants ejectait « Voir tout » au
        milieu de la ligne, loin d'« Ajuster ». */
-    .section-outils { display:flex; align-items:center; gap:0.4rem; flex-shrink:0; }
+    /* Meme pastille que le titre : sans fond, les commandes epinglees
+       laissaient le contenu defiler au travers. */
+    .section-outils {
+      display:flex; align-items:center; gap:0.4rem; flex-shrink:0;
+      background:var(--pilule-fond);
+      padding:var(--pilule-pad-outils);
+      margin-right:calc(-1 * 0.7rem);
+      border-radius:9999px;
+      box-shadow:var(--pilule-ombre);
+      -webkit-backdrop-filter:var(--pilule-flou);
+      backdrop-filter:var(--pilule-flou);
+      transition:background 0.22s var(--ease-out), padding 0.22s var(--ease-out),
+                 box-shadow 0.22s var(--ease-out), margin 0.22s var(--ease-out);
+    }
 
     /* Une seule etiquette de groupe, la ou il y en avait trois. */
     .groupe-label {
