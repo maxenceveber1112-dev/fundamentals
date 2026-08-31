@@ -18,50 +18,171 @@
     * { box-sizing:border-box; }
     body { margin:0; min-height:100dvh; background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
 
+    /* Encre des petits textes poses sur un fond teinte (cartes, resume,
+       panneau de resultat). En clair, --text-muted n'y tient plus 4,5 :
+       mesure a 3,56 sur le fond de carte contre 4,53 sur la page nue. En
+       sombre le lavis eclaircit au lieu d'assombrir, --text-muted suffit. */
+    :root { --sim-ink-soft:#57534E; }
+    html.dark { --sim-ink-soft:var(--text-muted); }
+
     /* ── Layout ── */
     .sim-wrap { max-width:940px; margin:0 auto; padding:2.5rem 1.5rem 4rem; position:relative; z-index:1; }
     .sim-kicker { font-size:0.7rem; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-strong); }
     .sim-title { font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:2.15rem; line-height:1.1; margin:0.5rem 0 0.5rem; }
     .sim-sub { font-size:0.92rem; color:var(--text-muted); line-height:1.55; margin:0 0 1.75rem; max-width:52ch; }
 
-    /* ── Tabs (sens de calcul) ── */
-    .sim-tabs { display:inline-flex; gap:0.25rem; padding:0.25rem; background:var(--surface-2); border-radius:9999px; margin-bottom:1.5rem; }
-    .sim-tab { font-size:0.82rem; font-weight:600; color:var(--text-muted); background:transparent; border:none; border-radius:9999px; padding:0.5rem 1rem; cursor:pointer; transition:color .2s, background .2s; }
-    .sim-tab.active { background:var(--bg-elevated); color:var(--text); box-shadow:0 1px 3px rgba(20,20,30,0.10); }
-    html.dark .sim-tab.active { background:rgba(255,255,255,0.12); color:#fff; }
+    /* ── Sens de calcul ── */
+    /* Le sens du calcul, dit en une phrase plutot qu'en deux onglets gris.
+       Les glyphes montrent la direction : un capital qui se decoupe en
+       mensualites, ou des mensualites qui se rassemblent en capital. */
+    .sim-dit { display:flex; align-items:baseline; flex-wrap:wrap; gap:0.3rem 0.45rem;
+      margin-bottom:1.75rem; font-size:0.9rem; color:var(--text-muted); line-height:1.7; }
+    .sim-dit-intro, .sim-dit-ou { flex-shrink:0; }
+    .sim-dit-opt { display:inline-flex; align-items:center; gap:0.4rem; padding:0.1rem 0;
+      background:none; border:none; cursor:pointer; font-family:inherit; font-size:0.9rem;
+      font-weight:600; color:var(--text-muted); position:relative; transition:color .18s; }
+    .sim-dit-opt::after { content:''; position:absolute; left:0; right:0; bottom:-2px; height:2px;
+      border-radius:2px; background:var(--accent-strong); transform:scaleX(0); transform-origin:left;
+      transition:transform .3s cubic-bezier(0.34,1.4,0.64,1); }
+    .sim-dit-opt:hover { color:var(--text); }
+    .sim-dit-opt.actif { color:var(--text); }
+    .sim-dit-opt.actif::after { transform:scaleX(1); }
+    .sim-dit-opt:focus-visible { outline:2px solid var(--accent-strong); outline-offset:3px; border-radius:3px; }
+    .sim-dit-glyphe { width:17px; height:11px; flex-shrink:0; overflow:visible; }
+    .g-gros, .g-petit { fill:none; stroke:currentColor; stroke-width:1.2; opacity:0.45; }
+    .sim-dit-opt.actif .g-gros { fill:var(--accent-strong); stroke:var(--accent-strong); opacity:1; }
+    .sim-dit-opt.actif .g-petit { stroke:var(--accent-strong); opacity:1; }
+    .sim-dit-opt.actif .g-petit { animation:gDecoupe .42s cubic-bezier(0.16,1,0.3,1) both; }
+    .sim-dit-opt.actif .g-petit:nth-of-type(2) { animation-delay:.06s; }
+    .sim-dit-opt.actif .g-petit:nth-of-type(3) { animation-delay:.12s; }
+    @keyframes gDecoupe { from { opacity:0; transform:translateX(-3px); } to { opacity:1; transform:none; } }
+    .sim-dit-detail { flex:1 1 100%; font-size:0.8rem; color:var(--text-muted); }
+
+    /* Le pop-up qui designe le second sens : il ne s'affiche qu'une fois. */
+    .sim-dit-ancre { position:relative; display:inline-flex; }
+    .sim-bulle { position:absolute; top:calc(100% + 9px); left:-6px; z-index:20;
+      display:flex; align-items:flex-start; gap:0.5rem; width:max-content; max-width:17rem;
+      padding:0.55rem 0.5rem 0.55rem 0.7rem; background:var(--bg-elevated);
+      border:1px solid color-mix(in srgb, var(--accent-strong) 35%, transparent);
+      border-radius:0.7rem;
+      box-shadow:0 2px 4px rgba(20,20,30,0.05), 0 14px 30px -14px rgba(124,58,237,0.45);
+      font-size:0.76rem; line-height:1.45; color:var(--text-muted);
+      animation:simBulle .42s cubic-bezier(0.34,1.4,0.64,1) both; }
+    .sim-bulle[hidden] { display:none; }
+    .sim-bulle::before, .sim-bulle::after { content:''; position:absolute; left:20px;
+      width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; }
+    .sim-bulle::before { top:-7px; border-bottom:7px solid color-mix(in srgb, var(--accent-strong) 35%, transparent); }
+    .sim-bulle::after  { top:-6px; border-bottom:7px solid var(--bg-elevated); }
+    .sim-bulle-txt { flex:1; }
+    .sim-bulle-x { flex-shrink:0; width:18px; height:18px; padding:0; margin-top:-1px;
+      display:inline-flex; align-items:center; justify-content:center; background:none;
+      border:none; border-radius:50%; cursor:pointer; color:var(--text-faint);
+      transition:color .15s, background .15s; }
+    .sim-bulle-x svg { width:11px; height:11px; }
+    .sim-bulle-x:hover { color:var(--text); background:var(--surface-2); }
+    .sim-dit-ancre.designe .sim-dit-opt { color:var(--text); }
+    .sim-dit-ancre.designe .sim-dit-opt::after { transform:scaleX(1);
+      background:color-mix(in srgb, var(--accent-strong) 45%, transparent); }
+    @keyframes simBulle { from { opacity:0; transform:translateY(-5px) scale(0.97); } to { opacity:1; transform:none; } }
+    @media (prefers-reduced-motion:reduce) {
+      .sim-dit-opt::after { transition:none; }
+      .sim-dit-opt.actif .g-petit { animation:none; }
+      .sim-bulle { animation:none; }
+    }
+    @media (max-width:560px) {
+      .sim-bulle { left:0; max-width:calc(100vw - 2.5rem); }
+      .sim-bulle::before, .sim-bulle::after { left:14px; }
+    }
 
     /* ── Steps ── */
-    .sim-steplabel { display:flex; align-items:center; gap:0.6rem; font-size:0.95rem; font-weight:700; color:var(--text); margin-bottom:1rem; }
-    .sim-stepnum { width:24px; height:24px; border-radius:50%; background:var(--accent-strong); color:#fff; font-size:0.78rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    /* Le numero reste — la page est une sequence en deux temps, il dit ou
+       l'on en est. Mais il perd sa rondelle : un chiffre de la plateforme,
+       en serif italique, plutot qu'une pastille de tableau de bord. */
+    .sim-steplabel { display:flex; align-items:baseline; gap:0.5rem; font-size:0.95rem; font-weight:700; color:var(--text); margin-bottom:1rem; }
+    .sim-stepnum { font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:400;
+      font-size:1.45rem; line-height:1; color:var(--accent-strong); flex-shrink:0;
+      font-variant-numeric:tabular-nums; }
     .sim-steplabel .chg { margin-left:auto; font-size:0.78rem; font-weight:600; color:var(--accent-strong); background:none; border:none; cursor:pointer; }
     .sim-steplabel .chg:hover { text-decoration:underline; }
 
     /* ── Step 1 : type ── */
     .sim-step-type { margin-bottom:1.5rem; }
-    .sim-type-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:0.75rem; }
-    .sim-typecard { position:relative; display:flex; flex-direction:column; gap:0.55rem; padding:1.15rem 1.05rem 1rem; border-radius:1.1rem; border:1.5px solid var(--border-mid); background:var(--surface-1); cursor:pointer; text-align:left; transition:transform .2s cubic-bezier(.34,1.45,.5,1), border-color .2s, box-shadow .2s, background .2s; }
-    .sim-typecard:hover { transform:translateY(-4px); border-color:var(--accent-strong); box-shadow:0 12px 26px rgba(139,92,246,0.16); }
-    .sim-typecard.active { border-color:var(--accent-strong); background:var(--accent-soft); box-shadow:0 8px 22px rgba(139,92,246,0.18); }
-    .sim-typecard-icon { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:var(--accent-soft); color:var(--accent-strong); transition:background .2s, color .2s, transform .2s; }
-    .sim-typecard:hover .sim-typecard-icon { transform:scale(1.06) rotate(-3deg); }
-    .sim-typecard.active .sim-typecard-icon { background:var(--accent-strong); color:#fff; }
-    .sim-typecard-name { font-size:0.98rem; font-weight:700; color:var(--text); }
-    .sim-typecard-sub { font-size:0.72rem; color:var(--text-muted); line-height:1.35; }
-    .sim-typecard-rate { font-size:0.72rem; font-weight:600; color:var(--accent-strong); margin-top:0.15rem; }
-    .sim-typecard-check { position:absolute; top:0.75rem; right:0.75rem; width:20px; height:20px; border-radius:50%; background:var(--accent-strong); color:#fff; display:flex; align-items:center; justify-content:center; opacity:0; transform:scale(0.4); transition:opacity .2s, transform .25s cubic-bezier(.34,1.6,.5,1); }
-    .sim-typecard.active .sim-typecard-check { opacity:1; transform:scale(1); }
+    /* 148px plutot que 155 : les cinq types tiennent alors sur une ligne
+       au lieu de laisser un orphelin seul en seconde rangee. */
+    .sim-type-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:0.7rem; }
+
+    /* Pas de cadre : le meme halo que le panneau de resultat. Une carte
+       choisie se signale par son lavis et son coin ouvert, pas par un
+       empilement de marqueurs violets. */
+    .sim-typecard {
+      position:relative; display:flex; flex-direction:column; gap:0.5rem;
+      padding:1.05rem 1rem 0.95rem; border:none; border-radius:1.1rem;
+      background:
+        radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.10) 0%, transparent 68%),
+        linear-gradient(rgba(120,113,108,0.055), rgba(120,113,108,0.055));
+      cursor:pointer; text-align:left; font-family:inherit;
+      transition:transform .18s ease, background .25s, border-radius .25s;
+    }
+    html.dark .sim-typecard {
+      background:
+        radial-gradient(120% 150% at 6% 0%, rgba(255,255,255,0.075) 0%, transparent 68%),
+        linear-gradient(rgba(255,255,255,0.045), rgba(255,255,255,0.045));
+    }
+    .sim-typecard:hover { transform:translateY(-2px); }
+    .sim-typecard:hover .sim-typecard-icon { color:var(--accent-strong); }
+    .sim-typecard:focus-visible { outline:2px solid var(--accent-strong); outline-offset:3px; }
+    .sim-typecard.active {
+      border-radius:1.1rem 1.1rem 2.2rem 1.1rem;
+      background:
+        radial-gradient(120% 155% at 6% 0%, var(--accent-soft) 0%, transparent 70%),
+        radial-gradient(90% 130% at 96% 96%, color-mix(in srgb, var(--accent-soft) 62%, transparent) 0%, transparent 60%),
+        linear-gradient(var(--accent-soft), var(--accent-soft));
+    }
+    /* Alphas baisses pour que meme l'empilement maximal des trois couches
+       — un point qui n'existe pas sur la carte — garde 4,5 sur le texte
+       sourd. Le rendu ne bouge presque pas. */
+    html.dark .sim-typecard.active {
+      background:
+        radial-gradient(120% 155% at 6% 0%, rgba(167,139,250,0.15) 0%, transparent 70%),
+        radial-gradient(90% 130% at 96% 96%, rgba(167,139,250,0.08) 0%, transparent 60%),
+        linear-gradient(rgba(167,139,250,0.06), rgba(167,139,250,0.06));
+    }
+    /* Le glyphe nu, sans rondelle derriere lui. */
+    .sim-typecard-icon { height:24px; display:flex; align-items:center; color:var(--text-muted); transition:color .2s; }
+    .sim-typecard.active .sim-typecard-icon { color:var(--accent-strong); }
+    .sim-typecard-name { font-size:0.95rem; font-weight:700; color:var(--text); }
+    .sim-typecard-sub { font-size:0.72rem; color:var(--sim-ink-soft); line-height:1.35; }
+    /* En bas de carte : les taux s'alignent sur toute la rangee, meme
+       quand un sous-titre passe a la ligne. */
+    .sim-typecard-rate { font-size:0.72rem; font-weight:600; color:var(--sim-ink-soft); margin-top:auto; padding-top:0.3rem; transition:color .2s; }
+    .sim-typecard.active .sim-typecard-rate { color:var(--accent-strong); }
+    /* En sombre, --accent-strong pose sur son propre lavis tombe a 4,24.
+       Le sombre prend son propre cran de la rampe plutot qu'un simple
+       report du clair : violet-300 remonte a 6,2. */
+    html.dark .sim-typecard.active .sim-typecard-rate { color:#C4B5FD; }
 
     /* Résumé type (quand collapsed) */
-    .sim-typesummary { display:none; width:100%; align-items:center; gap:0.75rem; padding:0.85rem 1rem; border-radius:1rem; border:1.5px solid var(--accent-soft); background:var(--accent-soft); cursor:pointer; font-family:inherit; text-align:left; transition:border-color .15s; }
-    .sim-typesummary:hover { border-color:var(--accent-strong); }
+    .sim-typesummary { display:none; width:100%; align-items:center; gap:0.7rem;
+      padding:0.85rem 1rem; border:none; border-radius:1.1rem 1.1rem 2.2rem 1.1rem;
+      background:
+        radial-gradient(110% 170% at 4% 0%, var(--accent-soft) 0%, transparent 72%),
+        radial-gradient(80% 150% at 97% 96%, color-mix(in srgb, var(--accent-soft) 62%, transparent) 0%, transparent 62%);
+      cursor:pointer; font-family:inherit; text-align:left; }
+    html.dark .sim-typesummary {
+      background:
+        radial-gradient(110% 170% at 4% 0%, rgba(167,139,250,0.15) 0%, transparent 72%),
+        radial-gradient(80% 150% at 97% 96%, rgba(167,139,250,0.08) 0%, transparent 62%);
+    }
+    .sim-typesummary:focus-visible { outline:2px solid var(--accent-strong); outline-offset:3px; }
     .sim-typesummary:hover .sim-chev { transform:translateY(2px); }
     .sim-chev { transition:transform .15s; }
     .sim-step-type.done .sim-type-grid { display:none; }
     .sim-step-type.done .sim-typesummary { display:flex; }
-    .sim-typesummary-icon { width:34px; height:34px; border-radius:10px; background:var(--accent-strong); color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    /* La aussi le glyphe est nu — plus de tuile violette pleine. */
+    .sim-typesummary-icon { display:flex; align-items:center; color:var(--accent-strong); flex-shrink:0; }
     .sim-typesummary-txt { min-width:0; }
     .sim-typesummary-name { font-size:0.9rem; font-weight:700; color:var(--text); }
-    .sim-typesummary-sub { font-size:0.72rem; color:var(--text-muted); }
+    .sim-typesummary-sub { font-size:0.72rem; color:var(--sim-ink-soft); }
     .sim-typesummary-chg { margin-left:auto; display:inline-flex; align-items:center; gap:0.25rem; font-size:0.78rem; font-weight:600; color:var(--accent-strong); flex-shrink:0; }
 
     /* ── Step 2 : projet (2 colonnes) ── */
@@ -83,31 +204,51 @@
       .sim-rrow { font-size:0.78rem; }
     }
 
-    .sim-panel { background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:1.25rem; padding:1.5rem; box-shadow:0 1px 3px rgba(20,20,30,0.04), 0 10px 30px rgba(20,20,30,0.05); }
-    html.dark .sim-panel { box-shadow:0 10px 30px rgba(0,0,0,0.35); }
+    /* Le dernier carton de la page. Il perd sa bordure et ouvre son coin
+       bas-GAUCHE, en miroir du panneau de resultat qui ouvre le sien a
+       droite : les deux encadrent la rangee au lieu de se repeter. */
+    .sim-panel {
+      background:var(--bg-elevated); border:none;
+      border-radius:1.25rem 1.25rem 1.25rem 2.75rem;
+      padding:1.5rem 1.5rem 1.4rem;
+      box-shadow:0 1px 2px rgba(20,20,30,0.05), 0 10px 26px rgba(20,20,30,0.045);
+    }
+    html.dark .sim-panel { background:rgba(255,255,255,0.038); box-shadow:none; }
 
-    .sim-field { margin-bottom:1.5rem; }
-    .sim-field:last-child { margin-bottom:0; }
+    /* Separes par un filet plutot que par du vide : le panneau a un
+       rythme au lieu d'une pile. */
+    .sim-field { padding-bottom:1.25rem; margin-bottom:1.25rem; border-bottom:1px solid var(--border-subtle); }
+    /* Le dernier reglage, pas le dernier div : .sim-hint ferme le panneau,
+       donc :last-child et :last-of-type ne l'attrapent ni l'un ni l'autre. */
+    .sim-field:not(:has(~ .sim-field)) { padding-bottom:0; margin-bottom:0; border-bottom:none; }
     .sim-field-row { display:flex; align-items:center; justify-content:space-between; gap:0.5rem; margin-bottom:0.5rem; }
     .sim-flabel { font-size:0.82rem; font-weight:600; color:var(--text); }
 
     /* Amount input */
-    .sim-input-wrap { position:relative; display:flex; align-items:center; }
-    .sim-input { width:100%; font-family:'Inter',sans-serif; font-size:1.5rem; font-weight:700; color:var(--text); background:var(--surface-1); border:1.5px solid var(--border-mid); border-radius:0.85rem; padding:0.8rem 3rem 0.8rem 0.95rem; outline:none; transition:border-color .15s, box-shadow .15s; -moz-appearance:textfield; }
+    /* Le nombre s'assoit sur un filet qui passe a l'accent a la saisie —
+       plus de boite dans la boite. */
+    .sim-input-wrap { position:relative; display:flex; align-items:center;
+      border-bottom:2px solid var(--border-mid); transition:border-color .18s; }
+    .sim-input-wrap:focus-within { border-bottom-color:var(--accent-strong); }
+    .sim-input { width:100%; font-family:'Inter',sans-serif; font-size:1.75rem; font-weight:700; color:var(--text); background:none; border:none; border-radius:0; padding:0.3rem 2.6rem 0.45rem 0; outline:none; -moz-appearance:textfield; }
     .sim-input::-webkit-outer-spin-button, .sim-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
-    .sim-input:focus { border-color:var(--accent-strong); }
-    .sim-input-suffix { position:absolute; right:1rem; font-size:1rem; font-weight:600; color:var(--text-muted); pointer-events:none; }
+    /* Le focus se voit sur le filet du parent (focus-within) : le champ
+       lui-meme n'a plus de bordure a colorer. */
+    .sim-input-suffix { position:absolute; right:0; bottom:0.5rem; font-size:1rem; font-weight:600; color:var(--text-muted); pointer-events:none; }
 
     /* Slider */
     .sim-slider { -webkit-appearance:none; appearance:none; width:100%; height:7px; border-radius:9999px; background:var(--surface-3); outline:none; margin:0.4rem 0; cursor:pointer; }
     .sim-slider::-webkit-slider-thumb { -webkit-appearance:none; appearance:none; width:22px; height:22px; border-radius:50%; background:#fff; border:2.5px solid var(--accent-strong); box-shadow:0 1px 5px rgba(20,20,30,0.22); cursor:pointer; transition:transform .12s; }
     .sim-slider::-webkit-slider-thumb:active { transform:scale(1.15); }
     .sim-slider::-moz-range-thumb { width:22px; height:22px; border-radius:50%; background:#fff; border:2.5px solid var(--accent-strong); cursor:pointer; }
-    .sim-slider-bounds { display:flex; justify-content:space-between; font-size:0.68rem; color:var(--text-faint); }
+    /* Les bornes disent la plage reglable : de l'information, pas de
+       l'ornement. --text-faint les laissait sous 4,5 en sombre. */
+    .sim-slider-bounds { display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted); }
     .sim-duree-val { font-family:'Fraunces',serif; font-style:italic; font-size:1.15rem; color:var(--text); }
 
     /* Taux */
-    .sim-taux-badge { display:inline-block; font-size:0.62rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent-strong); background:var(--accent-soft); padding:0.1rem 0.4rem; border-radius:9999px; margin-left:0.35rem; vertical-align:middle; }
+    /* Un mot, pas une gelule : c'etait la derniere pastille de la page. */
+    .sim-taux-badge { display:inline-block; font-size:0.64rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); margin-left:0.45rem; vertical-align:middle; }
     .sim-taux-edit { font-size:0.76rem; font-weight:600; color:var(--accent-strong); background:none; border:none; cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:0.3rem; }
     .sim-taux-edit:hover { text-decoration:underline; }
     .sim-taux-display { font-size:1.1rem; font-weight:700; color:var(--text); }
@@ -123,28 +264,49 @@
     .sim-taux-reset:hover { color:var(--text); text-decoration:underline; }
 
     /* Hint "ajuste" + nudge animation */
-    .sim-hint { display:flex; align-items:center; gap:0.5rem; margin-top:1.25rem; padding:0.7rem 0.9rem; border-radius:0.75rem; background:var(--accent-soft); font-size:0.78rem; color:var(--accent-strong); font-weight:500; }
-    .sim-hint svg { flex-shrink:0; animation:simPencil 1.6s ease-in-out infinite; }
-    @keyframes simPencil { 0%,100% { transform:translate(0,0) rotate(0); } 25% { transform:translate(1px,-1px) rotate(-8deg); } 75% { transform:translate(-1px,1px) rotate(8deg); } }
+    /* Une phrase d'aide ne groupe rien : pas de boite. Et le crayon cesse
+       de s'animer en boucle — c'etait du mouvement pour du mouvement. */
+    .sim-hint { display:flex; align-items:flex-start; gap:0.45rem; margin-top:1.25rem;
+      font-size:0.78rem; line-height:1.45; color:var(--text-muted); }
+    .sim-hint svg { flex-shrink:0; margin-top:0.15rem; color:var(--text-faint); }
     @keyframes simGlow { 0% { box-shadow:0 0 0 0 rgba(139,92,246,0); } 35% { box-shadow:0 0 0 4px rgba(139,92,246,0.22); } 100% { box-shadow:0 0 0 0 rgba(139,92,246,0); } }
-    .sim-input.nudge, .sim-slider.nudge { animation:simGlow 1.15s ease 2; border-radius:0.85rem; }
-    @media (prefers-reduced-motion:reduce) { .sim-input.nudge,.sim-slider.nudge,.sim-hint svg,.sim-step-project.active { animation:none; } }
+    .sim-slider.nudge { animation:simGlow 1.15s ease 2; border-radius:0.85rem; }
+    /* Le champ n'a plus de boite a cercler : c'est son filet qui s'allume. */
+    @keyframes simFilet { 0%,100% { border-bottom-color:var(--border-mid); } 40% { border-bottom-color:var(--accent-strong); } }
+    .sim-input-wrap.nudge { animation:simFilet 1.15s ease 2; }
+    @media (prefers-reduced-motion:reduce) { .sim-input-wrap.nudge,.sim-slider.nudge,.sim-step-project.active { animation:none; } }
 
     /* ── Result (mise en évidence) ── */
     .sim-result { text-align:center; }
-    .sim-result-panel { background:linear-gradient(160deg, var(--accent-soft), color-mix(in srgb, var(--accent-soft) 28%, transparent)); border:1px solid var(--accent-soft); box-shadow:0 10px 30px rgba(139,92,246,0.10); }
-    html.dark .sim-result-panel { box-shadow:0 10px 30px rgba(0,0,0,0.4); }
+    /* Un halo, pas une carte de plus : le degrade radial n'a pas de bord,
+       donc rien a aligner avec le panneau de saisie. Le coin bas-droit
+       s'ouvre plus que les autres — la forme se distingue.
+       Pas de `position` ici : la media query mobile est declaree plus haut
+       et pose `sticky`, une position posee ici l'ecraserait. */
+    .sim-result-panel {
+      border:none; box-shadow:none;
+      border-radius:1.25rem 1.25rem 2.75rem 1.25rem;
+      background:
+        radial-gradient(115% 165% at 8% 12%, var(--accent-soft) 0%, transparent 64%),
+        radial-gradient(90% 140% at 96% 96%, color-mix(in srgb, var(--accent-soft) 55%, transparent) 0%, transparent 58%);
+    }
+    html.dark .sim-result-panel {
+      box-shadow:none;
+      background:
+        radial-gradient(115% 165% at 8% 12%, rgba(167,139,250,0.16) 0%, transparent 64%),
+        radial-gradient(90% 140% at 96% 96%, rgba(167,139,250,0.09) 0%, transparent 58%);
+    }
     .sim-result-label { font-size:0.82rem; font-weight:600; color:var(--accent-strong); letter-spacing:0.02em; }
     .sim-result-value { font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:3.4rem; line-height:1.03; color:var(--text); margin:0.4rem 0 0.2rem; letter-spacing:-0.01em; transition:opacity .12s; }
     .sim-result-value .unit { font-size:1.5rem; font-weight:500; color:var(--text-muted); font-family:'Inter',sans-serif; }
     .sim-result-value.flash { opacity:0.35; }
-    .sim-result-sub { font-size:0.84rem; color:var(--text-muted); }
+    .sim-result-sub { font-size:0.84rem; color:var(--sim-ink-soft); }
     .sim-result-rows { margin-top:1.25rem; padding-top:1.1rem; border-top:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:0.55rem; text-align:left; }
     .sim-rrow { display:flex; align-items:center; justify-content:space-between; font-size:0.83rem; }
     .sim-rrow-label { color:var(--text-muted); }
     .sim-rrow-val { font-weight:600; color:var(--text); font-variant-numeric:tabular-nums; }
 
-    .sim-disclaimer { max-width:60ch; margin:2rem auto 0; font-size:0.72rem; color:var(--text-faint); text-align:center; line-height:1.5; }
+    .sim-disclaimer { max-width:60ch; margin:2rem auto 0; font-size:0.72rem; color:var(--text-muted); text-align:center; line-height:1.5; }
 
     @media (max-width:520px) {
       .sim-wrap { padding-left:1rem; padding-right:1rem; }
@@ -161,17 +323,40 @@
   <main class="sim-wrap">
     <div class="sim-kicker">SIMULATEUR</div>
     <h1 class="sim-title">Capacité d'emprunt ou mensualité</h1>
-    <p class="sim-sub">Pars d'un montant pour estimer ta mensualité, ou d'une mensualité pour connaître ta capacité d'emprunt.</p>
+    <p class="sim-sub">Sache ce qu'un crédit te coûterait vraiment, avant d'aller en parler à ta banque.</p>
 
-    <div class="sim-tabs" role="tablist" aria-label="Sens de calcul">
-      <button class="sim-tab active" id="tab-montant" type="button" onclick="setMode('montant')" role="tab">Montant → mensualité</button>
-      <button class="sim-tab" id="tab-mensualite" type="button" onclick="setMode('mensualite')" role="tab">Mensualité → montant</button>
+    <div class="sim-dit" role="radiogroup" aria-label="Sens de calcul">
+      <span class="sim-dit-intro">Je pars</span>
+      <button class="sim-dit-opt actif" id="tab-montant" type="button" role="radio" aria-checked="true" tabindex="0" onclick="setMode('montant')">
+        <svg class="sim-dit-glyphe" viewBox="0 0 22 14" aria-hidden="true">
+          <rect class="g-gros" x="0" y="2" width="8" height="10" rx="2"/>
+          <rect class="g-petit" x="11.5" y="4" width="2.6" height="6" rx="1.2"/>
+          <rect class="g-petit" x="15.2" y="4" width="2.6" height="6" rx="1.2"/>
+          <rect class="g-petit" x="18.9" y="4" width="2.6" height="6" rx="1.2"/>
+        </svg>d'un montant</button>
+      <span class="sim-dit-ou">ou</span>
+      <span class="sim-dit-ancre">
+      <button class="sim-dit-opt" id="tab-mensualite" type="button" role="radio" aria-checked="false" tabindex="-1" onclick="setMode('mensualite')">
+        <svg class="sim-dit-glyphe" viewBox="0 0 22 14" aria-hidden="true">
+          <rect class="g-petit" x="0" y="4" width="2.6" height="6" rx="1.2"/>
+          <rect class="g-petit" x="3.7" y="4" width="2.6" height="6" rx="1.2"/>
+          <rect class="g-petit" x="7.4" y="4" width="2.6" height="6" rx="1.2"/>
+          <rect class="g-gros" x="13.5" y="2" width="8.5" height="10" rx="2"/>
+        </svg>d'une mensualité</button>
+        <span class="sim-bulle" id="sim-bulle" role="note" hidden>
+          <span class="sim-bulle-txt">Tu sais ce que tu peux mettre chaque mois ? Pars de là, on calcule ce que ça permet d'emprunter.</span>
+          <button class="sim-bulle-x" type="button" aria-label="Fermer" onclick="fermerBulle(true)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </span>
+      </span>
+      <span class="sim-dit-detail" id="sim-dit-detail"></span>
     </div>
 
     <!-- ÉTAPE 1 · Type -->
     <div class="sim-step-type" id="step-type">
       <div class="sim-steplabel"><span class="sim-stepnum">1</span> Quel type d'achat&nbsp;?</div>
-      <div class="sim-type-grid" id="sim-types"></div>
+      <div class="sim-type-grid" id="sim-types" role="radiogroup" aria-label="Type d'achat"></div>
       <button class="sim-typesummary" type="button" onclick="changeType()" aria-label="Changer le type d'achat">
         <div class="sim-typesummary-icon" id="sum-icon"></div>
         <div class="sim-typesummary-txt">
@@ -191,7 +376,8 @@
           <div class="sim-field">
             <label class="sim-flabel" id="sim-input-label" for="sim-amount">Montant emprunté</label>
             <div class="sim-input-wrap">
-              <input type="number" id="sim-amount" class="sim-input" min="0" inputmode="numeric" />
+              <input type="text" id="sim-amount" class="sim-input" inputmode="numeric"
+                     autocomplete="off" enterkeyhint="done" />
               <span class="sim-input-suffix" id="sim-input-suffix">€</span>
             </div>
           </div>
@@ -280,6 +466,34 @@
     function T(){ for (var i=0;i<SIM_TYPES.length;i++){ if (SIM_TYPES[i].id===typeId) return SIM_TYPES[i]; } return null; }
     function el(id){ return document.getElementById(id); }
     function n(v){ v = parseFloat(v); return isFinite(v) ? v : 0; }
+
+    /* Le montant s'affiche avec des fines insecables, comme les chiffres
+       du panneau de resultat. n() ne bouge pas : il sert aussi aux taux,
+       ou le point decimal compte. */
+    var ESP_FINE = '\u202f';
+    function formaterMontant(v){
+      var chiffres = String(v == null ? '' : v).replace(/[^\d]/g, '');
+      return chiffres ? chiffres.replace(/\B(?=(\d{3})+(?!\d))/g, ESP_FINE) : '';
+    }
+    function poserMontant(v){ el('sim-amount').value = formaterMontant(v); }
+    function montantSaisi(){ return n(String(el('sim-amount').value).replace(/[^\d]/g, '')); }
+
+    /* Reformate pendant la frappe. Le curseur est repose en comptant les
+       chiffres qui le precedaient : sans ca il sauterait a la fin des
+       qu'une espace est inseree. */
+    function reformaterMontant(){
+      var i = el('sim-amount');
+      var avant = i.value.slice(0, i.selectionStart).replace(/[^\d]/g, '').length;
+      var f = formaterMontant(i.value);
+      if (f === i.value) return;
+      i.value = f;
+      var pos = 0, vus = 0;
+      while (pos < f.length && vus < avant) {
+        if (f.charCodeAt(pos) >= 48 && f.charCodeAt(pos) <= 57) vus++;
+        pos++;
+      }
+      i.setSelectionRange(pos, pos);
+    }
     function euro(v){ return Math.round(v).toLocaleString('fr-FR') + ' €'; }
     function euro0(v){ return Math.round(v).toLocaleString('fr-FR'); }
     function rate(){ return tauxCustom ? n(el('sim-taux').value) : (T()?T().taux:0); }
@@ -288,12 +502,17 @@
     function renderTypes(){
       var c = el('sim-types'); c.innerHTML = '';
       SIM_TYPES.forEach(function(t){
+        var choisi = (t.id === typeId);
         var b = document.createElement('button');
         b.type = 'button';
-        b.className = 'sim-typecard' + (t.id===typeId ? ' active' : '');
-        b.setAttribute('aria-pressed', String(t.id===typeId));
+        b.className = 'sim-typecard' + (choisi ? ' active' : '');
+        // Cinq choix exclusifs : un radiogroup, pas cinq bascules. Un seul
+        // point d'arret au clavier, les fleches circulent dedans.
+        b.setAttribute('role', 'radio');
+        b.setAttribute('aria-checked', choisi ? 'true' : 'false');
+        b.tabIndex = choisi ? 0 : -1;
+        b.dataset.type = t.id;
         b.innerHTML =
-          '<div class="sim-typecard-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' +
           '<div class="sim-typecard-icon">'+svg(t.icon)+'</div>' +
           '<div class="sim-typecard-name">'+t.name+'</div>' +
           '<div class="sim-typecard-sub">'+t.sub+'</div>' +
@@ -301,24 +520,68 @@
         b.onclick = function(){ selectType(t.id); };
         c.appendChild(b);
       });
+      // Tant qu'aucun type n'est choisi, aucune carte n'a tabindex 0 et le
+      // groupe serait injoignable au clavier : le premier porte l'arret.
+      if (typeId === null && c.firstChild) c.firstChild.tabIndex = 0;
     }
 
-    function selectType(id){
+    /* Fleches, Home et End circulent dans le groupe et deplacent le choix,
+       comme un vrai groupe de boutons radio. */
+    function brancherClavierTypes(){
+      var c = el('sim-types');
+      if (!c) return;
+      c.addEventListener('keydown', function (e) {
+        var k = e.key;
+        if (['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].indexOf(k) === -1) return;
+        var cartes = Array.prototype.slice.call(c.querySelectorAll('.sim-typecard'));
+        if (!cartes.length) return;
+        var i = cartes.indexOf(document.activeElement);
+        if (i === -1) i = 0;
+        var vers;
+        if (k === 'Home') vers = 0;
+        else if (k === 'End') vers = cartes.length - 1;
+        else if (k === 'ArrowRight' || k === 'ArrowDown') vers = (i + 1) % cartes.length;
+        else vers = (i - 1 + cartes.length) % cartes.length;
+        e.preventDefault();
+        // false : parcourir les types ne valide pas: la grille reste ouverte
+        // et l'etape 2 se met a jour en direct pendant le parcours.
+        selectType(cartes[vers].dataset.type, false);
+      });
+    }
+
+    /* `replier` a false : on change le type mais la grille reste ouverte.
+       C'est ce que font les fleches — parcourir n'est pas valider. */
+    function selectType(id, replier){
+      if (replier === undefined) replier = true;
       var first = (typeId === null);
       typeId = id;
       var t = T();
+      // renderTypes() reconstruit les cartes : le focus serait perdu.
+      var avaitFocus = el('sim-types').contains(document.activeElement);
       renderTypes();
+      if (avaitFocus && !replier) {
+        var actif = el('sim-types').querySelector('.sim-typecard.active');
+        if (actif) actif.focus();
+      }
       // Résumé
       el('sum-icon').innerHTML = svg(t.icon);
       el('sum-name').textContent = t.name;
       el('sum-sub').textContent = t.sub;
-      el('step-type').classList.add('done');
+      if (replier) {
+        el('step-type').classList.add('done');
+        // La grille disparait : sans ca le focus retomberait sur le body.
+        // Le resume est son successeur logique — c'est lui qui rouvre.
+        if (avaitFocus) {
+          var res = document.querySelector('.sim-typesummary');
+          if (res) res.focus();
+        }
+      }
       // Durée par type
       var d = el('sim-duree');
       d.max = t.dureeMax; d.value = t.dureeDef;
       el('sim-duree-max').textContent = t.dureeMax + ' ans';
       // Montant / mensualité par type
-      el('sim-amount').value = (mode==='montant') ? t.defMontant : t.defMens;
+      poserMontant((mode==='montant') ? t.defMontant : t.defMens);
       // Taux auto
       tauxCustom = false; el('sim-taux-badge').style.display = '';
       el('sim-taux').value = t.taux; el('sim-taux-ass').value = t.ass;
@@ -328,15 +591,56 @@
       p.classList.remove('active'); void p.offsetWidth; p.classList.add('active');
       updateSlider(); recalc();
       nudge();
-      if (first) setTimeout(function(){ p.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 80);
+      if (first && replier) setTimeout(function(){ p.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 80);
     }
 
-    function changeType(){ el('step-type').classList.remove('done'); }
+    function changeType(){
+      el('step-type').classList.remove('done');
+      // Le bouton « Changer » vient de disparaitre : sans ca le focus
+      // resterait sur un element invisible.
+      var actif = el('sim-types').querySelector('.sim-typecard.active')
+               || el('sim-types').firstChild;
+      if (actif && actif.focus) actif.focus({ preventScroll:true });
+    }
 
-    function setMode(m){
+    var MODE_DETAIL = {
+      montant:    'Tu sais ce que tu veux emprunter — on calcule ce que ça coûte chaque mois.',
+      mensualite: 'Tu sais ce que tu peux mettre chaque mois — on calcule ce que ça permet d’emprunter.'
+    };
+
+    /* Le pop-up de decouverte : une seule apparition, memorisee. */
+    var CLE_BULLE = 'fund_sim_emprunt_bulle';
+    function fermerBulle(definitif){
+      var b = el('sim-bulle'); if (!b || b.hidden) return;
+      b.hidden = true;
+      var a = document.querySelector('.sim-dit-ancre');
+      if (a) a.classList.remove('designe');
+      if (definitif) { try { localStorage.setItem(CLE_BULLE, '1'); } catch(e) {} }
+    }
+    function montrerBulle(){
+      if (mode !== 'montant') return;
+      try { if (localStorage.getItem(CLE_BULLE) === '1') return; } catch(e) {}
+      var b = el('sim-bulle'); if (!b) return;
+      b.hidden = false;
+      var a = document.querySelector('.sim-dit-ancre');
+      if (a) a.classList.add('designe');
+      setTimeout(function(){ fermerBulle(false); }, 11000);
+    }
+
+    function setMode(m, rendreLeFocus){
+      fermerBulle(true);
       mode = m;
-      el('tab-montant').classList.toggle('active', m==='montant');
-      el('tab-mensualite').classList.toggle('active', m==='mensualite');
+      ['montant','mensualite'].forEach(function (k) {
+        var opt = el('tab-' + k);
+        var actif = (k === m);
+        opt.classList.toggle('actif', actif);
+        opt.setAttribute('aria-checked', actif ? 'true' : 'false');
+        // Un radiogroup n'a qu'un point d'arret ; les fleches circulent dedans.
+        opt.setAttribute('tabindex', actif ? '0' : '-1');
+        if (actif && rendreLeFocus) opt.focus();
+      });
+      var d = el('sim-dit-detail');
+      if (d) d.textContent = MODE_DETAIL[m] || '';
       el('step2-title').textContent = (m==='montant') ? 'Ton projet' : 'Ta capacité';
       if (m==='montant'){
         el('sim-input-label').textContent = 'Montant emprunté';
@@ -346,7 +650,7 @@
         el('sim-input-suffix').textContent = '€/mois';
       }
       var t = T();
-      if (t) el('sim-amount').value = (m==='montant') ? t.defMontant : t.defMens;
+      if (t) poserMontant((m==='montant') ? t.defMontant : t.defMens);
       recalc();
     }
 
@@ -371,7 +675,7 @@
     }
 
     function nudge(){
-      var a = el('sim-amount'), s = el('sim-duree');
+      var a = el('sim-amount').closest('.sim-input-wrap'), s = el('sim-duree');
       [a,s].forEach(function(e){ e.classList.remove('nudge'); void e.offsetWidth; e.classList.add('nudge'); });
       setTimeout(function(){ a.classList.remove('nudge'); s.classList.remove('nudge'); }, 2600);
     }
@@ -385,7 +689,7 @@
       el('sim-taux-display').innerHTML = r.toString().replace('.',',') + ' %<span class="sim-taux-note">+ assurance ' + ar.toString().replace('.',',') + ' %</span>';
 
       var val = el('sim-result-value'), sub = el('sim-result-sub'), rows = el('sim-result-rows'), label = el('sim-result-label');
-      var input = n(el('sim-amount').value);
+      var input = montantSaisi();
       if (input <= 0 || months <= 0){ val.textContent = '—'; sub.textContent = ''; rows.innerHTML = ''; return; }
       flash();
       var years = months/12;
@@ -397,8 +701,14 @@
         var mTot = mCredit + mAss;
         label.textContent = 'Ta mensualité';
         val.innerHTML = euro0(mTot) + ' <span class="unit">€/mois</span>';
-        sub.textContent = 'dont ' + euro(mCredit) + ' de crédit + ' + euro(mAss) + ' d’assurance';
+        // La condition, pas la decomposition : sur mobile ce panneau reste
+        // colle en haut pendant que le montant et la duree defilent hors
+        // ecran — sans ca le chiffre s'affichait sans dire de quel pret.
+        sub.textContent = 'pour ' + euro(capital) + ' sur ' + years + ' ans à '
+                        + r.toString().replace('.', ',') + ' %';
         rows.innerHTML =
+          row('Mensualité de crédit', euro(mCredit) + '/mois') +
+          row('+ assurance', euro(mAss) + '/mois') +
           row('Coût du crédit (intérêts)', euro(mCredit*months - capital)) +
           row('Coût de l’assurance', euro(mAss*months)) +
           row('Total remboursé sur ' + years + ' ans', euro(mTot*months));
@@ -414,21 +724,62 @@
         sub.textContent = 'pour ' + euro(target) + '/mois pendant ' + years + ' ans';
         rows.innerHTML =
           row('Mensualité de crédit', euro(mC) + '/mois') +
-          row('dont assurance', euro(mA) + '/mois') +
+          row('+ assurance', euro(mA) + '/mois') +
           row('Coût du crédit (intérêts)', euro(mC*months - cap)) +
           row('Total remboursé sur ' + years + ' ans', euro(target*months));
       }
     }
     function row(l, v){ return '<div class="sim-rrow"><span class="sim-rrow-label">'+l+'</span><span class="sim-rrow-val">'+v+'</span></div>'; }
 
+    /* Un seul cablage pour toute la saisie, plutot qu'un ecouteur par champ :
+       le prochain champ ajoute ne pourra pas etre oublie. */
+    function brancherSaisie(){
+      var zone = el('step-project');
+      if (!zone) return;
+      zone.addEventListener('input', function (e) {
+        var t = e.target;
+        if (!t.closest('.sim-input, .sim-slider, .sim-taux-small')) return;
+        if (t === el('sim-amount')) reformaterMontant();
+        if (t === el('sim-duree')) updateSlider();
+        if (t === el('sim-taux') || t === el('sim-taux-ass')) {
+          // Toucher un taux le rend manuel : le badge « auto » ne vaut plus.
+          tauxCustom = true;
+          el('sim-taux-badge').style.display = 'none';
+        }
+        recalc();
+      });
+    }
+
     function initSim(){
       renderTypes();
-      el('sim-amount').addEventListener('input', recalc);
-      el('sim-duree').addEventListener('input', function(){ updateSlider(); recalc(); });
-      el('sim-taux').addEventListener('input', function(){ tauxCustom = true; el('sim-taux-badge').style.display='none'; recalc(); });
-      el('sim-taux-ass').addEventListener('input', function(){ tauxCustom = true; el('sim-taux-badge').style.display='none'; recalc(); });
+      brancherSaisie();
+      brancherClavierTypes();
+      setMode(mode);
+      setTimeout(montrerBulle, 1100);
+      // La piste du curseur n'etait peinte qu'au choix d'un type : avant ca
+      // elle restait grise alors que « 20 ans » etait deja affiche.
+      updateSlider();
     }
     window.setMode = setMode;
+    window.fermerBulle = fermerBulle;
+
+    /* Le groupe annoncait un role sans en tenir le contrat. */
+    (function clavierModes(){
+      var groupe = document.querySelector('.sim-dit');
+      if (!groupe) return;
+      groupe.addEventListener('keydown', function (e) {
+        var k = e.key;
+        if (['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].indexOf(k) === -1) return;
+        if (!e.target.closest('[role=radio]')) return;
+        e.preventDefault();
+        var vers;
+        if (k === 'Home') vers = 'montant';
+        else if (k === 'End') vers = 'mensualite';
+        else if (k === 'ArrowRight' || k === 'ArrowDown') vers = (mode === 'montant') ? 'mensualite' : 'montant';
+        else vers = (mode === 'mensualite') ? 'montant' : 'mensualite';
+        setMode(vers, true);
+      });
+    })();
     window.selectType = selectType;
     window.changeType = changeType;
     window.toggleTauxEdit = toggleTauxEdit;
