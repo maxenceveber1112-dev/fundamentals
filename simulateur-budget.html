@@ -27,27 +27,42 @@
        Une phrase, pas deux cartes : il ne gouverne que la saisie, et la
        formulation dit ce que les schemas disaient. Les glyphes restent,
        en 15 px, pour montrer la structure de chaque mode. */
+    /* Pas de fond : ce serait un cinquieme rectangle sur une page qui en a
+       deja quatre, et son lavis pre-empterait celui de la banniere juste en
+       dessous. La phrase se voit parce qu'elle est pleine largeur (dans
+       .sb-left, 360 px, elle se cassait en deux) et parce que ses deux
+       options sont les seuls soulignements de la page. C'est la marge qui
+       la separe, pas un aplat. */
     .sb-dit {
-      display:flex; align-items:baseline; flex-wrap:wrap; gap:0.3rem 0.45rem;
-      margin-bottom:0.9rem; font-size:0.9rem; color:var(--text-muted);
-      line-height:1.7;
+      display:flex; align-items:baseline; flex-wrap:wrap; gap:0.35rem 0.55rem;
+      margin:0 0 1.7rem;
+      font-size:0.95rem; color:var(--text-muted); line-height:1.6;
     }
     .sb-dit-intro, .sb-dit-ou { flex-shrink:0; }
     .sb-dit-opt {
       display:inline-flex; align-items:center; gap:0.35rem;
       padding:0.1rem 0; background:none; border:none; cursor:pointer;
-      font-family:inherit; font-size:0.9rem; font-weight:600;
-      color:var(--text-muted); position:relative;
+      font-family:inherit; font-size:0.95rem; font-weight:600;
+      color:var(--text); position:relative;
       transition:color .18s;
     }
+    /* L'option DISPONIBLE porte un pointille au repos : sans lui, elle
+       ressemblait a du texte en gras et personne ne devinait qu'on pouvait
+       cliquer. L'active porte le trait plein a l'accent — la difference ne
+       tient donc pas a la couleur seule. */
+    .sb-dit-opt::before {
+      content:''; position:absolute; left:0; right:0; bottom:-2px;
+      border-bottom:1.5px dashed var(--text-faint);
+      opacity:1; transition:opacity .18s;
+    }
+    .sb-dit-opt.actif::before { opacity:0; }
     .sb-dit-opt::after {
       content:''; position:absolute; left:0; right:0; bottom:-2px; height:2px;
       border-radius:2px; background:#7C3AED;
       transform:scaleX(0); transform-origin:left;
       transition:transform .3s cubic-bezier(0.34,1.4,0.64,1);
     }
-    .sb-dit-opt:hover { color:var(--text); }
-    .sb-dit-opt.actif { color:var(--text); }
+    .sb-dit-opt:hover::before { border-bottom-color:var(--accent-strong); }
     .sb-dit-opt.actif::after { transform:scaleX(1); }
     .sb-dit-opt:focus-visible { outline:2px solid #7C3AED; outline-offset:3px; border-radius:3px; }
 
@@ -68,57 +83,10 @@
     @keyframes gGlisseA  { from { transform:translateX(-3px); opacity:0.3; } to { transform:none; opacity:1; } }
     @keyframes gGlisseB  { from { transform:translateX(4px);  opacity:0.3; } to { transform:none; opacity:1; } }
 
-    .sb-dit-detail { flex:1 1 100%; font-size:0.8rem; color:var(--text-faint); }
-
-    /* Le pop-up qui designe le second mode. Il ne s'affiche qu'une fois, et
-       s'efface des qu'on a choisi — un rappel, pas une consigne. */
-    .sb-dit-ancre { position:relative; display:inline-flex; }
-    .sb-bulle {
-      position:absolute; top:calc(100% + 9px); left:-6px; z-index:20;
-      display:flex; align-items:flex-start; gap:0.5rem;
-      width:max-content; max-width:16rem;
-      padding:0.55rem 0.5rem 0.55rem 0.7rem;
-      background:var(--bg-elevated);
-      border:1px solid color-mix(in srgb, #7C3AED 35%, transparent);
-      border-radius:0.7rem;
-      box-shadow:0 2px 4px rgba(20,20,30,0.05), 0 14px 30px -14px rgba(124,58,237,0.45);
-      font-size:0.76rem; line-height:1.45; color:var(--text-muted);
-      animation:bulleEntre .42s cubic-bezier(0.34,1.4,0.64,1) both;
-    }
-    .sb-bulle[hidden] { display:none; }
-    /* La pointe : deux triangles superposes pour garder la bordure. */
-    .sb-bulle::before, .sb-bulle::after {
-      content:''; position:absolute; left:20px; width:0; height:0;
-      border-left:6px solid transparent; border-right:6px solid transparent;
-    }
-    .sb-bulle::before { top:-7px; border-bottom:7px solid color-mix(in srgb, #7C3AED 35%, transparent); }
-    .sb-bulle::after  { top:-6px; border-bottom:7px solid var(--bg-elevated); }
-    .sb-bulle-txt { flex:1; }
-    .sb-bulle-x {
-      flex-shrink:0; width:18px; height:18px; padding:0; margin-top:-1px;
-      display:inline-flex; align-items:center; justify-content:center;
-      background:none; border:none; border-radius:50%; cursor:pointer;
-      color:var(--text-faint); transition:color .15s, background .15s;
-    }
-    .sb-bulle-x svg { width:11px; height:11px; }
-    .sb-bulle-x:hover { color:var(--text); background:var(--surface-2); }
-    .sb-bulle-x:focus-visible { outline:2px solid #7C3AED; outline-offset:1px; }
-    /* Un halo doux sur l'option designee, tant que la bulle est la. */
-    .sb-dit-ancre.designe .sb-dit-opt { color:var(--text); }
-    .sb-dit-ancre.designe .sb-dit-opt::after {
-      transform:scaleX(1); background:color-mix(in srgb, #7C3AED 45%, transparent);
-    }
-    @keyframes bulleEntre {
-      from { opacity:0; transform:translateY(-5px) scale(0.97); }
-      to   { opacity:1; transform:none; }
-    }
-    @media (prefers-reduced-motion:reduce) { .sb-bulle { animation:none; } }
-    /* Pres du bord gauche sur mobile : on aligne la bulle sur le bouton et
-       on borne sa largeur, sinon elle sort de l'ecran. */
-    @media (max-width:560px) {
-      .sb-bulle { left:0; max-width:calc(100vw - 2.5rem); }
-      .sb-bulle::before, .sb-bulle::after { left:14px; }
-    }
+    /* Elle montre le mode ACTIF au repos, et celui qu'on pointe pendant
+       qu'on le pointe : l'apercu remplace le pop-up. */
+    .sb-dit-detail { flex:1 1 100%; font-size:0.82rem; color:var(--text-muted);
+      margin-top:0.15rem; transition:opacity .15s; }
 
     @media (prefers-reduced-motion:reduce) {
       .sb-dit-opt::after { transition:none; }
@@ -344,38 +312,31 @@
     <h1 class="sb-title">Simulateur de budget</h1>
     <p class="sb-sub">Vois où part ton argent, mois par mois, en un schéma clair et téléchargeable.</p>
 
+    <!-- Le choix du mode, en pleine largeur : dans .sb-left (360 px) la
+         phrase se cassait en deux et personne ne la voyait. -->
+    <div class="sb-dit" role="radiogroup" aria-label="Mode de saisie">
+      <span class="sb-dit-intro">Je pars</span>
+      <button class="sb-dit-opt actif" id="tab-guide" type="button" role="radio" aria-checked="true" onclick="setMode('guide')">
+        <svg class="sb-dit-glyphe" viewBox="0 0 20 14" aria-hidden="true">
+          <rect class="g-lab" x="0" y="1"  width="7" height="2.5" rx="1.2"/>
+          <rect class="g-box" x="10" y="0"  width="10" height="4.5" rx="1.6"/>
+          <rect class="g-lab" x="0" y="9.5" width="5" height="2.5" rx="1.2"/>
+          <rect class="g-box" x="10" y="8.5" width="10" height="4.5" rx="1.6"/>
+        </svg>de catégories prêtes</button>
+      <span class="sb-dit-ou">ou</span>
+      <button class="sb-dit-opt" id="tab-libre" type="button" role="radio" aria-checked="false" onclick="setMode('libre')">
+        <svg class="sb-dit-glyphe" viewBox="0 0 20 14" aria-hidden="true">
+          <circle class="g-poi" cx="1.4" cy="2" r="1"/><circle class="g-poi" cx="4.4" cy="2" r="1"/>
+          <rect class="g-blk a" x="7.5" y="0" width="12.5" height="4.5" rx="1.6"/>
+          <circle class="g-poi" cx="1.4" cy="10.5" r="1"/><circle class="g-poi" cx="4.4" cy="10.5" r="1"/>
+          <rect class="g-blk b" x="7.5" y="8.5" width="8.5" height="4.5" rx="1.6"/>
+        </svg>des miennes</button>
+      <span class="sb-dit-detail" id="sb-dit-detail"></span>
+    </div>
+
     <div class="sb-cols">
       <!-- COLONNE GAUCHE : saisie -->
       <div class="sb-left">
-        <!-- Le choix du mode, en tête de la saisie : c'est elle qu'il
-             gouverne. -->
-        <div class="sb-dit" role="radiogroup" aria-label="Mode de saisie">
-          <span class="sb-dit-intro">Je pars</span>
-          <button class="sb-dit-opt actif" id="tab-guide" type="button" role="radio" aria-checked="true" onclick="setMode('guide')">
-            <svg class="sb-dit-glyphe" viewBox="0 0 20 14" aria-hidden="true">
-              <rect class="g-lab" x="0" y="1"  width="7" height="2.5" rx="1.2"/>
-              <rect class="g-box" x="10" y="0"  width="10" height="4.5" rx="1.6"/>
-              <rect class="g-lab" x="0" y="9.5" width="5" height="2.5" rx="1.2"/>
-              <rect class="g-box" x="10" y="8.5" width="10" height="4.5" rx="1.6"/>
-            </svg>de catégories prêtes</button>
-          <span class="sb-dit-ou">ou</span>
-          <span class="sb-dit-ancre">
-          <button class="sb-dit-opt" id="tab-libre" type="button" role="radio" aria-checked="false" onclick="setMode('libre')">
-            <svg class="sb-dit-glyphe" viewBox="0 0 20 14" aria-hidden="true">
-              <circle class="g-poi" cx="1.4" cy="2" r="1"/><circle class="g-poi" cx="4.4" cy="2" r="1"/>
-              <rect class="g-blk a" x="7.5" y="0" width="12.5" height="4.5" rx="1.6"/>
-              <circle class="g-poi" cx="1.4" cy="10.5" r="1"/><circle class="g-poi" cx="4.4" cy="10.5" r="1"/>
-              <rect class="g-blk b" x="7.5" y="8.5" width="8.5" height="4.5" rx="1.6"/>
-            </svg>des miennes</button>
-            <span class="sb-bulle" id="sb-bulle" role="note" hidden>
-              <span class="sb-bulle-txt">Crée tes propres catégories, avec leurs sous-postes, et réorganise-les.</span>
-              <button class="sb-bulle-x" type="button" aria-label="Fermer" onclick="fermerBulle(true)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-              </button>
-            </span>
-          </span>
-          <span class="sb-dit-detail" id="sb-dit-detail"></span>
-        </div>
 
         <!-- GUIDÉ -->
         <div class="sb-mode active" id="mode-guide">
@@ -551,36 +512,29 @@
       guide: 'Loyer, courses, abonnements\u2026 tu remplis les montants, rien \u00e0 construire.',
       libre: 'Tes cat\u00e9gories et leurs sous-postes, dans l\u2019ordre que tu veux. Coche \u00ab\u00a0\u00c9pargne\u00a0\u00bb sur celles que tu mets de c\u00f4t\u00e9.'
     };
-    /* Le pop-up de decouverte. Une seule apparition, memorisee : c'est un
-       rappel, pas une consigne qu'on repete. Il ne concerne que le mode
-       qu'on n'a pas choisi. */
-    var CLE_BULLE = 'fund_sim_bulle_libre';
-    function fermerBulle(definitif){
-      var b = el('sb-bulle'); if (!b || b.hidden) return;
-      b.hidden = true;
-      var a = document.querySelector('.sb-dit-ancre');
-      if (a) a.classList.remove('designe');
-      if (definitif) { try { localStorage.setItem(CLE_BULLE, '1'); } catch(e) {} }
+    /* Le pop-up de decouverte a ete retire : il ne s'affichait qu'une
+       fois, il recouvrait la phrase qu'il expliquait, et une fois refuse
+       il ne revenait jamais — alors que le probleme, lui, se repose a
+       chaque nouveau visiteur.
+       A la place, un apercu permanent : pointer ou tabuler sur une option
+       affiche SA description dans la ligne de detail, qui revient au mode
+       actif des qu'on s'en va. Rien ne recouvre rien, rien ne s'epuise. */
+    function majDetail(quel){
+      var d = el('sb-dit-detail');
+      if (d) d.textContent = MODE_DETAIL[quel || mode] || '';
     }
-    window.fermerBulle = fermerBulle;
-
-    function peutEtreMontree(){
-      if (mode !== 'guide') return false;
-      try { return localStorage.getItem(CLE_BULLE) !== '1'; } catch(e) { return true; }
-    }
-    function montrerBulle(){
-      if (!peutEtreMontree()) return;
-      var b = el('sb-bulle'); if (!b) return;
-      b.hidden = false;
-      var a = document.querySelector('.sb-dit-ancre');
-      if (a) a.classList.add('designe');
-      // Elle s'efface d'elle-meme : personne ne doit avoir a la fermer.
-      setTimeout(function(){ fermerBulle(false); }, 11000);
+    function brancherApercu(){
+      ['guide','libre'].forEach(function (k) {
+        var o = el('tab-' + k);
+        if (!o) return;
+        o.addEventListener('mouseenter', function(){ majDetail(k); });
+        o.addEventListener('focus',      function(){ majDetail(k); });
+        o.addEventListener('mouseleave', function(){ majDetail(); });
+        o.addEventListener('blur',       function(){ majDetail(); });
+      });
     }
 
     function setMode(m, rendreLeFocus){
-      // Choisir, c'est avoir compris : la bulle n'a plus de raison d'etre.
-      fermerBulle(true);
       mode=m;
       ['guide','libre'].forEach(function(k){
         var opt = el('tab-'+k);
@@ -594,8 +548,7 @@
       });
       el('mode-guide').classList.toggle('active', m==='guide');
       el('mode-libre').classList.toggle('active', m==='libre');
-      var d = el('sb-dit-detail');
-      if (d) d.textContent = MODE_DETAIL[m] || '';
+      majDetail(m);
       render();
     }
     window.setMode=setMode;
@@ -946,9 +899,8 @@
 
     document.addEventListener('DOMContentLoaded', function(){
       brancherSaisie();
+      brancherApercu();
       init();
-      // Apres le premier rendu : la phrase doit etre en place pour ancrer.
-      setTimeout(montrerBulle, 1100);
       /* Le theme se change sans rechargement : les couleurs du graphe sont
          choisies par mode, il faut donc redessiner. */
       try {
