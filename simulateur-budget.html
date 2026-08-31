@@ -23,10 +23,107 @@
     .sb-title { font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:2.15rem; line-height:1.1; margin:0.5rem 0 0.5rem; }
     .sb-sub { font-size:0.92rem; color:var(--text-muted); line-height:1.55; margin:0 0 1.5rem; max-width:56ch; }
 
-    .sb-tabs { display:inline-flex; gap:0.25rem; padding:0.25rem; background:var(--surface-2); border-radius:9999px; margin-bottom:1.5rem; }
-    .sb-tab { font-size:0.82rem; font-weight:600; color:var(--text-muted); background:transparent; border:none; border-radius:9999px; padding:0.5rem 1.1rem; cursor:pointer; transition:color .2s, background .2s; }
-    .sb-tab.active { background:var(--bg-elevated); color:var(--text); box-shadow:0 1px 3px rgba(20,20,30,0.10); }
-    html.dark .sb-tab.active { background:rgba(255,255,255,0.12); color:#fff; }
+    /* ── Le choix du mode ────────────────────────────────────────
+       Une phrase, pas deux cartes : il ne gouverne que la saisie, et la
+       formulation dit ce que les schemas disaient. Les glyphes restent,
+       en 15 px, pour montrer la structure de chaque mode. */
+    .sb-dit {
+      display:flex; align-items:baseline; flex-wrap:wrap; gap:0.3rem 0.45rem;
+      margin-bottom:0.9rem; font-size:0.9rem; color:var(--text-muted);
+      line-height:1.7;
+    }
+    .sb-dit-intro, .sb-dit-ou { flex-shrink:0; }
+    .sb-dit-opt {
+      display:inline-flex; align-items:center; gap:0.35rem;
+      padding:0.1rem 0; background:none; border:none; cursor:pointer;
+      font-family:inherit; font-size:0.9rem; font-weight:600;
+      color:var(--text-muted); position:relative;
+      transition:color .18s;
+    }
+    .sb-dit-opt::after {
+      content:''; position:absolute; left:0; right:0; bottom:-2px; height:2px;
+      border-radius:2px; background:#7C3AED;
+      transform:scaleX(0); transform-origin:left;
+      transition:transform .3s cubic-bezier(0.34,1.4,0.64,1);
+    }
+    .sb-dit-opt:hover { color:var(--text); }
+    .sb-dit-opt.actif { color:var(--text); }
+    .sb-dit-opt.actif::after { transform:scaleX(1); }
+    .sb-dit-opt:focus-visible { outline:2px solid #7C3AED; outline-offset:3px; border-radius:3px; }
+
+    .sb-dit-glyphe { width:15px; height:11px; flex-shrink:0; overflow:visible; }
+    .g-lab { fill:currentColor; opacity:0.32; }
+    .g-box, .g-blk { fill:none; stroke:currentColor; stroke-width:1.1; opacity:0.45; }
+    .g-poi { fill:currentColor; opacity:0.4; }
+    /* Le glyphe du mode choisi joue son geste : les champs se remplissent,
+       les blocs se recalent. */
+    .sb-dit-opt.actif .g-box { fill:#7C3AED; stroke:#7C3AED; opacity:1;
+      animation:gRemplir .4s cubic-bezier(0.16,1,0.3,1) both; }
+    .sb-dit-opt.actif .g-box:nth-of-type(4) { animation-delay:.08s; }
+    .sb-dit-opt.actif .g-blk { stroke:#7C3AED; opacity:1; }
+    .sb-dit-opt.actif .g-blk.a { animation:gGlisseA .42s cubic-bezier(0.16,1,0.3,1) both; }
+    .sb-dit-opt.actif .g-blk.b { animation:gGlisseB .42s .06s cubic-bezier(0.16,1,0.3,1) both; }
+    .sb-dit-opt.actif .g-poi, .sb-dit-opt.actif .g-lab { opacity:0.55; }
+    @keyframes gRemplir  { from { transform:scaleX(0.2); transform-origin:left; opacity:0; } to { transform:none; opacity:1; } }
+    @keyframes gGlisseA  { from { transform:translateX(-3px); opacity:0.3; } to { transform:none; opacity:1; } }
+    @keyframes gGlisseB  { from { transform:translateX(4px);  opacity:0.3; } to { transform:none; opacity:1; } }
+
+    .sb-dit-detail { flex:1 1 100%; font-size:0.8rem; color:var(--text-faint); }
+
+    /* Le pop-up qui designe le second mode. Il ne s'affiche qu'une fois, et
+       s'efface des qu'on a choisi — un rappel, pas une consigne. */
+    .sb-dit-ancre { position:relative; display:inline-flex; }
+    .sb-bulle {
+      position:absolute; top:calc(100% + 9px); left:-6px; z-index:20;
+      display:flex; align-items:flex-start; gap:0.5rem;
+      width:max-content; max-width:16rem;
+      padding:0.55rem 0.5rem 0.55rem 0.7rem;
+      background:var(--bg-elevated);
+      border:1px solid color-mix(in srgb, #7C3AED 35%, transparent);
+      border-radius:0.7rem;
+      box-shadow:0 2px 4px rgba(20,20,30,0.05), 0 14px 30px -14px rgba(124,58,237,0.45);
+      font-size:0.76rem; line-height:1.45; color:var(--text-muted);
+      animation:bulleEntre .42s cubic-bezier(0.34,1.4,0.64,1) both;
+    }
+    .sb-bulle[hidden] { display:none; }
+    /* La pointe : deux triangles superposes pour garder la bordure. */
+    .sb-bulle::before, .sb-bulle::after {
+      content:''; position:absolute; left:20px; width:0; height:0;
+      border-left:6px solid transparent; border-right:6px solid transparent;
+    }
+    .sb-bulle::before { top:-7px; border-bottom:7px solid color-mix(in srgb, #7C3AED 35%, transparent); }
+    .sb-bulle::after  { top:-6px; border-bottom:7px solid var(--bg-elevated); }
+    .sb-bulle-txt { flex:1; }
+    .sb-bulle-x {
+      flex-shrink:0; width:18px; height:18px; padding:0; margin-top:-1px;
+      display:inline-flex; align-items:center; justify-content:center;
+      background:none; border:none; border-radius:50%; cursor:pointer;
+      color:var(--text-faint); transition:color .15s, background .15s;
+    }
+    .sb-bulle-x svg { width:11px; height:11px; }
+    .sb-bulle-x:hover { color:var(--text); background:var(--surface-2); }
+    .sb-bulle-x:focus-visible { outline:2px solid #7C3AED; outline-offset:1px; }
+    /* Un halo doux sur l'option designee, tant que la bulle est la. */
+    .sb-dit-ancre.designe .sb-dit-opt { color:var(--text); }
+    .sb-dit-ancre.designe .sb-dit-opt::after {
+      transform:scaleX(1); background:color-mix(in srgb, #7C3AED 45%, transparent);
+    }
+    @keyframes bulleEntre {
+      from { opacity:0; transform:translateY(-5px) scale(0.97); }
+      to   { opacity:1; transform:none; }
+    }
+    @media (prefers-reduced-motion:reduce) { .sb-bulle { animation:none; } }
+    /* Pres du bord gauche sur mobile : on aligne la bulle sur le bouton et
+       on borne sa largeur, sinon elle sort de l'ecran. */
+    @media (max-width:560px) {
+      .sb-bulle { left:0; max-width:calc(100vw - 2.5rem); }
+      .sb-bulle::before, .sb-bulle::after { left:14px; }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      .sb-dit-opt::after { transition:none; }
+      .sb-dit-opt.actif .g-box, .sb-dit-opt.actif .g-blk { animation:none; }
+    }
 
     /* Deux colonnes : saisie à gauche, résultat sticky à droite */
     .sb-cols { display:grid; grid-template-columns:360px minmax(0,1fr); gap:1.5rem; align-items:start; }
@@ -50,11 +147,30 @@
     }
 
     /* Bannière budget + taux d'épargne */
-    .sb-banner { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; padding:1.15rem 1.4rem; border-radius:1.1rem; background:linear-gradient(160deg, var(--accent-soft), color-mix(in srgb, var(--accent-soft) 28%, transparent)); border:1px solid var(--accent-soft); margin-bottom:1.25rem; }
-    .sb-banner-label { font-size:0.75rem; font-weight:600; color:var(--accent-strong); letter-spacing:0.02em; }
+    /* Un fond, mais pas une carte de plus : un halo. Le degrade radial
+       n'a pas de bord, donc rien a aligner avec les autres conteneurs — il
+       porte le chiffre sans ajouter un rectangle. Le rayon bas-droit reste
+       plus ouvert que partout ailleurs : la forme se distingue. */
+    .sb-banner {
+      /* Pas de `position` ici : la media query mobile la declare AVANT ce
+         bloc et pose `sticky`. A specificite egale la derniere regle gagne,
+         donc toute position posee ici l'ecraserait. */
+      display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between;
+      gap:0.5rem 1.5rem; padding:1.15rem 1.5rem 1.25rem; margin-bottom:1.1rem;
+      border-radius:1.25rem 1.25rem 2.75rem 1.25rem;
+      background:
+        radial-gradient(115% 165% at 8% 25%, var(--accent-soft) 0%, transparent 62%),
+        radial-gradient(90% 140% at 96% 96%, color-mix(in srgb, var(--accent-soft) 55%, transparent) 0%, transparent 58%);
+    }
+    html.dark .sb-banner {
+      background:
+        radial-gradient(115% 165% at 8% 25%, rgba(167,139,250,0.16) 0%, transparent 62%),
+        radial-gradient(90% 140% at 96% 96%, rgba(167,139,250,0.09) 0%, transparent 58%);
+    }
+    .sb-banner-label { font-size:0.68rem; font-weight:600; color:var(--text-muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.1rem; }
     .sb-banner-value { font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:2.5rem; line-height:1.02; color:var(--text); }
     .sb-banner-value .unit { font-size:1.1rem; font-weight:500; color:var(--text-muted); font-family:'Inter',sans-serif; }
-    .sb-banner-meta { text-align:right; font-size:0.95rem; color:var(--text-muted); line-height:1.5; }
+    .sb-banner-meta { text-align:right; font-size:0.85rem; color:var(--text-muted); line-height:1.55; }
     .sb-banner-meta b { color:var(--text); font-weight:700; }
     .sb-meta-sm { font-size:0.8rem; }
     .sb-meta-sm2 { font-size:0.74rem; color:var(--text-faint); }
@@ -67,16 +183,56 @@
     .sb-mode { display:none; }
     .sb-mode.active { display:block; }
 
-    .sb-section { margin-bottom:1rem; padding:0.9rem 1rem 1rem; border-radius:0.9rem; border:1px solid var(--border-subtle); }
+    /* La zone plutot que la carte : pas de bordure, un lavis radial tres
+       doux, et un coin ouvert — le geste du halo du total. */
+    .sb-section {
+      margin-bottom:1.1rem; padding:1rem 1.15rem 1.1rem;
+      border:none; border-radius:1.1rem 1.1rem 2.2rem 1.1rem;
+    }
     .sb-section:last-child { margin-bottom:0; }
-    .sb-section.in   { background:rgba(22,163,74,0.05); border-color:rgba(22,163,74,0.18); }
-    .sb-section.fix  { background:rgba(139,92,246,0.05); border-color:rgba(139,92,246,0.18); }
-    .sb-section.var  { background:rgba(99,102,241,0.05); border-color:rgba(99,102,241,0.18); }
-    .sb-section.debt { background:rgba(249,115,22,0.05); border-color:rgba(249,115,22,0.18); }
-    .sb-section.save { background:rgba(20,184,166,0.05); border-color:rgba(20,184,166,0.18); }
-    .sb-section-head { display:flex; align-items:center; gap:0.5rem; font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.75rem; }
-    .sb-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-    .sb-dot.in { background:#16A34A; } .sb-dot.fix { background:#8B5CF6; } .sb-dot.var { background:#6366F1; } .sb-dot.debt { background:#F97316; } .sb-dot.save { background:#14B8A6; }
+    /* Les teintes de section sont la LEGENDE du graphe : elles doivent
+       etre les memes couleurs. Elles etaient restees sur l'ancienne palette
+       et annoncaient « charges fixes = violet » quand le Sankey les
+       dessinait en bleu. Elles viennent maintenant des memes variables,
+       posees par le script selon le theme. */
+    .sb-section.in   { background:radial-gradient(120% 150% at 6% 0%, color-mix(in srgb, var(--sec-in) 11%, transparent) 0%, transparent 68%); }
+    .sb-section.fix  { background:radial-gradient(120% 150% at 6% 0%, color-mix(in srgb, var(--sec-fix) 11%, transparent) 0%, transparent 68%); }
+    .sb-section.var  { background:radial-gradient(120% 150% at 6% 0%, color-mix(in srgb, var(--sec-var) 11%, transparent) 0%, transparent 68%); }
+    .sb-section.debt { background:radial-gradient(120% 150% at 6% 0%, color-mix(in srgb, var(--sec-debt) 12%, transparent) 0%, transparent 68%); }
+    .sb-section.save { background:radial-gradient(120% 150% at 6% 0%, color-mix(in srgb, var(--sec-save) 11%, transparent) 0%, transparent 68%); }
+    /* L'en-tete porte le sous-total de sa section : il informe au lieu
+       d'etiqueter. La pastille ronde a disparu — elle repetait une couleur
+       que le fond de la section porte deja. */
+    .sb-section-head {
+      display:flex; align-items:center; gap:0.55rem;
+      font-size:0.72rem; font-weight:700; letter-spacing:0.06em;
+      text-transform:uppercase; color:var(--text-muted); margin-bottom:0.75rem;
+    }
+    /* Plus de marqueur devant le titre : c'est le sous-total qui porte la
+       couleur. Elle designe alors une donnee, pas un ornement — un chiffre
+       bleu ici, une barre bleue dans le graphe. */
+    .sb-section-nom { flex:1; min-width:0; padding-right:0.75rem; }
+    .sb-section-total {
+      font-variant-numeric:tabular-nums; font-weight:700;
+      color:var(--text); white-space:nowrap; letter-spacing:0;
+      transition:color .25s;
+      opacity:0; transform:translateY(-2px);
+      transition:opacity .28s cubic-bezier(0.16,1,0.3,1), transform .28s cubic-bezier(0.16,1,0.3,1);
+    }
+    .sb-section-total.vu { opacity:1; transform:none; }
+    /* Le chiffre reste a l'encre de texte : en 12 px, les couleurs de la
+       palette tombent sous 4,5:1 (vie courante 4,32, dettes 3,42, epargne
+       3,30 en clair ; charges fixes 3,02 en sombre). Elles sont validees
+       comme marques graphiques, pas comme encre — c'est le lavis de la
+       section qui porte l'identite. */
+    @media (prefers-reduced-motion:reduce) { .sb-section-total { transition:none; } }
+    /* Neutre : la section regroupe des categories qui ont chacune leur
+       couleur — en imposer une au conteneur serait mentir sur son contenu. */
+    /* Un gris qui a une direction et une temperature, plutot qu'un aplat :
+       les contenus de ces sections portent chacun leur couleur, le
+       conteneur doit s'effacer sans devenir terne. */
+    .sb-section.neutre { background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.10) 0%, transparent 68%); }
+    html.dark .sb-section.neutre { background:radial-gradient(120% 150% at 6% 0%, rgba(255,255,255,0.075) 0%, transparent 68%); }
     .sb-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; }
     .sb-field { display:flex; flex-direction:column; gap:0.25rem; }
     .sb-flabel { font-size:0.75rem; font-weight:500; color:var(--text-secondary,var(--text-muted)); }
@@ -98,18 +254,61 @@
     html.dark .sb-add { color:#A78BFA; }
 
     /* Libre : blocs catégories colorés */
-    .sb-cat { border:1px solid var(--border-subtle); border-left:3px solid var(--border-mid); border-radius:0.8rem; padding:0.8rem; margin-bottom:0.65rem; background:var(--surface-1); transition:background .2s, border-color .2s; }
+    /* Les categories recoivent le meme geste que les sections : pas de
+       cadre, un lavis de leur propre couleur, un coin ouvert. */
+    .sb-cat {
+      border:none; border-radius:0.95rem 0.95rem 1.9rem 0.95rem;
+      padding:0.85rem 0.9rem 0.9rem; margin-bottom:0.7rem;
+      background:var(--surface-1); transition:background .25s;
+    }
     .sb-cat-head { display:flex; gap:0.4rem; align-items:center; margin-bottom:0.55rem; }
     .sb-cat-head .sb-inp.name { flex:1; font-weight:600; }
     .sb-ep-check { display:inline-flex; align-items:center; gap:0.3rem; font-size:0.72rem; font-weight:600; color:var(--text-muted); cursor:pointer; white-space:nowrap; flex-shrink:0; padding:0 0.3rem; }
     .sb-ep-check input { accent-color:#16A34A; cursor:pointer; }
-    .sb-subs { display:flex; flex-direction:column; gap:0.35rem; padding-left:0.5rem; border-left:2px solid var(--border-subtle); margin-left:0.15rem; }
+    /* Le rail des sous-postes prend la teinte de sa categorie : le meme
+       lien parent/enfant que les nuances du graphe. */
+    .sb-subs { display:flex; flex-direction:column; gap:0.35rem; padding-left:0.55rem;
+      border-left:2px solid var(--cat-teinte, var(--border-subtle)); margin-left:0.15rem;
+      transition:border-color .25s; }
     .sb-drag { flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center; width:16px; align-self:stretch; color:var(--text-faint); cursor:grab; touch-action:none; }
     .sb-drag:hover { color:var(--text-muted); }
     .sb-cat.sb-dragging, .sb-row.sb-dragging { opacity:0.92; box-shadow:0 8px 22px rgba(20,20,30,0.16); border-radius:0.6rem; position:relative; z-index:6; background:var(--bg-elevated); cursor:grabbing; }
     html.dark .sb-cat.sb-dragging, html.dark .sb-row.sb-dragging { box-shadow:0 10px 26px rgba(0,0,0,0.55); }
     body.sb-dragging-active { cursor:grabbing; }
     body.sb-dragging-active, body.sb-dragging-active * { user-select:none; -webkit-user-select:none; }
+
+    /* La table des chiffres : une alternative au schema, ouverte au
+       clavier sans une ligne de script grace a <details>. */
+    .sb-table { margin-top:0.9rem; border-top:1px solid var(--border-subtle,rgba(0,0,0,0.07)); padding-top:0.7rem; }
+    .sb-table-tete {
+      display:inline-flex; align-items:center; gap:0.4rem; cursor:pointer;
+      font-size:0.78rem; font-weight:600; color:var(--text-muted);
+      list-style:none; padding:0.15rem 0; border-radius:0.4rem;
+      transition:color .16s;
+    }
+    .sb-table-tete::-webkit-details-marker { display:none; }
+    .sb-table-tete:hover { color:var(--text); }
+    .sb-table[open] .sb-table-tete { color:var(--text); }
+    .sb-table-tete:focus-visible { outline:2px solid #7C3AED; outline-offset:3px; }
+    .sb-table-chev { width:13px; height:13px; transition:transform .25s cubic-bezier(0.34,1.4,0.64,1); }
+    .sb-table[open] .sb-table-chev { transform:rotate(90deg); }
+    .sb-table-corps { margin-top:0.6rem; animation:sbTableOuvre .28s var(--ease-out,cubic-bezier(0.16,1,0.3,1)) both; }
+    @keyframes sbTableOuvre { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+    .sb-tbl { width:100%; border-collapse:collapse; font-size:0.79rem; }
+    .sb-tbl caption {
+      text-align:left; font-size:0.67rem; font-weight:700; letter-spacing:0.09em;
+      text-transform:uppercase; color:var(--text-muted);
+      padding:0.55rem 0 0.3rem;
+    }
+    .sb-tbl th, .sb-tbl td { padding:0.3rem 0.2rem; text-align:left; }
+    .sb-tbl th { font-weight:600; color:var(--text-muted); font-size:0.7rem;
+      border-bottom:1px solid var(--border-subtle,rgba(0,0,0,0.07)); }
+    .sb-tbl td { border-bottom:1px solid var(--border-subtle,rgba(0,0,0,0.05)); color:var(--text); }
+    .sb-tbl td.num, .sb-tbl th.num { text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .sb-tbl td.part { color:var(--text-muted); }
+    .sb-tbl .pastille { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:0.45rem; vertical-align:middle; }
+    .sb-tbl tr.sous td:first-child { padding-left:1.15rem; color:var(--text-muted); }
+    @media (prefers-reduced-motion:reduce) { .sb-table-chev { transition:none; } .sb-table-corps { animation:none; } }
 
     .sb-result-head { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; margin-bottom:0.75rem; }
     .sb-result-title { font-size:0.75rem; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted); }
@@ -143,28 +342,53 @@
   <main class="sb-wrap">
     <div class="sb-kicker">SIMULATEUR</div>
     <h1 class="sb-title">Simulateur de budget</h1>
-    <p class="sb-sub">Répartis ton budget et visualise-le en un Sankey clair et téléchargeable. Mode guidé avec des catégories prêtes, ou mode libre avec tes propres catégories.</p>
-
-    <div class="sb-tabs" role="tablist" aria-label="Mode de saisie">
-      <button class="sb-tab active" id="tab-guide" type="button" role="tab" onclick="setMode('guide')">Guidé</button>
-      <button class="sb-tab" id="tab-libre" type="button" role="tab" onclick="setMode('libre')">Libre</button>
-    </div>
+    <p class="sb-sub">Vois où part ton argent, mois par mois, en un schéma clair et téléchargeable.</p>
 
     <div class="sb-cols">
       <!-- COLONNE GAUCHE : saisie -->
       <div class="sb-left">
+        <!-- Le choix du mode, en tête de la saisie : c'est elle qu'il
+             gouverne. -->
+        <div class="sb-dit" role="radiogroup" aria-label="Mode de saisie">
+          <span class="sb-dit-intro">Je pars</span>
+          <button class="sb-dit-opt actif" id="tab-guide" type="button" role="radio" aria-checked="true" onclick="setMode('guide')">
+            <svg class="sb-dit-glyphe" viewBox="0 0 20 14" aria-hidden="true">
+              <rect class="g-lab" x="0" y="1"  width="7" height="2.5" rx="1.2"/>
+              <rect class="g-box" x="10" y="0"  width="10" height="4.5" rx="1.6"/>
+              <rect class="g-lab" x="0" y="9.5" width="5" height="2.5" rx="1.2"/>
+              <rect class="g-box" x="10" y="8.5" width="10" height="4.5" rx="1.6"/>
+            </svg>de catégories prêtes</button>
+          <span class="sb-dit-ou">ou</span>
+          <span class="sb-dit-ancre">
+          <button class="sb-dit-opt" id="tab-libre" type="button" role="radio" aria-checked="false" onclick="setMode('libre')">
+            <svg class="sb-dit-glyphe" viewBox="0 0 20 14" aria-hidden="true">
+              <circle class="g-poi" cx="1.4" cy="2" r="1"/><circle class="g-poi" cx="4.4" cy="2" r="1"/>
+              <rect class="g-blk a" x="7.5" y="0" width="12.5" height="4.5" rx="1.6"/>
+              <circle class="g-poi" cx="1.4" cy="10.5" r="1"/><circle class="g-poi" cx="4.4" cy="10.5" r="1"/>
+              <rect class="g-blk b" x="7.5" y="8.5" width="8.5" height="4.5" rx="1.6"/>
+            </svg>des miennes</button>
+            <span class="sb-bulle" id="sb-bulle" role="note" hidden>
+              <span class="sb-bulle-txt">Crée tes propres catégories, avec leurs sous-postes, et réorganise-les.</span>
+              <button class="sb-bulle-x" type="button" aria-label="Fermer" onclick="fermerBulle(true)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </button>
+            </span>
+          </span>
+          <span class="sb-dit-detail" id="sb-dit-detail"></span>
+        </div>
+
         <!-- GUIDÉ -->
         <div class="sb-mode active" id="mode-guide">
           <div class="sb-panel">
-            <div class="sb-section in">
-              <div class="sb-section-head"><span class="sb-dot in"></span>Ce qui rentre</div>
+            <div class="sb-section neutre">
+              <div class="sb-section-head"><span class="sb-section-nom">Ce qui rentre</span><span class="sb-section-total" data-total="in"></span></div>
               <div class="sb-grid">
                 <div class="sb-field"><label class="sb-flabel">Revenus nets</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-revenus" min="0" inputmode="numeric" value="2200"><span class="sb-inp-suffix">€</span></div></div>
                 <div class="sb-field"><label class="sb-flabel">Aides / autres</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-aides" min="0" inputmode="numeric" value="150"><span class="sb-inp-suffix">€</span></div></div>
               </div>
             </div>
             <div class="sb-section fix">
-              <div class="sb-section-head"><span class="sb-dot fix"></span>Charges fixes</div>
+              <div class="sb-section-head"><span class="sb-section-nom">Charges fixes</span><span class="sb-section-total" data-total="fix"></span></div>
               <div class="sb-grid">
                 <div class="sb-field"><label class="sb-flabel">Loyer / logement</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-loyer" min="0" inputmode="numeric" value="700"><span class="sb-inp-suffix">€</span></div></div>
                 <div class="sb-field"><label class="sb-flabel">Assurances</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-assurances" min="0" inputmode="numeric" value="90"><span class="sb-inp-suffix">€</span></div></div>
@@ -173,7 +397,7 @@
               </div>
             </div>
             <div class="sb-section var">
-              <div class="sb-section-head"><span class="sb-dot var"></span>Vie courante</div>
+              <div class="sb-section-head"><span class="sb-section-nom">Vie courante</span><span class="sb-section-total" data-total="var"></span></div>
               <div class="sb-grid">
                 <div class="sb-field"><label class="sb-flabel">Courses</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-courses" min="0" inputmode="numeric" value="320"><span class="sb-inp-suffix">€</span></div></div>
                 <div class="sb-field"><label class="sb-flabel">Restos, cafés</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-repas" min="0" inputmode="numeric" value="120"><span class="sb-inp-suffix">€</span></div></div>
@@ -184,12 +408,12 @@
               </div>
             </div>
             <div class="sb-section debt">
-              <div class="sb-section-head"><span class="sb-dot debt"></span>Dettes & crédits</div>
+              <div class="sb-section-head"><span class="sb-section-nom">Dettes & crédits</span><span class="sb-section-total" data-total="debt"></span></div>
               <div id="g-dettes-list"></div>
               <button class="sb-add" type="button" onclick="addGDette()">+ Ajouter une dette</button>
             </div>
             <div class="sb-section save">
-              <div class="sb-section-head"><span class="sb-dot save"></span>Épargne & catégories perso</div>
+              <div class="sb-section-head"><span class="sb-section-nom">Épargne & catégories perso</span><span class="sb-section-total" data-total="save"></span></div>
               <div class="sb-grid" style="margin-bottom:0.5rem;">
                 <div class="sb-field"><label class="sb-flabel">Épargne mensuelle</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-epargne" min="0" inputmode="numeric" value="200"><span class="sb-inp-suffix">€</span></div></div>
               </div>
@@ -202,20 +426,20 @@
         <!-- LIBRE -->
         <div class="sb-mode" id="mode-libre">
           <div class="sb-panel">
-            <div class="sb-section in">
-              <div class="sb-section-head"><span class="sb-dot in"></span>Tes sources de revenus</div>
+            <div class="sb-section neutre">
+              <div class="sb-section-head"><span class="sb-section-nom">Tes sources de revenus</span><span class="sb-section-total" data-total="f-in"></span></div>
               <div id="f-income-list"></div>
               <button class="sb-add" type="button" onclick="addFIncome()">+ Ajouter une source</button>
             </div>
-            <div class="sb-section var">
-              <div class="sb-section-head"><span class="sb-dot var"></span>Tes catégories de dépenses</div>
+            <div class="sb-section neutre">
+              <div class="sb-section-head"><span class="sb-section-nom">Tes catégories de dépenses</span><span class="sb-section-total" data-total="f-var"></span></div>
               <div id="f-cats-list"></div>
               <button class="sb-add" type="button" onclick="addFCat()">+ Ajouter une catégorie</button>
             </div>
           </div>
         </div>
 
-        <p class="sb-disclaimer">Outil de visualisation — les montants ne sont pas enregistrés. En mode libre, coche « Épargne » sur les catégories que tu mets de côté pour calculer ton taux d'épargne.</p>
+        <p class="sb-disclaimer">Outil de visualisation — les montants ne sont pas enregistrés.</p>
       </div>
 
       <!-- COLONNE DROITE : résultat (sticky) -->
@@ -235,8 +459,18 @@
               Télécharger
             </button>
           </div>
-          <div class="sb-scroll"><svg id="sb-svg" viewBox="0 0 640 300" role="img" aria-label="Sankey de ton budget"></svg></div>
+          <div class="sb-scroll"><svg id="sb-svg" viewBox="0 0 640 300" role="img" aria-label="Schéma de répartition de ton budget"></svg></div>
           <div class="sb-empty" id="sb-empty" style="display:none;">Saisis au moins un revenu pour voir ton Sankey.</div>
+          <!-- role="img" retire les etiquettes du SVG de l'arbre
+               d'accessibilite. La table les rend, et sert aussi a qui
+               prefere lire des chiffres. -->
+          <details class="sb-table" id="sb-table">
+            <summary class="sb-table-tete">
+              <svg class="sb-table-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              <span>Voir les chiffres</span>
+            </summary>
+            <div class="sb-table-corps" id="sb-table-corps"></div>
+          </details>
         </div>
       </div>
     </div>
@@ -247,7 +481,7 @@
   <script src="shared.js"></script>
   <script src="supabase.js"></script>
   <script src="nav-avatar.js?v=budget2"></script>
-  <script src="budget-sankey.js?v=aer1"></script>
+  <script src="budget-sankey.js?v=nuances1"></script>
   <script>
   (function(){
     'use strict';
@@ -256,33 +490,141 @@
     function num(id){ var e=el(id); var v=e?parseFloat(e.value):0; return isFinite(v)?Math.max(0,v):0; }
     function euro(v){ return Math.round(v).toLocaleString('fr-FR')+' €'; }
 
-    var violetP=['#7C3AED','#8B5CF6','#A78BFA','#9333EA','#A855F7','#C084FC'];
-    var indigoP=['#6366F1','#818CF8','#4F46E5','#4338CA','#A5B4FC'];
-    var detteP=['#F97316','#FB923C','#EF4444','#DC2626'];
-    var tealP=['#14B8A6','#0D9488','#2DD4BF'];
-    var GREEN='#16A34A';
+    /* Palette categorielle calculee au validateur, pas choisie a l'oeil.
+       Le vert est reserve a l'epargne et fait partie de la recherche : ajoute
+       apres coup, il se confondait avec l'or en protanopie. Chaque mode a son
+       propre jeu, valide contre sa propre surface. */
+    var PALETTE = {
+      clair:  { epargne:'#16A34A', cats:['#1251e2','#e212a4','#e26612','#259dd0'] },
+      sombre: { epargne:'#2ea55c', cats:['#4c4cf0','#ef3eba','#e76813','#219ced'] }
+    };
+    function estSombre(){ return document.documentElement.classList.contains('dark'); }
+    function palette(){ return estSombre() ? PALETTE.sombre : PALETTE.clair; }
+    /* Le mode guide a des GROUPES semantiques (charges fixes, vie courante,
+       dettes, perso). Chacun prend une couleur de la palette, et ses postes
+       en prennent des nuances : meme principe que les sous-postes du mode
+       libre. Avant, onze teintes voisines se partageaient deux familles. */
+    function nuances(base, n){
+      if (typeof nuancesSankey === 'function') { var v = nuancesSankey(base, n); if (v) return v; }
+      var out=[]; for (var k=0;k<n;k++) out.push(base); return out;
+    }
+    function couleursGroupe(base, items){
+      var nu = nuances(base, Math.max(1, items.length));
+      return items.map(function(x,i){ x.color = nu[i]; return x; });
+    }
     var SB_HANDLE='<span class="sb-drag" aria-hidden="true" title="Glisser pour réorganiser"><svg width="10" height="16" viewBox="0 0 10 16"><g fill="currentColor"><circle cx="2.5" cy="4" r="1.2"/><circle cx="7.5" cy="4" r="1.2"/><circle cx="2.5" cy="8" r="1.2"/><circle cx="7.5" cy="8" r="1.2"/><circle cx="2.5" cy="12" r="1.2"/><circle cx="7.5" cy="12" r="1.2"/></g></svg></span>';
     // Options de rendu (P3 — blocs colorés, aéré)
     var RENDER_OPTS = { catGap:14, barW:30, H_BASE:380, innerGap:165, bands:true };
 
-    function catColorForIndex(i){ return (i%2===0) ? violetP[i%violetP.length] : indigoP[i%indigoP.length]; }
+    /* Ordre fixe, jamais recalcule sur le rang : une categorie garde sa
+       couleur meme si on en supprime une autre au-dessus.
+       Au-dela de quatre, les teintes se repetent — c'est assume : aucune
+       cinquieme teinte ne tient les planchers de separation aux cotes des
+       quatre premieres et du vert. Les etiquettes du Sankey portent alors
+       la distinction. */
+    function catColorForIndex(i){ var c = palette().cats; return c[i % c.length]; }
+
+    /* Les sections du mode guide portent la meme couleur que leur groupe
+       dans le graphe : le formulaire est la legende. Pose ici plutot qu'en
+       dur dans le CSS, parce que la palette depend du theme. */
+    function majCouleursSections(){
+      var p = palette(), st = document.documentElement.style;
+      st.setProperty('--sec-in',   p.epargne);   // revenus : de l'argent qui entre
+      st.setProperty('--sec-fix',  p.cats[0]);
+      st.setProperty('--sec-var',  p.cats[1]);
+      st.setProperty('--sec-debt', p.cats[2]);
+      st.setProperty('--sec-save', p.epargne);   // epargne : meme vert que dans le graphe
+    }
+
+    /* Un jeton stable par categorie, attribue a la creation. Sans lui, la
+       couleur suivait le rang : supprimer une categorie repeignait toutes
+       les suivantes, et le repere qu'on venait de se construire changeait. */
+    var jetonSuivant = 0;
+    function jetonDe(cat){
+      if (!cat.dataset.jeton) cat.dataset.jeton = String(jetonSuivant++);
+      return parseInt(cat.dataset.jeton, 10);
+    }
+    function vertEpargne(){ return palette().epargne; }
     function hexA(hex, a){ var h=hex.replace('#',''); if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; var n=parseInt(h,16); return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')'; }
 
-    function setMode(m){
+    var MODE_DETAIL = {
+      guide: 'Loyer, courses, abonnements\u2026 tu remplis les montants, rien \u00e0 construire.',
+      libre: 'Tes cat\u00e9gories et leurs sous-postes, dans l\u2019ordre que tu veux. Coche \u00ab\u00a0\u00c9pargne\u00a0\u00bb sur celles que tu mets de c\u00f4t\u00e9.'
+    };
+    /* Le pop-up de decouverte. Une seule apparition, memorisee : c'est un
+       rappel, pas une consigne qu'on repete. Il ne concerne que le mode
+       qu'on n'a pas choisi. */
+    var CLE_BULLE = 'fund_sim_bulle_libre';
+    function fermerBulle(definitif){
+      var b = el('sb-bulle'); if (!b || b.hidden) return;
+      b.hidden = true;
+      var a = document.querySelector('.sb-dit-ancre');
+      if (a) a.classList.remove('designe');
+      if (definitif) { try { localStorage.setItem(CLE_BULLE, '1'); } catch(e) {} }
+    }
+    window.fermerBulle = fermerBulle;
+
+    function peutEtreMontree(){
+      if (mode !== 'guide') return false;
+      try { return localStorage.getItem(CLE_BULLE) !== '1'; } catch(e) { return true; }
+    }
+    function montrerBulle(){
+      if (!peutEtreMontree()) return;
+      var b = el('sb-bulle'); if (!b) return;
+      b.hidden = false;
+      var a = document.querySelector('.sb-dit-ancre');
+      if (a) a.classList.add('designe');
+      // Elle s'efface d'elle-meme : personne ne doit avoir a la fermer.
+      setTimeout(function(){ fermerBulle(false); }, 11000);
+    }
+
+    function setMode(m, rendreLeFocus){
+      // Choisir, c'est avoir compris : la bulle n'a plus de raison d'etre.
+      fermerBulle(true);
       mode=m;
-      el('tab-guide').classList.toggle('active', m==='guide');
-      el('tab-libre').classList.toggle('active', m==='libre');
+      ['guide','libre'].forEach(function(k){
+        var opt = el('tab-'+k);
+        var actif = (k === m);
+        opt.classList.toggle('actif', actif);
+        opt.setAttribute('aria-checked', actif ? 'true' : 'false');
+        /* Tabulation itinerante : un radiogroup n'a qu'un seul point
+           d'arret, et les fleches circulent a l'interieur. */
+        opt.setAttribute('tabindex', actif ? '0' : '-1');
+        if (actif && rendreLeFocus) opt.focus();
+      });
       el('mode-guide').classList.toggle('active', m==='guide');
       el('mode-libre').classList.toggle('active', m==='libre');
+      var d = el('sb-dit-detail');
+      if (d) d.textContent = MODE_DETAIL[m] || '';
       render();
     }
     window.setMode=setMode;
 
+    /* Le groupe annoncait `radiogroup` sans en tenir le contrat. Les
+       fleches circulent, Home et Fin vont aux extremites — ce qu'un lecteur
+       d'ecran promet des qu'il lit ce role. */
+    (function clavierModes(){
+      var groupe = document.querySelector('.sb-dit');
+      if (!groupe) return;
+      groupe.addEventListener('keydown', function (e) {
+        var k = e.key;
+        if (['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].indexOf(k) === -1) return;
+        if (!e.target.closest('[role=radio]')) return;
+        e.preventDefault();
+        var vers;
+        if (k === 'Home') vers = 'guide';
+        else if (k === 'End') vers = 'libre';
+        else if (k === 'ArrowRight' || k === 'ArrowDown') vers = (mode === 'guide') ? 'libre' : 'guide';
+        else vers = (mode === 'libre') ? 'guide' : 'libre';
+        setMode(vers, true);
+      });
+    })();
+
     // ── GUIDÉ ──
     function addGDette(name, val){
       var list=el('g-dettes-list'); var row=document.createElement('div'); row.className='sb-row';
-      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Crédit conso" oninput="render()">'
-        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric" oninput="render()"><span></span>'
+      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Crédit conso">'
+        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric"><span></span>'
         +'<button class="sb-del" type="button" aria-label="Supprimer" onclick="this.closest(\'.sb-row\').remove(); render();">×</button>';
       list.appendChild(row);
       if(name) row.querySelector('.name').value=name; if(val) row.querySelector('.amt').value=val;
@@ -290,9 +632,9 @@
     }
     function addGCustom(name, val, type){
       var list=el('g-custom-list'); var row=document.createElement('div'); row.className='sb-row';
-      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Animaux" oninput="render()">'
-        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric" oninput="render()">'
-        +'<select class="sb-type" onchange="render()"><option value="var">Vie courante</option><option value="fix">Charge fixe</option></select>'
+      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Animaux">'
+        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric">'
+        +'<select class="sb-type"><option value="var">Vie courante</option><option value="fix">Charge fixe</option></select>'
         +'<button class="sb-del" type="button" aria-label="Supprimer" onclick="this.closest(\'.sb-row\').remove(); render();">×</button>';
       list.appendChild(row);
       if(name) row.querySelector('.name').value=name; if(val) row.querySelector('.amt').value=val; if(type) row.querySelector('.sb-type').value=type;
@@ -307,14 +649,19 @@
         {name:'Loyer', val:num('g-loyer')}, {name:'Assurances', val:num('g-assurances')},
         {name:'Transport', val:num('g-transport')}, {name:'Courses', val:num('g-courses')},
         {name:'Santé', val:num('g-sante')}
-      ].filter(function(x){return x.val>0;}).map(function(x,i){x.color=violetP[i%violetP.length];return x;});
+      ].filter(function(x){return x.val>0;});
+      besoins = couleursGroupe(palette().cats[0], besoins);
       var envies=[
         {name:'Abonnements', val:num('g-abonnements')}, {name:'Restos', val:num('g-repas')},
         {name:'Sorties', val:num('g-sorties')}, {name:'Shopping', val:num('g-shopping')},
         {name:'Autres', val:num('g-autres')}
-      ].filter(function(x){return x.val>0;}).map(function(x,i){x.color=indigoP[i%indigoP.length];return x;});
-      var dettes=[]; el('g-dettes-list').querySelectorAll('.sb-row').forEach(function(row,i){ var v=parseFloat(row.querySelector('.amt').value)||0; if(v>0) dettes.push({name:(row.querySelector('.name').value||'Dette').trim(), val:v, color:detteP[i%detteP.length]}); });
-      var cf=[], cc=[]; el('g-custom-list').querySelectorAll('.sb-row').forEach(function(row,i){ var v=parseFloat(row.querySelector('.amt').value)||0; if(v>0){ var it={name:(row.querySelector('.name').value||'Perso').trim(), val:v, color:tealP[i%tealP.length]}; if(row.querySelector('.sb-type').value==='fix') cf.push(it); else cc.push(it); } });
+      ].filter(function(x){return x.val>0;});
+      envies = couleursGroupe(palette().cats[1], envies);
+      var dettes=[]; el('g-dettes-list').querySelectorAll('.sb-row').forEach(function(row){ var v=parseFloat(row.querySelector('.amt').value)||0; if(v>0) dettes.push({name:(row.querySelector('.name').value||'Dette').trim(), val:v}); });
+      dettes = couleursGroupe(palette().cats[2], dettes);
+      var perso=[]; el('g-custom-list').querySelectorAll('.sb-row').forEach(function(row){ var v=parseFloat(row.querySelector('.amt').value)||0; if(v>0){ var it={name:(row.querySelector('.name').value||'Perso').trim(), val:v, fixe:row.querySelector('.sb-type').value==='fix'}; perso.push(it); } });
+      perso = couleursGroupe(palette().cats[3], perso);
+      var cf=perso.filter(function(x){return x.fixe;}), cc=perso.filter(function(x){return !x.fixe;});
       var epargne=num('g-epargne');
       var totalInc=revenus+aides;
       var outNormal=besoins.concat(cf).concat(dettes).concat(envies).concat(cc);
@@ -329,8 +676,8 @@
     // ── LIBRE ──
     function addFIncome(name,val){
       var list=el('f-income-list'); var row=document.createElement('div'); row.className='sb-row';
-      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Salaire" oninput="render()">'
-        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric" oninput="render()"><span></span>'
+      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Salaire">'
+        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric"><span></span>'
         +'<button class="sb-del" type="button" aria-label="Supprimer" onclick="this.closest(\'.sb-row\').remove(); render();">×</button>';
       list.appendChild(row);
       if(name) row.querySelector('.name').value=name; if(val) row.querySelector('.amt').value=val;
@@ -338,8 +685,8 @@
     }
     function addFCat(name){
       var list=el('f-cats-list'); var cat=document.createElement('div'); cat.className='sb-cat';
-      cat.innerHTML='<div class="sb-cat-head">'+SB_HANDLE+'<input type="text" class="sb-inp name" placeholder="Ex. Logement" oninput="render()">'
-        +'<label class="sb-ep-check"><input type="checkbox" class="sb-cat-ep" onchange="render()"> Épargne</label>'
+      cat.innerHTML='<div class="sb-cat-head">'+SB_HANDLE+'<input type="text" class="sb-inp name" placeholder="Ex. Logement">'
+        +'<label class="sb-ep-check"><input type="checkbox" class="sb-cat-ep" onchange="basculeEpargne(this)"> Épargne</label>'
         +'<button class="sb-del" type="button" aria-label="Supprimer la catégorie" onclick="this.closest(\'.sb-cat\').remove(); render();">×</button></div>'
         +'<div class="sb-subs"></div>'
         +'<button class="sb-add" type="button" style="margin-top:0.4rem;" onclick="addFSub(this.closest(\'.sb-cat\').querySelector(\'.sb-subs\'))">+ Ajouter un poste</button>';
@@ -350,22 +697,41 @@
     }
     function addFSub(subs, name, val){
       var row=document.createElement('div'); row.className='sb-row';
-      row.innerHTML=SB_HANDLE+'<input type="text" class="sb-inp name" placeholder="Poste (ex. Loyer)" oninput="render()">'
-        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric" oninput="render()"><span></span>'
+      row.innerHTML=SB_HANDLE+'<input type="text" class="sb-inp name" placeholder="Poste (ex. Loyer)">'
+        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric"><span></span>'
         +'<button class="sb-del" type="button" aria-label="Supprimer" onclick="this.closest(\'.sb-row\').remove(); render();">×</button>';
       subs.appendChild(row);
       if(name) row.querySelector('.name').value=name; if(val) row.querySelector('.amt').value=val;
       render();
     }
+    /* Cocher « Epargne » teintait la categorie en vert mais laissait son
+       nom vide : le Sankey affichait « Categorie ». On la nomme, et le nom
+       reste modifiable. Decocher ne retire que le nom qu'on a pose nous-meme :
+       si la personne l'a reecrit, on n'y touche pas. */
+    var NOM_EPARGNE = '\u00c9pargne';
+    function basculeEpargne(cb){
+      var cat = cb.closest('.sb-cat');
+      var champ = cat ? cat.querySelector('.sb-cat-head .name') : null;
+      if (champ) {
+        var actuel = champ.value.trim();
+        if (cb.checked && actuel === '') { champ.value = NOM_EPARGNE; }
+        else if (!cb.checked && actuel === NOM_EPARGNE) { champ.value = ''; }
+      }
+      // Pas de render() ici : l'evenement remonte ensuite vers le delegue,
+      // qui redessine une fois le nom pose.
+    }
+    window.basculeEpargne=basculeEpargne;
+
     window.addFIncome=addFIncome; window.addFCat=addFCat; window.addFSub=addFSub;
 
     function colorizeCats(){
       var cats=el('f-cats-list').querySelectorAll('.sb-cat');
       cats.forEach(function(cat,i){
         var isEp=cat.querySelector('.sb-cat-ep').checked;
-        var c=isEp?GREEN:catColorForIndex(i);
-        cat.style.borderLeftColor=c;
-        cat.style.background=hexA(c,0.05);
+        var c=isEp?vertEpargne():catColorForIndex(jetonDe(cat));
+        // Un lavis, pas un cadre — comme les sections.
+        cat.style.background='radial-gradient(120% 150% at 6% 0%, '+hexA(c,0.15)+' 0%, transparent 70%)';
+        cat.style.setProperty('--cat-teinte', hexA(c,0.30));
       });
     }
 
@@ -377,7 +743,7 @@
         var isEp=cat.querySelector('.sb-cat-ep').checked;
         var children=[];
         cat.querySelectorAll('.sb-subs .sb-row').forEach(function(row){ var v=parseFloat(row.querySelector('.amt').value)||0; if(v>0) children.push({name:(row.querySelector('.name').value||'Poste').trim(), val:v}); });
-        if(children.length){ var tot=children.reduce(function(a,b){return a+b.val;},0); if(isEp) epargne+=tot; cats.push({name:cname, children:children, color:isEp?GREEN:catColorForIndex(i)}); }
+        if(children.length){ var tot=children.reduce(function(a,b){return a+b.val;},0); if(isEp) epargne+=tot; cats.push({name:cname, children:children, color:isEp?vertEpargne():catColorForIndex(jetonDe(cat))}); }
       });
       var totalInc=income.reduce(function(s,x){return s+x.val;},0);
       var sumCat=cats.reduce(function(s,c){return s+c.children.reduce(function(a,b){return a+b.val;},0);},0);
@@ -392,6 +758,7 @@
     function currentModel(){ return mode==='guide' ? buildGuided() : buildFree(); }
 
     function render(){
+      majCouleursSections();
       if(mode==='libre') colorizeCats();
       var model=currentModel();
       var totalInc=model.totalInc||0;
@@ -405,11 +772,13 @@
         var deficit=spent-totalInc;
         if(deficit > Math.min(30, totalInc*0.02)){
           el('sb-meta').innerHTML='<span class="sb-alert">Budget dépassé de '+euro(deficit)+' · '+pct(deficit)+' %</span>'
-            +'<br><span class="sb-meta-sm2">Épargne possible à l’équilibre : '+pct(Math.max(0,totalInc-(spent-ep)))+' %</span>';
+            +'<br><span class="sb-meta-sm2">Budget équilibré, il te resterait '+pct(Math.max(0,totalInc-(spent-ep)))+' % à épargner</span>';
         } else {
         var meta='Taux d’épargne · <b>'+pct(ep)+' %</b>'
           +'<br><span class="sb-meta-sm">'+euro(ep)+' épargnés / '+euro(totalInc)+' gagnés</span>';
-        if(resteSignif(reste,totalInc)) meta+='<br><span class="sb-meta-sm2">Épargne possible : '+pct(ep+reste)+' % (avec le non-dépensé)</span>';
+        // « Epargne possible » se lisait comme un conseil. C'est une hypothese :
+        // on enonce la condition, et on donne le montant plutot que le taux seul.
+        if(resteSignif(reste,totalInc)) meta+='<br><span class="sb-meta-sm2">Si tu mettais de côté les '+euro(reste)+' non répartis : '+pct(ep+reste)+' %</span>';
         el('sb-meta').innerHTML=meta;
         }
       } else { el('sb-meta').innerHTML=''; }
@@ -420,6 +789,90 @@
       svg.setAttribute('viewBox', res.viewBox);
       svg.style.minWidth = Math.min(res.W, 760) + 'px';
       svg.innerHTML = res.html;
+      majResume(model, svg);
+      majTable(model);
+      majSousTotaux();
+    }
+
+    /* Chaque en-tete porte le total de sa section : c'est ce qui lui donne
+       une raison d'exister au-dela de l'etiquette, et le formulaire cesse
+       d'etre muet tant qu'on n'a pas regarde le graphe. */
+    function sommeChamps(ids){ return ids.reduce(function (t, id) { return t + num(id); }, 0); }
+    function sommeListe(sel){
+      var t = 0;
+      document.querySelectorAll(sel).forEach(function (x) { t += parseFloat(x.value) || 0; });
+      return t;
+    }
+    function majSousTotaux(){
+      var totaux = {
+        'in':    sommeChamps(['g-revenus','g-aides']),
+        'fix':   sommeChamps(['g-loyer','g-assurances','g-abonnements','g-transport']),
+        'var':   sommeChamps(['g-courses','g-repas','g-sorties','g-shopping','g-sante','g-autres']),
+        'debt':  sommeListe('#g-dettes-list .amt'),
+        'save':  num('g-epargne') + sommeListe('#g-custom-list .amt'),
+        'f-in':  sommeListe('#f-income-list .amt'),
+        'f-var': sommeListe('#f-cats-list .sb-subs .amt')
+      };
+      document.querySelectorAll('.sb-section-total').forEach(function (cell) {
+        var v = totaux[cell.dataset.total] || 0;
+        cell.textContent = v > 0 ? euro(v) : '';
+        cell.classList.toggle('vu', v > 0);
+      });
+    }
+
+    /* Un resume lisible a la place de « Sankey de ton budget ». role="img"
+       ne laisse passer que ce libelle : autant qu'il dise quelque chose. */
+    function majResume(model, svg){
+      var t = model.totalInc || 0;
+      if (t <= 0) { svg.setAttribute('aria-label', 'Schéma de répartition de ton budget'); return; }
+      var parts = (model.outflows || []).slice(0, 4).map(function (o) {
+        var v = o.children ? o.children.reduce(function (a,b){ return a+b.val; }, 0) : o.val;
+        return o.name + ' ' + euro(v);
+      });
+      svg.setAttribute('aria-label',
+        'Répartition de ' + euro(t) + ' par mois : ' + parts.join(', ')
+        + ((model.outflows || []).length > 4 ? ', et d’autres postes.' : '.')
+        + ' Le détail chiffré est sous le schéma.');
+    }
+
+    function majTable(model){
+      var corps = el('sb-table-corps');
+      if (!corps) return;
+      var t = model.totalInc || 0;
+      if (t <= 0) { corps.innerHTML = ''; return; }
+      var part = function (v) { return Math.round(v / t * 100) + ' %'; };
+
+      function pastille(c) {
+        return c ? '<span class="pastille" style="background:' + c + '"></span>' : '';
+      }
+      function lignes(items) {
+        var html = '';
+        items.forEach(function (it) {
+          var v = it.children ? it.children.reduce(function (a,b){ return a+b.val; }, 0) : it.val;
+          html += '<tr><td>' + pastille(it.color) + escapeHtml(it.name) + '</td>'
+                + '<td class="num">' + euro(v) + '</td>'
+                + '<td class="num part">' + part(v) + '</td></tr>';
+          (it.children || []).forEach(function (c) {
+            html += '<tr class="sous"><td>' + pastille(c.color) + escapeHtml(c.name) + '</td>'
+                  + '<td class="num">' + euro(c.val) + '</td>'
+                  + '<td class="num part">' + part(c.val) + '</td></tr>';
+          });
+        });
+        return html;
+      }
+
+      corps.innerHTML =
+          '<table class="sb-tbl"><caption>Ce qui rentre</caption>'
+        + '<thead><tr><th>Source</th><th class="num">Montant</th><th class="num">Part</th></tr></thead>'
+        + '<tbody>' + lignes(model.income || []) + '</tbody></table>'
+        + '<table class="sb-tbl"><caption>Où ça va</caption>'
+        + '<thead><tr><th>Poste</th><th class="num">Montant</th><th class="num">Part</th></tr></thead>'
+        + '<tbody>' + lignes(model.outflows || []) + '</tbody></table>';
+    }
+
+    function escapeHtml(x){
+      return String(x == null ? '' : x)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
     window.render=render;
 
@@ -472,12 +925,36 @@
       addGDette('Crédit conso', 180);
       addFIncome('Salaire', 2400); addFIncome('Aides', 200);
       addFCat('Logement');
+      setMode(mode);
       render();
     }
 
     // Outil public : aucun compte requis (aucune donnée n'est enregistrée ici).
+    /* Un seul cablage pour toute la saisie. Les 13 champs du mode guide
+       n'en avaient aucun : la classe `gv` n'etait referencee nulle part et
+       ils n'avaient pas d'oninput. Deleguer evite que le prochain champ
+       ajoute soit oublie a son tour. */
+    function brancherSaisie(){
+      var zone = document.querySelector('.sb-left');
+      if (!zone) return;
+      ['input', 'change'].forEach(function (evt) {
+        zone.addEventListener(evt, function (e) {
+          if (e.target.closest('.sb-inp, .sb-type, .sb-cat-ep')) render();
+        });
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', function(){
+      brancherSaisie();
       init();
+      // Apres le premier rendu : la phrase doit etre en place pour ancrer.
+      setTimeout(montrerBulle, 1100);
+      /* Le theme se change sans rechargement : les couleurs du graphe sont
+         choisies par mode, il faut donc redessiner. */
+      try {
+        new MutationObserver(function(){ render(); })
+          .observe(document.documentElement, { attributes:true, attributeFilter:['class'] });
+      } catch(e) {}
     });
   })();
   </script>

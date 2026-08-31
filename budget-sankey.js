@@ -10,6 +10,67 @@
 (function () {
   'use strict';
 
+  /* ── Nuances ──────────────────────────────────────────────────
+     Les sous-postes doivent appartenir visuellement a leur categorie.
+     On garde la teinte et la saturation du parent, on ne fait varier que
+     la luminosite : une categorie verte donne des verts, une violette
+     des violets. */
+  function _hex2rgb(hex) {
+    var h = String(hex).replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+  function _rgb2hsl(rr, gg, bb) {
+    rr /= 255; gg /= 255; bb /= 255;
+    var mx = Math.max(rr, gg, bb), mn = Math.min(rr, gg, bb);
+    var h = 0, sa = 0, l = (mx + mn) / 2;
+    if (mx !== mn) {
+      var d = mx - mn;
+      sa = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+      if (mx === rr) h = (gg - bb) / d + (gg < bb ? 6 : 0);
+      else if (mx === gg) h = (bb - rr) / d + 2;
+      else h = (rr - gg) / d + 4;
+      h /= 6;
+    }
+    return [h, sa, l];
+  }
+  function _hsl2hex(h, sa, l) {
+    function f(pp, qq, t) {
+      if (t < 0) t += 1; if (t > 1) t -= 1;
+      if (t < 1 / 6) return pp + (qq - pp) * 6 * t;
+      if (t < 1 / 2) return qq;
+      if (t < 2 / 3) return pp + (qq - pp) * (2 / 3 - t) * 6;
+      return pp;
+    }
+    var rr, gg, bb;
+    if (sa === 0) { rr = gg = bb = l; }
+    else {
+      var q = l < 0.5 ? l * (1 + sa) : l + sa - l * sa, pp = 2 * l - q;
+      rr = f(pp, q, h + 1 / 3); gg = f(pp, q, h); bb = f(pp, q, h - 1 / 3);
+    }
+    function c2(x) { var v = Math.round(x * 255).toString(16); return v.length === 1 ? '0' + v : v; }
+    return '#' + c2(rr) + c2(gg) + c2(bb);
+  }
+  /* n nuances du plus soutenu au plus clair. Renvoie null si la couleur
+     n'est pas un hexadecimal — les rgba() du « reste », par exemple. */
+  function nuancesDe(hex, n) {
+    if (!/^#[0-9a-fA-F]{3,8}$/.test(String(hex))) return null;
+    if (n <= 1) return [hex];
+    var rgb = _hex2rgb(hex), hsl = _rgb2hsl(rgb[0], rgb[1], rgb[2]);
+    /* Plage resserree autour du parent, et saturation plafonnee : sans ce
+       plafond, assombrir une teinte deja saturee la rend criarde
+       (#818CF8 donnait #0c20de). Les nuances doivent se lire comme une
+       famille. */
+    var sa = Math.min(hsl[1], 0.72);
+    var lo = Math.max(0.34, hsl[2] - 0.14);
+    var hi = Math.min(0.80, hsl[2] + 0.12);
+    if (hi - lo < 0.10) { lo = Math.max(0.30, hsl[2] - 0.07); hi = Math.min(0.84, lo + 0.16); }
+    var out = [];
+    for (var k = 0; k < n; k++) out.push(_hsl2hex(hsl[0], sa, lo + (hi - lo) * (k / (n - 1))));
+    return out;
+  }
+
   // Montants exacts sous 10 000 € ; au-delà (5 chiffres et +) : xx,xx k€.
   function fmtK(v) { v = Math.round(v); return v >= 10000 ? (v / 1000).toFixed(2).replace('.', ',') + ' k€' : v.toLocaleString('fr-FR') + ' €'; }
   function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
@@ -55,8 +116,24 @@
     var pillTx = isDark ? 'rgba(255,255,255,0.90)' : 'rgba(0,0,0,0.80)';
     var lead = isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.22)';
 
-    income.forEach(function (it, i) { if (!it.color) it.color = greenP[i % greenP.length]; if (it.children) it.children.forEach(function (c, j) { if (!c.color) c.color = greenP[(i + j) % greenP.length]; }); });
-    normalOut.forEach(function (it, i) { var pal = (i % 2 === 0) ? violetP : indigoP; if (!it.color) it.color = pal[i % pal.length]; if (it.children) it.children.forEach(function (c, j) { if (!c.color) c.color = pal[(j + 1) % pal.length]; }); });
+    function colorierEnfants(it, replis) {
+      if (!it.children || !it.children.length) return;
+      var nu = nuancesDe(it.color, it.children.length);
+      it.children.forEach(function (c, j) {
+        if (c.color) return;                          // couleur imposee : on n'y touche pas
+        c.color = nu ? nu[j] : replis[(j + 1) % replis.length];
+      });
+    }
+
+    income.forEach(function (it, i) {
+      if (!it.color) it.color = greenP[i % greenP.length];
+      colorierEnfants(it, greenP);
+    });
+    normalOut.forEach(function (it, i) {
+      var pal = (i % 2 === 0) ? violetP : indigoP;
+      if (!it.color) it.color = pal[i % pal.length];
+      colorierEnfants(it, pal);
+    });
     specialOut.forEach(function (it) { if (it.kind === 'epargne') { it.color = cEp; it.dot = cEp; } else { it.color = cReste; it.dot = cResteDot; } });
 
     // ── Géométrie (paramétrable pour l'aération) ──
@@ -274,6 +351,7 @@
     img.src = url;
   }
 
+  window.nuancesSankey = nuancesDe;
   window.renderBudgetSankey = renderBudgetSankey;
   window.downloadBudgetSankeyPNG = downloadBudgetSankeyPNG;
 })();
