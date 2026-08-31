@@ -6,7 +6,11 @@
 
 (function initSidebar() {
   // ── Config par page ───────────────────────────────────────────
-  const page = (window.location.pathname.split('/').pop() || 'dashboard.html');
+  // Netlify sert aussi les URL propres (/dashboard, sans extension). Toutes
+  // les comparaisons ci-dessous attendent le nom complet : on renormalise
+  // une fois ici plutot que de les reecrire une par une.
+  const _fichier = (window.location.pathname.split('/').pop() || 'dashboard');
+  const page = _fichier.indexOf('.') === -1 ? _fichier + '.html' : _fichier;
   const isDashboard = page === 'dashboard.html';
   const isPlan      = page === 'plan.html';
   const isBrique    = page.startsWith('brique-');
