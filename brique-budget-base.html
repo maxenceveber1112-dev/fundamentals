@@ -54,9 +54,13 @@
 
     --track:           #E7E5E4;
 
-    --dot-survie:      #E8A6A0;
-    --dot-construction:#E5B66A;
-    --dot-invest:      #8FB59A;
+    --dot-survie:      #BB3A6B;
+    --dot-construction:#96690D;
+    --dot-invest:      #1F5FA6;
+    /* Statut « budget tendu / equilibre » : une couleur d'ETAT, distincte
+       des couleurs de famille — sinon changer la palette des familles
+       deplacerait un diagnostic. */
+    --etat-median:     #E5B66A;
 
     --shadow-card:     0 1px 2px rgba(20,20,30,0.04), 0 4px 16px rgba(20,20,30,0.04);
     --shadow-hover:    0 4px 20px rgba(20,20,30,0.10);
@@ -93,7 +97,7 @@
     --v3-accent-strong:#5B21B6;
     --v3-accent-soft:  rgba(196,181,253,.22);
     --v3-track:        #E7E5E4;
-    --v3-dot-survie:   #E8A6A0;
+    --v3-dot-survie:   #BB3A6B;
     --v3-shadow-card:  0 1px 2px rgba(20,20,30,.04), 0 4px 16px rgba(20,20,30,.04);
   }
 
@@ -124,9 +128,10 @@
 
     --track:           rgba(255,255,255,0.08);
 
-    --dot-survie:      #F472B6;
-    --dot-construction:#FBBF24;
-    --dot-invest:      #34D399;
+    --dot-survie:      #E06591;
+    --dot-construction:#C08A1E;
+    --dot-invest:      #4E8BD6;
+    --etat-median:     #FBBF24;
 
     --shadow-card:     0 1px 2px rgba(0,0,0,0.4), 0 4px 24px rgba(0,0,0,0.20);
     --shadow-hover:    0 4px 28px rgba(0,0,0,0.45);
@@ -152,7 +157,7 @@
     --v3-accent-strong:#A78BFA;
     --v3-accent-soft:  rgba(167,139,250,.14);
     --v3-track:        rgba(255,255,255,.08);
-    --v3-dot-survie:   #F472B6;
+    --v3-dot-survie:   #E06591;
     --v3-shadow-card:  0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
   }
 
@@ -2812,8 +2817,8 @@ let leviersConfig_dernier = [];
 const DIAGNOSTIC = {
   deficit:         { border:'var(--red)',              impr:'#DC2626', kicker:'⚠️ DÉFICIT',       text:"Tu dépenses plus que tu gagnes. Avant tout le reste, il faut retrouver l’équilibre." },
   deficit_couvert: { border:'rgba(245,158,11,0.4)',    impr:'#EA580C', kicker:'⚠️ ATTENTION',     text:"Tes charges dépassent tes revenus hors épargne. C’est ton épargne qui équilibre, ce n’est pas tenable sur le long terme." },
-  tendu:           { border:'var(--dot-construction)', impr:'#EA580C', kicker:'BUDGET TENDU',     text:"Ton budget est peu flexible. La priorité : retrouver de l’air, pas encore investir." },
-  equilibre:       { border:'var(--dot-construction)', impr:'#CA8A04', kicker:'BUDGET ÉQUILIBRÉ', text:"Ton budget tient. L’objectif maintenant : consolider ton épargne." },
+  tendu:           { border:'var(--etat-median)', impr:'#EA580C', kicker:'BUDGET TENDU',     text:"Ton budget est peu flexible. La priorité : retrouver de l’air, pas encore investir." },
+  equilibre:       { border:'var(--etat-median)', impr:'#CA8A04', kicker:'BUDGET ÉQUILIBRÉ', text:"Ton budget tient. L’objectif maintenant : consolider ton épargne." },
   aise:            { border:'var(--green)',            impr:'#16A34A', kicker:'✅ BONNE POSITION', text:"Tu gères bien. Prochaine étape : faire travailler ton argent." },
   confortable:     { border:'var(--green)',            impr:'#16A34A', kicker:'✅ BONNE POSITION', text:"Tu es en bonne position. L’étape suivante : optimiser et faire travailler ton épargne." }
 };

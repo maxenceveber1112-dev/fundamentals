@@ -22,6 +22,10 @@
   <style>
     /* ─── DESIGN SYSTEM TOKENS ────────────────────────────────── */
     :root {
+      /* Couleurs des trois familles de briques, alignees sur le reste de
+         la plateforme. Elles etaient codees en dur plus bas, sans
+         variante sombre. */
+      --dot-survie:#BB3A6B; --dot-construction:#96690D; --dot-invest:#1F5FA6;
       --bg:#FAF8F5; --bg-elevated:#FFFFFF;
       --nav-bg:rgba(250,248,245,0.88); --nav-border:rgba(28,25,23,0.07);
       --border-subtle:rgba(28,25,23,0.07); --border-mid:rgba(28,25,23,0.11); --border-hover:rgba(28,25,23,0.18);
@@ -36,6 +40,7 @@
       --ease-out:cubic-bezier(0.16,1,0.3,1); --ease-spring:cubic-bezier(0.34,1.56,0.64,1); --t:180ms;
     }
     html.dark {
+      --dot-survie:#E06591; --dot-construction:#C08A1E; --dot-invest:#4E8BD6;
       --bg:#0B0B1A; --bg-elevated:#161824;
       --nav-bg:rgba(11,11,26,0.82); --nav-border:rgba(255,255,255,0.05);
       --border-subtle:rgba(255,255,255,0.06); --border-mid:rgba(255,255,255,0.10); --border-hover:rgba(255,255,255,0.16);
@@ -1865,8 +1870,8 @@ function rvEchoProfil() {
 // ─── RÉVÉLATION DU PLAN ────────────────────────────────
 // Affiche le parcours reellement calcule (aucun contenu en dur).
 var RV_PHASES = ['Survie & stabilit\u00e9', 'Construction & projets', 'Investissement & long terme'];
-var RV_DOTS = { 'Survie & stabilit\u00e9':'#E8A6A0', 'Construction & projets':'#E5B66A',
-                'Investissement & long terme':'#8FB59A' };
+var RV_DOTS = { 'Survie & stabilit\u00e9':'var(--dot-survie)', 'Construction & projets':'var(--dot-construction)',
+                'Investissement & long terme':'var(--dot-invest)' };
 
 function revealPlan() {
   var host = document.getElementById('reveal-plan');
@@ -1899,9 +1904,9 @@ function revealPlan() {
 
   function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
 
-  var RV_PALETTE = { 'Survie & stabilit\u00e9':'#E8A6A0',
-                     'Construction & projets':'#E5B66A',
-                     'Investissement & long terme':'#8FB59A' };
+  var RV_PALETTE = { 'Survie & stabilit\u00e9':'var(--dot-survie)',
+                     'Construction & projets':'var(--dot-construction)',
+                     'Investissement & long terme':'var(--dot-invest)' };
 
   // ── Le chemin ──
   var rang = 0, chemin = '', retard = 0;
