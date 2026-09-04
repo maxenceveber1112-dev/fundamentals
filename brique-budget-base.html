@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fundamental — Budget de base</title>
+  <title>Fundamentals — Budget de base</title>
   <!-- Page derriere authentification : l'indexer ne montrerait qu'un
        formulaire de connexion dans les resultats. Pas de Disallow dans
        robots.txt en revanche, sinon Google ne pourrait pas lire ce noindex. -->
@@ -3226,7 +3226,7 @@ function downloadBudgetImage() {
     '<svg xmlns="http://www.w3.org/2000/svg" width="'+outW+'" height="'+outH+'" viewBox="0 0 '+outW+' '+outH+'">'+
     '<rect width="'+outW+'" height="'+outH+'" fill="'+bg+'"/>'+
     '<text x="'+pad+'" y="'+(pad+16)+'" font-family="Georgia,serif" font-style="italic" font-size="22" fill="'+fg+'">Où va mon argent</text>'+
-    '<text x="'+(outW-pad)+'" y="'+(pad+15)+'" text-anchor="end" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="'+sub+'">Fundamental</text>'+
+    '<text x="'+(outW-pad)+'" y="'+(pad+15)+'" text-anchor="end" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="'+sub+'">Fundamentals</text>'+
     '<g transform="translate('+pad+','+(pad+headerH)+')">'+inner+'</g>'+
     '<text x="'+pad+'" y="'+(outH-pad+2)+'" font-family="Inter,sans-serif" font-size="11" fill="'+sub+'">Budget mensuel · '+(typeof SITE_DOMAINE === 'string' ? SITE_DOMAINE : 'fundamentals-education.com')+'</text>'+
     '</svg>';
@@ -3742,11 +3742,11 @@ function imprimerBilan() {
     var nomBrique = (typeof BRIQUES_META !== 'undefined' && BRIQUES_META[bd.brique_recommandee])
       ? BRIQUES_META[bd.brique_recommandee].nom : null;
     if (nomBrique) suite = '<div class="pb-suite">Prochaine étape de ton parcours : <b>' + nomBrique + '</b>. '
-      + 'Retrouve-la sur ton tableau de bord Fundamental.</div>';
+      + 'Retrouve-la sur ton tableau de bord Fundamentals.</div>';
   }
 
   el.innerHTML =
-      '<div class="pb-head"><div class="pb-mark">f</div><div class="pb-brand">Fundamental</div></div>'
+      '<div class="pb-head"><div class="pb-mark">f</div><div class="pb-brand">Fundamentals</div></div>'
     + '<h1>Mon bilan budget</h1>'
     + '<div class="pb-date">Établi le ' + now + '</div>'
 
@@ -3799,7 +3799,7 @@ function imprimerBilan() {
     + leviersHtml
     + (prioritesHtml ? '<div class="pb-section"><div class="pb-section-title">Tes priorités</div>' + prioritesHtml + '</div>' : '')
     + suite
-    + '<div class="pb-footer">Généré par Fundamental \u00b7 ' + (typeof SITE_DOMAINE === 'string' ? SITE_DOMAINE : 'fundamentals-education.com') + '<br>'
+    + '<div class="pb-footer">Généré par Fundamentals \u00b7 ' + (typeof SITE_DOMAINE === 'string' ? SITE_DOMAINE : 'fundamentals-education.com') + '<br>'
     + 'Document indicatif, établi à partir des montants que tu as saisis.</div>';
 
   window.print();

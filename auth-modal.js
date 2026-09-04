@@ -227,7 +227,7 @@
     overlay.querySelector('#am-t').textContent = estConnexion ? 'Bienvenue' : 'Créer un compte';
     overlay.querySelector('#am-s').textContent = estConnexion
       ? 'Connecte-toi pour retrouver ton parcours.'
-      : 'Rejoins Fundamental et garde ton parcours.';
+      : 'Rejoins Fundamentals et garde ton parcours.';
     overlay.querySelector('#am-go-label').textContent = estConnexion ? 'Se connecter' : 'Créer mon compte';
     overlay.querySelector('#am-pass').setAttribute('autocomplete', estConnexion ? 'current-password' : 'new-password');
     overlay.querySelector('#am-alt-login').style.display = estConnexion ? 'none' : '';
@@ -355,7 +355,7 @@
       '<div class="am-card">'
       + '<button class="am-close" type="button" id="am-close" aria-label="Fermer">×</button>'
       + '<p class="am-t" id="am-t">Créer un compte</p>'
-      + '<p class="am-s" id="am-s">Rejoins Fundamental et garde ton parcours.</p>'
+      + '<p class="am-s" id="am-s">Rejoins Fundamentals et garde ton parcours.</p>'
       + brouillon
       + '<div class="am-tabs" role="tablist">'
       +   '<button class="am-tab" id="am-tab-login" role="tab" aria-selected="false">Se connecter</button>'

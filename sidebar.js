@@ -36,7 +36,7 @@
       const nom = el ? el.textContent.trim().slice(0, 40) : 'Brique';
       return { title: nom, crumb: '\u00b7\u00a0\u00a0Dashboard\u00a0/\u00a0<b>' + nom + '</b>' };
     }
-    return { title: 'Fundamental', crumb: '' };
+    return { title: 'Fundamentals', crumb: '' };
   }
 
   function getActiveNav() {
@@ -419,9 +419,9 @@
   sidebar.setAttribute('aria-label', 'Navigation principale');
   sidebar.id = 'f-sidebar-nav-panel';
   sidebar.innerHTML = `
-    <a href="dashboard.html" class="f-sidebar-logo" aria-label="Fundamental">
+    <a href="dashboard.html" class="f-sidebar-logo" aria-label="Fundamentals">
       <div class="f-sb-mark">f</div>
-      <span class="f-sb-wordmark">Fundamental</span>
+      <span class="f-sb-wordmark">Fundamentals</span>
     </a>
     <div class="f-sidebar-nav">
       <a href="dashboard.html" class="f-sidebar-item${activeNav==='dashboard'?' active':''}">

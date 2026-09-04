@@ -77,7 +77,7 @@
         'On respecte tes données' +
       '</p>' +
       '<p class="fc-text">' +
-        'Fundamental utilise uniquement des données techniques essentielles (connexion, préférence de thème) stockées sur ton appareil. ' +
+        'Fundamentals utilise uniquement des données techniques essentielles (connexion, préférence de thème) stockées sur ton appareil. ' +
         'Les polices d’écriture sont chargées via Google&nbsp;Fonts (un service tiers). ' +
         'Aucun cookie publicitaire ni traceur. ' +
         '<a href="confidentialite.html">En savoir plus</a>.' +

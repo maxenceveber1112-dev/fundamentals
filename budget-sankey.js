@@ -330,7 +330,7 @@
     var wrap = '<svg xmlns="http://www.w3.org/2000/svg" width="' + outW + '" height="' + outH + '" viewBox="0 0 ' + outW + ' ' + outH + '">' +
       '<rect width="' + outW + '" height="' + outH + '" fill="' + bg + '"/>' +
       '<text x="' + pad + '" y="' + (pad + 18) + '" font-family="Georgia,serif" font-style="italic" font-size="23" fill="' + fg + '">' + esc(title) + '</text>' +
-      '<text x="' + (outW - pad) + '" y="' + (pad + 17) + '" text-anchor="end" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="' + sub + '">Fundamental</text>' +
+      '<text x="' + (outW - pad) + '" y="' + (pad + 17) + '" text-anchor="end" font-family="Inter,sans-serif" font-weight="700" font-size="13" fill="' + sub + '">Fundamentals</text>' +
       '<g transform="translate(' + pad + ',' + (pad + headerH) + ')">' + svgEl.innerHTML + '</g>' +
       '<text x="' + pad + '" y="' + (outH - pad + 2) + '" font-family="Inter,sans-serif" font-size="11" fill="' + sub + '">Simulateur de budget · ' + (typeof SITE_DOMAINE === 'string' ? SITE_DOMAINE : 'fundamentals-education.com') + '</text>' +
       '</svg>';

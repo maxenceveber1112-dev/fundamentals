@@ -1,4 +1,4 @@
-# Fundamental
+# Fundamentals
 
 Plateforme d'éducation financière personnalisée.
 

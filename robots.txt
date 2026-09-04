@@ -1,4 +1,4 @@
-# Fundamental
+# Fundamentals
 #
 # Volontairement permissif. Les pages derriere authentification portent
 # une balise <meta name="robots" content="noindex">, ce qui suppose que
