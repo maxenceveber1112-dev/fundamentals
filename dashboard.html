@@ -2681,5 +2681,12 @@
   }
 </script>
 <script src="theme.js"></script>
+
+<!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
+     sans bandeau de consentement a ajouter. Le jeton identifie le site,
+     ce n'est pas un secret. Pour retirer la mesure : supprimer ces deux
+     lignes ici et sur les autres pages, et retirer les deux domaines
+     cloudflareinsights du CSP dans netlify.toml. -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
 </body>
 </html>
