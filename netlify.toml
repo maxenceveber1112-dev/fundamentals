@@ -2,20 +2,28 @@
   publish = "."
 
 # Racine du site : la page de connexion sert d'accueil.
-# status 200 = reecriture (l'URL reste "/"), force = false = les fichiers
-# reels (dashboard.html, index.html, simulateur-*.html...) restent servis
-# directement.
+# status 200 = reecriture, pas redirection : l'URL affichee reste "/".
 [[redirects]]
   from = "/"
   to = "/auth.html"
   status = 200
+  # force = true est INDISPENSABLE : un fichier index.html existe a la
+  # racine du dossier publie, et sur Netlify un fichier physique l'emporte
+  # sur une reecriture non forcee. Sans lui, "/" servait l'onboarding.
+  force = true
 
 # Chemin inconnu : on atterrit sur la connexion plutot qu'au milieu de
 # l'onboarding. Un visiteur deja connecte y est redirige vers son dashboard.
+# force = false : les fichiers reels (index.html, simulateur-*.html, les
+# briques...) restent servis directement et repondent 200.
 [[redirects]]
   from = "/*"
   to = "/auth.html"
-  status = 200
+  # status 404 et non 200 : une URL inconnue qui repond 200 est un
+  # « soft 404 », que Google signale et qui laisse indexer n'importe
+  # quelle URL fantaisiste. Le visiteur, lui, voit toujours la page de
+  # connexion : seul le code de statut change.
+  status = 404
   force = false
 
 [[headers]]

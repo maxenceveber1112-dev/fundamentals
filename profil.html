@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fundamental — Profil & Objectifs</title>
+  <!-- Page derriere authentification : l'indexer ne montrerait qu'un
+       formulaire de connexion dans les resultats. Pas de Disallow dans
+       robots.txt en revanche, sinon Google ne pourrait pas lire ce noindex. -->
+  <meta name="robots" content="noindex, follow" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
@@ -519,7 +523,7 @@
         <div class="profil-legal-row-label">Demander mes données (portabilité)</div>
         <div class="profil-legal-row-sub">Art. 20 RGPD — reçois une copie par e-mail</div>
       </div>
-      <a href="mailto:hello@fundamental.app?subject=Demande%20de%20portabilit%C3%A9%20RGPD" class="profil-legal-link">Contacter →</a>
+      <a href="mailto:fundy.fundamentals@gmail.com?subject=Demande%20de%20portabilit%C3%A9%20RGPD" class="profil-legal-link">Contacter →</a>
     </div>
   </div>
 
@@ -711,7 +715,7 @@
     } catch (e) {
       btn.disabled = false;
       btn.textContent = 'Oui, supprimer définitivement';
-      alert('Une erreur est survenue. Réessaie ou contacte hello@fundamental.app.');
+      alert('Une erreur est survenue. Réessaie ou contacte fundy.fundamentals@gmail.com.');
     }
   }
 </script>

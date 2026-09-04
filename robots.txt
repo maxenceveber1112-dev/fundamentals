@@ -1,0 +1,12 @@
+# Fundamental
+#
+# Volontairement permissif. Les pages derriere authentification portent
+# une balise <meta name="robots" content="noindex">, ce qui suppose que
+# Google puisse les CRAWLER pour la lire : un Disallow ici l'en
+# empecherait, et ces pages resteraient indexables sans jamais qu'on
+# puisse le lui dire.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://fundamentals-education.com/sitemap.xml

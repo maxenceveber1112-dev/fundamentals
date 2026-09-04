@@ -193,6 +193,18 @@ const BRIQUES_META = {
   }
 };
 
+
+// ─── DOMAINE DU SITE ───────────────────────────────────
+// Un seul endroit à changer le jour où le domaine bouge.
+//
+// N'est utilisé QUE pour les mentions de marque dans les documents que
+// l'utilisateur exporte : filigrane des PNG, pied du bilan imprimable.
+// Tout ce qui est FONCTIONNEL — redirections d'authentification, retours
+// OAuth — passe par `window.location.origin`, qui déduit le domaine à
+// l'exécution et n'a donc jamais besoin d'être mis à jour. Ne remplacez
+// jamais l'un par l'autre.
+const SITE_DOMAINE = 'fundamentals-education.com';
+
 // ─── ICÔNES DES BRIQUES ─────────────────────────────────────────
 // Icônes au trait, une par brique. Elles remplacent les emoji du champ
 // `icon` de BRIQUES_META, qui ne suivent pas le thème et ne se colorent

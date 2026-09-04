@@ -139,4 +139,4 @@ Note importante : les 3 maisons-boucliers restent dans le **screen principal**, 
 - **Brique fonds d'urgence (référence DA)** : `/home/user/workspace/fundamentals/brique-fonds-urgence.html`
 - **Mockup maisons-boucliers (validé conceptuellement)** : `/home/user/workspace/mockup-boucliers-logements/index.html`
 - **Repo** : https://github.com/maxenceveber1112-dev/fundamentals
-- **Prod** : https://fundamentals-beta.netlify.app/brique-achat-immobilier.html
+- **Prod** : https://fundamentals-education.com/brique-achat-immobilier.html
