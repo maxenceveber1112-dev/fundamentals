@@ -597,6 +597,9 @@
     .rv-node { position:absolute; left:-3.1rem; top:0.5rem;
       width:36px; height:36px; border-radius:50%;
       display:flex; align-items:center; justify-content:center; font-size:17px;
+      /* Le glyphe prend l'encre : la bordure du cercle porte deja la
+         couleur du segment, inutile de la repeter dans le dessin. */
+      color:var(--text);
       background:var(--bg-elevated); border:2px solid color-mix(in srgb, var(--seg) 55%, transparent);
       box-shadow:0 0 0 4px var(--bg); }
     .rv-step { position:absolute; left:-3.1rem; top:-0.15rem;
@@ -1183,7 +1186,7 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="shared.js"></script>
+<script src="shared.js?v=icones1"></script>
 <script src="supabase.js"></script>
 <script src="auth-modal.js"></script>
 <script>
@@ -1933,7 +1936,10 @@ function revealPlan() {
       }
       chemin += '<div class="rv-item' + (premier ? ' rv-item--first' : '') + '"'
             + ' style="animation-delay:' + retard + 'ms">'
-            + '<span class="rv-node" aria-hidden="true">' + (m.icon || '') + '</span>'
+            + '<span class="rv-node" aria-hidden="true">'
+            +   ((typeof iconeBriqueSVG === 'function' && iconeBriqueSVG(m.id, { taille:18, trait:1.9 }))
+                 || (m.icon || ''))
+            + '</span>'
             + '<span class="rv-step" aria-hidden="true">' + rang + '</span>'
             + '<span class="rv-head"><span class="rv-name">' + esc(m.nom) + '</span>'
             + droite + '</span>'

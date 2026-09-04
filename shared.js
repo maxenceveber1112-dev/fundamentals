@@ -193,6 +193,80 @@ const BRIQUES_META = {
   }
 };
 
+// ─── ICÔNES DES BRIQUES ─────────────────────────────────────────
+// Icônes au trait, une par brique. Elles remplacent les emoji du champ
+// `icon` de BRIQUES_META, qui ne suivent pas le thème et ne se colorent
+// pas — mais `icon` RESTE : c'est le repli, et le glyphe fantôme des
+// blocs de recommandation s'en sert toujours (à dessein).
+//
+// Chaque entrée est [silhouette, accent]. Les deux sont aujourd'hui
+// rendues de la même encre ; la séparation reste pour pouvoir y revenir.
+const BRIQUES_ICONES = {
+  budget_base:                   ['<path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/>',
+                                   '<rect x="17" y="4" width="3" height="14"/>'],
+  gestion_decouvert:             ['<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',
+                                   '<path d="M12 9v4"/><path d="M12 17h.01"/>'],
+  paiements_fractionnes:         ['<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+                                   '<path d="M7 15h3"/>'],
+  fonds_urgence:                 ['<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>',
+                                   '<path d="m9 11.5 2 2 4-4"/>'],
+  droits_aides:                  ['<circle cx="9" cy="7" r="3.2"/><path d="M3 20v-1.2A4.8 4.8 0 0 1 7.8 14h2.4a4.8 4.8 0 0 1 4.8 4.8V20"/>',
+                                   '<path d="M17.5 11.5v5M15 14h5"/>'],
+  plan_desendettement:           ['<path d="M3 4.5l6.5 7.5 4-3.5 7 7.5"/>',
+                                   '<path d="M15.5 16h5v-5"/>'],
+  dispositifs_bdf:               ['<path d="M3 21h18"/><path d="M12 3 3 8.5h18L12 3Z"/>',
+                                   '<path d="M6.5 11v7M10.2 11v7M13.8 11v7M17.5 11v7"/>'],
+  anti_arnaques:                 ['<rect x="4" y="10" width="16" height="11" rx="2"/>',
+                                   '<path d="M8 10V7a4 4 0 0 1 8 0v3"/>'],
+  premiers_pas_bancaires:        ['<path d="M22 9 12 4 2 9l10 5 10-5Z"/>',
+                                   '<path d="M6 11v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/>'],
+  emmenagement:                  ['<path d="M3 8h18v12H3z"/><path d="M3 8 5 4h14l2 4"/>',
+                                   '<path d="M10 12h4"/>'],
+  plan_multi_objectifs:          ['<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/>',
+                                   '<circle cx="12" cy="12" r="1.6"/>'],
+  projet_immo:                   ['<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/>',
+                                   '<path d="M10 20v-6h4v6"/>'],
+  achat_immobilier:              ['<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/>',
+                                   '<path d="M10 20v-6h4v6"/>'],
+  immo_locatif:                  ['<path d="M2 20h20"/><path d="M4 20V9l6-4v15"/><path d="M14 20V11l6-3v12"/>',
+                                   '<path d="M7 12h.01M7 16h.01"/>'],
+  treso_dirigeant:               ['<rect x="2" y="7" width="20" height="13" rx="2"/>',
+                                   '<path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>'],
+  structuration_patrimoine:      ['<rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
+                                   '<rect x="8.5" y="4" width="7" height="7"/>'],
+  investissement_long_terme:     ['<path d="M12 21c0-5-2-8-6-9 1 5 3 8 6 9Z"/><path d="M12 21v-6"/>',
+                                   '<path d="M12 21c0-6 3-9 8-10-1 6-4 9-8 10Z"/>'],
+  diversification_allocation:    ['<circle cx="12" cy="12" r="9"/>',
+                                   '<path d="M12 3v9l6 4"/>'],
+  produits_complexes_vs_simples: ['<path d="M12 3v18"/><path d="M5 7h14"/><path d="M5 7 2 14h6L5 7Z"/>',
+                                   '<path d="M19 7l-3 7h6l-3-7Z"/>'],
+  fiscalite_epargne:             ['<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/>',
+                                   '<path d="M9 13h6M9 17h4"/>'],
+  retraite:                      ['<path d="M2 18h20"/><path d="M12 2v2M4.9 6.9l1.4 1.4M19.1 6.9l-1.4 1.4"/>',
+                                   '<path d="M12 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>'],
+  transmission:                  ['<circle cx="5.5" cy="17.5" r="2.5"/><circle cx="18.5" cy="6.5" r="2.5"/><path d="M8 16.2A9 9 0 0 1 16.2 8"/>',
+                                   '<path d="m12.4 7.2 3.9.6.6 3.9"/>'],
+  clarification_contrats:        ['<circle cx="11" cy="11" r="7"/>',
+                                   '<path d="m20 20-3.5-3.5"/>'],
+};
+
+/* Renvoie le SVG de l'icône d'une brique, ou null si elle n'en a pas —
+   à l'appelant de retomber sur `meta.icon`. Aucune classe propre à une
+   page : c'est l'appelant qui l'habille.
+     taille  côté du carré, en px (défaut 25)
+     trait   épaisseur du trait (défaut 1.85) */
+function iconeBriqueSVG(id, opts) {
+  const parts = BRIQUES_ICONES[id];
+  if (!parts) return null;
+  const o = opts || {};
+  const px = o.taille || 25;
+  const w  = o.trait  || 1.85;
+  return '<svg width="' + px + '" height="' + px + '" viewBox="0 0 24 24"'
+       + ' fill="none" stroke="currentColor" stroke-width="' + w + '"'
+       + ' stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+       + parts[0] + parts[1] + '</svg>';
+}
+
 // ─── PROFILE → HUMAN SENTENCES ──────────────────────────────────
 const AGE_LABELS = { '15_17':'15–17 ans','18_24':'18–24 ans','25_34':'25–34 ans','35_54':'35–54 ans','55_64':'55–64 ans','65_plus':'65 ans ou plus' };
 const STATUS_LABELS = { college_lycee:'Collégien / lycéen', etudiant:'Étudiant', sal_ouvrier_employe:'Salarié', sal_prof_inter:'Salarié intermédiaire', cadre_prof_lib:'Cadre / profession libérale', indep_tpe:'Indépendant / TPE', chomeur_inactif:'En recherche d\'emploi', retraite:'Retraité', autre:'Autre' };
