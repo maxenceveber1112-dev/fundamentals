@@ -428,8 +428,23 @@
 
   </style>
   <link rel="stylesheet" href="theme.css">
+  <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
+       voile soit peint avant la mise en page encore vide. -->
+  <link rel="stylesheet" href="chargement.css?v=1" />
+  <noscript><style>.ec{display:none}</style></noscript>
 </head>
 <body>
+<!-- Écran de chargement — voir chargement.css / chargement.js -->
+<div class="ec" id="ec-chargement" role="status" aria-live="polite" aria-busy="true">
+  <div class="ec-marque" aria-hidden="true">f</div>
+  <p class="ec-mot"></p>
+  <div class="ec-sortie">
+    <button type="button" class="ec-btn ec-reessayer">Réessayer</button>
+    <button type="button" class="ec-btn ec-btn-2 ec-forcer">Continuer quand même</button>
+  </div>
+</div>
+<script src="chargement.js?v=1"></script>
+
 
 <main class="profil-main">
   <p class="profil-kicker">Mon compte</p>
@@ -543,7 +558,7 @@
   (async function() {
     if (typeof requireAuth === 'function') {
       const user = await requireAuth();
-      if (!user) return;
+      if (!user) return false;
     }
   })();
 
@@ -619,7 +634,7 @@
         + '</div>' + versement + '</div>';
     }).join('');
   }
-  renderEngagements();
+  renderEngagements().then(window.finChargementSi, window.finChargementSi);
 
 
   /* ─── Ajouter un engagement ────────────────────────────────

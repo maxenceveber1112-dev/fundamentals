@@ -363,8 +363,23 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
     }
   </style>
   <link rel="stylesheet" href="theme.css">
+  <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
+       voile soit peint avant la mise en page encore vide. -->
+  <link rel="stylesheet" href="chargement.css?v=1" />
+  <noscript><style>.ec{display:none}</style></noscript>
 </head>
 <body data-brick-name="Gestion du découvert">
+<!-- Écran de chargement — voir chargement.css / chargement.js -->
+<div class="ec" id="ec-chargement" role="status" aria-live="polite" aria-busy="true">
+  <div class="ec-marque" aria-hidden="true">f</div>
+  <p class="ec-mot"></p>
+  <div class="ec-sortie">
+    <button type="button" class="ec-btn ec-reessayer">Réessayer</button>
+    <button type="button" class="ec-btn ec-btn-2 ec-forcer">Continuer quand même</button>
+  </div>
+</div>
+<script src="chargement.js?v=1"></script>
+
 <canvas id="bg-canvas"></canvas>
 
 
@@ -690,7 +705,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
         window._brickResume_gestion_decouvert = saved.screenCourant;
       }
     }
-  })();
+  })().then(window.finChargementSi, window.finChargementSi);
 
   // ── State ─────────────────────────────────────────────────────────────
   const state = {

@@ -1193,8 +1193,23 @@
   .s2-gain-sep { width:1px; height:2.5rem; background:var(--border-mid); flex-shrink:0; }
   </style>
   <link rel="stylesheet" href="theme.css">
+  <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
+       voile soit peint avant la mise en page encore vide. -->
+  <link rel="stylesheet" href="chargement.css?v=1" />
+  <noscript><style>.ec{display:none}</style></noscript>
 </head>
 <body data-brick-name="Gestion des dettes">
+<!-- Écran de chargement — voir chargement.css / chargement.js -->
+<div class="ec" id="ec-chargement" role="status" aria-live="polite" aria-busy="true">
+  <div class="ec-marque" aria-hidden="true">f</div>
+  <p class="ec-mot"></p>
+  <div class="ec-sortie">
+    <button type="button" class="ec-btn ec-reessayer">Réessayer</button>
+    <button type="button" class="ec-btn ec-btn-2 ec-forcer">Continuer quand même</button>
+  </div>
+</div>
+<script src="chargement.js?v=1"></script>
+
 
 <!-- sidebar.js injecte automatiquement .f-sidebar pour les pages brique-* -->
 <div class="f-sidebar-shell">
@@ -1905,7 +1920,7 @@ function checkPrerequisitesAndStart() {
   // 0. Auth — meme garde que les autres briques : le contenu n'est pas public
   if (typeof requireAuth === 'function') {
     const user = await requireAuth();
-    if (!user) return;
+    if (!user) return false;
   }
 
   // 0b. Marquer la brique comme commencée (statut « en cours » au tableau de bord)
@@ -2046,7 +2061,7 @@ function checkPrerequisitesAndStart() {
   // 5. Injecter les dettes + mettre à jour le speedometer
   prefillDettes.forEach(d => addDetteFromData(d));
   setTimeout(updateSpeedometer, 200);
-})();
+})().then(window.finChargementSi, window.finChargementSi);
 
 /* ══════════════════════════════════════════════════════════════
    CONFIRMATION ONBOARDING
