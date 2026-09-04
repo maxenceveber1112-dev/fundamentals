@@ -17,3 +17,7 @@ brique-zz-*.html
 # Config locale de l'outil de preview
 .claude/
 
+# Sources graphiques : seul og-image.png, derive de ce fichier, est
+# servi par le site. Le fichier d'origine (1,1 Mo) n'a rien a faire
+# dans le deploiement.
+long logo fundamentals.png
