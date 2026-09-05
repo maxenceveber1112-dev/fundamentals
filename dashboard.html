@@ -1891,10 +1891,11 @@
     if (sousTitre) {
       const nb = tries.length;
       const nbBriques = new Set(tries.map(function (e) { return e.brique_source; })).size;
+      const source = nbBriques > 1 ? ' de ' + nbBriques + ' briques' : ' d’une brique';
       sousTitre.textContent =
-        nb + (nb > 1 ? ' enseignements tirés de ' : ' enseignement tiré de ')
-        + nbBriques + (nbBriques > 1 ? ' briques' : ' brique')
-        + ' · issus de tes réponses';
+        nb + (nb > 1 ? ' enseignements tirés' : ' enseignement tiré')
+        + source
+        + (nb > 1 ? ' · issus de tes réponses' : ' · issu de tes réponses');
     }
 
     grille.innerHTML = tries.map(function (e) {

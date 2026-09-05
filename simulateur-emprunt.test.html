@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>simulateur-emprunt — tests</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1000px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  p.intro{color:#A1A1AA;margin:0 0 18px;max-width:70ch}
+  #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
+  .ok{color:#4ADE80}.ko{color:#F87171}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
+  td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  iframe{position:absolute;left:-9999px;width:1200px;height:900px;border:0}
+</style>
+</head>
+<body>
+<h1>simulateur-emprunt.html — tests du calcul affiché</h1>
+<p class="intro">
+  <code>calculateMonthlyPayment</code> est déjà couvert par
+  <code>immo-core.test.html</code>. Ce qui ne l'était pas, c'est ce que la page
+  en <em>fait</em> : l'ajout de l'assurance, le mode inverse, et les totaux sur
+  la durée. Ces tests pilotent la vraie page et recalculent tout de leur côté,
+  avec une implémentation indépendante — si les deux tombent d'accord, ce n'est
+  pas par construction.
+</p>
+<div id="bilan">exécution…</div>
+<table id="t">
+  <tr><th>cas</th><th>attendu</th><th>affiché</th><th>écart</th><th></th></tr>
+</table>
+
+<script>
+/* ── Implémentation de référence, écrite ici et nulle part ailleurs ──
+   Annuité constante : m = P·i / (1 − (1+i)^−n), i le taux mensuel.
+   À taux nul la formule dégénère, on rend le capital divisé par la durée. */
+function mensualite(capital, tauxAnnuelPct, mois) {
+  if (!capital || !mois) return 0;
+  var i = tauxAnnuelPct / 100 / 12;
+  if (i === 0) return capital / mois;
+  return capital * i / (1 - Math.pow(1 + i, -mois));
+}
+function assuranceMensuelle(capital, tauxAssPct) {
+  return capital * tauxAssPct / 100 / 12;
+}
+
+/* Les types tels que la page les définit. Recopiés à la main : si quelqu'un
+   change un taux dans la page sans le vouloir, le test doit s'en apercevoir. */
+var TYPES = {
+  rp:        { taux:3.30, ass:0.34, defMontant:220000, defMens:1000, dureeDef:20 },
+  locatif:   { taux:3.60, ass:0.34, defMontant:160000, defMens:800,  dureeDef:15 },
+  auto:      { taux:5.50, ass:0.15, defMontant:22000,  defMens:350,  dureeDef:4  },
+  auto_elec: { taux:1.00, ass:0.15, defMontant:32000,  defMens:450,  dureeDef:5  },
+  conso:     { taux:6.50, ass:0.20, defMontant:10000,  defMens:250,  dureeDef:5  }
+};
+
+var resultats = [];
+function verifier(nom, attendu, obtenu, tolerance) {
+  var tol = tolerance === undefined ? 1 : tolerance;
+  var ecart = Math.abs(attendu - obtenu);
+  resultats.push({ nom: nom, attendu: attendu, obtenu: obtenu, ecart: ecart, ok: ecart <= tol });
+}
+
+/* La page affiche « 1 160 €/mois » : on ne garde que les chiffres.
+   L'espace fine insécable des milliers doit disparaître aussi. */
+function nombre(txt) {
+  var s = String(txt).replace(/[   \s]/g, '').replace(/[^\d,.-]/g, '');
+  return parseFloat(s.replace(',', '.')) || 0;
+}
+
+function ligneResultat(doc, libelle) {
+  var lignes = doc.querySelectorAll('#sim-result-rows .sim-rrow');
+  for (var i = 0; i < lignes.length; i++) {
+    var l = lignes[i].querySelector('.sim-rrow-label');
+    if (l && l.textContent.indexOf(libelle) === 0) {
+      return nombre(lignes[i].querySelector('.sim-rrow-val').textContent);
+    }
+  }
+  return null;
+}
+
+(async function () {
+  var f = document.createElement('iframe');
+  f.src = 'simulateur-emprunt.html?test=' + Date.now();
+  document.body.appendChild(f);
+  await new Promise(function (r) { f.onload = r; setTimeout(r, 5000); });
+  await new Promise(function (r) { setTimeout(r, 600); });
+
+  var w = f.contentWindow, d = f.contentDocument;
+  if (!w.selectType || !w.setMode) {
+    document.getElementById('bilan').innerHTML =
+      '<span class="ko">La page n\'expose ni selectType ni setMode : test impossible.</span>';
+    return;
+  }
+
+  function poser(typeId, mode, montant, annees) {
+    w.selectType(typeId, true);
+    w.setMode(mode);
+    d.getElementById('sim-duree').value = annees;
+    d.getElementById('sim-amount').value = String(montant);
+    // la page recalcule sur saisie ; on déclenche le même événement
+    d.getElementById('sim-amount').dispatchEvent(new w.Event('input', { bubbles: true }));
+    d.getElementById('sim-duree').dispatchEvent(new w.Event('input', { bubbles: true }));
+  }
+
+  /* ══ Mode « montant » : on connaît le capital, on cherche la mensualité ══ */
+  [
+    ['rp',        220000, 20],
+    ['rp',        150000, 25],
+    ['conso',      10000,  5],
+    ['auto_elec',  32000,  5],
+    ['auto',       22000,  4]
+  ].forEach(function (cas) {
+    var id = cas[0], capital = cas[1], annees = cas[2];
+    var t = TYPES[id], mois = annees * 12;
+    poser(id, 'montant', capital, annees);
+
+    var mCredit = mensualite(capital, t.taux, mois);
+    var mAss    = assuranceMensuelle(capital, t.ass);
+    var attTot  = Math.round(mCredit + mAss);
+    var affTot  = nombre(d.getElementById('sim-result-value').textContent);
+    verifier(id + ' · ' + capital.toLocaleString('fr-FR') + ' € sur ' + annees + ' ans → mensualité totale',
+             attTot, affTot);
+
+    verifier(id + ' · dont crédit', Math.round(mCredit), ligneResultat(d, 'Mensualité de crédit'));
+    verifier(id + ' · dont assurance', Math.round(mAss), ligneResultat(d, '+ assurance'));
+    verifier(id + ' · coût du crédit (intérêts)',
+             Math.round(mCredit * mois - capital), ligneResultat(d, 'Coût du crédit'), 2);
+    verifier(id + ' · coût de l’assurance',
+             Math.round(mAss * mois), ligneResultat(d, 'Coût de l’assurance'), 2);
+    verifier(id + ' · total remboursé',
+             Math.round((mCredit + mAss) * mois), ligneResultat(d, 'Total remboursé'), 2);
+  });
+
+  /* ══ Mode « mensualité » : on connaît la traite, on cherche le capital ══
+     C'est l'inverse exact du précédent. On le vérifie en bouclant : le
+     capital trouvé, repassé dans la formule, doit redonner la mensualité. */
+  [
+    ['rp',    1000, 20],
+    ['rp',    1500, 25],
+    ['conso',  250,  5]
+  ].forEach(function (cas) {
+    var id = cas[0], traite = cas[1], annees = cas[2];
+    var t = TYPES[id], mois = annees * 12;
+    poser(id, 'mensualite', traite, annees);
+
+    var facteur = mensualite(1, t.taux, mois);          // mensualité pour 1 € emprunté
+    var attCap  = Math.round(traite / (facteur + t.ass / 100 / 12));
+    var affCap  = nombre(d.getElementById('sim-result-value').textContent);
+    verifier(id + ' · ' + traite + ' €/mois sur ' + annees + ' ans → capital', attCap, affCap, 2);
+
+    // le tour complet : ce capital coûte-t-il bien la traite demandée ?
+    var retour = mensualite(affCap, t.taux, mois) + assuranceMensuelle(affCap, t.ass);
+    verifier(id + ' · aller-retour, on retombe sur la traite', traite, Math.round(retour), 2);
+  });
+
+  /* ══ Cas limites ══ */
+  poser('auto_elec', 'montant', 32000, 5);
+  var mois60 = 60, tElec = TYPES.auto_elec;
+  verifier('taux à 1 % : la mensualité reste au-dessus du capital / durée',
+           1, mensualite(32000, tElec.taux, mois60) > 32000 / mois60 ? 1 : 0, 0);
+
+  poser('rp', 'montant', 0, 20);
+  verifier('montant nul : aucun chiffre affiché',
+           1, d.getElementById('sim-result-value').textContent.trim() === '—' ? 1 : 0, 0);
+
+  f.remove();
+
+  /* ══ Rapport ══ */
+  var t = document.getElementById('t');
+  var ko = 0;
+  resultats.forEach(function (r) {
+    if (!r.ok) ko++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td>' + r.nom + '</td>'
+      + '<td class="n">' + r.attendu.toLocaleString('fr-FR') + '</td>'
+      + '<td class="n">' + (r.obtenu === null ? '(absent)' : r.obtenu.toLocaleString('fr-FR')) + '</td>'
+      + '<td class="n">' + r.ecart.toFixed(2) + '</td>'
+      + '<td class="' + (r.ok ? 'ok' : 'ko') + '">' + (r.ok ? '✓' : '✗') + '</td></tr>');
+  });
+  document.getElementById('bilan').innerHTML = ko
+    ? '<span class="ko">✗ ' + ko + ' ÉCHEC(S) — ' + (resultats.length - ko) + ' OK / ' + resultats.length + '</span>'
+    : '<span class="ok">✅ TOUS LES TESTS PASSENT — ' + resultats.length + ' OK / ' + resultats.length + ' total</span>';
+  window.__echecs = ko;
+  window.__total = resultats.length;
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>
