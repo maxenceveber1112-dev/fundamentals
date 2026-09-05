@@ -23,11 +23,23 @@
 
   function contenuPrincipal() {
     // Par ordre de fiabilité décroissante.
+    //
+    // La première version de cette liste ne couvrait que 12 pages sur 19 :
+    // sept n'avaient donc aucun lien d'évitement, dont la page d'accueil
+    // et quatre briques. Le défaut était invisible aux contrôles qui
+    // lisent le HTML source, puisque le lien est injecté ici — il a fallu
+    // rejouer cette fonction sur chaque page pour le voir.
     var candidats = [
       'main',
       '[role="main"]',
+      '.f-content',          // briques : le contenu, à l'intérieur du shell
+                             // de barre latérale (viser le shell lui-même
+                             // ne ferait rien sauter)
+      '.brique-main-col',    // les briques en deux colonnes, qui n'ont pas
+                             // de .f-content
+      '.auth-layout',        // connexion, servie à la racine
       '.page-wrap',          // pages légales
-      '.brick-container',    // briques
+      '.brick-container',
       '.onb-body',           // onboarding
       '.sim-wrap', '.sb-wrap'
     ];
