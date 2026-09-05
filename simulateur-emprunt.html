@@ -49,12 +49,11 @@
     * { box-sizing:border-box; }
     body { margin:0; min-height:100dvh; background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
 
-    /* Encre des petits textes poses sur un fond teinte (cartes, resume,
-       panneau de resultat). En clair, --text-muted n'y tient plus 4,5 :
-       mesure a 3,56 sur le fond de carte contre 4,53 sur la page nue. En
-       sombre le lavis eclaircit au lieu d'assombrir, --text-muted suffit. */
-    :root { --sim-ink-soft:#57534E; }
-    html.dark { --sim-ink-soft:var(--text-muted); }
+    /* Les petits textes poses sur un fond teinte (cartes, resume, panneau
+       de resultat) portent --ink-soft. Ce jeton etait local a cette page
+       sous le nom --sim-ink-soft ; le meme besoin est apparu ailleurs
+       (synthese immo, carte de frais bancaires), il vit maintenant dans
+       theme.css. */
 
     /* ── Layout ── */
     .sim-wrap { max-width:940px; margin:0 auto; padding:2.5rem 1.5rem 4rem; position:relative; z-index:1; }
@@ -182,10 +181,10 @@
     .sim-typecard-icon { height:24px; display:flex; align-items:center; color:var(--text-muted); transition:color .2s; }
     .sim-typecard.active .sim-typecard-icon { color:var(--accent-strong); }
     .sim-typecard-name { font-size:0.95rem; font-weight:700; color:var(--text); }
-    .sim-typecard-sub { font-size:0.72rem; color:var(--sim-ink-soft); line-height:1.35; }
+    .sim-typecard-sub { font-size:0.72rem; color:var(--ink-soft); line-height:1.35; }
     /* En bas de carte : les taux s'alignent sur toute la rangee, meme
        quand un sous-titre passe a la ligne. */
-    .sim-typecard-rate { font-size:0.72rem; font-weight:600; color:var(--sim-ink-soft); margin-top:auto; padding-top:0.3rem; transition:color .2s; }
+    .sim-typecard-rate { font-size:0.72rem; font-weight:600; color:var(--ink-soft); margin-top:auto; padding-top:0.3rem; transition:color .2s; }
     .sim-typecard.active .sim-typecard-rate { color:var(--accent-strong); }
     /* En sombre, --accent-strong pose sur son propre lavis tombe a 4,24.
        Le sombre prend son propre cran de la rampe plutot qu'un simple
@@ -213,7 +212,7 @@
     .sim-typesummary-icon { display:flex; align-items:center; color:var(--accent-strong); flex-shrink:0; }
     .sim-typesummary-txt { min-width:0; }
     .sim-typesummary-name { font-size:0.9rem; font-weight:700; color:var(--text); }
-    .sim-typesummary-sub { font-size:0.72rem; color:var(--sim-ink-soft); }
+    .sim-typesummary-sub { font-size:0.72rem; color:var(--ink-soft); }
     .sim-typesummary-chg { margin-left:auto; display:inline-flex; align-items:center; gap:0.25rem; font-size:0.78rem; font-weight:600; color:var(--accent-strong); flex-shrink:0; }
 
     /* ── Step 2 : projet (2 colonnes) ── */
@@ -336,7 +335,7 @@
     .sim-result-value { font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:3.4rem; line-height:1.03; color:var(--text); margin:0.4rem 0 0.2rem; letter-spacing:-0.01em; transition:opacity .12s; }
     .sim-result-value .unit { font-size:1.5rem; font-weight:500; color:var(--text-muted); font-family:'Inter',sans-serif; }
     .sim-result-value.flash { opacity:0.35; }
-    .sim-result-sub { font-size:0.84rem; color:var(--sim-ink-soft); }
+    .sim-result-sub { font-size:0.84rem; color:var(--ink-soft); }
     .sim-result-rows { margin-top:1.25rem; padding-top:1.1rem; border-top:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:0.55rem; text-align:left; }
     .sim-rrow { display:flex; align-items:center; justify-content:space-between; font-size:0.83rem; }
     .sim-rrow-label { color:var(--text-muted); }
@@ -356,7 +355,7 @@
   </style>
   <!-- theme.css apres la CSS de la page, comme sur les 15 autres :
        il porte les jetons communs et doit pouvoir les imposer. -->
-  <link rel="stylesheet" href="theme.css?v=jetons1" />
+  <link rel="stylesheet" href="theme.css?v=encre1" />
 </head>
 <body>
   <main class="sim-wrap">

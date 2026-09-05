@@ -50,6 +50,14 @@
      pages sur les douze ou ce script tourne : ailleurs la variable
      etait vide et l'anneau n'existait pas. */
   --indigo-glow: rgba(99,102,241,0.18);
+
+  /* Encre sourde pour les surfaces TEINTEES. --text-muted tient 4,53 sur
+     le fond nu mais tombe a 4,40 des qu'une surface l'assombrit un peu :
+     en theme clair, toute teinte rapproche le fond d'un gris moyen au lieu
+     de l'en eloigner, donc tout lavis coute du contraste. Ici 6,3 sur
+     --surface-2. En sombre le probleme ne se pose pas — la teinte
+     eclaircit — donc le jeton y vaut simplement --text-muted. */
+  --ink-soft: #57534E;
   --purple: #8B5CF6;
 
   /* ── États / statuts ── */
@@ -128,6 +136,7 @@ html.dark {
   --indigo: #818CF8;
   --indigo-dim: rgba(99,102,241,0.14);
   --indigo-glow: rgba(99,102,241,0.22);
+  --ink-soft: var(--text-muted);
   --purple: #A78BFA;
 
   /* ── États / statuts ── */

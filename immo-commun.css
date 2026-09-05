@@ -523,7 +523,7 @@ html.dark .sb2-node.done .sb2-node-bullet { color:#0B0B1A; }
 
 .sb2-synth-label {
   font-size:0.625rem;
-  color:var(--v3-text-muted); font-weight:600;
+  color:var(--ink-soft); font-weight:600;
   letter-spacing:0.08em; text-transform:uppercase;
 }
 
@@ -560,7 +560,7 @@ html.dark .sb2-node.done .sb2-node-bullet { color:#0B0B1A; }
 }
 
 .sb2-synth-row-label {
-  color:var(--v3-text-muted); font-weight:500;
+  color:var(--ink-soft); font-weight:500;
   display:flex; align-items:center; gap:0.375rem;
 }
 
