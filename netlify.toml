@@ -1,6 +1,17 @@
 [build]
   publish = "."
 
+# L'ancien sous-domaine Netlify redirige vers le domaine principal.
+# Sans cela, deux adresses servent le meme site : Google peut indexer les
+# deux, et la mesure d'audience se retrouve eclatee entre les deux hotes.
+# La regle vise l'hote EXACT — les previsualisations de deploiement, sur
+# <hash>--fundamentals-beta.netlify.app, restent consultables.
+[[redirects]]
+  from = "https://fundamentals-beta.netlify.app/*"
+  to = "https://fundamentals-education.com/:splat"
+  status = 301
+  force = true
+
 # Racine du site : la page de connexion sert d'accueil.
 # status 200 = reecriture, pas redirection : l'URL affichee reste "/".
 [[redirects]]
