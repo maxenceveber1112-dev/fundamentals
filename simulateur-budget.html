@@ -39,11 +39,12 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
   <script>(function(){var s=localStorage.getItem('fundamental-theme');var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');})()</script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
   <link rel="stylesheet" href="theme.css" />
   <style>
     * { box-sizing:border-box; }
@@ -375,28 +376,28 @@
             <div class="sb-section neutre">
               <div class="sb-section-head"><span class="sb-section-nom">Ce qui rentre</span><span class="sb-section-total" data-total="in"></span></div>
               <div class="sb-grid">
-                <div class="sb-field"><label class="sb-flabel">Revenus nets</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-revenus" min="0" inputmode="numeric" value="2200"><span class="sb-inp-suffix">€</span></div></div>
-                <div class="sb-field"><label class="sb-flabel">Aides / autres</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-aides" min="0" inputmode="numeric" value="150"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-revenus">Revenus nets</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-revenus" min="0" inputmode="numeric" value="2200"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-aides">Aides / autres</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-aides" min="0" inputmode="numeric" value="150"><span class="sb-inp-suffix">€</span></div></div>
               </div>
             </div>
             <div class="sb-section fix">
               <div class="sb-section-head"><span class="sb-section-nom">Charges fixes</span><span class="sb-section-total" data-total="fix"></span></div>
               <div class="sb-grid">
-                <div class="sb-field"><label class="sb-flabel">Loyer / logement</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-loyer" min="0" inputmode="numeric" value="700"><span class="sb-inp-suffix">€</span></div></div>
-                <div class="sb-field"><label class="sb-flabel">Assurances</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-assurances" min="0" inputmode="numeric" value="90"><span class="sb-inp-suffix">€</span></div></div>
-                <div class="sb-field"><label class="sb-flabel">Abonnements</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-abonnements" min="0" inputmode="numeric" value="45"><span class="sb-inp-suffix">€</span></div></div>
-                <div class="sb-field"><label class="sb-flabel">Transport</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-transport" min="0" inputmode="numeric" value="110"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-loyer">Loyer / logement</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-loyer" min="0" inputmode="numeric" value="700"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-assurances">Assurances</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-assurances" min="0" inputmode="numeric" value="90"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-abonnements">Abonnements</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-abonnements" min="0" inputmode="numeric" value="45"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-transport">Transport</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-transport" min="0" inputmode="numeric" value="110"><span class="sb-inp-suffix">€</span></div></div>
               </div>
             </div>
             <div class="sb-section var">
               <div class="sb-section-head"><span class="sb-section-nom">Vie courante</span><span class="sb-section-total" data-total="var"></span></div>
               <div class="sb-grid">
-                <div class="sb-field"><label class="sb-flabel">Courses</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-courses" min="0" inputmode="numeric" value="320"><span class="sb-inp-suffix">€</span></div></div>
-                <div class="sb-field"><label class="sb-flabel">Restos, cafés</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-repas" min="0" inputmode="numeric" value="120"><span class="sb-inp-suffix">€</span></div></div>
-                <div class="sb-field"><label class="sb-flabel">Sorties & loisirs</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-sorties" min="0" inputmode="numeric" value="90"><span class="sb-inp-suffix">€</span></div></div>
-                <div class="sb-field"><label class="sb-flabel">Shopping</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-shopping" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
-                <div class="sb-field"><label class="sb-flabel">Santé</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-sante" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
-                <div class="sb-field"><label class="sb-flabel">Autres</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-autres" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-courses">Courses</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-courses" min="0" inputmode="numeric" value="320"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-repas">Restos, cafés</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-repas" min="0" inputmode="numeric" value="120"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-sorties">Sorties & loisirs</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-sorties" min="0" inputmode="numeric" value="90"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-shopping">Shopping</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-shopping" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-sante">Santé</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-sante" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-autres">Autres</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-autres" min="0" inputmode="numeric" value="0"><span class="sb-inp-suffix">€</span></div></div>
               </div>
             </div>
             <div class="sb-section debt">
@@ -407,7 +408,7 @@
             <div class="sb-section save">
               <div class="sb-section-head"><span class="sb-section-nom">Épargne & catégories perso</span><span class="sb-section-total" data-total="save"></span></div>
               <div class="sb-grid" style="margin-bottom:0.5rem;">
-                <div class="sb-field"><label class="sb-flabel">Épargne mensuelle</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-epargne" min="0" inputmode="numeric" value="200"><span class="sb-inp-suffix">€</span></div></div>
+                <div class="sb-field"><label class="sb-flabel" for="g-epargne">Épargne mensuelle</label><div class="sb-inp-wrap"><input type="number" class="sb-inp gv" id="g-epargne" min="0" inputmode="numeric" value="200"><span class="sb-inp-suffix">€</span></div></div>
               </div>
               <div id="g-custom-list"></div>
               <button class="sb-add" type="button" onclick="addGCustom()">+ Ajouter une catégorie perso</button>
@@ -942,7 +943,7 @@
   })();
   </script>
   <script src="feedback-widget.js"></script>
-  <script src="cookie-banner.js"></script>
+  <script src="cookie-banner.js?v=polices2"></script>
   <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -951,5 +952,6 @@
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

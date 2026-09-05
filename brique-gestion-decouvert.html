@@ -18,8 +18,11 @@
     // native : elle bloque le navigateur pour ne rien apprendre.
     window.location.replace('dashboard.html');
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
   <script>
 (function() {
   var saved = localStorage.getItem('fundamental-theme');
@@ -27,8 +30,6 @@
   if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
 })();
 </script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" /></noscript>
   <style>
 /* ════ FUNDAMENTAL V3 · DESIGN SYSTEM TOKENS (shared) ════ */
 :root {
@@ -1197,7 +1198,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
 </script>
 
 <script src="feedback-widget.js"></script>
-<script src="cookie-banner.js"></script>
+<script src="cookie-banner.js?v=polices2"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -1206,5 +1207,6 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

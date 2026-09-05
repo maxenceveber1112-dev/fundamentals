@@ -391,7 +391,8 @@
       +   '<span id="am-alt-login">Déjà un compte ? <a id="am-to-login">Se connecter</a></span>'
       +   '<span id="am-alt-signup" style="display:none">Pas encore de compte ? <a id="am-to-signup">Créer un compte</a></span>'
       +   '<br>En continuant, tu acceptes nos <a href="cgu.html">CGU</a> et notre '
-      +   '<a href="confidentialite.html">politique de confidentialité</a>.'
+      +   '<a href="confidentialite.html">politique de confidentialité</a>. '
+      +   '<a href="mentions-legales.html">Mentions légales</a>.'
       + '</p>'
       + '</div>';
 

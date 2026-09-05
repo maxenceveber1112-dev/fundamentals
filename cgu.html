@@ -36,10 +36,11 @@
     }catch(e){}
   })();
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
   <style>
     /* Tokens fournis par theme.css (clair/sombre unifiés) */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -111,6 +112,21 @@
     }
   </style>
   <link rel="stylesheet" href="theme.css">
+
+  <style>
+    /* Respecter le reglage systeme « reduire les animations ». Sans cela,
+       les fondus et deplacements de cette page s'imposaient a des
+       personnes qui ont explicitement demande a en etre dispensees —
+       vertiges, migraines, troubles vestibulaires. */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
 </head>
 <body>
 <div class="page-wrap">
@@ -122,10 +138,10 @@
 
   <span class="badge">Version bêta</span>
   <h1>Conditions Générales d'Utilisation</h1>
-  <p class="meta">Dernière mise à jour : juin 2025 &nbsp;·&nbsp; Applicable dès l'inscription</p>
+  <p class="meta">Dernière mise à jour : septembre 2026 &nbsp;·&nbsp; Applicable dès l'inscription</p>
 
   <h2>1. Présentation du service</h2>
-  <p>Fundamentals (ci-après « le Service ») est une plateforme d'éducation financière accessible sur invitation dans le cadre d'un programme bêta fermé. Le Service est édité et exploité par Fundamental SAS (ci-après « l'Éditeur »). Pour toute question : <a href="mailto:fundy.fundamentals@gmail.com">fundy.fundamentals@gmail.com</a>.</p>
+  <p>Fundamentals (ci-après « le Service ») est une plateforme d'éducation financière proposée en version bêta : le Service évolue, et certaines fonctionnalités peuvent être incomplètes ou modifiées. L'inscription est ouverte à toute personne remplissant les conditions de l'article 3. Le Service est édité et exploité par Fundamentals SAS (ci-après « l'Éditeur »), dont l'identification complète figure dans les <a href="mentions-legales.html">mentions légales</a>. Pour toute question : <a href="mailto:fundy.fundamentals@gmail.com">fundy.fundamentals@gmail.com</a>.</p>
 
   <h2>2. Acceptation des conditions</h2>
   <p>En créant un compte ou en utilisant le Service, l'utilisateur (ci-après « vous ») accepte sans réserve les présentes CGU. Si vous n'acceptez pas ces conditions, vous ne devez pas accéder au Service.</p>
@@ -171,7 +187,7 @@
   <p style="font-size:0.8rem;color:var(--text-muted);">Pour toute question relative aux présentes CGU, contactez-nous à <a href="mailto:fundy.fundamentals@gmail.com">fundy.fundamentals@gmail.com</a>.</p>
 
 </div>
-<script src="cookie-banner.js"></script>
+<script src="cookie-banner.js?v=polices2"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -180,5 +196,6 @@
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

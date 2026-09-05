@@ -12,14 +12,15 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
 
   <!-- THEME BOOTSTRAP — synchronous, before CSS -->
   <script>(function(){var s=localStorage.getItem('fundamental-theme');var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');})()</script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
 
   <style>
   /* ══════════════════════════════════════════════════════════════
@@ -1638,6 +1639,18 @@
        voile soit peint avant la mise en page encore vide. -->
   <link rel="stylesheet" href="chargement.css?v=1" />
   <noscript><style>.ec{display:none}</style></noscript>
+
+  <style>
+    /* Titre destine aux lecteurs d'ecran. Il ne doit PAS utiliser
+       display:none ni visibility:hidden, qui le retireraient aussi de
+       l'arbre d'accessibilite : on le sort du cadre visible en gardant
+       une taille non nulle. */
+    .f-sr-only {
+      position:absolute !important; width:1px; height:1px;
+      padding:0; margin:-1px; overflow:hidden;
+      clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap; border:0;
+    }
+  </style>
 </head>
 <body data-brick-name="Épargne de précaution">
 <!-- Écran de chargement — voir chargement.css / chargement.js -->
@@ -1650,6 +1663,7 @@
   </div>
 </div>
 <script src="chargement.js?v=1"></script>
+<h1 class="f-sr-only">Épargne de précaution</h1>
 
 
 <!-- SIDEBAR injected by sidebar.js -->
@@ -3857,7 +3871,7 @@ function getLogementLabel(situation) {
 </script>
 
 <script src="feedback-widget.js"></script>
-<script src="cookie-banner.js"></script>
+<script src="cookie-banner.js?v=polices2"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -3866,5 +3880,6 @@ function getLogementLabel(situation) {
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

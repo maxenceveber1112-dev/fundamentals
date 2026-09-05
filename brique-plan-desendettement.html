@@ -22,10 +22,11 @@
 })();
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
 
   <style>
   /* ══════════════════════════════════════════════════════════════
@@ -1272,7 +1273,7 @@
         <div id="revenus-input-bloc" style="display:none; background:var(--bg-elevated); border:1px solid var(--border-subtle); border-radius:0.875rem; padding:0.875rem 1rem; margin-top:0.25rem; margin-bottom:1.5rem;">
           <div style="font-size:0.78rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.5rem;">Tes revenus nets mensuels</div>
           <div style="display:flex; align-items:center; gap:0.5rem;">
-            <input type="number" id="input-revenus" placeholder="ex. 2 000" min="0" inputmode="numeric"
+            <input aria-label="Revenus nets mensuels, en euros" type="number" id="input-revenus" placeholder="ex. 2 000" min="0" inputmode="numeric"
               style="flex:1; background:var(--bg); border:1.5px solid var(--border-subtle); border-radius:0.625rem; padding:0.6rem 0.75rem; font-size:1rem; font-family:inherit; color:var(--text); outline:none;"
               oninput="onRevenusInput(this.value)" />
             <span style="font-size:0.9rem; color:var(--text-muted); white-space:nowrap;">€/mois</span>
@@ -3749,7 +3750,7 @@ function updateS2ChartResults(simActive, simGhost) {
 </script>
 
 <script src="feedback-widget.js"></script>
-<script src="cookie-banner.js"></script>
+<script src="cookie-banner.js?v=polices2"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -3758,5 +3759,6 @@ function updateS2ChartResults(simActive, simGhost) {
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

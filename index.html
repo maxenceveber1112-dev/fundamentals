@@ -28,10 +28,11 @@
     if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
   })();
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
   <style>
     /* ─── DESIGN SYSTEM TOKENS ────────────────────────────────── */
     :root {
@@ -1078,7 +1079,7 @@
               <div class="produit-montant-row" id="montant-row-livrets">
                 <div class="produit-montant-inner">
                   <span class="produit-montant-label">Total sur livrets :</span>
-                  <input class="produit-montant-input" id="montant-livrets" type="text" inputmode="numeric" placeholder="Ex. 1 500" autocomplete="off" />
+                  <input aria-label="Total sur tes livrets, en euros" class="produit-montant-input" id="montant-livrets" type="text" inputmode="numeric" placeholder="Ex. 1 500" autocomplete="off" />
                   <span class="produit-montant-suffix">&#8364;</span>
                 </div>
               </div>
@@ -1088,7 +1089,7 @@
               <div class="produit-montant-row" id="montant-row-assurance_vie">
                 <div class="produit-montant-inner">
                   <span class="produit-montant-label">Valeur estim&#233;e :</span>
-                  <input class="produit-montant-input" id="montant-assurance_vie" type="text" inputmode="numeric" placeholder="Ex. 5 000" autocomplete="off" />
+                  <input aria-label="Valeur estimée de ton assurance-vie, en euros" class="produit-montant-input" id="montant-assurance_vie" type="text" inputmode="numeric" placeholder="Ex. 5 000" autocomplete="off" />
                   <span class="produit-montant-suffix">&#8364;</span>
                 </div>
               </div>
@@ -2203,7 +2204,7 @@ updatePreview();
 </div>
 
 <script src="feedback-widget.js"></script>
-<script src="cookie-banner.js"></script>
+<script src="cookie-banner.js?v=polices2"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -2212,5 +2213,6 @@ updatePreview();
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

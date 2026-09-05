@@ -22,10 +22,11 @@
 })();
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
 
   <style>
   /* ══════════════════════════════════════════════════════════════
@@ -1718,37 +1719,37 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
         <div class="abo-item-check"></div>
         <span class="abo-item-emoji">🎬</span>
         <span class="abo-item-name">Netflix / Prime / Disney+</span>
-        <input type="number" class="abo-item-montant" placeholder="14" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
+        <input aria-label="Montant mensuel — Netflix, Prime ou Disney+" type="number" class="abo-item-montant" placeholder="14" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
       </div>
       <div class="abo-item" data-id="musique" onclick="toggleAbo(this)">
         <div class="abo-item-check"></div>
         <span class="abo-item-emoji">🎵</span>
         <span class="abo-item-name">Spotify / Deezer / Apple Music</span>
-        <input type="number" class="abo-item-montant" placeholder="10" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
+        <input aria-label="Montant mensuel — Spotify, Deezer ou Apple Music" type="number" class="abo-item-montant" placeholder="10" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
       </div>
       <div class="abo-item" data-id="sport" onclick="toggleAbo(this)">
         <div class="abo-item-check"></div>
         <span class="abo-item-emoji">💪</span>
         <span class="abo-item-name">Salle de sport</span>
-        <input type="number" class="abo-item-montant" placeholder="30" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
+        <input aria-label="Montant mensuel — salle de sport" type="number" class="abo-item-montant" placeholder="30" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
       </div>
       <div class="abo-item" data-id="box" onclick="toggleAbo(this)">
         <div class="abo-item-check"></div>
         <span class="abo-item-emoji">📱</span>
         <span class="abo-item-name">Box internet / mobile premium</span>
-        <input type="number" class="abo-item-montant" placeholder="25" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
+        <input aria-label="Montant mensuel — box internet ou mobile premium" type="number" class="abo-item-montant" placeholder="25" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
       </div>
       <div class="abo-item" data-id="cloud" onclick="toggleAbo(this)">
         <div class="abo-item-check"></div>
         <span class="abo-item-emoji">☁️</span>
         <span class="abo-item-name">Cloud / app premium (iCloud, Adobe…)</span>
-        <input type="number" class="abo-item-montant" placeholder="3" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
+        <input aria-label="Montant mensuel — cloud ou application premium" type="number" class="abo-item-montant" placeholder="3" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
       </div>
       <div class="abo-item" data-id="autre_abo" onclick="toggleAbo(this)">
         <div class="abo-item-check"></div>
         <span class="abo-item-emoji">➕</span>
-        <input type="text" class="abo-item-name" placeholder="Autre…" onclick="event.stopPropagation()" style="background:none;border:none;font-family:inherit;font-size:0.875rem;font-weight:500;color:var(--text);outline:none;flex:1;min-width:0;" />
-        <input type="number" class="abo-item-montant" placeholder="0" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
+        <input aria-label="Nom de l’abonnement" type="text" class="abo-item-name" placeholder="Autre…" onclick="event.stopPropagation()" style="background:none;border:none;font-family:inherit;font-size:0.875rem;font-weight:500;color:var(--text);outline:none;flex:1;min-width:0;" />
+        <input aria-label="Montant mensuel de cet abonnement" type="number" class="abo-item-montant" placeholder="0" min="0" onclick="event.stopPropagation()" oninput="if(parseFloat(this.value)>0){this.closest('.abo-item').classList.add('checked');updateAboNonUtilises();updateAboEconomie();}" />
       </div>
     </div>
 
@@ -3806,7 +3807,7 @@ function imprimerBilan() {
 }
 </script>
 <script src="feedback-widget.js"></script>
-<script src="cookie-banner.js"></script>
+<script src="cookie-banner.js?v=polices2"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -3815,5 +3816,6 @@ function imprimerBilan() {
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

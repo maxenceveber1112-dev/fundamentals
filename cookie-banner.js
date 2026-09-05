@@ -2,7 +2,7 @@
 // FUNDAMENTALS — Bandeau cookies / consentement (RGPD)
 // Composant autonome (IIFE), à inclure sur toutes les pages.
 // Le site n'utilise que des cookies/stockages essentiels (auth, thème)
-// + Google Fonts (chargé depuis un CDN tiers → transfert d'IP).
+// + Cloudflare Web Analytics (mesure sans cookie ni suivi individuel).
 // Ce bandeau informe et recueille le choix de l'utilisateur.
 // ═══════════════════════════════════════════════════════════════════
 (function () {
@@ -78,7 +78,7 @@
       '</p>' +
       '<p class="fc-text">' +
         'Fundamentals utilise uniquement des données techniques essentielles (connexion, préférence de thème) stockées sur ton appareil. ' +
-        'Les polices d’écriture sont chargées via Google&nbsp;Fonts (un service tiers). ' +
+        'La fréquentation est mesurée par Cloudflare, sans cookie et sans suivi individuel. ' +
         'Aucun cookie publicitaire ni traceur. ' +
         '<a href="confidentialite.html">En savoir plus</a>.' +
       '</p>' +

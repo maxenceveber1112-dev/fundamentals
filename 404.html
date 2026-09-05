@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page introuvable | Fundamentals</title>
+  <meta name="description" content="Cette page n’existe pas ou n’existe plus." />
+  <meta property="og:site_name" content="Fundamentals" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Page introuvable | Fundamentals" />
+  <meta property="og:description" content="Conditions générales d’utilisation de Fundamentals : accès au service, nature pédagogique des contenus, responsabilités et gestion du compte." />
+  <meta property="og:url" content="https://fundamentals-education.com/404.html" />
+  <meta property="og:image" content="https://fundamentals-education.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Le logo Fundamentals et sa baseline « Comprendre l’argent pour mieux le vivre », à côté d’une illustration d’une personne tenant une pièce d’un euro." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
+  <script>
+  /* Thème unifié — anti-FOUC (clair par défaut, .dark pour sombre) */
+  (function(){
+    try{
+      var K='fundamental-theme', t=localStorage.getItem(K);
+      if(t!=='light'&&t!=='dark'){
+        var legacy=localStorage.getItem('fund_theme');
+        if(legacy==='dark')t='dark'; else if(legacy==='bright')t='light';
+        if(t==='light'||t==='dark')localStorage.setItem(K,t);
+      }
+      var dark=(t==='dark')||(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if(dark)document.documentElement.classList.add('dark');
+    }catch(e){}
+  })();
+  </script>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
+  <style>
+    /* Tokens fournis par theme.css (clair/sombre unifiés) */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 2rem 1rem 4rem;
+    }
+    .page-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 2.5rem;
+      transition: color 150ms;
+    }
+    .back-link:hover { color: var(--accent-strong); }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+    }
+    h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 2rem;
+      margin-bottom: 0.6rem;
+    }
+    p, li {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+    }
+    ul { padding-left: 1.4rem; margin-bottom: 0.75rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--accent-strong); text-decoration: underline; }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(139,92,246,0.14);
+      color: var(--accent-strong);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+
+  <style>
+    /* ── Page 404 ─────────────────────────────────────── */
+    .e-wrap {
+      position:relative; min-height:100dvh; overflow:hidden;
+      display:flex; flex-direction:column; align-items:center;
+      justify-content:center; gap:0; padding:2rem 1.5rem 3rem;
+      text-align:center;
+    }
+    /* Le filigrane de marque, comme sur l'ecran de chargement et le
+       panneau d'essai : la page perdue reste chez elle. */
+    .e-wrap::after {
+      content:'f'; position:absolute; right:-0.9rem; bottom:-5rem;
+      font-family:'Instrument Serif',Georgia,serif; font-style:italic;
+      font-size:clamp(200px, 32vw, 340px); line-height:1;
+      color:rgba(139,147,184,.11); pointer-events:none; user-select:none;
+    }
+    html.dark .e-wrap::after { color:rgba(143,140,212,.13); }
+
+    /* §1.3 du guide : un halo, pas une carte. Aucun bord, aucun cadre —
+       c'est deja le plus gros element de la page. */
+    .e-nombre {
+      position:relative; z-index:1;
+      font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:300;
+      font-size:clamp(6.5rem, 22vw, 12rem); line-height:0.9;
+      color:var(--accent-strong, #5B21B6);
+      font-variant-numeric:tabular-nums;
+      letter-spacing:-0.02em;
+      padding:2.6rem 3.4rem 2.2rem;
+      border-radius:1rem 1rem 3.5rem 1rem;
+      background:
+        radial-gradient(75% 90% at 20% 0%, rgba(91,33,182,.15) 0%, rgba(91,33,182,.03) 55%, transparent 78%),
+        radial-gradient(60% 80% at 85% 100%, rgba(91,33,182,.10) 0%, transparent 70%);
+    }
+    html.dark .e-nombre {
+      color:var(--accent-strong, #A78BFA);
+      background:
+        radial-gradient(75% 90% at 20% 0%, rgba(167,139,250,.17) 0%, rgba(167,139,250,.04) 55%, transparent 78%),
+        radial-gradient(60% 80% at 85% 100%, rgba(167,139,250,.11) 0%, transparent 70%);
+    }
+
+    .e-titre {
+      position:relative; z-index:1;
+      font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:400;
+      font-size:clamp(1.5rem, 4.5vw, 2rem); line-height:1.25;
+      color:var(--text, #1C1917); margin:1.4rem 0 0.6rem;
+    }
+    .e-sous {
+      position:relative; z-index:1; max-width:44ch; margin:0 auto 2.4rem;
+      font-size:0.95rem; line-height:1.65; color:var(--text-muted, #78716C);
+    }
+
+    /* §1.1 : moins de conteneurs. Trois issues, en lignes separees par un
+       filet — pas trois boutons dans trois boites. */
+    .e-issues {
+      position:relative; z-index:1; width:100%; max-width:32rem;
+      text-align:left; border-top:1px solid var(--border-soft, rgba(20,20,30,.09));
+    }
+    .e-issue {
+      display:flex; align-items:baseline; gap:0.85rem;
+      padding:0.95rem 0.25rem; text-decoration:none;
+      border-bottom:1px solid var(--border-soft, rgba(20,20,30,.09));
+      transition:padding-left .18s ease;
+    }
+    .e-issue:hover, .e-issue:focus-visible { padding-left:0.7rem; }
+    .e-issue:focus-visible { outline:2px solid var(--accent-strong,#5B21B6); outline-offset:3px; border-radius:0.35rem; }
+    /* §1.7 : le numero d'etape en serif italique a l'accent, sans rondelle */
+    .e-num {
+      font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:400;
+      font-size:1.25rem; line-height:1; color:var(--accent-strong,#5B21B6);
+      font-variant-numeric:tabular-nums; flex-shrink:0; min-width:1.1rem;
+    }
+    .e-corps { flex:1; min-width:0; }
+    .e-lib { display:block; font-size:0.95rem; font-weight:600; color:var(--text,#1C1917); }
+    .e-desc { display:block; font-size:0.8125rem; color:var(--text-muted,#78716C); margin-top:0.15rem; line-height:1.5; }
+    .e-fleche { flex-shrink:0; color:var(--text-faint,#A8A29E); transition:transform .18s ease, color .18s ease; }
+    .e-issue:hover .e-fleche, .e-issue:focus-visible .e-fleche { transform:translateX(3px); color:var(--accent-strong,#5B21B6); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .e-issue, .e-fleche { transition:none; }
+      .e-issue:hover, .e-issue:focus-visible { padding-left:0.25rem; }
+      .e-issue:hover .e-fleche { transform:none; }
+    }
+  </style>
+</head>
+<body>
+<main class="e-wrap">
+
+  <p class="e-nombre" aria-hidden="true">404</p>
+
+  <h1 class="e-titre">Cette page a dû partir sans laisser d’adresse.</h1>
+  <p class="e-sous">
+    Le lien est peut-être périmé, ou l’adresse comporte une coquille.
+    Rien de grave : voilà par où reprendre.
+  </p>
+
+  <nav class="e-issues" aria-label="Reprendre la navigation">
+    <a class="e-issue" href="auth.html">
+      <span class="e-num" aria-hidden="true">1</span>
+      <span class="e-corps"><span class="e-lib">Retourner à l’accueil</span><span class="e-desc">Se connecter, ou créer un compte</span></span>
+      <svg class="e-fleche" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <a class="e-issue" href="simulateur-budget.html">
+      <span class="e-num" aria-hidden="true">2</span>
+      <span class="e-corps"><span class="e-lib">Simulateur de budget</span><span class="e-desc">Voir où part ton argent, sans inscription</span></span>
+      <svg class="e-fleche" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <a class="e-issue" href="simulateur-emprunt.html">
+      <span class="e-num" aria-hidden="true">3</span>
+      <span class="e-corps"><span class="e-lib">Simulateur d’emprunt</span><span class="e-desc">Capacité d’emprunt et mensualité, sans inscription</span></span>
+      <svg class="e-fleche" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </nav>
+
+</main>
+<!-- Cloudflare Web Analytics -->
+<script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
+</body>
+</html>

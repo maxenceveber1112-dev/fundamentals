@@ -87,8 +87,15 @@ create policy "brick_data_own" on public.brick_data
   for all using (auth.uid() = user_id);
 
 -- Feedbacks : tout utilisateur peut insérer, seulement lire les siens
+-- Insertion ouverte, mais bornee : `with check (true)` laissait passer
+-- des messages de taille illimitee depuis n'importe qui. On borne la
+-- longueur ; le debit, lui, se regle cote Supabase (rate limiting).
 create policy "feedbacks_insert" on public.feedbacks
-  for insert with check (true);
+  for insert with check (
+    (message is null or length(message) <= 4000)
+    and (rating is null or rating between 1 and 5)
+    and length(page) <= 120
+  );
 create policy "feedbacks_own_read" on public.feedbacks
   for select using (auth.uid() = user_id);
 
@@ -111,7 +118,15 @@ create trigger brick_data_updated_at
   for each row execute function public.set_updated_at();
 
 -- ── VUE ADMIN (feedbacks centralisés) ────────────────────
--- Accessible depuis le dashboard Supabase ou un futur admin panel
+-- Destinée au dashboard Supabase, PAS à l'API publique.
+--
+-- ATTENTION — cette vue joint auth.users pour exposer des adresses
+-- e-mail. Une vue Postgres s'exécute par défaut avec les droits de son
+-- propriétaire et CONTOURNE donc le RLS des tables sous-jacentes ; or
+-- Supabase expose les vues du schéma public via son API REST, et la clé
+-- anon est publique par construction. Sans les deux verrous posés plus
+-- bas, n'importe qui pouvait lire tous les feedbacks et toutes les
+-- adresses e-mail associées.
 create or replace view public.feedbacks_admin as
   select
     f.id, f.page, f.rating, f.message, f.created_at,
@@ -119,3 +134,11 @@ create or replace view public.feedbacks_admin as
   from public.feedbacks f
   left join auth.users u on u.id = f.user_id
   order by f.created_at desc;
+
+-- Verrou 1 : la vue s'exécute avec les droits de l'APPELANT, donc le RLS
+-- de public.feedbacks s'applique de nouveau. (PostgreSQL 15+)
+alter view public.feedbacks_admin set (security_invoker = on);
+
+-- Verrou 2 : et de toute façon, l'API n'y touche pas. Indépendant du
+-- premier : si security_invoker était un jour désactivé, celui-ci tient.
+revoke all on public.feedbacks_admin from anon, authenticated;

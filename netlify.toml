@@ -12,13 +12,14 @@
   # sur une reecriture non forcee. Sans lui, "/" servait l'onboarding.
   force = true
 
-# Chemin inconnu : on atterrit sur la connexion plutot qu'au milieu de
-# l'onboarding. Un visiteur deja connecte y est redirige vers son dashboard.
+# Chemin inconnu : une vraie page 404, qui dit ce qui s'est passe et
+# propose trois issues. Elle servait la page de connexion jusqu'ici, ce qui
+# laissait le visiteur devant un formulaire sans un mot d'explication.
 # force = false : les fichiers reels (index.html, simulateur-*.html, les
 # briques...) restent servis directement et repondent 200.
 [[redirects]]
   from = "/*"
-  to = "/auth.html"
+  to = "/404.html"
   # status 404 et non 200 : une URL inconnue qui repond 200 est un
   # « soft 404 », que Google signale et qui laisse indexer n'importe
   # quelle URL fantaisiste. Le visiteur, lui, voit toujours la page de
@@ -33,7 +34,10 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://avnxkfthqgeehcjuxoej.supabase.co https://api-adresse.data.gouv.fr https://public.opendatasoft.com wss://avnxkfthqgeehcjuxoej.supabase.co https://cloudflareinsights.com; img-src 'self' data: blob:; frame-ancestors 'self'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://avnxkfthqgeehcjuxoej.supabase.co https://api-adresse.data.gouv.fr https://public.opendatasoft.com wss://avnxkfthqgeehcjuxoej.supabase.co https://cloudflareinsights.com; img-src 'self' data: blob:; frame-ancestors 'self'"
+    # Le site n'utilise ni caméra, ni micro, ni géolocalisation, ni capteurs.
+    # On le declare, plutot que de laisser la porte ouverte par defaut.
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"
 
 # ── Cache-Control ──
 # Pas de hash dans les noms de fichiers → on revalide systématiquement
@@ -57,3 +61,12 @@
   for = "/*.svg"
   [headers.values]
     Cache-Control = "public, max-age=86400, must-revalidate"
+
+# Les polices ne changent jamais sous un meme nom de fichier : on les met
+# en cache longtemps. Pour REMPLACER une police, il faut donc RENOMMER le
+# fichier (et l'URL dans fonts.css), sinon les navigateurs garderont
+# l'ancienne version pendant un an.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

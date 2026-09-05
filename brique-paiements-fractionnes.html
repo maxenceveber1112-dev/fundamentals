@@ -12,8 +12,11 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
   <script>
 (function() {
   var saved = localStorage.getItem('fundamental-theme');
@@ -21,8 +24,6 @@
   if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
 })();
 </script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" /></noscript>
   <style>
 /* ════ FUNDAMENTAL V3 · DESIGN SYSTEM TOKENS (shared) ════ */
 :root {
@@ -995,7 +996,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
           <div class="engagement-radio"></div>
           <div class="engagement-label">
             Je solde en priorité&nbsp;:
-            <input type="text" class="inline-input" id="priority-input" placeholder="Nom du paiement" />
+            <input aria-label="Nom du paiement à solder en priorité" type="text" class="inline-input" id="priority-input" placeholder="Nom du paiement" />
           </div>
         </div>
         <div class="engagement-option" data-idx="2" tabindex="0" role="radio" aria-checked="false">
@@ -2530,7 +2531,7 @@ function escAttr(str) {
 </script>
 
 <script src="feedback-widget.js"></script>
-<script src="cookie-banner.js"></script>
+<script src="cookie-banner.js?v=polices2"></script>
 <script src="theme.js"></script>
 
 <script>
@@ -2546,5 +2547,6 @@ function escAttr(str) {
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

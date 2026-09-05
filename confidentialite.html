@@ -36,10 +36,11 @@
     }catch(e){}
   })();
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" /></noscript>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
   <style>
     /* Tokens fournis par theme.css (clair/sombre unifiés) */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -114,6 +115,21 @@
     .right-card span { color: var(--text-muted); }
   </style>
   <link rel="stylesheet" href="theme.css">
+
+  <style>
+    /* Respecter le reglage systeme « reduire les animations ». Sans cela,
+       les fondus et deplacements de cette page s'imposaient a des
+       personnes qui ont explicitement demande a en etre dispensees —
+       vertiges, migraines, troubles vestibulaires. */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
 </head>
 <body>
 <div class="page-wrap">
@@ -125,10 +141,10 @@
 
   <span class="badge">RGPD — Art. 13 & 14</span>
   <h1>Politique de confidentialité</h1>
-  <p class="meta">Dernière mise à jour : juin 2025 &nbsp;·&nbsp; Applicable à tous les utilisateurs du Service</p>
+  <p class="meta">Dernière mise à jour : septembre 2026 &nbsp;·&nbsp; Applicable à tous les utilisateurs du Service</p>
 
   <h2>1. Responsable de traitement</h2>
-  <p><strong>Fundamental SAS</strong><br>
+  <p><strong>Fundamentals SAS</strong> — identification complète dans les <a href="mentions-legales.html">mentions légales</a>.<br>
   Contact : <a href="mailto:fundy.fundamentals@gmail.com">fundy.fundamentals@gmail.com</a><br>
   Hébergement des données : Supabase Inc. (base de données PostgreSQL, serveurs en UE) &amp; Netlify Inc. (hébergement statique, serveurs en UE).</p>
 
@@ -189,21 +205,23 @@
   <ul>
     <li><strong>Supabase Inc.</strong> — hébergement de la base de données (sous-traitant, DPA signé, serveurs UE)</li>
     <li><strong>Netlify Inc.</strong> — hébergement des pages et fichiers statiques (sous-traitant, DPA signé, serveurs UE)</li>
-    <li><strong>Google LLC</strong> — polices de caractères chargées via Google Fonts (transfert d'IP lors du chargement des pages) — <em>à vérifier : envisager l'auto-hébergement des fontes pour supprimer ce transfert</em></li>
+    <li><strong>Cloudflare, Inc.</strong> — mesure d'audience du site. Reçoit l'adresse IP, l'URL consultée et le type de navigateur. <strong>Ne dépose aucun cookie et n'identifie aucun visiteur individuellement.</strong> Base légale : intérêt légitime à comprendre l'usage du service pour l'améliorer</li>
     <li>Les autorités compétentes, sur réquisition judiciaire</li>
   </ul>
 
   <h2>4. Transferts hors UE</h2>
-  <p>Supabase et Netlify hébergent les données dans l'UE. Google Fonts peut entraîner un transfert de l'adresse IP vers les États-Unis lors du chargement des pages ; ce transfert est couvert par les Clauses Contractuelles Types (CCT) de la Commission européenne.</p>
+  <p>Supabase et Netlify hébergent les données dans l'UE.</p>
+  <p>Les polices d'écriture étaient auparavant chargées depuis Google Fonts, ce qui transférait votre adresse IP vers les États-Unis à chaque affichage de page. <strong>Elles sont désormais servies depuis notre propre domaine : ce transfert n'existe plus.</strong></p>
+  <p>Reste la mesure d'audience Cloudflare, société américaine. Ce transfert est encadré par les Clauses Contractuelles Types de la Commission européenne. Il ne porte ni sur votre identité, ni sur les données que vous saisissez dans les briques.</p>
 
   <h2>5. Cookies et stockage local</h2>
   <p>Le Service utilise le stockage local du navigateur (<code>localStorage</code> / <code>sessionStorage</code>) pour :</p>
   <ul>
     <li>Maintenir la session d'authentification (<code>fund_auth</code>)</li>
-    <li>Sauvegarder la préférence de thème (<code>fund_theme</code>)</li>
+    <li>Sauvegarder la préférence de thème (<code>fundamental-theme</code>)</li>
     <li>Mémoriser l'affichage du tour de bienvenue</li>
   </ul>
-  <p>Ces données restent sur votre appareil et ne sont pas transmises à des tiers. Aucun cookie de pistage ou de publicité n'est utilisé.</p>
+  <p>Ces données restent sur votre appareil et ne sont pas transmises à des tiers. Aucun cookie de pistage ou de publicité n'est utilisé — y compris par notre outil de mesure d'audience, qui fonctionne sans cookie.</p>
 
   <h2>6. Vos droits (RGPD art. 15–22)</h2>
   <div class="rights-grid">
@@ -236,7 +254,7 @@
   <p style="font-size:0.8rem;color:var(--text-muted);">Contact DPO / données personnelles : <a href="mailto:fundy.fundamentals@gmail.com">fundy.fundamentals@gmail.com</a></p>
 
 </div>
-<script src="cookie-banner.js"></script>
+<script src="cookie-banner.js?v=polices2"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -245,5 +263,6 @@
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

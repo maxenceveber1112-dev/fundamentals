@@ -39,11 +39,12 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8f7ff" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0f1a" />
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
   <script>(function(){var s=localStorage.getItem('fundamental-theme');var d=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(!s&&d))document.documentElement.classList.add('dark');})()</script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
   <link rel="stylesheet" href="theme.css" />
   <style>
     * { box-sizing:border-box; }
@@ -423,7 +424,7 @@
               <span class="sim-flabel">Durée</span>
               <span class="sim-duree-val" id="sim-duree-val">20 ans</span>
             </div>
-            <input type="range" id="sim-duree" class="sim-slider" min="1" max="25" step="1" value="20" />
+            <input aria-label="Durée du prêt, en années" type="range" id="sim-duree" class="sim-slider" min="1" max="25" step="1" value="20" />
             <div class="sim-slider-bounds"><span id="sim-duree-min">1 an</span><span id="sim-duree-max">25 ans</span></div>
           </div>
 
@@ -828,7 +829,7 @@
   })();
   </script>
   <script src="feedback-widget.js"></script>
-  <script src="cookie-banner.js"></script>
+  <script src="cookie-banner.js?v=polices2"></script>
   <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -837,5 +838,6 @@
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>

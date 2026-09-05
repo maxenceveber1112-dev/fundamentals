@@ -22,10 +22,11 @@
 })();
 </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" /></noscript>
+  <!-- Polices auto-hébergées (voir fonts.css). Elles venaient de Google,
+       ce qui transférait l'IP de chaque visiteur vers les États-Unis à
+       chaque affichage de page, avant tout consentement. -->
+  <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="fonts.css?v=1" />
 
 <style>
 /* ══════════════════════════════════════════════════════════════
@@ -4252,7 +4253,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 </div>
                 <div class="z1-pill-main" onclick="editPill(this.parentElement,'input-revenus')">
                   <span class="z1-pill-value" id="pill-revenus-val">0 €</span>
-                  <input type="number" class="z1-pill-input" id="input-revenus" min="0" inputmode="numeric" placeholder="ex : 2 500" onblur="closePill(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                  <input aria-label="Revenus nets mensuels, en euros" type="number" class="z1-pill-input" id="input-revenus" min="0" inputmode="numeric" placeholder="ex : 2 500" onblur="closePill(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
                 </div>
                 <div class="z1-pill-sub" id="pill-revenus-sub">
                   <span id="pill-aides-text">+ 0 € d'aides</span>
@@ -4260,7 +4261,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 </div>
                 <div class="z1-pill-expand" id="pill-revenus-expand">
                   <div class="euro-wrap">
-                    <input type="number" id="input-aides" class="field-input" placeholder="Aides mensuelles (APL, allocations...)" min="0" inputmode="numeric"/>
+                    <input aria-label="Aides mensuelles (APL, allocations), en euros" type="number" id="input-aides" class="field-input" placeholder="Aides mensuelles (APL, allocations...)" min="0" inputmode="numeric"/>
                     <span class="euro-suffix">€</span>
                   </div>
                 </div>
@@ -4275,7 +4276,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 </div>
                 <div class="z1-pill-main" onclick="editPill(this.parentElement,'input-credits')">
                   <span class="z1-pill-value" id="pill-credits-val">0 €/mois</span>
-                  <input type="number" class="z1-pill-input" id="input-credits" min="0" inputmode="numeric" placeholder="ex : 200" onblur="closePill(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
+                  <input aria-label="Crédits en cours, par mois, en euros" type="number" class="z1-pill-input" id="input-credits" min="0" inputmode="numeric" placeholder="ex : 200" onblur="closePill(this)" onkeydown="if(event.key==='Enter')this.blur()"/>
                 </div>
                 <div class="z1-pill-sub" id="pill-credits-sub">
                   <span id="pill-charges-text">+ 0 € de charges fixes</span>
@@ -4283,7 +4284,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 </div>
                 <div class="z1-pill-expand" id="pill-credits-expand">
                   <div class="euro-wrap">
-                    <input type="number" id="input-charges" class="field-input" placeholder="Charges fixes mensuelles" min="0" inputmode="numeric"/>
+                    <input aria-label="Charges fixes mensuelles, en euros" type="number" id="input-charges" class="field-input" placeholder="Charges fixes mensuelles" min="0" inputmode="numeric"/>
                     <span class="euro-suffix">€</span>
                   </div>
                 </div>
@@ -4416,12 +4417,12 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="epargne-item" id="ei-epargne" onclick="editEpargneItem(this,'input-epargne-totale')">
                   <div class="epargne-item-label">Épargne totale</div>
                   <div class="epargne-item-value" id="ei-epargne-val">0 €</div>
-                  <input type="number" class="epargne-item-input" id="input-epargne-totale" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
+                  <input aria-label="Épargne totale, en euros" type="number" class="epargne-item-input" id="input-epargne-totale" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
                 </div>
                 <div class="epargne-item" id="ei-matelas" onclick="editEpargneItem(this,'input-matelas-actuel')">
                   <div class="epargne-item-label">Épargne de précaution à ne pas dépenser</div>
                   <div class="epargne-item-value" id="ei-matelas-val">0 €</div>
-                  <input type="number" class="epargne-item-input" id="input-matelas-actuel" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
+                  <input aria-label="Épargne de précaution à ne pas dépenser, en euros" type="number" class="epargne-item-input" id="input-matelas-actuel" min="0" inputmode="numeric" onblur="closeEpargneItem(this)" oninput="updateApport()"/>
                 </div>
               </div>
               <!-- Matelas cible: hidden from UI but kept in state for scoring -->
@@ -4504,7 +4505,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
               </div>
               <div class="s4-prix-badge">Prérempli avec ta capacité d'emprunt</div>
               <div class="s4-prix-value" id="s4-prix-display" onclick="s4EditPrix()">--</div>
-              <input type="number" class="s4-prix-input" id="input-prix-bien" placeholder="ex : 200 000" min="0" inputmode="numeric"/>
+              <input aria-label="Prix du bien, en euros" type="number" class="s4-prix-input" id="input-prix-bien" placeholder="ex : 200 000" min="0" inputmode="numeric"/>
               <div class="s4-prix-sub">Prix du bien — modifiable</div>
               <div class="s4-prix-budget" id="s4-prix-budget" aria-live="polite">
                 <span class="s4-prix-budget-label">Budget max possible</span>
@@ -4529,21 +4530,21 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="s4-field-card" data-input="input-frais-notaire" onclick="s4EditField(this)">
                   <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Frais de notaire')" tabindex="0">Frais de notaire</button></div>
                   <div class="s4-field-value" id="s4-val-notaire">--</div>
-                  <input type="number" class="s4-field-input" id="input-frais-notaire" placeholder="auto" min="0" inputmode="numeric"/>
+                  <input aria-label="Frais de notaire, en euros" type="number" class="s4-field-input" id="input-frais-notaire" placeholder="auto" min="0" inputmode="numeric"/>
                   <span class="s4-field-badge s4-badge-estime" id="s4-badge-notaire">Estimé</span>
                   <div class="field-help" id="help-notaire" style="font-size:0.65rem;color:var(--text-faint);margin-top:0.25rem;">Estimation modifiable.</div>
                 </div>
                 <div class="s4-field-card" data-input="input-frais-agence" onclick="s4EditField(this)">
                   <div class="s4-field-label">Frais d'agence</div>
                   <div class="s4-field-value" id="s4-val-agence">0 €</div>
-                  <input type="number" class="s4-field-input" id="input-frais-agence" placeholder="0" min="0" inputmode="numeric"/>
+                  <input aria-label="Frais d’agence, en euros" type="number" class="s4-field-input" id="input-frais-agence" placeholder="0" min="0" inputmode="numeric"/>
                 </div>
                 <div class="s4-field-card" data-input="input-frais-garantie" onclick="s4EditField(this)">
                   <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Garantie bancaire')" tabindex="0">Frais de garantie</button>
                     <span class="field-tooltip"><span class="tooltip-icon" onclick="event.stopPropagation()">?</span><span class="tooltip-text">Caution Crédit Logement — estimée à 1,2% de l'emprunt</span></span>
                   </div>
                   <div class="s4-field-value" id="s4-val-garantie">--</div>
-                  <input type="number" class="s4-field-input" id="input-frais-garantie" placeholder="auto" min="0" inputmode="numeric"/>
+                  <input aria-label="Frais de garantie, en euros" type="number" class="s4-field-input" id="input-frais-garantie" placeholder="auto" min="0" inputmode="numeric"/>
                   <span class="s4-field-badge s4-badge-estime" id="s4-badge-garantie">Estimé</span>
                   <div class="field-help" id="help-garantie" style="font-size:0.65rem;color:var(--text-faint);margin-top:0.25rem;"></div>
                 </div>
@@ -4552,7 +4553,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                     <span class="field-tooltip"><span class="tooltip-icon" onclick="event.stopPropagation()">?</span><span class="tooltip-text">Frais bancaires — estimés entre 500 et 1 000 €</span></span>
                   </div>
                   <div class="s4-field-value" id="s4-val-dossier">--</div>
-                  <input type="number" class="s4-field-input" id="input-frais-dossier" placeholder="auto" min="0" inputmode="numeric"/>
+                  <input aria-label="Frais de dossier bancaire, en euros" type="number" class="s4-field-input" id="input-frais-dossier" placeholder="auto" min="0" inputmode="numeric"/>
                   <span class="s4-field-badge s4-badge-estime" id="s4-badge-dossier">Estimé</span>
                   <div class="field-help" id="help-dossier" style="font-size:0.65rem;color:var(--text-faint);margin-top:0.25rem;"></div>
                 </div>
@@ -4574,7 +4575,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                   <span class="field-tooltip"><span class="tooltip-icon" onclick="event.stopPropagation()">?</span><span class="tooltip-text">Incluant meubles, déménagement et équipements</span></span>
                 </div>
                 <div class="s4-field-value" id="s4-val-travaux">0 €</div>
-                <input type="number" class="s4-field-input" id="input-travaux-autres" placeholder="0" min="0" inputmode="numeric"/>
+                <input aria-label="Travaux et autres frais, en euros" type="number" class="s4-field-input" id="input-travaux-autres" placeholder="0" min="0" inputmode="numeric"/>
               </div>
             </div>
 
@@ -4750,7 +4751,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 </div>
                 <div class="s6-loyer-kicker">● Loyer mensuel estimé (hors charges récupérables)</div>
                 <div class="s6-loyer-value-wrap">
-                  <input type="number" id="input-loyer-estime-s6" placeholder="Saisis un loyer" min="0" inputmode="numeric" oninput="recalcLocatif()"/>
+                  <input aria-label="Loyer mensuel estimé, en euros" type="number" id="input-loyer-estime-s6" placeholder="Saisis un loyer" min="0" inputmode="numeric" oninput="recalcLocatif()"/>
                   <span class="s6-loyer-suffix">€/mois</span>
                 </div>
                 <div class="s6-loyer-helper" id="s6-loyer-helper">= 0 €/an de revenus locatifs</div>
@@ -4767,7 +4768,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                       <span class="s6-badge-estime">Estimé</span>
                       <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Assurance Propriétaire Non Occupant — obligatoire pour les biens loués.</span></span>
                     </div>
-                    <div><input type="number" id="input-assurance-pno-s6" value="15" min="0" inputmode="numeric" oninput="recalcLocatif()"/></div>
+                    <div><input aria-label="Assurance propriétaire non occupant, par mois, en euros" type="number" id="input-assurance-pno-s6" value="15" min="0" inputmode="numeric" oninput="recalcLocatif()"/></div>
                     <div class="s6-charge-unit">€/mois</div>
                   </div>
                   <!-- Vacance locative -->
@@ -4777,7 +4778,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                       <span class="s6-badge-estime">Estimé</span>
                       <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Période sans locataire. 0,5 mois/an ≈ 4% de vacance typique.</span></span>
                     </div>
-                    <div><input type="number" id="input-vacance-s6" value="0.5" min="0" max="12" step="0.1" inputmode="numeric" oninput="recalcLocatif()"/></div>
+                    <div><input aria-label="Taux de vacance locative, en pourcentage" type="number" id="input-vacance-s6" value="0.5" min="0" max="12" step="0.1" inputmode="numeric" oninput="recalcLocatif()"/></div>
                     <div class="s6-charge-unit">mois/an</div>
                     <div class="s6-charge-helper" id="s6-helper-vacance">= 4,2 % de perte</div>
                   </div>
@@ -4788,7 +4789,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                       <span class="s6-badge-estime">Estimé</span>
                       <span class="s6-gi"><span class="s6-gi-icon">ⓘ</span><span class="s6-gi-tip">Petites réparations, frais divers non couverts par la copro.</span></span>
                     </div>
-                    <div><input type="number" id="input-charges-loc-s6" value="20" min="0" inputmode="numeric" oninput="recalcLocatif()"/></div>
+                    <div><input aria-label="Charges locatives non récupérables, en pourcentage" type="number" id="input-charges-loc-s6" value="20" min="0" inputmode="numeric" oninput="recalcLocatif()"/></div>
                     <div class="s6-charge-unit">€/mois</div>
                   </div>
                 </div>
@@ -4805,19 +4806,19 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
                 <div class="s4-field-card" data-input="input-taxe-fonciere" onclick="s4EditField(this)">
                   <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Taxe foncière')" tabindex="0">Taxe foncière</button> / an</div>
                   <div class="s4-field-value" id="s4-val-taxe">0 €</div>
-                  <input type="number" class="s4-field-input" id="input-taxe-fonciere" placeholder="ex : 1 200" min="0" inputmode="numeric"/>
+                  <input aria-label="Taxe foncière annuelle, en euros" type="number" class="s4-field-input" id="input-taxe-fonciere" placeholder="ex : 1 200" min="0" inputmode="numeric"/>
                 </div>
                 <div class="s4-field-card" data-input="input-charges-copro" onclick="s4EditField(this)">
                   <div class="s4-field-label"><button class="glossary-term" onclick="event.stopPropagation();showGlossaryPopover(this,'Charges de copropriété')" tabindex="0">Charges copro</button> / an</div>
                   <div class="s4-field-value" id="s4-val-copro">0 €</div>
-                  <input type="number" class="s4-field-input" id="input-charges-copro" placeholder="ex : 1 800" min="0" inputmode="numeric"/>
+                  <input aria-label="Charges de copropriété annuelles, en euros" type="number" class="s4-field-input" id="input-charges-copro" placeholder="ex : 1 800" min="0" inputmode="numeric"/>
                 </div>
                 <div class="s4-field-card" data-input="input-entretien" onclick="s4EditField(this)">
                   <div class="s4-field-label">Entretien annuel / an
                     <span class="field-tooltip"><span class="tooltip-icon" onclick="event.stopPropagation()">?</span><span class="tooltip-text">1% du prix pour un appartement, 1,5% pour une maison</span></span>
                   </div>
                   <div class="s4-field-value" id="s4-val-entretien">--</div>
-                  <input type="number" class="s4-field-input" id="input-entretien" placeholder="auto" min="0" inputmode="numeric"/>
+                  <input aria-label="Entretien annuel, en euros" type="number" class="s4-field-input" id="input-entretien" placeholder="auto" min="0" inputmode="numeric"/>
                   <span class="s4-field-badge s4-badge-estime" id="s4-badge-entretien">Estimé</span>
                 </div>
               </div>
@@ -9079,7 +9080,7 @@ window.initScreen5 = initScreen5;
 
 <div id="pdf-preview" style="display:none"></div>
 <script src="feedback-widget.js"></script>
-<script src="cookie-banner.js"></script>
+<script src="cookie-banner.js?v=polices2"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc
@@ -9088,5 +9089,6 @@ window.initScreen5 = initScreen5;
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
+<script src="acces.js?v=1"></script>
 </body>
 </html>
