@@ -340,7 +340,15 @@ html.dark .reco::after{color:rgba(139,92,246,.13)}
   padding:1.2rem 1.25rem;box-shadow:var(--shadow-card)}
 .side-k{font-size:.6875rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
   color:var(--text-muted);margin-bottom:.9rem}
-.side-step{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0}
+.side-step{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem .4rem;margin-left:-.4rem}
+/* Les etapes franchies se recliquent : ce sont des <button>, atteignables
+   au clavier. On neutralise ce que le navigateur pose de lui-meme, et le
+   leger retrait a gauche compense la marge interne ajoutee pour le survol. */
+.side-step{appearance:none;-webkit-appearance:none;border:0;background:none;font-family:inherit;
+  text-align:left;width:calc(100% + .4rem);border-radius:.5rem;cursor:default}
+.side-step.done{cursor:pointer}
+.side-step.done:hover{background:var(--surface-2)}
+.side-step:focus-visible{outline:2px solid var(--accent-strong);outline-offset:2px}
 .side-dot{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--surface-3);
   color:var(--text-faint);font-size:.66rem;font-weight:700;display:flex;align-items:center;
   justify-content:center;transition:all var(--t)}
@@ -1157,11 +1165,24 @@ function buildDroits() {
 /* ═══ Navigation ═══ */
 const ETAPES = ['Intro', 'Toi', 'Comprendre', 'Ce qui te va', 'La suite'];
 
+// Retour a une etape deja franchie depuis le panneau lateral.
+function revenirEtape(n) {
+  if (n >= ecran) return;
+  goToScreen(n);
+}
+
 function majSide() {
   document.getElementById('side-steps').innerHTML = ETAPES.map(function (l, i) {
     const cls = i < ecran ? 'done' : (i === ecran ? 'now' : '');
-    return '<div class="side-step ' + cls + '"><span class="side-dot">' +
-           (i < ecran ? '&#10003;' : (i + 1)) + '</span><span class="side-l">' + l + '</span></div>';
+    const franchie = i < ecran;
+    // Une etape non franchie n'est ni cliquable ni atteignable au clavier.
+    return '<button type="button" class="side-step ' + cls + '"' +
+           (franchie ? '' : ' disabled') +
+           ' aria-current="' + (i === ecran ? 'step' : 'false') + '"' +
+           (franchie ? ' aria-label="Revenir a : ' + l + '"' : '') +
+           ' onclick="revenirEtape(' + i + ')">' +
+           '<span class="side-dot">' +
+           (franchie ? '&#10003;' : (i + 1)) + '</span><span class="side-l">' + l + '</span></button>';
   }).join('');
 }
 

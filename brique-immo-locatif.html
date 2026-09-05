@@ -31,7 +31,7 @@
   <!-- Styles communs aux deux briques immobilieres. Cette feuille occupe
        l'emplacement exact du bloc en ligne qu'elle remplace, pour preserver
        l'ordre de cascade vis-a-vis de theme.css. -->
-  <link rel="stylesheet" href="immo-commun.css?v=encre1" />
+  <link rel="stylesheet" href="immo-commun.css?v=etapes1" />
   <style>
     /* Règles propres à l'investissement locatif. Le reste vit dans
        immo-commun.css, chargé juste au-dessus. */
@@ -1856,42 +1856,42 @@ html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
           <div>
             <div class="sb2-tree-label">Étapes</div>
             <div class="sb2-tree" id="sb2-tree">
-              <div class="sb2-node active" data-step="0">
-                <div class="sb2-node-bullet">0</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Introduction</div></div>
-              </div>
-              <div class="sb2-node" data-step="1">
-                <div class="sb2-node-bullet">1</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Ton projet</div></div>
-              </div>
-              <div class="sb2-node" data-step="2">
-                <div class="sb2-node-bullet">2</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Capacité mensuelle</div></div>
-              </div>
-              <div class="sb2-node" data-step="3">
-                <div class="sb2-node-bullet">3</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Ton apport</div></div>
-              </div>
-              <div class="sb2-node" data-step="4">
-                <div class="sb2-node-bullet">4</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Emplacement &amp; typologie</div></div>
-              </div>
-              <div class="sb2-node" data-step="5">
-                <div class="sb2-node-bullet">5</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Vrai coût d'achat</div></div>
-              </div>
-              <div class="sb2-node" data-step="6">
-                <div class="sb2-node-bullet">6</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Stratégie locatif</div></div>
-              </div>
-              <div class="sb2-node" data-step="7">
-                <div class="sb2-node-bullet">7</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Les étapes</div></div>
-              </div>
-              <div class="sb2-node" data-step="8">
-                <div class="sb2-node-bullet">★</div>
-                <div class="sb2-node-content"><div class="sb2-node-label">Diagnostic final</div></div>
-              </div>
+              <button type="button" class="sb2-node active" data-step="0" disabled>
+                <span class="sb2-node-bullet">0</span>
+                <span class="sb2-node-content"><span class="sb2-node-label">Introduction</span></span>
+              </button>
+              <button type="button" class="sb2-node" data-step="1" disabled>
+                <span class="sb2-node-bullet">1</span>
+                <span class="sb2-node-content"><span class="sb2-node-label">Ton projet</span></span>
+              </button>
+              <button type="button" class="sb2-node" data-step="2" disabled>
+                <span class="sb2-node-bullet">2</span>
+                <span class="sb2-node-content"><span class="sb2-node-label">Capacité mensuelle</span></span>
+              </button>
+              <button type="button" class="sb2-node" data-step="3" disabled>
+                <span class="sb2-node-bullet">3</span>
+                <span class="sb2-node-content"><span class="sb2-node-label">Ton apport</span></span>
+              </button>
+              <button type="button" class="sb2-node" data-step="4" disabled>
+                <span class="sb2-node-bullet">4</span>
+                <span class="sb2-node-content"><span class="sb2-node-label">Emplacement &amp; typologie</span></span>
+              </button>
+              <button type="button" class="sb2-node" data-step="5" disabled>
+                <span class="sb2-node-bullet">5</span>
+                <span class="sb2-node-content"><span class="sb2-node-label">Vrai coût d'achat</span></span>
+              </button>
+              <button type="button" class="sb2-node" data-step="6" disabled>
+                <span class="sb2-node-bullet">6</span>
+                <span class="sb2-node-content"><span class="sb2-node-label">Stratégie locatif</span></span>
+              </button>
+              <button type="button" class="sb2-node" data-step="7" disabled>
+                <span class="sb2-node-bullet">7</span>
+                <span class="sb2-node-content"><span class="sb2-node-label">Les étapes</span></span>
+              </button>
+              <button type="button" class="sb2-node" data-step="8" disabled>
+                <span class="sb2-node-bullet">★</span>
+                <span class="sb2-node-content"><span class="sb2-node-label">Diagnostic final</span></span>
+              </button>
             </div>
           </div>
 
@@ -2401,6 +2401,10 @@ function updateProgressPanel(idx) {
   nodes.forEach(function(node) {
     var i = parseInt(node.getAttribute('data-step') || '0', 10);
     node.classList.remove('active', 'done');
+    // Une etape non franchie n'est ni cliquable ni atteignable au clavier.
+    node.disabled = !(i < idx);
+    node.setAttribute('aria-current', i === idx ? 'step' : 'false');
+
     var bullet = node.querySelector('.sb2-node-bullet');
     if (i < idx) {
       node.classList.add('done');
@@ -2435,6 +2439,9 @@ document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('.sb2-node').forEach(function(node){
     node.addEventListener('click', function(){
       var i = parseInt(node.getAttribute('data-step') || '0', 10);
+      // On ne revient qu'en arriere : les ecrans suivants se construisent a
+      // partir des precedents, y sauter afficherait un ecran vide.
+      if (i >= S.currentScreen) return;
       if (typeof goToScreen === 'function') goToScreen(i);
     });
   });

@@ -141,6 +141,15 @@
   .bpc-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.25rem; }
   .bpc-title  { font-family:'Fraunces',Georgia,serif; font-size:0.9375rem; font-weight:400; font-style:italic; color:var(--text); line-height:1.35; }
   .bpc-steps { display:flex; flex-direction:column; gap:0.25rem; }
+
+  /* Une etape franchie se reclique pour revenir en arriere : ce sont donc
+     des <button>, atteignables au clavier, et non des <div>. On neutralise
+     ce que le navigateur pose de lui-meme sur un bouton. */
+  .bpc-step { appearance:none; -webkit-appearance:none; border:0; background:none;
+              font-family:inherit; text-align:left; margin:0; width:100%; cursor:default; }
+  .bpc-step.done { cursor:pointer; }
+  .bpc-step.done:hover { background:var(--accent-soft); }
+  .bpc-step:focus-visible { outline:2px solid var(--accent-strong); outline-offset:2px; }
   .bpc-step {
     display:flex; align-items:center; gap:0.625rem;
     padding:0.5rem 0.5rem; border-radius:var(--r-md);
@@ -1664,22 +1673,26 @@
       </div>
       <div class="bpc-divider"></div>
       <div class="bpc-steps">
-        <div class="bpc-step active" id="step-1">
-          <div class="bpc-step-num">1</div>
-          <div class="bpc-step-label">Tes dettes</div>
-        </div>
-        <div class="bpc-step" id="step-2">
-          <div class="bpc-step-num">2</div>
-          <div class="bpc-step-label">Stratégie</div>
-        </div>
-        <div class="bpc-step" id="step-3">
-          <div class="bpc-step-num">3</div>
-          <div class="bpc-step-label">Plan de remboursement</div>
-        </div>
-        <div class="bpc-step" id="step-4">
-          <div class="bpc-step-num">4</div>
-          <div class="bpc-step-label">Engagement</div>
-        </div>
+        <button type="button" class="bpc-step active" id="step-1" disabled
+                onclick="revenirEtape(1)">
+          <span class="bpc-step-num">1</span>
+          <span class="bpc-step-label">Tes dettes</span>
+        </button>
+        <button type="button" class="bpc-step" id="step-2" disabled
+                onclick="revenirEtape(2)">
+          <span class="bpc-step-num">2</span>
+          <span class="bpc-step-label">Stratégie</span>
+        </button>
+        <button type="button" class="bpc-step" id="step-3" disabled
+                onclick="revenirEtape(3)">
+          <span class="bpc-step-num">3</span>
+          <span class="bpc-step-label">Plan de remboursement</span>
+        </button>
+        <button type="button" class="bpc-step" id="step-4" disabled
+                onclick="revenirEtape(4)">
+          <span class="bpc-step-num">4</span>
+          <span class="bpc-step-label">Engagement</span>
+        </button>
       </div>
       <div class="bpc-divider"></div>
       <!-- Synthèse temps réel -->
@@ -3497,8 +3510,19 @@ function sauverProgression(n) {
   } catch (e) {}
 }
 
+// Cette brique ne gardait nulle part l'ecran affiche. L'updater du panneau
+// est appele a chaque navigation : il fait donc foi.
+let ecranCourant = 1;
+
+// Retour a une etape deja franchie depuis le panneau lateral.
+function revenirEtape(n) {
+  if (n >= ecranCourant) return;
+  goToScreen(n);
+}
+
 function updateProgressPanel(screenIdx) {
   const TOTAL = 4;
+  ecranCourant = screenIdx;
   const circ = 176; // 2π × 28
   const pct = Math.round((screenIdx / TOTAL) * 100);
   const arc = document.getElementById('bpc-ring-arc');
@@ -3512,6 +3536,10 @@ function updateProgressPanel(screenIdx) {
     step.classList.remove('active', 'done');
     if (i < screenIdx) step.classList.add('done');
     else if (i === screenIdx) step.classList.add('active');
+
+    // Une etape non franchie n'est ni cliquable ni atteignable au clavier.
+    step.disabled = !(i < screenIdx);
+    step.setAttribute('aria-current', i === screenIdx ? 'step' : 'false');
 
     const num = step.querySelector('.bpc-step-num');
     if (i < screenIdx) {

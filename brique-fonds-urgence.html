@@ -230,6 +230,15 @@
 
   /* Steps list */
   .bpc-steps { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.5rem; }
+
+  /* Une etape franchie se reclique pour revenir en arriere : ce sont donc
+     des <button>, atteignables au clavier, et non des <div>. On neutralise
+     ce que le navigateur pose de lui-meme sur un bouton. */
+  .bpc-step { appearance:none; -webkit-appearance:none; border:0; background:none;
+              font-family:inherit; text-align:left; margin:0; cursor:default; }
+  .bpc-step.done { cursor:pointer; }
+  .bpc-step.done:hover { background:var(--v3-accent-soft); }
+  .bpc-step:focus-visible { outline:2px solid var(--v3-accent-strong); outline-offset:2px; }
   .bpc-step {
     display:flex; align-items:flex-start; gap:0.625rem;
     padding:0.5rem 0.625rem; border-radius:0.625rem;
@@ -1998,22 +2007,26 @@
         </div>
 
         <div class="bpc-steps" id="bpc-steps-list">
-          <div class="bpc-step active" id="bpc-step-1">
-            <div class="bpc-step-num">1</div>
-            <div class="bpc-step-label">Ce qu'on sait déjà</div>
-          </div>
-          <div class="bpc-step" id="bpc-step-2">
-            <div class="bpc-step-num">2</div>
-            <div class="bpc-step-label">Ton prochain palier</div>
-          </div>
-          <div class="bpc-step" id="bpc-step-3">
-            <div class="bpc-step-num">3</div>
-            <div class="bpc-step-label">Ton rythme</div>
-          </div>
-          <div class="bpc-step" id="bpc-step-4">
-            <div class="bpc-step-num">4</div>
-            <div class="bpc-step-label">Où le garder</div>
-          </div>
+          <button type="button" class="bpc-step active" id="bpc-step-1" disabled
+                  onclick="revenirEtape(1)">
+            <span class="bpc-step-num">1</span>
+            <span class="bpc-step-label">Ce qu'on sait déjà</span>
+          </button>
+          <button type="button" class="bpc-step" id="bpc-step-2" disabled
+                  onclick="revenirEtape(2)">
+            <span class="bpc-step-num">2</span>
+            <span class="bpc-step-label">Ton prochain palier</span>
+          </button>
+          <button type="button" class="bpc-step" id="bpc-step-3" disabled
+                  onclick="revenirEtape(3)">
+            <span class="bpc-step-num">3</span>
+            <span class="bpc-step-label">Ton rythme</span>
+          </button>
+          <button type="button" class="bpc-step" id="bpc-step-4" disabled
+                  onclick="revenirEtape(4)">
+            <span class="bpc-step-num">4</span>
+            <span class="bpc-step-label">Où le garder</span>
+          </button>
         </div>
 
         <div class="bpc-nav">
@@ -3634,6 +3647,12 @@ async function validerEngagement() {
 /* ══════════════════════════════════════════════════════════════
    PROGRESS PANEL
    ══════════════════════════════════════════════════════════════ */
+// Retour a une etape deja franchie depuis le panneau lateral.
+function revenirEtape(n) {
+  if (typeof currentScreen === 'number' && n >= currentScreen) return;
+  goToScreen(n);
+}
+
 function updateProgressPanel(screenIdx) {
   // Title
   var titleEl = document.getElementById('bpc-step-title');
@@ -3655,6 +3674,9 @@ function updateProgressPanel(screenIdx) {
     step.classList.remove('active', 'done');
     if (i < screenIdx) step.classList.add('done');
     else if (i === screenIdx) step.classList.add('active');
+    // Une etape non franchie n'est ni cliquable ni atteignable au clavier.
+    step.disabled = !(i < screenIdx);
+    step.setAttribute('aria-current', i === screenIdx ? 'step' : 'false');
   }
 }
 

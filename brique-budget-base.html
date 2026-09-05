@@ -249,10 +249,19 @@
   .screen { display:none; flex-direction:column; gap:1.5rem; animation:fadeSlideUp 0.35s var(--ease-out) both; }
   .screen.active { display:flex; }
 
-  /* Progress bar top */
+  /* Rangee de points en haut d'ecran. Elle faisait doublon avec le panneau
+     lateral sur grand ecran ; en mobile le panneau est masque (voir le bloc
+     @media plus haut) et elle devient le seul reperage de progression de la
+     brique. On ne l'affiche donc que la. */
   .brick-progress-bar {
-    display:flex; align-items:center; gap:0.75rem;
+    display:none; align-items:center; gap:0.75rem;
     margin-bottom:0.5rem;
+  }
+  /* Sous 768px le panneau lateral est masque : la rangee reprend son role.
+     Cette regle doit rester APRES celle du dessus — a specificite egale
+     c'est la derniere declaree qui gagne. */
+  @media(max-width:768px) {
+    .brick-progress-bar { display:flex; }
   }
   .brick-prog-dots { display:flex; gap:0.375rem; }
   .brick-prog-dot {

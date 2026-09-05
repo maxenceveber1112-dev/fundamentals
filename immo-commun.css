@@ -402,9 +402,19 @@ html.dark .brique-sidebar-v2 { backdrop-filter:blur(12px); }
   position:relative;
   display:flex; align-items:center; gap:0.75rem;
   padding:0.5rem 0;
-  cursor:pointer;
+  cursor:default;
   transition:all 0.2s ease;
 }
+
+/* Une etape franchie se reclique pour revenir en arriere : ce sont donc des
+   <button>, atteignables au clavier, et non des <div>. On neutralise ce que
+   le navigateur pose de lui-meme, et le pointeur ne se change en main que
+   sur ce qui est reellement cliquable. */
+.sb2-node { appearance:none; -webkit-appearance:none; border:0; background:none;
+            font-family:inherit; text-align:left; width:100%; margin:0; }
+.sb2-node.done { cursor:pointer; }
+.sb2-node:focus-visible { outline:2px solid var(--v3-accent-strong); outline-offset:2px; border-radius:0.5rem; }
+
 
 .sb2-node::before {
   content:''; position:absolute;
