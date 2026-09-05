@@ -336,18 +336,14 @@
     html.dark .f-tt-moon { opacity: 1; color: #C4B5FD; }
 
     /* Compat tokens pour nav-avatar.js */
-    :root {
-      --indigo: var(--accent-strong, #5B21B6);
-      --violet: var(--accent-strong, #5B21B6);
-      --indigo-dim: var(--accent-soft, rgba(196,181,253,.22));
-      --indigo-glow: rgba(91,33,182,.15);
-    }
-    html.dark {
-      --indigo: #A78BFA;
-      --violet: #A78BFA;
-      --indigo-dim: rgba(167,139,250,.14);
-      --indigo-glow: rgba(167,139,250,.20);
-    }
+    /* Ce composant declarait ici --indigo, --violet, --indigo-dim et
+       --indigo-glow, que theme.css possede deja. Un script de barre
+       laterale n'a pas a redefinir des jetons globaux : injecte a
+       l'execution, il l'emportait silencieusement sur la feuille de
+       theme, et le seul moyen de s'en apercevoir etait de lire les
+       valeurs calculees sur la page rendue.
+       Mesure avant suppression : le bloc ne prenait effet que sur les
+       deux simulateurs, qui ne lisent aucun de ces quatre jetons. */
 
     /* Masquer l'ancienne nav si elle reste dans le DOM */
     body.f-has-sidebar > nav:not(.f-sidebar-nav),

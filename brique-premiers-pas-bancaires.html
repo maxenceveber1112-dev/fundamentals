@@ -24,7 +24,6 @@
        chaque affichage de page, avant tout consentement. -->
   <link rel="preload" href="fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="fonts.css?v=1" />
-<link rel="stylesheet" href="theme.css" />
 <style>
   /* Meme regle que les autres briques : sans elle, aucun repere au clavier. */
   :focus-visible{outline:2px solid var(--accent-strong);outline-offset:3px;border-radius:var(--r-sm)}
@@ -32,7 +31,7 @@
       /* Les jetons communs viennent de theme.css. Ceux qui etaient
          redeclares ici etaient sans effet : theme.css est charge apres
          et les ecrasait tous (verifie sur la page rendue). */
-  --violet-glow:rgba(129,140,248,0.10);   /* consomme par nav-avatar.js */
+     /* consomme par nav-avatar.js */
   --cream-grad:linear-gradient(150deg,#FFF9F0 0%,#FDF4E8 100%);
   --cream-border:rgba(28,25,23,.08);
 }
@@ -42,7 +41,6 @@ html.dark{
          et les ecrasait tous (verifie sur la page rendue). */
   --cream-grad:linear-gradient(150deg,rgba(139,92,246,.10) 0%,rgba(59,130,246,.06) 100%);
   --cream-border:rgba(255,255,255,.09);
-  --violet-glow:rgba(167,139,250,0.14);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.6}
@@ -407,7 +405,10 @@ html.dark .reco::after{color:rgba(139,92,246,.13)}
   <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
        voile soit peint avant la mise en page encore vide. -->
   <link rel="stylesheet" href="chargement.css?v=1" />
-  <noscript><style>.ec{display:none}</style></noscript>
+  <noscript><style>.ec{display:none}</style>
+  <!-- theme.css apres la CSS de la page, comme sur les 15 autres :
+       il porte les jetons communs et doit pouvoir les imposer. -->
+<link rel="stylesheet" href="theme.css?v=jetons1" /></noscript>
 </head>
 <body data-brick-name="Premiers pas bancaires">
 <!-- Écran de chargement — voir chargement.css / chargement.js -->
@@ -510,7 +511,7 @@ html.dark .reco::after{color:rgba(139,92,246,.13)}
   </div>
 </div>
 
-<script src="sidebar.js"></script>
+<script src="sidebar.js?v=jetons1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>

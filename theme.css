@@ -46,6 +46,10 @@
   --violet: #7C3AED;
   --indigo: #6366F1;
   --indigo-dim: rgba(99,102,241,0.14);
+  /* Anneau de focus de l'avatar (nav-avatar.js). Il vivait dans cinq
+     pages sur les douze ou ce script tourne : ailleurs la variable
+     etait vide et l'anneau n'existait pas. */
+  --indigo-glow: rgba(99,102,241,0.18);
   --purple: #8B5CF6;
 
   /* ── États / statuts ── */
@@ -123,6 +127,7 @@ html.dark {
   --violet: #A78BFA;
   --indigo: #818CF8;
   --indigo-dim: rgba(99,102,241,0.14);
+  --indigo-glow: rgba(99,102,241,0.22);
   --purple: #A78BFA;
 
   /* ── États / statuts ── */

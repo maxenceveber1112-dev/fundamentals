@@ -880,13 +880,11 @@
   .s3-svg {
     --s3-grid:    rgba(28,25,23,0.08);
     --s3-axis:    rgba(28,25,23,0.30);
-    --s3-today:   rgba(28,25,23,0.20);
     --s3-ghost:   rgba(28,25,23,0.12);
   }
   html.dark .s3-svg {
     --s3-grid:    rgba(255,255,255,0.07);
     --s3-axis:    rgba(255,255,255,0.30);
-    --s3-today:   rgba(255,255,255,0.20);
     --s3-ghost:   rgba(255,255,255,0.12);
   }
   .s3-svg .s3-grid    { stroke:var(--s3-grid);  stroke-width:1; }
@@ -1141,7 +1139,7 @@
   .s2-gain-lbl { font-size:0.7rem; color:var(--text-muted); text-align:center; line-height:1.4; }
   .s2-gain-sep { width:1px; height:2.5rem; background:var(--border-mid); flex-shrink:0; }
   </style>
-  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="theme.css?v=jetons1">
   <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
        voile soit peint avant la mise en page encore vide. -->
   <link rel="stylesheet" href="chargement.css?v=1" />
@@ -1709,7 +1707,7 @@
 </div><!-- /f-sidebar-shell -->
 
 
-<script src="sidebar.js"></script>
+<script src="sidebar.js?v=jetons1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>

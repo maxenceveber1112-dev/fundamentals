@@ -36,11 +36,7 @@
   --v3-text-faint: #A8A29E;
   --v3-accent-strong: #5B21B6;
   --v3-accent-soft: rgba(196,181,253,.22);
-  --v3-nav-bg: rgba(250,248,245,.88);
   --v3-track: #E7E5E4;
-  --v3-dot-survie: #BB3A6B;
-  --v3-dot-construction: #96690D;
-  --v3-dot-invest: #1F5FA6;
   --v3-shadow-card: 0 1px 2px rgba(20,20,30,.04), 0 4px 16px rgba(20,20,30,.04);
 }
 html.dark {
@@ -52,11 +48,7 @@ html.dark {
   --v3-text-faint: #71717A;
   --v3-accent-strong: #A78BFA;
   --v3-accent-soft: rgba(167,139,250,.14);
-  --v3-nav-bg: rgba(11,11,26,.82);
   --v3-track: rgba(255,255,255,.08);
-  --v3-dot-survie: #E06591;
-  --v3-dot-construction: #C08A1E;
-  --v3-dot-invest: #4E8BD6;
   --v3-shadow-card: 0 1px 2px rgba(0,0,0,.4), 0 4px 24px rgba(0,0,0,.20);
 }
 /* ════ FIN TOKENS V3 ════ */
@@ -177,8 +169,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
          redeclares ici etaient sans effet : theme.css est charge apres
          et les ecrasait tous (verifie sur la page rendue). */
       --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
-      --violet-glow:rgba(129,140,248,0.10);
-      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
+      --red:#f87171;
     }
 
     /* ── Base reset ── */
@@ -402,7 +393,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
       font-size:0.82rem;color:var(--text);line-height:1.55;
     }
   </style>
-  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="theme.css?v=jetons1">
   <style>
     /* Ces deux tokens n'existent pas dans theme.css : chaque brique les
        definit chez elle. Valeurs reprises telles quelles de budget-base,
@@ -1062,7 +1053,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   </aside>
 </div>
 
-<script src="sidebar.js"></script>
+<script src="sidebar.js?v=jetons1"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
