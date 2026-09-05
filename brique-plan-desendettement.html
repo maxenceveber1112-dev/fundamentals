@@ -140,6 +140,22 @@
   }
   .bpc-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent-strong); margin-bottom:0.25rem; }
   .bpc-title  { font-family:'Fraunces',Georgia,serif; font-size:0.9375rem; font-weight:400; font-style:italic; color:var(--text); line-height:1.35; }
+  /* Rangee de points en haut d'ecran, reservee au mobile : sur grand ecran
+     le panneau lateral fait deja le travail. La regle @media doit rester
+     APRES la regle de base — a specificite egale c'est la derniere declaree
+     qui l'emporte. */
+  .brick-progress-bar { display:none; align-items:center; gap:0.75rem; margin-bottom:1.5rem; }
+  .brick-prog-dots { display:flex; gap:0.375rem; }
+  .brick-prog-dot {
+    width:6px; height:6px; border-radius:50%;
+    background:var(--track); transition:background 0.3s ease;
+  }
+  .brick-prog-dot.done   { background:var(--accent-strong); }
+  .brick-prog-dot.active { background:var(--accent-strong); opacity:0.5; }
+  @media(max-width:768px) {
+    .brick-progress-bar { display:flex; }
+  }
+
   .bpc-steps { display:flex; flex-direction:column; gap:0.25rem; }
 
   /* Une etape franchie se reclique pour revenir en arriere : ce sont donc
@@ -1177,6 +1193,12 @@
        COLONNE PRINCIPALE
   ════════════════════════════════════════════ -->
   <main class="brique-main">
+
+    <!-- Reperage de progression pour le mobile : sous 768px le panneau
+         lateral est masque et cette rangee prend le relais. -->
+    <div class="brick-progress-bar" id="global-progress-bar">
+      <div class="brick-prog-dots" id="prog-dots"></div>
+    </div>
 
     <!-- ─── SCREEN 0 : HERO ──────────────────── -->
     <section class="screen active" id="screen-0">
@@ -3523,6 +3545,18 @@ function revenirEtape(n) {
 function updateProgressPanel(screenIdx) {
   const TOTAL = 4;
   ecranCourant = screenIdx;
+
+  // La rangee de points du mobile suit exactement le meme compte que le
+  // panneau : les etapes vont de 1 a 4, l'ecran 0 est l'accueil.
+  const dots = document.getElementById('prog-dots');
+  if (dots) {
+    let html = '';
+    for (let d = 1; d <= TOTAL; d++) {
+      const cls = d < screenIdx ? 'done' : (d === screenIdx ? 'active' : '');
+      html += '<div class="brick-prog-dot ' + cls + '"></div>';
+    }
+    dots.innerHTML = html;
+  }
   const circ = 176; // 2π × 28
   const pct = Math.round((screenIdx / TOTAL) * 100);
   const arc = document.getElementById('bpc-ring-arc');

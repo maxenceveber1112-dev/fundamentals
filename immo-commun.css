@@ -724,9 +724,19 @@ html.dark .cb-banner--success .cb-banner-text strong { color:#86efac; }
 /* ══════════════════════════════════════════════════════════════
    PROGRESS BAR TOP (dots + barre)
 ══════════════════════════════════════════════════════════════ */
+/* Rangee de points en haut d'ecran. Elle faisait doublon avec le panneau
+   lateral sur grand ecran ; sous 768px .brique-progress-col est masquee et
+   la rangee devient le seul reperage de progression de la brique. On ne
+   l'affiche donc que la. */
 .brick-progress-bar {
-  display:flex; align-items:center; gap:0.75rem;
+  display:none; align-items:center; gap:0.75rem;
   margin-bottom:1.5rem;
+}
+
+/* Cette regle doit rester APRES celle du dessus : a specificite egale
+   c'est la derniere declaree qui l'emporte. */
+@media(max-width:768px) {
+  .brick-progress-bar { display:flex; }
 }
 
 .brick-prog-dots { display:flex; gap:0.375rem; }

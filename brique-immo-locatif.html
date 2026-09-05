@@ -31,7 +31,7 @@
   <!-- Styles communs aux deux briques immobilieres. Cette feuille occupe
        l'emplacement exact du bloc en ligne qu'elle remplace, pour preserver
        l'ordre de cascade vis-a-vis de theme.css. -->
-  <link rel="stylesheet" href="immo-commun.css?v=etapes1" />
+  <link rel="stylesheet" href="immo-commun.css?v=points1" />
   <style>
     /* Règles propres à l'investissement locatif. Le reste vit dans
        immo-commun.css, chargé juste au-dessus. */
@@ -1857,35 +1857,35 @@ html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
             <div class="sb2-tree-label">Étapes</div>
             <div class="sb2-tree" id="sb2-tree">
               <button type="button" class="sb2-node active" data-step="0" disabled>
-                <span class="sb2-node-bullet">0</span>
+                <span class="sb2-node-bullet">1</span>
                 <span class="sb2-node-content"><span class="sb2-node-label">Introduction</span></span>
               </button>
               <button type="button" class="sb2-node" data-step="1" disabled>
-                <span class="sb2-node-bullet">1</span>
+                <span class="sb2-node-bullet">2</span>
                 <span class="sb2-node-content"><span class="sb2-node-label">Ton projet</span></span>
               </button>
               <button type="button" class="sb2-node" data-step="2" disabled>
-                <span class="sb2-node-bullet">2</span>
+                <span class="sb2-node-bullet">3</span>
                 <span class="sb2-node-content"><span class="sb2-node-label">Capacité mensuelle</span></span>
               </button>
               <button type="button" class="sb2-node" data-step="3" disabled>
-                <span class="sb2-node-bullet">3</span>
+                <span class="sb2-node-bullet">4</span>
                 <span class="sb2-node-content"><span class="sb2-node-label">Ton apport</span></span>
               </button>
               <button type="button" class="sb2-node" data-step="4" disabled>
-                <span class="sb2-node-bullet">4</span>
+                <span class="sb2-node-bullet">5</span>
                 <span class="sb2-node-content"><span class="sb2-node-label">Emplacement &amp; typologie</span></span>
               </button>
               <button type="button" class="sb2-node" data-step="5" disabled>
-                <span class="sb2-node-bullet">5</span>
+                <span class="sb2-node-bullet">6</span>
                 <span class="sb2-node-content"><span class="sb2-node-label">Vrai coût d'achat</span></span>
               </button>
               <button type="button" class="sb2-node" data-step="6" disabled>
-                <span class="sb2-node-bullet">6</span>
+                <span class="sb2-node-bullet">7</span>
                 <span class="sb2-node-content"><span class="sb2-node-label">Stratégie locatif</span></span>
               </button>
               <button type="button" class="sb2-node" data-step="7" disabled>
-                <span class="sb2-node-bullet">7</span>
+                <span class="sb2-node-bullet">8</span>
                 <span class="sb2-node-content"><span class="sb2-node-label">Les étapes</span></span>
               </button>
               <button type="button" class="sb2-node" data-step="8" disabled>
@@ -2411,7 +2411,9 @@ function updateProgressPanel(idx) {
       if (bullet) bullet.innerHTML = '<span class="sb2-node-check">✓</span>';
     } else {
       if (i === idx) node.classList.add('active');
-      var origNum = (i === 8) ? '★' : String(i);
+      // Le chiffre affiche part de 1 comme dans les autres briques ;
+      // i reste l'indice d'ecran, qui part de 0.
+      var origNum = (i === 8) ? '★' : String(i + 1);
       if (bullet) bullet.textContent = origNum;
     }
   });
