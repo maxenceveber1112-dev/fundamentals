@@ -36,36 +36,19 @@
   <style>
     /* ─── DESIGN SYSTEM TOKENS ────────────────────────────────── */
     :root {
+      /* Les jetons communs viennent de theme.css. Ceux qui etaient
+         redeclares ici etaient sans effet : theme.css est charge apres
+         et les ecrasait tous (verifie sur la page rendue). */
       /* Couleurs des trois familles de briques, alignees sur le reste de
          la plateforme. Elles etaient codees en dur plus bas, sans
          variante sombre. */
       --dot-survie:#BB3A6B; --dot-construction:#96690D; --dot-invest:#1F5FA6;
-      --bg:#FAF8F5; --bg-elevated:#FFFFFF;
-      --nav-bg:rgba(250,248,245,0.88); --nav-border:rgba(28,25,23,0.07);
-      --border-subtle:rgba(28,25,23,0.07); --border-mid:rgba(28,25,23,0.11); --border-hover:rgba(28,25,23,0.18);
-      --text:#1C1917; --text-secondary:#57534E; --text-muted:#78716C; --text-faint:#A8A29E;
-      --accent:#C4B5FD; --accent-strong:#5B21B6; --accent-fill:#C4B5FD; --accent-soft:rgba(196,181,253,0.22); --accent-pill-text:#2E1065;
-      --track:#E7E5E4;
-      --shadow-card:0 1px 2px rgba(20,20,30,0.04), 0 4px 16px rgba(20,20,30,0.04);
-      --shadow-hover:0 4px 20px rgba(20,20,30,0.10);
-      --green:#22C55E; --red:#f87171; --orange:#fb923c;
-      --surface:#FFFFFF; --surface-2:#F5F5F4; --surface-3:#EDEBE8;
-      --r-sm:0.5rem; --r-md:0.875rem; --r-lg:1rem; --r-xl:1.5rem; --r-full:9999px;
-      --ease-out:cubic-bezier(0.16,1,0.3,1); --ease-spring:cubic-bezier(0.34,1.56,0.64,1); --t:180ms;
     }
     html.dark {
+      /* Les jetons communs viennent de theme.css. Ceux qui etaient
+         redeclares ici etaient sans effet : theme.css est charge apres
+         et les ecrasait tous (verifie sur la page rendue). */
       --dot-survie:#E06591; --dot-construction:#C08A1E; --dot-invest:#4E8BD6;
-      --bg:#0B0B1A; --bg-elevated:#161824;
-      --nav-bg:rgba(11,11,26,0.82); --nav-border:rgba(255,255,255,0.05);
-      --border-subtle:rgba(255,255,255,0.06); --border-mid:rgba(255,255,255,0.10); --border-hover:rgba(255,255,255,0.16);
-      --text:#F5F5F4; --text-secondary:#D4D4D8; --text-muted:#A1A1AA; --text-faint:#71717A;
-      --accent:linear-gradient(90deg,#8B5CF6 0%,#6366F1 60%,#3B82F6 100%); --accent-strong:#A78BFA;
-      --accent-fill:linear-gradient(90deg,#A78BFA,#60A5FA); --accent-soft:rgba(167,139,250,0.14); --accent-pill-text:#FFFFFF;
-      --track:rgba(255,255,255,0.08);
-      --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 4px 24px rgba(0,0,0,0.20);
-      --shadow-hover:0 4px 20px rgba(0,0,0,0.30);
-      --green:#4ade80; --orange:#fbbf24;
-      --surface:rgba(255,255,255,0.04); --surface-2:rgba(255,255,255,0.06); --surface-3:rgba(255,255,255,0.09);
     }
 
     /* ─── BASE ──────────────────────────────────────────────────── */

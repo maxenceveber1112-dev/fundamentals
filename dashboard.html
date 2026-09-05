@@ -35,10 +35,12 @@
        TOKENS — Light (défaut) + Dark (toggle)
     ══════════════════════════════════════════════════════════════ */
     :root {
+      /* Les jetons communs viennent de theme.css. Ceux qui etaient
+         redeclares ici etaient sans effet : theme.css est charge apres
+         et les ecrasait tous (verifie sur la page rendue). */
       --bg-glass:        rgba(255,255,255,0.70);
       --cream-grad:      linear-gradient(180deg, #F6F1E8 0%, #EFE7D8 100%);
       --cream-border:    rgba(184,159,113,0.18);
-      /* Ordre inverse de --font-display : le filigrane veut Instrument Serif. */
       --font-ornement:   'Instrument Serif','Fraunces',Georgia,serif;
 
 

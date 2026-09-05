@@ -749,24 +749,10 @@ function getSpendingPaliers(age) {
   return [40, 90, 180, 350];
 }
 
-function getBrickCSS() {
-  return `
-    :root {
-      --bg:#0b0d17;--surface:#111320;--surface-2:#171a2e;--surface-3:#1d2038;
-      --border:#252845;--border-hover:#363a68;
-      --text:#e2e4f0;--text-muted:#8b90b8;--text-faint:#444868;
-      --violet:#818cf8;--purple:#c084fc;--indigo:#6366f1;
-      --indigo-dim:rgba(99,102,241,0.14);--indigo-glow:rgba(99,102,241,0.22);
-      --violet-glow:rgba(129,140,248,0.10);
-      --green:#4ade80;--green-dim:rgba(74,222,128,0.10);--green-border:rgba(74,222,128,0.3);
-      --orange:#fb923c;--orange-dim:rgba(251,146,60,0.12);--orange-border:rgba(251,146,60,0.3);
-      --red:#f87171;--blue:#60a5fa;--purple-soft:#a78bfa;
-      --r-sm:0.5rem;--r-md:0.875rem;--r-lg:1.25rem;--r-xl:1.75rem;--r-full:9999px;
-      --ease-spring:cubic-bezier(0.34,1.56,0.64,1);--ease-out:cubic-bezier(0.16,1,0.3,1);--t:180ms;
-    }
-  `;
-}
-
+// getBrickCSS() vivait ici : une palette sombre complete, distincte de
+// theme.css comme des blocs en ligne. Elle n'etait APPELEE NULLE PART —
+// une seule occurrence dans tout le depot, sa propre definition. Retiree
+// le 2026-09-05 avec les autres redeclarations de jetons.
 // ─── BACKGROUND CANVAS ──────────────────────────────────────────────
 function initBgCanvas(canvasId) {
   const canvas = document.getElementById(canvasId);
