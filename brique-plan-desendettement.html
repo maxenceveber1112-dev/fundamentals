@@ -2248,7 +2248,8 @@ function onDureeChange(id) {
   // Pas d'impact sur le speedomètre — autosave via updateSpeedometer n'est pas appelé ici
   // On force un autosave léger pour persister la durée
   try {
-    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    const existing = (typeof loadFromStorage === 'function'
+      ? loadFromStorage('fund_brick_plan_desendettement') : null) || {};
     existing.data = Object.assign({}, existing.data || {}, {
       dettes: dettes.map(d => ({
         type: d.type,
@@ -2258,7 +2259,7 @@ function onDureeChange(id) {
       }))
     });
     existing.ts = Date.now();
-    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+    if (typeof saveToStorage === 'function') saveToStorage('fund_brick_plan_desendettement', existing);
   } catch(e) {}
 }
 
@@ -2282,9 +2283,10 @@ function onRevenusInput(val) {
   profil.revenus = v > 0 ? v : null;
   // Persister dans fund_profil pour cette session
   try {
-    const fp = JSON.parse(localStorage.getItem('fund_profil') || '{}');
+    const fp = (typeof loadFromStorage === 'function'
+      ? loadFromStorage('fund_profil') : null) || {};
     fp.revenus_nets_mensuel = v > 0 ? v : null;
-    localStorage.setItem('fund_profil', JSON.stringify(fp));
+    if (typeof saveToStorage === 'function') saveToStorage('fund_profil', fp);
   } catch(e) {}
   updateSpeedometer();
 }
@@ -2408,7 +2410,8 @@ function updateSpeedometer() {
 
   // ─── Autosave en cours de saisie (persist dettes + revenus pour reprise) ───
   try {
-    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    const existing = (typeof loadFromStorage === 'function'
+      ? loadFromStorage('fund_brick_plan_desendettement') : null) || {};
     existing.data = Object.assign({}, existing.data || {}, {
       dettes: dettes.map(d => ({
         type: d.type,
@@ -2421,7 +2424,7 @@ function updateSpeedometer() {
     });
     existing.screen = existing.screen || 1;
     existing.ts = Date.now();
-    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+    if (typeof saveToStorage === 'function') saveToStorage('fund_brick_plan_desendettement', existing);
   } catch(e) {}
 }
 
@@ -2761,7 +2764,8 @@ function checkSurplusEpargne() {
 /* ─── Autosave S2 ─── */
 function autosaveS2() {
   try {
-    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    const existing = (typeof loadFromStorage === 'function'
+      ? loadFromStorage('fund_brick_plan_desendettement') : null) || {};
     existing.data = Object.assign({}, existing.data || {}, {
       methode_choisie: methodeChoisie,
       s2_route: s2Route,
@@ -2774,7 +2778,7 @@ function autosaveS2() {
     });
     existing.screen = Math.max(existing.screen || 0, 2);
     existing.ts = Date.now();
-    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+    if (typeof saveToStorage === 'function') saveToStorage('fund_brick_plan_desendettement', existing);
   } catch(e) {}
 }
 
@@ -3272,7 +3276,8 @@ function onS3SliderInput(val) {
 function autosaveS3() {
   if (!s3SimResult) return;
   try {
-    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    const existing = (typeof loadFromStorage === 'function'
+      ? loadFromStorage('fund_brick_plan_desendettement') : null) || {};
     const dateLiberte = moisToDateLiberte(s3SimResult.moisLiberte);
     existing.data = Object.assign({}, existing.data || {}, {
       surplus_mensuel:   s3SurplusMensuel,
@@ -3282,7 +3287,7 @@ function autosaveS3() {
     });
     existing.screen = Math.max(existing.screen || 0, 3);
     existing.ts = Date.now();
-    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+    if (typeof saveToStorage === 'function') saveToStorage('fund_brick_plan_desendettement', existing);
   } catch(e) {}
 }
 
@@ -3502,12 +3507,13 @@ async function onS4Finir() {
   } catch (e) { /* la redirection reste due même si l'écriture distante échoue */ }
 
   try {
-    const existing = JSON.parse(localStorage.getItem('fund_brick_plan_desendettement') || 'null') || {};
+    const existing = (typeof loadFromStorage === 'function'
+      ? loadFromStorage('fund_brick_plan_desendettement') : null) || {};
     existing.data = Object.assign({}, existing.data || {}, rawData);
     existing.screen = 4;
     existing.completed = true;
     existing.ts = Date.now();
-    localStorage.setItem('fund_brick_plan_desendettement', JSON.stringify(existing));
+    if (typeof saveToStorage === 'function') saveToStorage('fund_brick_plan_desendettement', existing);
   } catch (e) {}
 
   setTimeout(function () { window.location.href = 'dashboard.html'; }, 200);

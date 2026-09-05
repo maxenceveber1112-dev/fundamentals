@@ -174,9 +174,46 @@ async function resetUserData() {
   await sb.from('brick_data').delete().eq('user_id', user.id);
   await sb.from('profiles').delete().eq('id', user.id);
   Object.keys(_MEM).forEach(function(k) { delete _MEM[k]; });
-  // Nettoyer aussi les flags localStorage/sessionStorage liés au profil
-  try { localStorage.removeItem('welcome_modal_seen'); } catch(e) {}
-  try { sessionStorage.removeItem('_wm_shown'); sessionStorage.removeItem('_tour_shown'); } catch(e) {}
+
+  // ── Balayage complet du stockage du navigateur ────────────────
+  // Auparavant on ne retirait que trois drapeaux : tout ce qu'une brique
+  // avait pu ecrire sous fund_* survivait a « supprimer definitivement
+  // mes donnees ». Sur un ordinateur partage, les montants de dettes ou
+  // de revenus restaient lisibles par la personne suivante — alors que
+  // la politique de confidentialite promet le contraire.
+  //
+  // On balaie donc par prefixe plutot que par liste : une brique ajoutee
+  // demain sera couverte sans qu'on ait a y penser.
+  //
+  // DEUX EXCEPTIONS, deliberees :
+  //   fund_auth          jeton de session Supabase. executeDeleteData
+  //                      renvoie vers auth.html en gardant la personne
+  //                      connectee ; le retirer la deconnecterait.
+  //   fundamental-theme  preference d'affichage, pas une donnee
+  //                      personnelle. L'effacer surprendrait sans rien
+  //                      proteger.
+  var EPARGNES = ['fund_auth', 'fundamental-theme'];
+  var AUTRES = ['welcome_modal_seen', 'ppb_added_from_budget',
+                'immo_banner_import_dismissed', 'immo_locatif_banner_import_dismissed',
+                'fund-sankey-hint-seen', 'fund_theme'];
+  try {
+    var aRetirer = [];
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (!k) continue;
+      if (EPARGNES.indexOf(k) !== -1) continue;
+      if (k.indexOf('fund_') === 0 || AUTRES.indexOf(k) !== -1) aRetirer.push(k);
+    }
+    aRetirer.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+  } catch (e) {}
+  try {
+    var sRetirer = [];
+    for (var j = 0; j < sessionStorage.length; j++) {
+      var sk = sessionStorage.key(j);
+      if (sk) sRetirer.push(sk);
+    }
+    sRetirer.forEach(function (k) { try { sessionStorage.removeItem(k); } catch (e) {} });
+  } catch (e) {}
 }
 
 // ─── COMPAT : wrappers sync pour le code existant ──────────────────

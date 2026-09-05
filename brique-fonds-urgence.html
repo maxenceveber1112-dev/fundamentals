@@ -3377,7 +3377,11 @@ function getNextBrique() {
   // Priorité 1 : découvert récurrent
   var hasDecouvert = profil.has_decouvert || (budget.solde_moyen != null && budget.solde_moyen < 0)
     || (profil.dettes_types && profil.dettes_types.includes('decouvert_regulier'));
-  if (hasDecouvert) return { url: 'brique-decouvert.html', label: 'Gérer mon découvert' };
+  // brique-decouvert.html n'existe pas : ce lien menait a une 404, et
+  // precisement pour le cas le plus urgent. gestion_decouvert existe bien
+  // mais n'est pas publiee (voir backlog). plan_desendettement, elle, est
+  // publiee et traite deja le decouvert regulier et le credit renouvelable.
+  if (hasDecouvert) return { url: 'brique-plan-desendettement.html', label: 'Sortir du rouge' };
 
   // Priorité 2 : dettes importantes
   var totalDettes = budget.total_dettes || 0;
