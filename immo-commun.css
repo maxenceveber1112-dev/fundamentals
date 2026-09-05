@@ -831,7 +831,7 @@ html.dark .hero-kicker { color:#A5B4FC; }
   padding:0.35rem 0.75rem;
   background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2);
   border-radius:9999px;
-  font-size:0.78rem; font-weight:500; color:var(--green);
+  font-size:0.78rem; font-weight:500; color:var(--green-text);
   margin-bottom:1.75rem;
 }
 
@@ -925,7 +925,7 @@ html.dark .brick-kicker { color:#A5B4FC; }
 
 .badge-prefilled {
   font-size:0.6rem; font-weight:600; letter-spacing:0.06em;
-  color:var(--green); background:rgba(34,197,94,0.08);
+  color:var(--green-text); background:rgba(34,197,94,0.08);
   border-radius:9999px; padding:0.15rem 0.45rem;
   white-space:nowrap;
 }
@@ -1317,7 +1317,7 @@ html.dark .horizon-tick.passed { background:var(--v3-accent-strong); }
   transition:color 0.3s ease, background 0.3s ease;
 }
 
-.effort-status-green { color:var(--green); background:var(--green-soft); }
+.effort-status-green { color:var(--green-text); background:var(--green-soft); }
 
 .effort-status-orange { color:var(--orange); background:var(--orange-soft); }
 
@@ -1389,7 +1389,7 @@ html.dark .budget-hero-m2 { color:var(--v3-accent-strong); }
 
 .compare-card.in-budget::after {
   content:'✓'; position:absolute; top:0.5rem; right:0.625rem;
-  font-size:0.875rem; color:var(--green); font-weight:700;
+  font-size:0.875rem; color:var(--green-text); font-weight:700;
 }
 
 .compare-card.out-budget {
@@ -1647,7 +1647,7 @@ html.dark .apport-hero-label { color:var(--v3-accent-strong); }
 
 .loyer-delta.positive { color:var(--orange); }
 
-.loyer-delta.negative { color:var(--green); }
+.loyer-delta.negative { color:var(--green-text); }
 
 .loyer-delta.neutral { color:var(--text-faint); }
 
@@ -3802,7 +3802,7 @@ html.dark .s7-chart-svg .area-net { fill:rgba(74,222,128,.12); }
   border-color: rgba(34,197,94,.18);
 }
 
-.s7-revente-card.net .s7-revente-card-value { color: var(--green); }
+.s7-revente-card.net .s7-revente-card-value { color: var(--green-text); }
 
 .s7-revente-detail {
   font-size:.74rem; color: var(--text-muted); margin-top:.85rem;
@@ -4286,7 +4286,7 @@ html.dark .s8-subscore.focus .s8-subscore-label { color: #FB923C; }
 
 .s8-typo-card.ok .s8-typo-badge { background: var(--green-soft); color: #15803d; }
 
-html.dark .s8-typo-card.ok .s8-typo-badge { color: var(--green); }
+html.dark .s8-typo-card.ok .s8-typo-badge { color: var(--green-text); }
 
 .s8-typo-card.tight { border-color: rgba(251,191,36,.3); }
 
@@ -4364,7 +4364,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   margin-top: .15rem;
 }
 
-.s8-levier-result strong { color: var(--green); font-weight: 700; }
+.s8-levier-result strong { color: var(--green-text); font-weight: 700; }
 
 .s8-levier-arrow {
   color: var(--text-faint); flex-shrink: 0;
@@ -4443,7 +4443,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   margin-top: .1rem;
 }
 
-.s8-vs-teaser-hint strong { color: var(--green); font-weight: 700; }
+.s8-vs-teaser-hint strong { color: var(--green-text); font-weight: 700; }
 
 .s8-vs-teaser-hint.neg strong { color: var(--orange); font-weight: 700; }
 
@@ -4575,7 +4575,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   font-size: .9rem; color: var(--text);
 }
 
-.s8-vs-verdict strong { color: var(--green); font-weight: 700; }
+.s8-vs-verdict strong { color: var(--green-text); font-weight: 700; }
 
 .s8-vs-verdict.neg { background: linear-gradient(135deg, rgba(251,146,60,.10), transparent); border-color: rgba(251,146,60,.25); }
 

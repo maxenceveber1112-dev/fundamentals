@@ -330,7 +330,7 @@
     padding:0.35rem 0.75rem;
     background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2);
     border-radius:9999px;
-    font-size:0.78rem; font-weight:500; color:var(--green);
+    font-size:0.78rem; font-weight:500; color:var(--green-text);
     margin-bottom:1.75rem;
   }
 
@@ -405,7 +405,7 @@
 
   .badge-prefilled {
     font-size:0.6rem; font-weight:600; letter-spacing:0.06em;
-    color:var(--green); background:rgba(34,197,94,0.08);
+    color:var(--green-text); background:rgba(34,197,94,0.08);
     border-radius:9999px; padding:0.15rem 0.45rem;
     white-space:nowrap;
   }
@@ -504,7 +504,7 @@
   .sticky-bar-sub { font-size:0.65rem; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.08em; }
   .sticky-bar-sep { font-size:1.25rem; color:var(--border-mid); line-height:1; }
   .sticky-bar-ral { font-family:var(--font-display); font-size:1.375rem; font-weight:400; line-height:1; }
-  .sticky-bar-ral.positive { color:var(--green); }
+  .sticky-bar-ral.positive { color:var(--green-text); }
   .sticky-bar-ral.warning  { color:var(--orange); }
   .sticky-bar-ral.negative { color:var(--red); }
 
@@ -912,7 +912,7 @@
   html.dark .abo-add-brique { color:#C4B5FD; border-color:rgba(196,181,253,0.5); }
   .abo-add-brique:hover { background:var(--accent-soft); }
   .abo-add-brique.added {
-    background:rgba(34,197,94,0.12); color:var(--green);
+    background:rgba(34,197,94,0.12); color:var(--green-text);
     border-color:rgba(34,197,94,0.35); cursor:default;
   }
   /* L'action de l'ecran, detachee du bloc de conseil. */
@@ -1178,7 +1178,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
   html.dark .add-cat-btn { color:#A78BFA; }
   @media(max-width:520px){ .cc-row{flex-wrap:wrap;} .cc-row .cc-name{flex-basis:100%;} .cc-row .cc-amount{flex:1 1 0;width:auto;} .cc-row .cc-type{flex:2 1 0;width:auto;} }
   </style>
-  <link rel="stylesheet" href="theme.css?v=encre1">
+  <link rel="stylesheet" href="theme.css?v=vert1">
   <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
        voile soit peint avant la mise en page encore vide. -->
   <link rel="stylesheet" href="chargement.css?v=1" />
@@ -1382,7 +1382,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                    un lecteur d'ecran ne l'apprend jamais. -->
               <div class="sticky-bar-amounts" aria-live="polite" aria-atomic="true">
                 <div class="sticky-bar-item">
-                  <span class="sticky-bar-val" id="sticky-revenus" style="color:var(--green);">0 €</span>
+                  <span class="sticky-bar-val" id="sticky-revenus" style="color:var(--green-text);">0 €</span>
                   <span class="sticky-bar-sub">Revenus</span>
                 </div>
                 <span class="sticky-bar-sep">−</span>
