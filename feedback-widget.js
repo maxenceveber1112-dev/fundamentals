@@ -187,7 +187,7 @@
       <button class="fb-star" role="radio" aria-checked="false" data-val="4" aria-label="Bien">😊</button>
       <button class="fb-star" role="radio" aria-checked="false" data-val="5" aria-label="Génial">🤩</button>
     </div>
-    <textarea class="fb-textarea" id="fb-text" maxlength="${MAX_CHARS}" placeholder="Un bug ? Une idée ? Quelque chose qui t'a bloqué ? (optionnel)"></textarea>
+    <textarea aria-label="Ton message (facultatif)" class="fb-textarea" id="fb-text" maxlength="${MAX_CHARS}" placeholder="Un bug ? Une idée ? Quelque chose qui t'a bloqué ? (optionnel)"></textarea>
     <div class="fb-count" id="fb-count">0 / ${MAX_CHARS}</div>
     <label class="fb-bug" id="fb-bug" style="display:none;">
       <input type="checkbox" id="fb-bug-check" checked>

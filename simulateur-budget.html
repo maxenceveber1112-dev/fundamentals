@@ -608,8 +608,8 @@
     // ── GUIDÉ ──
     function addGDette(name, val){
       var list=el('g-dettes-list'); var row=document.createElement('div'); row.className='sb-row';
-      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Crédit conso">'
-        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric"><span></span>'
+      row.innerHTML='<input type="text" aria-label="Nom du poste" class="sb-inp name" placeholder="Ex. Crédit conso">'
+        +'<input type="number" aria-label="Montant du poste, en euros" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric"><span></span>'
         +'<button class="sb-del" type="button" aria-label="Supprimer" onclick="this.closest(\'.sb-row\').remove(); render();">×</button>';
       list.appendChild(row);
       if(name) row.querySelector('.name').value=name; if(val) row.querySelector('.amt').value=val;
@@ -617,8 +617,8 @@
     }
     function addGCustom(name, val, type){
       var list=el('g-custom-list'); var row=document.createElement('div'); row.className='sb-row';
-      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Animaux">'
-        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric">'
+      row.innerHTML='<input type="text" aria-label="Nom du poste" class="sb-inp name" placeholder="Ex. Animaux">'
+        +'<input type="number" aria-label="Montant du poste, en euros" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric">'
         +'<select class="sb-type"><option value="var">Vie courante</option><option value="fix">Charge fixe</option></select>'
         +'<button class="sb-del" type="button" aria-label="Supprimer" onclick="this.closest(\'.sb-row\').remove(); render();">×</button>';
       list.appendChild(row);
@@ -661,8 +661,8 @@
     // ── LIBRE ──
     function addFIncome(name,val){
       var list=el('f-income-list'); var row=document.createElement('div'); row.className='sb-row';
-      row.innerHTML='<input type="text" class="sb-inp name" placeholder="Ex. Salaire">'
-        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric"><span></span>'
+      row.innerHTML='<input type="text" aria-label="Nom du poste" class="sb-inp name" placeholder="Ex. Salaire">'
+        +'<input type="number" aria-label="Montant du poste, en euros" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric"><span></span>'
         +'<button class="sb-del" type="button" aria-label="Supprimer" onclick="this.closest(\'.sb-row\').remove(); render();">×</button>';
       list.appendChild(row);
       if(name) row.querySelector('.name').value=name; if(val) row.querySelector('.amt').value=val;
@@ -670,7 +670,7 @@
     }
     function addFCat(name){
       var list=el('f-cats-list'); var cat=document.createElement('div'); cat.className='sb-cat';
-      cat.innerHTML='<div class="sb-cat-head">'+SB_HANDLE+'<input type="text" class="sb-inp name" placeholder="Ex. Logement">'
+      cat.innerHTML='<div class="sb-cat-head">'+SB_HANDLE+'<input type="text" aria-label="Nom du poste" class="sb-inp name" placeholder="Ex. Logement">'
         +'<label class="sb-ep-check"><input type="checkbox" class="sb-cat-ep" onchange="basculeEpargne(this)"> Épargne</label>'
         +'<button class="sb-del" type="button" aria-label="Supprimer la catégorie" onclick="this.closest(\'.sb-cat\').remove(); render();">×</button></div>'
         +'<div class="sb-subs"></div>'
@@ -682,8 +682,8 @@
     }
     function addFSub(subs, name, val){
       var row=document.createElement('div'); row.className='sb-row';
-      row.innerHTML=SB_HANDLE+'<input type="text" class="sb-inp name" placeholder="Poste (ex. Loyer)">'
-        +'<input type="number" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric"><span></span>'
+      row.innerHTML=SB_HANDLE+'<input type="text" aria-label="Nom du poste" class="sb-inp name" placeholder="Poste (ex. Loyer)">'
+        +'<input type="number" aria-label="Montant du poste, en euros" class="sb-inp amt" placeholder="€" min="0" inputmode="numeric"><span></span>'
         +'<button class="sb-del" type="button" aria-label="Supprimer" onclick="this.closest(\'.sb-row\').remove(); render();">×</button>';
       subs.appendChild(row);
       if(name) row.querySelector('.name').value=name; if(val) row.querySelector('.amt').value=val;
@@ -942,7 +942,7 @@
     });
   })();
   </script>
-  <script src="feedback-widget.js"></script>
+  <script src="feedback-widget.js?v=a11y1"></script>
   <script src="cookie-banner.js?v=polices2"></script>
   <script src="theme.js"></script>
 
