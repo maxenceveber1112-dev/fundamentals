@@ -11,7 +11,7 @@
   p.intro{color:#A1A1AA;margin:0 0 20px;max-width:70ch}
   #verdict{font-size:17px;font-weight:700;margin:16px 0 20px;padding:12px 16px;
            border-radius:10px;background:#12121f;border:1px solid #2a2a3a}
-  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#A1A1AA}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#FBBF24}
   table{border-collapse:collapse;width:100%}
   th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:5px 12px 5px 0;font-weight:400}
   td{padding:6px 12px 6px 0;border-bottom:1px solid #1c1c2e;vertical-align:middle}
@@ -26,6 +26,9 @@
   Chaque suite tourne dans son cadre et rend son propre verdict ; celui du haut
   ne passe au vert que si toutes passent. À lancer avant de pousser quoi que ce
   soit qui touche à un calcul.
+  <br><strong>À lancer depuis un serveur local :</strong> une des suites évalue
+  le moteur extrait d'une brique, ce que la CSP de production interdit — en
+  ligne elle s'annonce comme non exécutée plutôt que de mentir.
 </p>
 <div id="verdict" class="attente">exécution des suites…</div>
 <table id="t">
@@ -41,7 +44,8 @@ var SUITES = [
   { f: 'simulateur-budget.test.html',
     quoi: 'total, parts, reste à vivre, seuil, déficit' },
   { f: 'plan-desendettement.test.html',
-    quoi: 'ordre boule de neige / avalanche, capital dû, date de libération' }
+    quoi: 'ordre boule de neige / avalanche, capital dû, date de libération',
+    localSeulement: true }
 ];
 
 /* immo-core.test.html est antérieur aux autres et n'expose pas de compteur :
@@ -56,7 +60,7 @@ function lireBandeau(doc) {
 
 (async function () {
   var t = document.getElementById('t');
-  var totalAssertions = 0, totalEchecs = 0, suitesKo = 0;
+  var totalAssertions = 0, totalEchecs = 0, suitesKo = 0, nonExecutees = 0;
 
   for (var i = 0; i < SUITES.length; i++) {
     var s = SUITES[i];
@@ -67,8 +71,9 @@ function lireBandeau(doc) {
     // les suites qui pilotent une page ont besoin d'un peu de temps
     await new Promise(function (r) { fr.onload = r; setTimeout(r, 6000); });
     var d = fr.contentDocument, w = fr.contentWindow;
-    var etat = null;
-    for (var essai = 0; essai < 20 && !etat; essai++) {
+    var etat = null, nonExecutable = false;
+    for (var essai = 0; essai < 20 && !etat && !nonExecutable; essai++) {
+      if (w && w.__nonExecutable) { nonExecutable = true; break; }
       if (w && typeof w.__total === 'number') {
         etat = { ok: w.__total - w.__echecs, total: w.__total, echecs: w.__echecs };
       } else if (d) {
@@ -77,6 +82,18 @@ function lireBandeau(doc) {
       if (!etat) await new Promise(function (r) { setTimeout(r, 700); });
     }
     fr.remove();
+
+    // Une suite qui evalue du code extrait a besoin d'unsafe-eval : la CSP de
+    // production l'interdit, a juste titre. Ce n'est pas un echec — c'est une
+    // suite qui ne tourne qu'en local. L'annoncer comme rouge ferait croire a
+    // un calcul casse.
+    if (nonExecutable) {
+      t.insertAdjacentHTML('beforeend',
+        '<tr><td><a href="' + s.f + '">' + s.f + '</a></td><td>' + s.quoi
+        + '</td><td class="n">—</td><td class="attente">⚠ local seulement (CSP)</td></tr>');
+      nonExecutees++;
+      continue;
+    }
 
     if (!etat) {
       suitesKo++;
@@ -97,9 +114,13 @@ function lireBandeau(doc) {
 
   var v = document.getElementById('verdict');
   v.className = suitesKo ? 'ko' : 'ok';
+  var reserve = nonExecutees
+    ? ' — ' + nonExecutees + ' suite(s) non exécutée(s) ici, voir la ligne jaune'
+    : '';
   v.textContent = suitesKo
     ? '✗ ' + suitesKo + ' suite(s) en échec — ' + totalEchecs + ' assertion(s) sur ' + totalAssertions
-    : '✅ ' + SUITES.length + ' suites, ' + totalAssertions + ' assertions, aucune en échec';
+    : '✅ ' + (SUITES.length - nonExecutees) + ' suites, ' + totalAssertions
+      + ' assertions, aucune en échec' + reserve;
   window.__echecs = totalEchecs;
   window.__suitesKo = suitesKo;
   window.__total = totalAssertions;

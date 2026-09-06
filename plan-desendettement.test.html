@@ -11,7 +11,7 @@
   h2{font-size:13px;color:#A78BFA;margin:20px 0 6px;font-weight:400}
   p.intro{color:#A1A1AA;margin:0 0 18px;max-width:74ch}
   #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
-  .ok{color:#4ADE80}.ko{color:#F87171}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#FBBF24}
   table{border-collapse:collapse;width:100%}
   th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
   td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
@@ -81,7 +81,19 @@ function bloc(src, motif) {
       + '\nsortie.taegEffectif = taegEffectif;'
       + '\nsortie.DETTE_CONFIG = DETTE_CONFIG;')(M);
   } catch (e) {
-    document.getElementById('bilan').innerHTML = '<span class="ko">' + e.message + '</span>';
+    // La CSP de production interdit unsafe-eval, et cette suite en a besoin
+    // pour executer le moteur extrait. Ce n'est pas un echec de test : c'est
+    // une suite qui ne peut tourner qu'en local. On le dit sans ambiguite,
+    // plutot que d'afficher un rouge que personne ne saurait interpreter.
+    var csp = /unsafe-eval|Content Security Policy/i.test(e.message);
+    document.getElementById('bilan').innerHTML = csp
+      ? '<span class="attente">⚠ Suite non exécutée ici.</span><br>'
+        + '<span style="color:#A1A1AA;font-weight:400">Elle extrait les fonctions du moteur et les évalue, '
+        + 'ce qui demande <code>unsafe-eval</code> — interdit par la CSP de production, à juste titre. '
+        + 'Lance-la depuis un serveur local : <code>tests.html</code> sur localhost.</span>'
+      : '<span class="ko">' + e.message + '</span>';
+    window.__nonExecutable = csp;
+    window.__fini = true;
     return;
   }
 
