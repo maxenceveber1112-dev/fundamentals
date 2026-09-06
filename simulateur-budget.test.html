@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>simulateur-budget — tests</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1000px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  p.intro{color:#A1A1AA;margin:0 0 18px;max-width:72ch}
+  #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
+  .ok{color:#4ADE80}.ko{color:#F87171}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
+  td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  iframe{position:absolute;left:-9999px;width:1200px;height:1400px;border:0}
+</style>
+</head>
+<body>
+<h1>simulateur-budget.html — tests de la répartition</h1>
+<p class="intro">
+  Ce simulateur ne fait pas de calcul financier savant : il additionne et il
+  répartit. C'est précisément pour cela qu'une erreur y passerait inaperçue —
+  le résultat resterait plausible. Ces tests remplissent les champs de la
+  vraie page, déclenchent son rendu, et vérifient les invariants que
+  l'arithmétique impose : le total, la part de chaque poste, le reste à vivre,
+  et le seuil sous lequel il n'est plus annoncé.
+</p>
+<div id="bilan">exécution…</div>
+<table id="t">
+  <tr><th>cas</th><th>attendu</th><th>obtenu</th><th></th></tr>
+</table>
+
+<script>
+var resultats = [];
+function verifier(nom, attendu, obtenu, tol) {
+  var t = tol === undefined ? 0 : tol;
+  var ok = (typeof attendu === 'number' && typeof obtenu === 'number')
+    ? Math.abs(attendu - obtenu) <= t
+    : String(attendu) === String(obtenu);
+  resultats.push({ nom: nom, attendu: attendu, obtenu: obtenu, ok: ok });
+}
+
+/* « 1 234 € » -> 1234. L'espace des milliers est insécable. */
+function nombre(txt) {
+  var s = String(txt).replace(/[  \s]/g, '').replace(/[^\d,.-]/g, '');
+  return parseFloat(s.replace(',', '.')) || 0;
+}
+
+/* Le tableau « Où ça va » : les lignes de premier niveau, sans les sous-lignes. */
+function postes(doc) {
+  var tables = doc.querySelectorAll('#sb-table-corps table');
+  if (tables.length < 2) return [];
+  var out = [];
+  tables[1].querySelectorAll('tbody tr').forEach(function (tr) {
+    if (tr.classList.contains('sous')) return;
+    var tds = tr.querySelectorAll('td');
+    out.push({
+      nom: tds[0].textContent.trim(),
+      val: nombre(tds[1].textContent),
+      part: parseInt(tds[2].textContent, 10)
+    });
+  });
+  return out;
+}
+function entrees(doc) {
+  var tables = doc.querySelectorAll('#sb-table-corps table');
+  if (!tables.length) return [];
+  var out = [];
+  tables[0].querySelectorAll('tbody tr').forEach(function (tr) {
+    var tds = tr.querySelectorAll('td');
+    out.push({ nom: tds[0].textContent.trim(), val: nombre(tds[1].textContent) });
+  });
+  return out;
+}
+
+(async function () {
+  var f = document.createElement('iframe');
+  f.src = 'simulateur-budget.html?test=' + Date.now();
+  document.body.appendChild(f);
+  await new Promise(function (r) { f.onload = r; setTimeout(r, 5000); });
+  await new Promise(function (r) { setTimeout(r, 600); });
+
+  var w = f.contentWindow, d = f.contentDocument;
+  if (!w.render || !w.setMode) {
+    document.getElementById('bilan').innerHTML =
+      '<span class="ko">La page n\'expose ni render ni setMode : test impossible.</span>';
+    return;
+  }
+
+  function remplir(champs) {
+    w.setMode('guide');
+    ['g-revenus','g-aides','g-loyer','g-assurances','g-transport','g-courses','g-sante',
+     'g-abonnements','g-repas','g-sorties','g-shopping','g-autres','g-epargne']
+      .forEach(function (id) { var e = d.getElementById(id); if (e) e.value = ''; });
+    // La page est livrée avec un budget d'exemple, dettes comprises : sans
+    // ce nettoyage on mesurerait l'exemple autant que le cas de test.
+    ['g-dettes-list','g-custom-list'].forEach(function (id) {
+      var l = d.getElementById(id);
+      if (l) l.querySelectorAll('.sb-row').forEach(function (r) { r.remove(); });
+    });
+    Object.keys(champs).forEach(function (id) {
+      var e = d.getElementById(id); if (e) e.value = String(champs[id]);
+    });
+    w.render();
+  }
+
+  /* ══ Cas 1 — un budget qui tombe juste ══════════════════════════════
+     2 000 de revenus, 1 500 de dépenses, 200 d'épargne : 300 doivent
+     rester, et la somme de la colonne « Où ça va » doit refaire 2 000. */
+  remplir({ 'g-revenus':2000, 'g-loyer':800, 'g-courses':400, 'g-transport':150,
+            'g-sante':150, 'g-epargne':200 });
+
+  verifier('total affiché = revenus', 2000, nombre(d.getElementById('sb-total').textContent));
+
+  var p = postes(d);
+  var sommeSorties = p.reduce(function (s, x) { return s + x.val; }, 0);
+  verifier('somme de « Où ça va » = total des entrées', 2000, sommeSorties, 1);
+
+  var reste = p.filter(function (x) { return /Reste à vivre/.test(x.nom); })[0];
+  verifier('le reste à vivre est annoncé', true, !!reste);
+  verifier('reste = entrées − dépenses − épargne', 300, reste ? reste.val : 0, 1);
+
+  var ep = p.filter(function (x) { return /Épargne/.test(x.nom); })[0];
+  verifier('l’épargne figure comme un poste', 200, ep ? ep.val : 0, 1);
+
+  // les parts doivent être cohérentes avec les montants
+  var partsJustes = p.every(function (x) { return Math.abs(x.part - Math.round(x.val / 2000 * 100)) <= 1; });
+  verifier('chaque part correspond à son montant', true, partsJustes);
+
+  /* ══ Cas 2 — les aides s'ajoutent aux revenus ══════════════════════ */
+  remplir({ 'g-revenus':1500, 'g-aides':300, 'g-loyer':700, 'g-courses':300 });
+  verifier('revenus + aides', 1800, nombre(d.getElementById('sb-total').textContent));
+  var e = entrees(d);
+  verifier('deux sources de revenu listées', 2, e.length);
+  verifier('somme des entrées = total', 1800, e.reduce(function (s, x) { return s + x.val; }, 0), 1);
+
+  /* ══ Cas 3 — un reste négligeable n'est pas annoncé ════════════════
+     Le seuil est max(20 €, 2 % des entrées). Sur 2 000 €, c'est 40 € :
+     un reste de 10 € ne doit pas apparaître comme un poste. */
+  remplir({ 'g-revenus':2000, 'g-loyer':1000, 'g-courses':990 });
+  var p3 = postes(d);
+  var reste3 = p3.filter(function (x) { return /Reste à vivre/.test(x.nom); })[0];
+  verifier('reste de 10 € sur 2 000 : non annoncé (seuil 40 €)', false, !!reste3);
+
+  remplir({ 'g-revenus':2000, 'g-loyer':1000, 'g-courses':900 });
+  var p3b = postes(d);
+  var reste3b = p3b.filter(function (x) { return /Reste à vivre/.test(x.nom); })[0];
+  verifier('reste de 100 € sur 2 000 : annoncé', true, !!reste3b);
+  verifier('… et vaut bien 100', 100, reste3b ? reste3b.val : 0, 1);
+
+  /* ══ Cas 4 — dépenser plus que ce qui rentre ═══════════════════════
+     Le reste ne doit jamais devenir négatif : il est plancherisé à 0. */
+  remplir({ 'g-revenus':1000, 'g-loyer':900, 'g-courses':400 });
+  var p4 = postes(d);
+  var reste4 = p4.filter(function (x) { return /Reste à vivre/.test(x.nom); })[0];
+  verifier('déficit : aucun reste à vivre annoncé', false, !!reste4);
+  verifier('déficit : le total reste celui des entrées', 1000,
+           nombre(d.getElementById('sb-total').textContent));
+
+  /* ══ Cas 5 — aucun revenu ══════════════════════════════════════════ */
+  remplir({ 'g-loyer':500 });
+  verifier('sans revenu, le total n’affiche pas de chiffre', '—',
+           d.getElementById('sb-total').textContent.trim());
+  verifier('sans revenu, aucun tableau', 0, postes(d).length);
+
+  /* ══ Cas 6 — un poste à zéro ne crée pas de ligne ══════════════════ */
+  remplir({ 'g-revenus':1200, 'g-loyer':600, 'g-courses':0, 'g-sante':0 });
+  var noms6 = postes(d).map(function (x) { return x.nom; }).join(' ');
+  verifier('un montant nul ne crée pas de poste', false, /Courses|Santé/.test(noms6));
+
+  f.remove();
+
+  /* ══ Rapport ══ */
+  var t = document.getElementById('t');
+  var ko = 0;
+  resultats.forEach(function (r) {
+    if (!r.ok) ko++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td>' + r.nom + '</td><td class="n">' + r.attendu + '</td>'
+      + '<td class="n">' + r.obtenu + '</td>'
+      + '<td class="' + (r.ok ? 'ok' : 'ko') + '">' + (r.ok ? '✓' : '✗') + '</td></tr>');
+  });
+  document.getElementById('bilan').innerHTML = ko
+    ? '<span class="ko">✗ ' + ko + ' ÉCHEC(S) — ' + (resultats.length - ko) + ' OK / ' + resultats.length + '</span>'
+    : '<span class="ok">✅ TOUS LES TESTS PASSENT — ' + resultats.length + ' OK / ' + resultats.length + ' total</span>';
+  window.__echecs = ko;
+  window.__total = resultats.length;
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>

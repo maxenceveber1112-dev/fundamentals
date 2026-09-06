@@ -771,7 +771,13 @@
       } else { el('sb-meta').innerHTML=''; }
       // Sankey
       var res = (typeof renderBudgetSankey==='function') ? renderBudgetSankey(model, isDark, RENDER_OPTS) : null;
-      if(!res){ svg.style.display='none'; empty.style.display='block'; return; }
+      if(!res){
+        svg.style.display='none'; empty.style.display='block';
+        // Le schema disparait : le tableau chiffre doit suivre, sans quoi
+        // il continue d'afficher le budget precedent sous une banniere vide.
+        majTable(model); majSousTotaux();
+        return;
+      }
       svg.style.display='block'; empty.style.display='none';
       svg.setAttribute('viewBox', res.viewBox);
       svg.style.minWidth = Math.min(res.W, 760) + 'px';
