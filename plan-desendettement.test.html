@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>plan-desendettement — tests du moteur</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1040px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  h2{font-size:13px;color:#A78BFA;margin:20px 0 6px;font-weight:400}
+  p.intro{color:#A1A1AA;margin:0 0 18px;max-width:74ch}
+  #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
+  .ok{color:#4ADE80}.ko{color:#F87171}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
+  td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<h1>brique-plan-desendettement.html — tests de <code>simulateDettes</code></h1>
+<p class="intro">
+  Ce moteur décide dans quel ordre quelqu'un rembourse ses dettes, et lui
+  annonce une date de libération. Une erreur d'ordre ou d'unité n'aurait rien
+  d'évident à la lecture : le plan resterait crédible. La brique exigeant une
+  session, on extrait les fonctions du fichier servi et on les exécute seules —
+  elles ne touchent pas au DOM.
+</p>
+<div id="bilan">exécution…</div>
+<table id="t"><tr><th>cas</th><th>attendu</th><th>obtenu</th><th></th></tr></table>
+
+<script>
+var resultats = [];
+function verifier(nom, attendu, obtenu, tol) {
+  var t = tol === undefined ? 0 : tol;
+  var ok = (typeof attendu === 'number' && typeof obtenu === 'number')
+    ? Math.abs(attendu - obtenu) <= t
+    : String(attendu) === String(obtenu);
+  resultats.push({ nom: nom, attendu: attendu, obtenu: obtenu, ok: ok });
+}
+
+/* Découpe une fonction du source en comptant ses accolades. */
+function corps(src, nom) {
+  var m = src.match(new RegExp("function\\s+" + nom + "\\s*\\([^)]*\\)\\s*\\{"));
+  if (!m) return null;
+  var i = m.index + m[0].length, p = 1;
+  while (i < src.length && p) { if (src[i] === "{") p++; else if (src[i] === "}") p--; i++; }
+  return src.slice(m.index, i);
+}
+function bloc(src, motif) {
+  var m = src.match(motif);
+  return m ? m[0] : null;
+}
+
+(async function () {
+  var src = await (await fetch('brique-plan-desendettement.html?test=' + Date.now())).text();
+
+  var morceaux = [
+    bloc(src, /const DETTE_CONFIG = \{[\s\S]*?\n\};/),
+    corps(src, 'getDureeEstimee'),
+    corps(src, 'getDetteWithDuree'),
+    corps(src, 'capitalRestant'),
+    corps(src, 'taegEffectif'),
+    corps(src, 'simulateDettes')
+  ];
+  if (morceaux.some(function (x) { return !x; })) {
+    document.getElementById('bilan').innerHTML =
+      '<span class="ko">Extraction impossible : une fonction du moteur est introuvable.</span>';
+    return;
+  }
+
+  var M = {};
+  try {
+    // profil est une globale de la page ; ici on force les durées à la main,
+    // donc l'estimation par âge n'entre jamais en jeu.
+    new Function('sortie',
+      'var profil = null;\n' + morceaux.join('\n\n')
+      + '\nsortie.simulateDettes = simulateDettes;'
+      + '\nsortie.capitalRestant = capitalRestant;'
+      + '\nsortie.taegEffectif = taegEffectif;'
+      + '\nsortie.DETTE_CONFIG = DETTE_CONFIG;')(M);
+  } catch (e) {
+    document.getElementById('bilan').innerHTML = '<span class="ko">' + e.message + '</span>';
+    return;
+  }
+
+  /* ══ Le capital, déduit de la mensualité et de la durée ══════════════ */
+  // Sans TAEG, pas d'intérêts : le capital est le simple produit.
+  verifier('sans TAEG : capital = mensualité × durée',
+           2400, M.capitalRestant({ mensualite: 200, duree_restante: 12 }), 0.01);
+  // Avec TAEG, le capital dû est FORCÉMENT inférieur : une partie des
+  // mensualités à venir paiera des intérêts, pas du capital.
+  var capAvecTaeg = M.capitalRestant({ mensualite: 200, duree_restante: 12, taeg: 12 });
+  verifier('avec TAEG : capital inférieur au produit brut', true, capAvecTaeg < 2400);
+  verifier('… mais pas absurdement bas', true, capAvecTaeg > 2200);
+
+  /* ══ Le TAEG effectif ════════════════════════════════════════════════ */
+  verifier('TAEG saisi : il prime', 9.9, M.taegEffectif({ type: 'credit_conso', taeg: 9.9 }), 0.01);
+  verifier('TAEG absent : l’indicatif du type',
+           M.DETTE_CONFIG.credit_renouvelable.taux, M.taegEffectif({ type: 'credit_renouvelable' }), 0.01);
+  verifier('type inconnu et pas de TAEG : zéro', 0, M.taegEffectif({ type: 'zzz' }), 0.01);
+
+  /* ══ L'ordre, selon la méthode ═══════════════════════════════════════
+     On construit deux dettes en opposition : la PLUS PETITE porte le taux
+     le PLUS BAS. Les deux méthodes doivent donc les classer à l'envers
+     l'une de l'autre — c'est tout l'objet du choix qu'on propose. */
+  var dettes = [
+    { type: 'credit_renouvelable', mensualite: 300, duree_restante: 24, taeg: 19.5 }, // gros capital, taux fort
+    { type: 'pret_etudiant',       mensualite: 100, duree_restante: 10, taeg: 1.5 }   // petit capital, taux faible
+  ];
+  var boule = M.simulateDettes(dettes, 0, 'boule_de_neige');
+  var aval  = M.simulateDettes(dettes, 0, 'avalanche');
+
+  verifier('boule de neige : la plus petite dette d’abord',
+           'pret_etudiant', boule.sorted[0].type);
+  verifier('avalanche : le taux le plus fort d’abord',
+           'credit_renouvelable', aval.sorted[0].type);
+  verifier('les deux méthodes classent bien à l’envers l’une de l’autre',
+           true, boule.sorted[0].type !== aval.sorted[0].type);
+
+  /* ══ L'invariant qui justifie l'avalanche ════════════════════════════
+     À dettes et enveloppe identiques, viser le taux le plus fort coûte
+     moins cher en intérêts. Si cette inégalité s'inverse un jour, le
+     conseil donné par la brique devient faux. */
+  verifier('avalanche : au moins aussi peu d’intérêts que boule de neige',
+           true, aval.totalInterets <= boule.totalInterets + 0.5);
+
+  /* ══ La date de libération ═══════════════════════════════════════════ */
+  verifier('libération = le mois où la dernière dette tombe',
+           Math.max(boule.finishMois[0], boule.finishMois[1]), boule.moisLiberte);
+  verifier('toutes les dettes finissent par être soldées',
+           true, boule.finishMois.every(function (f) { return f !== null; }));
+
+  /* ══ Un cas exact, calculable à la main ══════════════════════════════
+     Une seule dette, sans TAEG : capital 1 200 (100 × 12), enveloppe
+     100 + 50 de surplus = 150 par mois. 1200 / 150 = 8 mois pile. */
+  var seule = M.simulateDettes([{ type: 'autre', mensualite: 100, duree_restante: 12 }], 50, 'avalanche');
+  verifier('une dette sans TAEG, surplus 50 : 8 mois pile', 8, seule.moisLiberte);
+  verifier('aucun intérêt quand aucun TAEG n’est connu', 0, Math.round(seule.totalInterets));
+  verifier('hasTaeg est faux si un TAEG manque', false, seule.hasTaeg);
+
+  /* ══ Le surplus raccourcit toujours ══════════════════════════════════ */
+  var sans  = M.simulateDettes(dettes, 0,   'avalanche');
+  var avec  = M.simulateDettes(dettes, 200, 'avalanche');
+  verifier('plus de surplus, moins de mois', true, avec.moisLiberte < sans.moisLiberte);
+  verifier('plus de surplus, moins d’intérêts', true, avec.totalInterets < sans.totalInterets);
+
+  /* ══ L'enveloppe ne rétrécit pas ═════════════════════════════════════
+     Quand une dette est soldée, sa mensualité doit passer sur la suivante.
+     Sans ce report, la seconde dette mettrait exactement sa durée initiale
+     à tomber ; avec, elle tombe plus tôt. */
+  var deux = M.simulateDettes([
+    { type: 'autre', mensualite: 100, duree_restante: 6  },  // 600, soldée tôt
+    { type: 'autre', mensualite: 100, duree_restante: 24 }   // 2400
+  ], 0, 'boule_de_neige');
+  verifier('la mensualité libérée accélère la dette suivante',
+           true, deux.moisLiberte < 24);
+  // total à rembourser 3 000, enveloppe 200/mois, sans intérêts : 15 mois.
+  verifier('deux dettes sans TAEG : 15 mois pile', 15, deux.moisLiberte);
+
+  /* ══ Cas limites ═════════════════════════════════════════════════════ */
+  verifier('aucune dette : rien à simuler', null, M.simulateDettes([], 100, 'avalanche'));
+  verifier('mensualité nulle : la dette est écartée',
+           null, M.simulateDettes([{ type: 'autre', mensualite: 0, duree_restante: 12 }], 0, 'avalanche'));
+  var melange = M.simulateDettes([
+    { type: 'autre', mensualite: 0,   duree_restante: 12 },
+    { type: 'autre', mensualite: 100, duree_restante: 12 }
+  ], 0, 'avalanche');
+  verifier('une dette valide parmi des vides : elle seule est gardée', 1, melange.sorted.length);
+
+  var tousTaeg = M.simulateDettes([
+    { type: 'credit_conso', mensualite: 150, duree_restante: 18, taeg: 6.5 }
+  ], 0, 'avalanche');
+  verifier('hasTaeg est vrai quand tous les TAEG sont connus', true, tousTaeg.hasTaeg);
+  verifier('des intérêts sont comptés dès qu’un TAEG existe', true, tousTaeg.totalInterets > 0);
+
+  /* ══ Les courbes suivent la simulation ═══════════════════════════════ */
+  verifier('la courbe totale part du capital et finit à zéro',
+           0, deux.courbeTotal[deux.courbeTotal.length - 1]);
+  verifier('la courbe totale décroît sans jamais remonter', true,
+           deux.courbeTotal.every(function (v, i, a) { return i === 0 || v <= a[i - 1] + 0.01; }));
+  verifier('une courbe par dette', deux.sorted.length, deux.courbes.length);
+
+  /* ══ Rapport ══ */
+  var t = document.getElementById('t');
+  var ko = 0;
+  resultats.forEach(function (r) {
+    if (!r.ok) ko++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td>' + r.nom + '</td><td class="n">' + r.attendu + '</td>'
+      + '<td class="n">' + r.obtenu + '</td>'
+      + '<td class="' + (r.ok ? 'ok' : 'ko') + '">' + (r.ok ? '✓' : '✗') + '</td></tr>');
+  });
+  document.getElementById('bilan').innerHTML = ko
+    ? '<span class="ko">✗ ' + ko + ' ÉCHEC(S) — ' + (resultats.length - ko) + ' OK / ' + resultats.length + '</span>'
+    : '<span class="ok">✅ TOUS LES TESTS PASSENT — ' + resultats.length + ' OK / ' + resultats.length + ' total</span>';
+  window.__echecs = ko;
+  window.__total = resultats.length;
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>

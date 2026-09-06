@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Fundamentals — toutes les suites de tests</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:880px}
+  h1{font-size:16px;color:#C4B5FD;margin:0 0 4px}
+  p.intro{color:#A1A1AA;margin:0 0 20px;max-width:70ch}
+  #verdict{font-size:17px;font-weight:700;margin:16px 0 20px;padding:12px 16px;
+           border-radius:10px;background:#12121f;border:1px solid #2a2a3a}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#A1A1AA}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:5px 12px 5px 0;font-weight:400}
+  td{padding:6px 12px 6px 0;border-bottom:1px solid #1c1c2e;vertical-align:middle}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  a{color:#A78BFA}
+  iframe{position:absolute;left:-9999px;width:1200px;height:1400px;border:0}
+</style>
+</head>
+<body>
+<h1>Toutes les suites de tests</h1>
+<p class="intro">
+  Chaque suite tourne dans son cadre et rend son propre verdict ; celui du haut
+  ne passe au vert que si toutes passent. À lancer avant de pousser quoi que ce
+  soit qui touche à un calcul.
+</p>
+<div id="verdict" class="attente">exécution des suites…</div>
+<table id="t">
+  <tr><th>suite</th><th>ce qu'elle couvre</th><th class="n">assertions</th><th></th></tr>
+</table>
+
+<script>
+var SUITES = [
+  { f: 'immo-core.test.html',
+    quoi: 'mensualité, capacité d’emprunt, frais d’acquisition, taux d’endettement' },
+  { f: 'simulateur-emprunt.test.html',
+    quoi: 'assurance, mode inverse, coûts et totaux sur la durée' },
+  { f: 'simulateur-budget.test.html',
+    quoi: 'total, parts, reste à vivre, seuil, déficit' },
+  { f: 'plan-desendettement.test.html',
+    quoi: 'ordre boule de neige / avalanche, capital dû, date de libération' }
+];
+
+/* immo-core.test.html est antérieur aux autres et n'expose pas de compteur :
+   on lit son bandeau, qui dit « N OK / N total ». */
+function lireBandeau(doc) {
+  var txt = doc.body.innerText || '';
+  var m = txt.match(/(\d+)\s*OK\s*\/\s*(\d+)/);
+  if (!m) return null;
+  var ok = parseInt(m[1], 10), total = parseInt(m[2], 10);
+  return { ok: ok, total: total, echecs: total - ok };
+}
+
+(async function () {
+  var t = document.getElementById('t');
+  var totalAssertions = 0, totalEchecs = 0, suitesKo = 0;
+
+  for (var i = 0; i < SUITES.length; i++) {
+    var s = SUITES[i];
+    var fr = document.createElement('iframe');
+    fr.src = s.f + '?runner=' + Date.now();
+    document.body.appendChild(fr);
+
+    // les suites qui pilotent une page ont besoin d'un peu de temps
+    await new Promise(function (r) { fr.onload = r; setTimeout(r, 6000); });
+    var d = fr.contentDocument, w = fr.contentWindow;
+    var etat = null;
+    for (var essai = 0; essai < 20 && !etat; essai++) {
+      if (w && typeof w.__total === 'number') {
+        etat = { ok: w.__total - w.__echecs, total: w.__total, echecs: w.__echecs };
+      } else if (d) {
+        etat = lireBandeau(d);
+      }
+      if (!etat) await new Promise(function (r) { setTimeout(r, 700); });
+    }
+    fr.remove();
+
+    if (!etat) {
+      suitesKo++;
+      t.insertAdjacentHTML('beforeend',
+        '<tr><td><a href="' + s.f + '">' + s.f + '</a></td><td>' + s.quoi
+        + '</td><td class="n">—</td><td class="ko">n’a pas rendu de verdict</td></tr>');
+      continue;
+    }
+    totalAssertions += etat.total;
+    totalEchecs += etat.echecs;
+    if (etat.echecs) suitesKo++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td><a href="' + s.f + '">' + s.f + '</a></td><td>' + s.quoi
+      + '</td><td class="n">' + etat.ok + ' / ' + etat.total + '</td>'
+      + '<td class="' + (etat.echecs ? 'ko' : 'ok') + '">'
+      + (etat.echecs ? '✗ ' + etat.echecs + ' échec(s)' : '✓') + '</td></tr>');
+  }
+
+  var v = document.getElementById('verdict');
+  v.className = suitesKo ? 'ko' : 'ok';
+  v.textContent = suitesKo
+    ? '✗ ' + suitesKo + ' suite(s) en échec — ' + totalEchecs + ' assertion(s) sur ' + totalAssertions
+    : '✅ ' + SUITES.length + ' suites, ' + totalAssertions + ' assertions, aucune en échec';
+  window.__echecs = totalEchecs;
+  window.__suitesKo = suitesKo;
+  window.__total = totalAssertions;
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>
