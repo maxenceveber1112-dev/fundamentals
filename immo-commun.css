@@ -484,18 +484,31 @@ html.dark .brique-sidebar-v2 { backdrop-filter:blur(12px); }
    porte fond, bordure et ombre. Son propre lavis suffit a le detacher —
    la bordure en faisait une carte dans une carte (guide §1.2). */
 .sb2-synth {
-  background:linear-gradient(180deg, var(--v3-accent-soft) 0%, var(--surface-2) 100%);
-  
-  border-radius:1rem;
+  /* Le degrade vertical finissait sur un aplat opaque : un bord franc en
+     bas, donc encore une carte. Le lavis radial s'eteint avant le bord —
+     rien a aligner — et son aplat ne s'ajoute plus a ceux de la barre. */
+  background:radial-gradient(120% 150% at 6% 0%,
+             color-mix(in srgb, var(--v3-accent-strong) 12%, transparent) 0%,
+             transparent 68%);
+  /* Coin bas-droit ouvert (§1.9) : la forme se distingue sans repeter
+     l'arrondi de la barre qui la contient. */
+  border-radius:1rem 1rem 2.2rem 1rem;
   padding:1rem 1.125rem 1.125rem;
   position:relative;
   overflow:hidden;
   transition:all 0.3s var(--ease-out);
 }
 
+/* Variante neutre du §1.2 : tant que rien n'est calcule, la zone prend un
+   gris chaud au lieu de la teinte d'accent. Le lavis part du meme coin que
+   la variante coloree, pour que les deux se lisent comme une famille.
+   L'opacite de 0,7 est retiree : elle delavait le texte autant que le fond,
+   alors que c'est le fond qui doit reculer, pas les mots. */
 .sb2-synth.locked {
-  background:var(--surface-2);
-  opacity:0.7;
+  background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.10) 0%, transparent 68%);
+}
+html.dark .sb2-synth.locked {
+  background:radial-gradient(120% 150% at 6% 0%, rgba(255,255,255,0.075) 0%, transparent 68%);
 }
 
 .sb2-synth.locked .sb2-synth-hero { color:var(--v3-text-faint); }
@@ -551,7 +564,7 @@ html.dark .brique-sidebar-v2 { backdrop-filter:blur(12px); }
 
 .sb2-synth-sub {
   font-size:0.6875rem;
-  color:var(--v3-text-faint);
+  color:var(--ink-soft);
   font-style:italic;
   margin-bottom:0.875rem;
 }
@@ -586,7 +599,7 @@ html.dark .brique-sidebar-v2 { backdrop-filter:blur(12px); }
 }
 
 .sb2-synth-row.pending .sb2-synth-row-value {
-  color:var(--v3-text-faint);
+  color:var(--ink-soft);
   font-family:'Inter',sans-serif;
   font-style:italic;
   font-size:0.6875rem;
