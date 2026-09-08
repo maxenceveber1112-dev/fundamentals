@@ -31,8 +31,8 @@
   <!-- Styles communs aux deux briques immobilieres. Cette feuille occupe
        l'emplacement exact du bloc en ligne qu'elle remplace, pour preserver
        l'ordre de cascade vis-a-vis de theme.css. -->
-  <link rel="stylesheet" href="immo-commun.css?v=zone3" />
-  <link rel="stylesheet" href="theme.css?v=contraste3">
+  <link rel="stylesheet" href="immo-commun.css?v=da11" />
+  <link rel="stylesheet" href="theme.css?v=contraste5">
   <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
        voile soit peint avant la mise en page encore vide. -->
   <link rel="stylesheet" href="chargement.css?v=1" />
@@ -59,7 +59,7 @@
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
 <script src="nav-avatar.js"></script>
-<script src="immo-core.js"></script>
+<script src="immo-core.js?v=core2"></script>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MAIN LAYOUT (sidebar.js injecte la sidebar à gauche)       -->
@@ -738,10 +738,15 @@
                 </div>
                 <div class="s5-commune-info" id="s5-commune-info">
                   <div class="s5-info-line">
-                    <span class="s5-info-label">Prix moyen estimé</span>
-                    <span class="s5-info-value" id="s5-prixm2">—</span>
+                    <label class="s5-info-label" for="s5-prixm2">Prix moyen au m&sup2;</label>
+                    <span class="s5-info-edit">
+                      <input type="text" inputmode="numeric" id="s5-prixm2" class="s5-info-value"
+                             placeholder="&mdash;" autocomplete="off" aria-describedby="s5-info-source"
+                             oninput="s5OnPrixM2Input(this)" onblur="s5PrixM2Blur(this)" />
+                      <span class="s5-info-unit" aria-hidden="true">&euro;/m&sup2;</span>
+                    </span>
                   </div>
-                  <div class="s5-info-source">Source&nbsp;: DVF 2024 (data.gouv) · agrégé département</div>
+                  <div class="s5-info-source" id="s5-info-source">M&eacute;diane du d&eacute;partement (DVF 2024) &mdash; modifiable</div>
                 </div>
               </div>
             </div>
@@ -930,22 +935,12 @@
 
         <!-- ═══ SCREEN 7 — Diagnostic final ═══ -->
         <div class="screen" id="screen-7">
-          <div class="diag-premium-section">
-            <div class="diag-premium-header">
-              <div class="diag-premium-kicker">DIAGNOSTIC IMMOBILIER</div>
-              <h2 class="diag-premium-title">Ton premier diagnostic immobilier est prêt.</h2>
-            </div>
-
-            <div class="pdf-pill-wrap" style="display:flex;justify-content:center;margin-top:1.5rem;">
-              <button class="pdf-pill" onclick="downloadPDFResume()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                Télécharger mon diagnostic PDF
-              </button>
-            </div>
+          <!-- Un en-tete de 208 px pour annoncer le verdict qui suit
+               immediatement : le titre reprend la forme des sept autres
+               ecrans, et le telechargement rejoint les actions de fin. -->
+          <div class="diag-premium-header">
+            <div class="diag-premium-kicker">DIAGNOSTIC IMMOBILIER</div>
+            <h2 class="diag-premium-title">Ton premier diagnostic immobilier est prêt.</h2>
           </div>
           <!-- ═══ 2. SCORE GLOBAL + 4 SOUS-SCORES ═══ -->
           <div class="s8-score-card" role="region" aria-labelledby="s8-score-verdict">
@@ -996,37 +991,54 @@
             </div>
           </div>
 
-          <!-- ═══ 3. BILAN EN CHIFFRES ═══ -->
-          <div class="s8-bilan">
-            <div class="s8-bilan-kicker">TON BILAN IMMOBILIER</div>
-            <div class="s8-bilan-row">
-              <div class="s8-bilan-cell">
-                <div class="s8-bilan-cell-label">Capacité emprunt</div>
-                <div class="s8-bilan-cell-value" id="s8-bilan-emprunt">--</div>
-              </div>
-              <div class="s8-bilan-cell">
-                <div class="s8-bilan-cell-label">Apport</div>
-                <div class="s8-bilan-cell-value" id="s8-bilan-apport">--</div>
-              </div>
-              <div class="s8-bilan-cell">
-                <div class="s8-bilan-cell-label">Budget total</div>
-                <div class="s8-bilan-cell-value" id="s8-bilan-budget">--</div>
-              </div>
-              <div class="s8-bilan-cell">
-                <div class="s8-bilan-cell-label">Mensualité</div>
-                <div class="s8-bilan-cell-value" id="s8-bilan-mensualite">--</div>
+          <!-- ═══ 3–4. LE DÉTAIL, REPLIÉ PAR DÉFAUT ═══ -->
+          <!-- L'écran final empilait neuf sections de même poids sur plus de
+               2 100 px : le verdict, qui est la réponse, se lisait au milieu
+               d'une masse. Le bilan chiffré et les typologies sont de la
+               référence — ils restent à un geste, sans peser sur la lecture.
+               <details> plutôt qu'un script : clavier et lecteurs d'écran le
+               connaissent déjà, et il fonctionne sans JavaScript. -->
+          <details class="s8-detail">
+            <summary class="s8-detail-summary">
+              <span class="s8-detail-label">Le détail chiffré</span>
+              <span class="s8-detail-hint">bilan &middot; typologies</span>
+              <svg class="s8-detail-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="s8-detail-body">
+            <!-- ═══ 3. BILAN EN CHIFFRES ═══ -->
+            <div class="s8-bilan">
+              <div class="s8-bilan-kicker">TON BILAN IMMOBILIER</div>
+              <div class="s8-bilan-row">
+                <div class="s8-bilan-cell">
+                  <div class="s8-bilan-cell-label">Capacité emprunt</div>
+                  <div class="s8-bilan-cell-value" id="s8-bilan-emprunt">--</div>
+                </div>
+                <div class="s8-bilan-cell">
+                  <div class="s8-bilan-cell-label">Apport</div>
+                  <div class="s8-bilan-cell-value" id="s8-bilan-apport">--</div>
+                </div>
+                <div class="s8-bilan-cell">
+                  <div class="s8-bilan-cell-label">Budget total</div>
+                  <div class="s8-bilan-cell-value" id="s8-bilan-budget">--</div>
+                </div>
+                <div class="s8-bilan-cell">
+                  <div class="s8-bilan-cell-label">Mensualité</div>
+                  <div class="s8-bilan-cell-value" id="s8-bilan-mensualite">--</div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- ═══ 4. TYPOLOGIES SUR LA COMMUNE ═══ -->
-          <div class="s8-typo-section">
-            <div class="s8-bilan-kicker" id="s8-typo-kicker">TYPOLOGIES SUR TA COMMUNE</div>
-            <p class="s8-typo-sub" id="s8-typo-sub">Croisement de ton budget avec les prix médians DVF.</p>
-            <div class="s8-typo-grid" id="s8-typo-grid">
-              <!-- généré par JS -->
+            <!-- ═══ 4. TYPOLOGIES SUR LA COMMUNE ═══ -->
+            <div class="s8-typo-section">
+              <div class="s8-bilan-kicker" id="s8-typo-kicker">TYPOLOGIES SUR TA COMMUNE</div>
+              <p class="s8-typo-sub" id="s8-typo-sub">Croisement de ton budget avec les prix médians DVF.</p>
+              <div class="s8-typo-grid" id="s8-typo-grid">
+                <!-- généré par JS -->
+              </div>
             </div>
-          </div>
+
+            </div>
+          </details>
 
           <!-- ═══ 5. TOP 3 LEVIERS ═══ -->
           <div class="s8-leviers" id="s8-leviers-section">
@@ -1037,11 +1049,6 @@
           </div>
 
           <!-- ═══ 6. ACHETER VS LOUER (COLLAPSÉ PAR DÉFAUT) ═══ -->
-          <div class="s8-vs-highlight" aria-hidden="true">
-            <span class="s8-vs-highlight-dot"></span>
-            <span class="s8-vs-highlight-label">UNE DERNIÈRE QUESTION ESSENTIELLE</span>
-            <span class="s8-vs-highlight-dot"></span>
-          </div>
           <div class="s8-vs-teaser" id="s8-vs-teaser" role="button" tabindex="0"
                aria-expanded="false" aria-controls="s8-vs-content"
                onclick="s8ToggleVs(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();s8ToggleVs(this);}">
@@ -1097,6 +1104,17 @@
               <p class="reco-desc" id="reco-next-text">--</p>
               <button class="btn-hero-primary" id="reco-next-btn" onclick="goToNextBrick()" style="align-self:flex-start;">Commencer</button>
             </div>
+          </div>
+
+          <div class="pdf-pill-wrap">
+            <button class="pdf-pill" onclick="downloadPDFResume()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Télécharger mon diagnostic PDF
+            </button>
           </div>
 
           <div class="nav-btns" style="margin-top:1rem;">
@@ -1248,7 +1266,7 @@ var TOTAL_SCREENS = 8; // 0-7
 var S = {
   currentScreen: 0,
   projectType: '', horizon: '3m', status: '', primo: '', propertyType: '',
-  codePostal: '', prixM2: 2500, deptName: '',
+  codePostal: '', prixM2: 2500, prixM2Manuel: false, deptName: '',
   communeNom: '', communeInsee: '', communeChoisie: false, typoChoisie: '', typosShortlist: [],
   revenus: 0, revenusCompl: 0, autresEntrees: 0, charges: 0, chargesFixes: 0, credits: 0, loyer: 0,
   duree: 25, taux: 3.0, assurance: 0, assuranceEmprunteur: 0, presetMode: 'equilibre',
@@ -4247,18 +4265,73 @@ function s5PickCommune(el) {
   S.communeInsee = insee;
   S.codePostal = cp;
   S.communeChoisie = true;
-  // Le prix m² reste un fallback département (DVF agrégé)
+  // Nouvelle commune = nouveau marche : une correction manuelle precedente
+  // ne vaut plus, on repart de la mediane departementale.
+  S.prixM2Manuel = false;
   S.prixM2 = getPrixM2(cp);
   S.deptName = DEPT_NAMES[dep] || dep;
   s5RenderInfo();
   s5RenderCards();
 }
 
-function s5RenderInfo() {
-  var el = $('s5-prixm2');
+/* Le champ demande une COMMUNE mais PRIX_M2 ne connait que le departement :
+   Nancy recevait la mediane de Meurthe-et-Moselle, la meme que le moindre
+   village. Plutot que d'inventer un coefficient, on rend la valeur
+   corrigeable — celui qui connait son marche la corrige, et tout ce qui en
+   decoule (typologies, budget atteignable, leviers) suit. */
+var S5_SRC_DEPT = 'M&eacute;diane du d&eacute;partement (DVF 2024) &mdash; modifiable';
+var S5_SRC_MANUEL = 'Ta valeur &mdash; tout se recalcule dessus.';
+var S5_PRIXM2_MIN = 200, S5_PRIXM2_MAX = 40000;
+
+/* L'autosauvegarde de la brique ne se declenche qu'au changement d'ecran :
+   une valeur corrigee puis un rechargement, et la correction etait perdue.
+   (Le garde 'saveState' ecrit ici au depart ne pointait aucune fonction
+   existante : il ne sauvegardait rien tout en le laissant croire.) */
+function s5Autosave() {
+  if (typeof autosaveBrickProgress !== 'function') return;
+  var idx = (typeof S.currentScreen === 'number') ? S.currentScreen : 0;
+  autosaveBrickProgress(BRICK_ID, idx, S);
+}
+
+function s5RenderInfo(remettreEnForme) {
+  var el = $('s5-prixm2'), src = $('s5-info-source');
   if (!el) return;
-  if (!S.communeChoisie) { el.textContent = '—'; return; }
-  el.textContent = new Intl.NumberFormat('fr-FR').format(S.prixM2) + ' €/m²';
+  if (!S.communeChoisie) { el.value = ''; if (src) src.innerHTML = S5_SRC_DEPT; return; }
+  /* Ne pas reecrire le champ pendant la frappe : l'utilisateur perdrait son
+     curseur des le deuxieme chiffre. La sortie du champ, elle, demande la
+     remise en forme explicitement — pendant l'evenement blur le navigateur
+     ne dit pas de facon fiable si le champ a encore le focus. */
+  if (remettreEnForme || document.activeElement !== el) el.value = new Intl.NumberFormat('fr-FR').format(S.prixM2);
+  if (src) src.innerHTML = S.prixM2Manuel ? S5_SRC_MANUEL : S5_SRC_DEPT;
+}
+
+function s5PrixM2Valide(v) {
+  var x = parseInt(String(v).replace(/[^0-9]/g, ''), 10);
+  return (x && x >= S5_PRIXM2_MIN && x <= S5_PRIXM2_MAX) ? x : null;
+}
+
+function s5OnPrixM2Input(el) {
+  var x = s5PrixM2Valide(el.value);
+  if (x === null) return;          // saisie en cours : on ne recalcule pas sur un chiffre isole
+  S.prixM2 = x;
+  S.prixM2Manuel = true;
+  s5RenderInfo();
+  s5RenderCards();
+  s5RenderPills();
+  s5Autosave();
+}
+
+function s5PrixM2Blur(el) {
+  /* Champ vide ou aberrant : on revient a la mediane departementale plutot
+     que de laisser un budget calcule sur une valeur fantaisiste. */
+  if (s5PrixM2Valide(el.value) === null) {
+    S.prixM2Manuel = false;
+    S.prixM2 = getPrixM2(S.codePostal);
+    s5RenderCards();
+    s5RenderPills();
+    s5Autosave();
+  }
+  s5RenderInfo(true);
 }
 
 /* Budget total = capacité d'emprunt + apport mobilisable */

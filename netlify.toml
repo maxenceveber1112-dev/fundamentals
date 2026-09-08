@@ -45,7 +45,7 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://avnxkfthqgeehcjuxoej.supabase.co https://api-adresse.data.gouv.fr https://public.opendatasoft.com wss://avnxkfthqgeehcjuxoej.supabase.co https://cloudflareinsights.com; img-src 'self' data: blob:; frame-ancestors 'self'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://avnxkfthqgeehcjuxoej.supabase.co https://api-adresse.data.gouv.fr https://geo.api.gouv.fr https://public.opendatasoft.com wss://avnxkfthqgeehcjuxoej.supabase.co https://cloudflareinsights.com; img-src 'self' data: blob:; frame-ancestors 'self'"
     # Le site n'utilise ni caméra, ni micro, ni géolocalisation, ni capteurs.
     # On le declare, plutot que de laisser la porte ouverte par defaut.
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()"

@@ -1006,7 +1006,7 @@ html.dark .brick-kicker { color:#A5B4FC; }
 
 .project-type-card {
   position:relative; overflow:hidden;
-  border-radius:1.25rem;
+  border:none; border-radius:1.25rem;
   padding:1.5rem 1.25rem 1.25rem;
   cursor:pointer; transition:all 0.3s cubic-bezier(0.16,1,0.3,1); text-align:center;
   display:flex; flex-direction:column; align-items:center; gap:0.625rem;
@@ -1021,36 +1021,50 @@ html.dark .brick-kicker { color:#A5B4FC; }
   pointer-events:none;
 }
 
+/* §1.6 — la carte choisie portait sept marqueurs a la fois : bordure,
+   degrade, anneau, halo porte, mise a l'echelle, icone agrandie, titre a
+   l'accent. Le guide n'en garde qu'un : le lavis, et le coin bas-droit qui
+   s'ouvre. La teinte de chaque famille reste, elle dit « laquelle ». */
 /* — Violet: Résidence principale */
 .project-type-card[data-val="residence_principale"] {
-  background:linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(99,102,241,0.05) 100%);
-  border:1.5px solid rgba(139,92,246,0.25);
+  background:
+    radial-gradient(120% 150% at 6% 0%, rgba(139,92,246,0.11) 0%, transparent 68%),
+    linear-gradient(rgba(139,92,246,0.05), rgba(139,92,246,0.05));
 }
 
 .project-type-card[data-val="residence_principale"]:hover {
-  border-color:rgba(139,92,246,0.55); background:linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(99,102,241,0.08) 100%);
-  box-shadow:0 4px 28px -4px rgba(139,92,246,0.25); transform:translateY(-3px) scale(1.015);
+  background:
+    radial-gradient(120% 150% at 6% 0%, rgba(139,92,246,0.17) 0%, transparent 68%),
+    linear-gradient(rgba(139,92,246,0.07), rgba(139,92,246,0.07));
 }
 
 .project-type-card[data-val="residence_principale"].selected {
-  border-color:#8b5cf6; background:linear-gradient(135deg, rgba(139,92,246,0.22) 0%, rgba(99,102,241,0.12) 100%);
-  box-shadow:0 0 0 2px rgba(139,92,246,0.2), 0 4px 32px -4px rgba(139,92,246,0.35); transform:scale(1.02);
+  border-radius:1.25rem 1.25rem 2.4rem 1.25rem;
+  background:
+    radial-gradient(120% 155% at 6% 0%, rgba(139,92,246,0.26) 0%, transparent 70%),
+    radial-gradient(90% 130% at 96% 96%, rgba(139,92,246,0.16) 0%, transparent 60%),
+    linear-gradient(rgba(139,92,246,0.10), rgba(139,92,246,0.10));
 }
 
 /* — Teal: Résidence secondaire */
 .project-type-card[data-val="residence_secondaire"] {
-  background:linear-gradient(135deg, rgba(20,184,166,0.12) 0%, rgba(20,184,166,0.04) 100%);
-  border:1.5px solid rgba(20,184,166,0.25);
+  background:
+    radial-gradient(120% 150% at 6% 0%, rgba(20,184,166,0.11) 0%, transparent 68%),
+    linear-gradient(rgba(20,184,166,0.05), rgba(20,184,166,0.05));
 }
 
 .project-type-card[data-val="residence_secondaire"]:hover {
-  border-color:rgba(20,184,166,0.55); background:linear-gradient(135deg, rgba(20,184,166,0.18) 0%, rgba(20,184,166,0.08) 100%);
-  box-shadow:0 4px 28px -4px rgba(20,184,166,0.25); transform:translateY(-3px) scale(1.015);
+  background:
+    radial-gradient(120% 150% at 6% 0%, rgba(20,184,166,0.17) 0%, transparent 68%),
+    linear-gradient(rgba(20,184,166,0.07), rgba(20,184,166,0.07));
 }
 
 .project-type-card[data-val="residence_secondaire"].selected {
-  border-color:#14b8a6; background:linear-gradient(135deg, rgba(20,184,166,0.22) 0%, rgba(20,184,166,0.12) 100%);
-  box-shadow:0 0 0 2px rgba(20,184,166,0.2), 0 4px 32px -4px rgba(20,184,166,0.35); transform:scale(1.02);
+  border-radius:1.25rem 1.25rem 2.4rem 1.25rem;
+  background:
+    radial-gradient(120% 155% at 6% 0%, rgba(20,184,166,0.26) 0%, transparent 70%),
+    radial-gradient(90% 130% at 96% 96%, rgba(20,184,166,0.16) 0%, transparent 60%),
+    linear-gradient(rgba(20,184,166,0.10), rgba(20,184,166,0.10));
 }
 
 /* Card illustration SVG */
@@ -1075,11 +1089,11 @@ html.dark .brick-kicker { color:#A5B4FC; }
 .project-type-card.selected .ptc-sub { color:var(--text-secondary); }
 
 /* Badge "Le plus courant" */
+/* §1.10 — « le plus courant » est une indication, pas une decoration. */
 .ptc-reco-badge {
-  position:absolute; top:0.625rem; right:0.625rem;
+  position:absolute; top:0.7rem; right:0.75rem;
   font-size:0.575rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
-  padding:0.2rem 0.55rem; border-radius:9999px;
-  background:var(--accent-soft); color:var(--accent-strong); border:1px solid var(--accent-soft);
+  color:var(--accent-strong);
 }
 
 /* Mode kicker pill — toutes les variantes utilisent l'accent unifié */
@@ -1116,7 +1130,7 @@ html.dark .brick-kicker { color:#A5B4FC; }
   display:flex; align-items:center; gap:0.625rem;
   padding:0.65rem 1rem; border-radius:9999px;
   background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2);
-  font-size:0.8rem; color:#fbbf24; line-height:1.4;
+  font-size:0.8rem; color:var(--orange-text); line-height:1.4;
   margin-bottom:0.75rem;
 }
 
@@ -1129,7 +1143,7 @@ html.dark .brick-kicker { color:#A5B4FC; }
   font-size:1rem; padding:0; line-height:1; flex-shrink:0;
 }
 
-.statut-banner-close:hover { color:#fbbf24; }
+.statut-banner-close:hover { color:var(--orange-text); }
 
 
 /* Compact pills (bloc B) */
@@ -1228,25 +1242,27 @@ input[type=range]::-moz-range-thumb { width:20px; height:20px; border-radius:50%
 /* Slider with animated chip */
 .slider-chip-wrap { position:relative; padding-top:2rem; }
 
+/* §1.7 — la valeur d'un curseur est un chiffre de la plateforme : Fraunces
+   italique a l'accent, pose au-dessus, sans medaillon. */
 .slider-chip {
   position:absolute; top:0; transform:translateX(-50%);
-  padding:0.25rem 0.625rem; border-radius:9999px;
-  background:var(--accent-strong); color:#fff;
-  font-size:0.75rem; font-weight:700;
+  color:var(--accent-strong);
+  font-family:var(--font-display); font-style:italic;
+  font-size:1rem; font-weight:400; font-variant-numeric:tabular-nums;
   white-space:nowrap; pointer-events:none;
   transition:left 0.15s ease;
   box-shadow:0 2px 8px rgba(91,33,182,0.25);
 }
 
-html.dark .slider-chip { background:var(--v3-accent-strong); }
+/* Demedaillonnee, la pastille n'a plus de bulle : lui repeindre un fond
+   sombre remettait l'accent sous un texte deja a l'accent (ratio 1,00). */
 
 .slider-chip::after {
   content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
   border-left:5px solid transparent; border-right:5px solid transparent;
-  border-top:5px solid var(--accent-strong);
+  /* Sans bulle, la fleche ne pointait plus depuis rien. */
+  border-top:0;
 }
-
-html.dark .slider-chip::after { border-top-color:var(--v3-accent-strong); }
 
 
 /* ══════════════════════════════════════════════════════════════
@@ -1432,12 +1448,16 @@ html.dark .budget-hero-m2 { color:var(--v3-accent-strong); }
   margin-left:0.375rem; cursor:help;
 }
 
+/* §1.6 r.3 — le glyphe reste nu. La cible de clic garde sa taille, mais
+   c'est la couleur au survol qui dit qu'on peut cliquer, pas une tuile. */
 .field-tooltip .tooltip-icon {
-  width:14px; height:14px; border-radius:50%;
-  background:var(--surface-3); color:var(--text-faint);
-  font-size:0.6rem; font-weight:700;
+  width:14px; height:14px;
+  color:var(--text-faint); font-size:0.72rem; font-weight:700;
   display:flex; align-items:center; justify-content:center;
+  transition:color .15s ease;
 }
+.field-tooltip:hover .tooltip-icon,
+.field-tooltip:focus-within .tooltip-icon { color:var(--accent-strong); }
 
 .field-tooltip .tooltip-text {
   display:none; position:absolute; bottom:calc(100% + 6px); left:50%;
@@ -1586,10 +1606,12 @@ html.dark .preset-btn.active { color:var(--v3-accent-strong); }
 /* ══════════════════════════════════════════════════════════════
    ÉPARGNE MODULE (écran 3)
 ══════════════════════════════════════════════════════════════ */
+/* §1.2 — le module groupe sans se cliquer : en zone, son contenu deja
+   encadre se lit sans un aplat de plus au-dessous. */
 .epargne-module {
-  background:var(--surface-2);
-  border:1px solid var(--border-subtle);
-  border-radius:1rem;
+  background:radial-gradient(120% 150% at 6% 0%,
+              color-mix(in srgb, var(--text) 5%, transparent) 0%, transparent 68%);
+  border-radius:1rem 1rem 2.2rem 1rem;
   padding:1.25rem; display:flex; flex-direction:column; gap:1rem;
 }
 
@@ -1859,7 +1881,7 @@ html.dark .apport-hero-label { color:var(--v3-accent-strong); }
 }
 
 .tl-alerte-text {
-  font-size:0.75rem; color:#f59e0b; margin:6px 0;
+  font-size:0.75rem; color:var(--orange-text); margin:6px 0;
 }
 
 
@@ -1878,13 +1900,11 @@ html.dark .apport-hero-label { color:var(--v3-accent-strong); }
    ÉCRAN FINAL — score ring + summary + reco cards
 ══════════════════════════════════════════════════════════════ */
 /* Premium diagnostic section */
-.diag-premium-section {
-  background:linear-gradient(160deg, rgba(139,92,246,0.06) 0%, rgba(99,102,241,0.03) 50%, rgba(20,184,166,0.02) 100%);
-  border:1px solid rgba(139,92,246,0.12);
-  border-radius:1.5rem; padding:2rem 1.75rem; text-align:center;
-}
+/* .diag-premium-section retiree : elle encadrait un titre et un bouton,
+   soit 208 px pour annoncer le verdict affiche juste dessous. */
 
-.diag-premium-header { margin-bottom:1.5rem; }
+/* Meme rythme que l'en-tete des sept autres ecrans. */
+.diag-premium-header { margin-bottom:1.5rem; text-align:center; }
 
 .diag-premium-kicker {
   font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase;
@@ -1895,14 +1915,14 @@ html.dark .apport-hero-label { color:var(--v3-accent-strong); }
 
 .diag-premium-title {
   font-family:var(--font-display); font-size:1.25rem; font-weight:400;
-  color:#fff; letter-spacing:0.01em;
+  color:var(--text); letter-spacing:0.01em;
 }
 
 .diag-score-wrap { margin-bottom:1.5rem; }
 
 .diag-score-bar {
   width:60%; max-width:200px; height:6px; border-radius:3px;
-  background:rgba(255,255,255,0.06); margin:0.75rem auto 0; overflow:hidden;
+  background:var(--border-subtle); margin:0.75rem auto 0; overflow:hidden;
 }
 
 .diag-score-bar-fill {
@@ -1915,7 +1935,7 @@ html.dark .apport-hero-label { color:var(--v3-accent-strong); }
 
 .score-ring circle { fill:none; stroke-width:8; }
 
-.score-ring .ring-bg { stroke:rgba(255,255,255,0.06); }
+.score-ring .ring-bg { stroke:var(--border-subtle); }
 
 .score-ring .ring-fill { stroke:url(#diag-gradient); stroke-linecap:round; transition:stroke-dashoffset 1s var(--ease-out); }
 
@@ -1933,7 +1953,7 @@ html.dark .score-ring .ring-fill { stroke:url(#diag-gradient); }
 .diag-card {
   display:flex; align-items:flex-start; gap:0.5rem;
   padding:0.75rem 0.875rem; border-radius:0.875rem;
-  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
+  background:var(--surface-2); border:1px solid var(--border-subtle);
 }
 
 .diag-card-icon {
@@ -1952,11 +1972,11 @@ html.dark .score-ring .ring-fill { stroke:url(#diag-gradient); }
 
 .diag-card-label {
   font-size:0.6rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
-  color:rgba(255,255,255,0.4); margin-bottom:0.1rem;
+  color:var(--text-muted); margin-bottom:0.1rem;
 }
 
 .diag-card-value {
-  font-size:0.9rem; font-weight:700; color:#fff;
+  font-size:0.9rem; font-weight:700; color:var(--text);
 }
 
 
@@ -2009,11 +2029,11 @@ html.dark .reco-card { backdrop-filter:blur(12px); }
   pointer-events:none; user-select:none;
 }
 
-.reco-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.5rem; }
+.reco-kicker { font-size:0.6875rem; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-secondary); margin-bottom:0.5rem; }
 
 .reco-title { font-family:var(--font-display); font-size:1.125rem; font-weight:400; font-style:italic; color:var(--text); margin-bottom:0.375rem; }
 
-.reco-desc { font-size:0.8125rem; color:var(--text-muted); margin-bottom:1.25rem; line-height:1.55; }
+.reco-desc { font-size:0.8125rem; color:var(--text-secondary); margin-bottom:1.25rem; line-height:1.55; }
 
 
 /* ══════════════════════════════════════════════════════════════
@@ -2189,16 +2209,18 @@ html.dark .z2-capital { color:var(--v3-accent-strong); }
   margin:0 auto;
 }
 
+/* §1.10 — l'etiquette d'un repere de jauge : un mot pose au-dessus du
+   trait, qui suffit a la rattacher. */
 .z2-marker-label {
-  position:absolute; bottom:calc(100% + 2px); left:50%;
+  position:absolute; bottom:calc(100% + 4px); left:50%;
   transform:translateX(-50%); white-space:nowrap;
-  font-size:0.68rem; font-weight:600; color:rgba(255,255,255,0.9);
-  background:rgba(139,92,246,0.7); padding:2px 8px; border-radius:9999px;
+  font-size:0.68rem; font-weight:600; color:var(--accent-strong);
 }
 
 html:not(.dark) .z2-marker-line { background:rgba(28,25,23,0.7); }
 
-html:not(.dark) .z2-marker-label { color:#fff; background:rgba(91,33,182,0.8); }
+/* L'aplat avait survecu a la demedaillonnage : sans rembourrage ni
+   arrondi il ne dessinait plus qu'un surlignage colle au mot. */
 
 
 /* HCSF 35% line */
@@ -2262,10 +2284,10 @@ html:not(.dark) .z2-hcsf-label { color:var(--text-faint); }
   margin-left:0.25rem; cursor:help; vertical-align:middle;
 }
 
+/* §1.6 r.3 — glyphe nu. */
 .glossary-info .gi-icon {
-  width:15px; height:15px; border-radius:50%;
-  background:var(--surface-3); color:var(--text-faint);
-  font-size:0.6rem; font-weight:700;
+  width:15px; height:15px;
+  color:var(--text-faint); font-size:0.72rem; font-weight:700;
   display:inline-flex; align-items:center; justify-content:center;
   line-height:1;
 }
@@ -2319,11 +2341,11 @@ html:not(.dark) .hypotheses-pill { color:var(--text-muted); }
 .hypotheses-pill .pill-star { color:#8b5cf6; }
 
 .hypotheses-pill .modifier-btn {
-  color:#8b5cf6; cursor:pointer; font-weight:500;
+  color:var(--accent-strong); cursor:pointer; font-weight:500;
   background:none; border:none; font:inherit; padding:0;
 }
 
-.hypotheses-pill .modifier-btn:hover { color:#a78bfa; }
+.hypotheses-pill .modifier-btn:hover { color:var(--accent); }
 
 
 /* Hypotheses popup (position:absolute, opens UP) */
@@ -2397,16 +2419,17 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
 
 .z1-pill-label { font-size:0.78rem; font-weight:600; color:var(--text-secondary); }
 
+/* §1.10 — « Budget » dit d'ou vient le chiffre : un mot suffit. */
 .z1-pill-badge {
   font-size:0.6rem; font-weight:700; letter-spacing:0.06em;
-  padding:0.15rem 0.5rem; border-radius:9999px; white-space:nowrap;
+  text-transform:uppercase; white-space:nowrap;
 }
 
-.z1-pill-badge-budget { color:#7c3aed; background:rgba(139,92,246,0.15); }
+.z1-pill-badge-budget { color:#7c3aed; }
 
-html.dark .z1-pill-badge-budget { color:#C4B5FD; background:rgba(196,181,253,0.18); }
+html.dark .z1-pill-badge-budget { color:#C4B5FD; }
 
-.z1-pill-badge-modifie { color:#d97706; background:rgba(217,119,6,0.12); }
+.z1-pill-badge-modifie { color:var(--orange-text); }
 
 
 .z1-pill-main {
@@ -2633,7 +2656,7 @@ html.dark .bpc-logement-surface { color:var(--v3-text); }
 
 .syn-apport-hint.pending {
   background:rgba(245,158,11,0.12);
-  color:#f59e0b;
+  color:var(--orange-text);
   border:1px solid rgba(245,158,11,0.25);
 }
 
@@ -2769,43 +2792,36 @@ html.dark .cs-logement-status { color:var(--v3-accent-strong); }
 ══════════════════════════════════════════════════════════════ */
 
 /* Groupe wrapper */
+/* §1.2 — ce bloc groupe reellement plusieurs champs : il garde une identite,
+   mais en zone. Le lavis radial s'eteint avant le bord, donc aucun trait a
+   aligner, et le coin bas-droit s'ouvre (§1.9) pour se distinguer de la
+   carte qui le contient sans en repeter l'arrondi. */
 .s4-group {
   position:relative; overflow:hidden;
-  border-radius:1rem; padding:1.25rem;
+  border-radius:1rem 1rem 2.2rem 1rem; padding:1.25rem;
   margin-bottom:1rem;
-  border:1px solid var(--border-subtle);
 }
 
 /* (Commit 4) Palette unifiée — nuances de violet (light) / jaune (dark) pour les 4 groupes S4 */
 .s4-group--prix {
-  background:rgba(91,33,182,0.07);
-  border-color:rgba(91,33,182,0.14);
+  background:radial-gradient(120% 150% at 6% 0%, rgba(91,33,182,0.10) 0%, transparent 68%);
   padding:1.5rem;
   text-align:center;
 }
 
-html.dark .s4-group--prix { background:rgba(251,191,36,0.08); border-color:rgba(251,191,36,0.16); }
+html.dark .s4-group--prix { background:radial-gradient(120% 150% at 6% 0%, rgba(251,191,36,0.12) 0%, transparent 68%); }
 
-.s4-group--frais {
-  background:rgba(124,58,237,0.05);
-  border-color:rgba(124,58,237,0.10);
-}
+.s4-group--frais { background:radial-gradient(120% 150% at 6% 0%, rgba(124,58,237,0.075) 0%, transparent 68%); }
 
-html.dark .s4-group--frais { background:rgba(245,158,11,0.06); border-color:rgba(245,158,11,0.12); }
+html.dark .s4-group--frais { background:radial-gradient(120% 150% at 6% 0%, rgba(245,158,11,0.09) 0%, transparent 68%); }
 
-.s4-group--travaux {
-  background:rgba(139,92,246,0.045);
-  border-color:rgba(139,92,246,0.09);
-}
+.s4-group--travaux { background:radial-gradient(120% 150% at 6% 0%, rgba(139,92,246,0.07) 0%, transparent 68%); }
 
-html.dark .s4-group--travaux { background:rgba(234,179,8,0.055); border-color:rgba(234,179,8,0.11); }
+html.dark .s4-group--travaux { background:radial-gradient(120% 150% at 6% 0%, rgba(234,179,8,0.085) 0%, transparent 68%); }
 
-.s4-group--charges {
-  background:rgba(167,139,250,0.05);
-  border-color:rgba(167,139,250,0.10);
-}
+.s4-group--charges { background:radial-gradient(120% 150% at 6% 0%, rgba(167,139,250,0.075) 0%, transparent 68%); }
 
-html.dark .s4-group--charges { background:rgba(250,204,21,0.05); border-color:rgba(250,204,21,0.10); }
+html.dark .s4-group--charges { background:radial-gradient(120% 150% at 6% 0%, rgba(250,204,21,0.08) 0%, transparent 68%); }
 
 
 /* Watermark SVG — commit 4 : remplace emojis par icônes thématiques sobres */
@@ -2830,11 +2846,11 @@ html.dark .s4-group-watermark { opacity:0.10; color:var(--v3-accent-strong, #FBB
 .s4-kicker-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
 
 /* (Commit 4) Kickers — nuances de violet (light) / jaune (dark) */
-.s4-kicker--frais { color:#7C3AED; }
+.s4-kicker--frais { color:var(--accent-strong); }
 
-.s4-kicker--travaux { color:#8B5CF6; }
+.s4-kicker--travaux { color:var(--accent-strong); }
 
-.s4-kicker--charges { color:#A78BFA; }
+.s4-kicker--charges { color:var(--accent-strong); }
 
 html.dark .s4-kicker--frais { color:#F59E0B; }
 
@@ -2847,8 +2863,8 @@ html.dark .s4-kicker--charges { color:#FACC15; }
 .s4-prix-badge {
   display:inline-flex; align-items:center; gap:0.35rem;
   font-size:0.72rem; font-weight:600;
-  color:var(--accent-strong); background:var(--accent-soft);
-  padding:0.25rem 0.75rem; border-radius:var(--r-full);
+  letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--accent-strong);
   margin-bottom:0.75rem;
 }
 
@@ -2936,23 +2952,32 @@ html.dark .s4-kicker--charges { color:#FACC15; }
 
 
 /* Mini-card champ */
-.s4-fields { display:grid; grid-template-columns:1fr 1fr; gap:0.625rem; }
+/* Deux filets cote a cote se liraient comme un seul trait continu : la
+   gouttiere s'elargit pour les separer, et la rangee se resserre puisque
+   le filet fait deja la separation verticale. */
+.s4-fields { display:grid; grid-template-columns:1fr 1fr; gap:0.15rem 1.5rem; }
 
+/* §1.8 — le champ ne groupe rien, il porte une valeur : il perd son cadre
+   et s'assoit sur un filet. Un conteneur de moins entre le texte et la page. */
 .s4-field-card {
   position:relative;
-  background:var(--bg-elevated); border:1.5px solid var(--border-subtle);
-  border-radius:12px; padding:0.75rem 0.875rem;
-  cursor:pointer; transition:box-shadow var(--t) var(--ease-out), border-color var(--t) var(--ease-out), transform var(--t) var(--ease-out);
+  background:none; border:none;
+  border-bottom:2px solid var(--border-subtle);
+  border-radius:0; padding:0.7rem 0.15rem 0.55rem;
+  cursor:pointer; transition:border-color var(--t) var(--ease-out);
 }
 
-.s4-field-card:hover {
-  box-shadow:var(--shadow-hover); border-color:var(--border-hover);
-  transform:scale(1.005);
-}
+/* Le survol visait l'ombre et le cadre : il vise le filet. Agrandir un
+   element sans boite ferait flotter le texte sans rien designer. */
+.s4-field-card:hover { border-bottom-color:var(--border-hover); }
+.s4-field-card:focus-within { border-bottom-color:var(--accent-strong); }
 
+/* En edition, le filet s'epaissit et prend l'accent : meme signal qu'avant,
+   porte par le seul trait qui reste. */
 .s4-field-card.s4-editing {
-  border-color:var(--accent-strong);
-  box-shadow:0 0 0 2px var(--accent-soft);
+  border-bottom-color:var(--accent-strong);
+  border-bottom-width:3px;
+  padding-bottom:0.4rem;   /* le trait epaissi ne decale pas la ligne suivante */
 }
 
 .s4-field-label {
@@ -2976,21 +3001,23 @@ html.dark .s4-kicker--charges { color:#FACC15; }
   width:100%; display:none; padding:0;
 }
 
+/* §1.10 — un mot en petites capitales sourdes, pas une gelule. La
+   geometrie part avec le fond : sans cela le mot reste decale par un
+   rembourrage qui ne dessine plus rien. */
 .s4-field-badge {
-  position:absolute; top:0.5rem; right:0.5rem;
+  position:absolute; top:0.5rem; right:0.6rem;
   font-size:0.6rem; font-weight:700; letter-spacing:0.06em;
-  text-transform:uppercase; padding:0.15rem 0.45rem;
-  border-radius:var(--r-full);
+  text-transform:uppercase;
 }
 
 /* (Commit 4) Badges Estimé/Modifié — nuances de violet (light) / jaune (dark) au lieu de teal */
-.s4-badge-estime { background:rgba(139,92,246,0.12); color:#7C3AED; }
+.s4-badge-estime { color:#7C3AED; }
 
-html.dark .s4-badge-estime { background:rgba(251,191,36,0.14); color:#FBBF24; }
+html.dark .s4-badge-estime { color:#FBBF24; }
 
-.s4-badge-modifie { background:rgba(91,33,182,0.14); color:#5B21B6; }
+.s4-badge-modifie { color:#5B21B6; }
 
-html.dark .s4-badge-modifie { background:rgba(245,158,11,0.18); color:#F59E0B; }
+html.dark .s4-badge-modifie { color:#F59E0B; }
 
 
 /* Sous-total */
@@ -3015,7 +3042,7 @@ html.dark .s4-badge-modifie { background:rgba(245,158,11,0.18); color:#F59E0B; }
 }
 
 .s4-result-card--acq {
-  background:linear-gradient(135deg, #5B21B6 0%, #7C3AED 100%);
+  background:linear-gradient(135deg, #5B21B6 0%, #6D28D9 100%);
   color:#fff;
 }
 
@@ -3024,7 +3051,7 @@ html.dark .s4-result-card--acq {
 }
 
 .s4-result-card--mensuel {
-  background:linear-gradient(135deg, #4338CA 0%, #6366F1 100%);
+  background:linear-gradient(135deg, #4338CA 0%, #4F46E5 100%);
   color:#fff;
 }
 
@@ -3059,10 +3086,10 @@ html.dark .s4-result-card--mensuel {
 
 
 /* ── PDF pill ── */
+/* Le telechargement rejoint les actions de fin d'ecran : c'est la qu'on
+   emporte le resultat, pas avant de l'avoir lu. */
 .pdf-pill-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 1rem 0;
+  display:flex; justify-content:center; margin-top:1.75rem;
 }
 
 .pdf-pill {
@@ -3075,7 +3102,7 @@ html.dark .s4-result-card--mensuel {
   padding: 10px 20px;
   font-size: 0.85rem;
   font-weight: 500;
-  color: #a78bfa;
+  color: var(--accent-strong);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -3279,8 +3306,9 @@ html.dark .s4-result-card--mensuel {
 .s5-block {
   position:relative; z-index:1;
   margin-top:1.5rem; padding:1.25rem 1.25rem 1.1rem;
-  background:var(--v3-bg-elevated); border:1px solid var(--v3-border-subtle);
-  border-radius:14px; box-shadow:var(--v3-shadow-card);
+  background:radial-gradient(120% 150% at 6% 0%,
+              color-mix(in srgb, var(--v3-accent-strong) 7%, transparent) 0%, transparent 68%);
+  border-radius:14px 14px 2.2rem 14px;
 }
 
 .s5-block-kicker {
@@ -3446,7 +3474,26 @@ html.dark .s5-change-btn:hover { color:#0B0B1A; }
 
 .s5-info-label { font-size:0.78rem; color:var(--v3-text-secondary); font-weight:500; }
 
-.s5-info-value { font-size:1.15rem; font-weight:700; color:var(--v3-accent-strong); font-variant-numeric:tabular-nums; }
+/* §1.8 — la valeur est saisissable, donc elle porte un filet, pas un cadre.
+   Au repos elle se lit comme le texte qu'elle remplacait ; au survol et au
+   focus le trait se montre, ce qui est le seul indice dont on ait besoin. */
+.s5-info-edit { display:inline-flex; align-items:baseline; gap:0.25rem; }
+
+.s5-info-value {
+  font-size:1.15rem; font-weight:700; color:var(--v3-accent-strong);
+  font-variant-numeric:tabular-nums;
+  width:4.2em; text-align:right;
+  background:none; border:none; border-bottom:2px solid transparent;
+  border-radius:0; padding:0 0 1px; margin:0;
+  font-family:inherit; cursor:text;
+  transition:border-color var(--t) var(--ease-out);
+}
+
+.s5-info-value:hover { border-bottom-color:var(--border-mid); }
+.s5-info-value:focus { outline:none; border-bottom-color:var(--v3-accent-strong); }
+.s5-info-value::placeholder { color:var(--v3-text-muted); opacity:1; }
+
+.s5-info-unit { font-size:0.85rem; font-weight:600; color:var(--v3-accent-strong); }
 
 .s5-info-source { font-size:0.7rem; color:var(--v3-text-muted); }
 
@@ -3745,9 +3792,9 @@ html.dark .s7-chart-svg .area-net { fill:rgba(74,222,128,.12); }
 
 
 .s7-revente-wrap {
-  background: var(--surface);
-  border:1px solid var(--border-subtle);
-  border-radius: var(--r-lg);
+  background: radial-gradient(120% 150% at 6% 0%,
+              color-mix(in srgb, var(--text) 5%, transparent) 0%, transparent 68%);
+  border-radius: var(--r-lg) var(--r-lg) 2.2rem var(--r-lg);
   padding:1.25rem;
   margin-bottom:1.25rem;
 }
@@ -4196,15 +4243,10 @@ html.dark .s8-subscore.focus .s8-subscore-label { color: #FB923C; }
 
 .s8-subscore.focus .s8-subscore-val { color: var(--text); }
 
-.s8-subscore.focus::before {
-  content: '\2193 point d\27 attention';
-  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-  font-size: .58rem; font-weight: 700;
-  background: #FB923C; color: #fff;
-  padding: .12rem .45rem; border-radius: var(--r-full);
-  letter-spacing: .04em;
-  white-space: nowrap;
-}
+/* La gelule « point d'attention » disait, en 110 px sur une puce qui en fait
+   102, ce que le verdict enonce en toutes lettres quarante pixels plus haut
+   (« Un point appelle ton attention : la faisabilite »). Elle debordait sur
+   la colonne voisine. Le fond teinte et l etiquette orange suffisent. */
 
 
 /* ─── 3. Bilan en chiffres ─── */
@@ -4252,9 +4294,9 @@ html.dark .s8-subscore.focus .s8-subscore-label { color: #FB923C; }
 
 /* ─── 4. Typologies sur la commune ─── */
 .s8-typo-section {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--r-xl);
+  background: radial-gradient(120% 150% at 6% 0%,
+              color-mix(in srgb, var(--text) 5%, transparent) 0%, transparent 68%);
+  border-radius: var(--r-xl) var(--r-xl) 2.2rem var(--r-xl);
   padding: 1.5rem 1.75rem;
   margin-bottom: 1.25rem;
 }
@@ -4289,36 +4331,39 @@ html.dark .s8-subscore.focus .s8-subscore-label { color: #FB923C; }
   font-size: .72rem; color: var(--text-muted); margin-bottom: .65rem;
 }
 
+/* §1.10 — le verdict tient a la couleur et au signe, pas au medaillon. */
 .s8-typo-badge {
-  display: inline-flex; align-items: center; gap: .25rem;
-  font-size: .68rem; font-weight: 600; padding: .2rem .55rem;
-  border-radius: var(--r-full);
+  display: inline-flex; align-items: center; gap: .3rem;
+  font-size: .68rem; font-weight: 600;
 }
 
 .s8-typo-card.ok { border-color: rgba(34,197,94,.25); }
 
-.s8-typo-card.ok .s8-typo-badge { background: var(--green-soft); color: #15803d; }
+.s8-typo-card.ok .s8-typo-badge { color: var(--green-text); }
 
 html.dark .s8-typo-card.ok .s8-typo-badge { color: var(--green-text); }
 
 .s8-typo-card.tight { border-color: rgba(251,191,36,.3); }
 
-.s8-typo-card.tight .s8-typo-badge { background: rgba(251,191,36,.15); color: #a16207; }
+.s8-typo-card.tight .s8-typo-badge { color: var(--orange-text); }
 
 html.dark .s8-typo-card.tight .s8-typo-badge { color: var(--yellow); }
 
 .s8-typo-card.over { border-color: rgba(248,113,113,.25); opacity: .85; }
 
-.s8-typo-card.over .s8-typo-badge { background: var(--red-soft); color: #b91c1c; }
+.s8-typo-card.over .s8-typo-badge { color: var(--red-text); }
 
-html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
+html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red-text); }
 
 
 /* ─── 5. Top 3 leviers ─── */
+/* §1.2 — le wrapper groupe, mais rien ne s'y clique : il passe en zone.
+   La rangee, elle, reste une boite parce qu'elle est la cible du geste. */
 .s8-leviers {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--r-xl);
+  background: radial-gradient(120% 150% at 6% 0%,
+              color-mix(in srgb, var(--accent-strong) 9%, transparent) 0%,
+              transparent 68%);
+  border-radius: var(--r-xl) var(--r-xl) 2.2rem var(--r-xl);
   padding: 1.5rem 1.75rem;
   margin-bottom: 1.25rem;
 }
@@ -4355,12 +4400,14 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   outline-offset: 2px;
 }
 
+/* §1.7 — le rang se lit dans le chiffre, pas dans la pastille qui l'entoure.
+   La largeur reste fixe pour que les corps de texte s'alignent. */
 .s8-levier-num {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: linear-gradient(135deg, #A78BFA, #818CF8);
-  color: #fff; font-weight: 700; font-size: .82rem;
+  width: 28px; flex-shrink: 0;
+  font-family: var(--font-display); font-style: italic;
+  font-size: 1.25rem; font-weight: 500; line-height: 1;
+  color: var(--accent-strong);
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
 }
 
 .s8-levier-body { flex: 1; min-width: 0; }
@@ -4458,7 +4505,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
 
 .s8-vs-teaser-hint strong { color: var(--green-text); font-weight: 700; }
 
-.s8-vs-teaser-hint.neg strong { color: var(--orange); font-weight: 700; }
+.s8-vs-teaser-hint.neg strong { color: var(--orange-text); font-weight: 700; }
 
 .s8-vs-chevron {
   color: var(--text-faint);
@@ -4469,32 +4516,8 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
 
 
 /* Highlight aéré au-dessus du teaser "Acheter vs Louer" — attire l'œil sans encombrer */
-.s8-vs-highlight {
-  display: flex; align-items: center; justify-content: center; gap: .9rem;
-  margin: 2.5rem auto 1.1rem;
-  max-width: 480px;
-}
-
-.s8-vs-highlight-label {
-  font-size: .68rem; font-weight: 600; letter-spacing: .14em;
-  color: var(--text-muted); text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.s8-vs-highlight-dot {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--cream-border) 30%, var(--cream-border) 70%, transparent);
-  max-width: 80px;
-}
-
-.s8-vs-highlight-dot:first-child {
-  background: linear-gradient(90deg, transparent, var(--cream-border));
-}
-
-.s8-vs-highlight-dot:last-child {
-  background: linear-gradient(90deg, var(--cream-border), transparent);
-}
+/* .s8-vs-highlight retire : un filet decoratif de 17 px, aria-hidden, seul
+   entre deux blocs — un arret de lecture pour aucune information. */
 
 /* Pulse subtil pour attirer l'œil sur le teaser fermé */
 .s8-vs-teaser:not(.open) {
@@ -4550,10 +4573,24 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   gap: .85rem;
 }
 
+/* La colonne du comparatif groupe des lignes sans etre cliquable : un aplat
+   de plus sous le teaser, donc un lavis suffit a la delimiter. */
 .s8-vs-col {
   padding: 1rem;
-  border-radius: var(--r-md);
-  background: var(--surface-2);
+  border-radius: var(--r-md) var(--r-md) 1.6rem var(--r-md);
+  background: radial-gradient(120% 150% at 94% 0%,
+              color-mix(in srgb, var(--text) 6%, transparent) 0%,
+              transparent 70%);
+}
+
+/* §1.9 — acheter et louer forment une paire : leurs coins ouverts se font
+   face vers l'exterieur, la paire encadre la rangee au lieu de repeter
+   deux fois la meme forme. Le lavis suit le meme axe que le coin. */
+.s8-vs-grid > .s8-vs-col:first-child {
+  border-radius: var(--r-md) var(--r-md) var(--r-md) 1.6rem;
+  background: radial-gradient(120% 150% at 6% 0%,
+              color-mix(in srgb, var(--text) 6%, transparent) 0%,
+              transparent 70%);
 }
 
 .s8-vs-col-title {
@@ -4592,7 +4629,7 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
 
 .s8-vs-verdict.neg { background: linear-gradient(135deg, rgba(251,146,60,.10), transparent); border-color: rgba(251,146,60,.25); }
 
-.s8-vs-verdict.neg strong { color: var(--orange); }
+.s8-vs-verdict.neg strong { color: var(--orange-text); }
 
 .s8-vs-col-section {
   font-size: .7rem; letter-spacing: .04em; text-transform: uppercase;
@@ -4622,5 +4659,61 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red); }
   .s8-bilan-row { grid-template-columns: repeat(2, 1fr); }
   .s8-typo-grid { grid-template-columns: 1fr; }
   .s8-vs-grid { grid-template-columns: 1fr; }
+  /* Empilees, les colonnes ne forment plus une paire : le miroir n'a plus
+     rien a encadrer, les deux reprennent le meme coin. */
+  .s8-vs-grid > .s8-vs-col:first-child {
+    border-radius: var(--r-md) var(--r-md) 1.6rem var(--r-md);
+    background: radial-gradient(120% 150% at 6% 0%,
+                color-mix(in srgb, var(--text) 6%, transparent) 0%,
+                transparent 70%);
+  }
   .s8-subscores { grid-template-columns: repeat(2, 1fr); gap: .65rem; }
+}
+
+/* ── Le detail replie de l'ecran final ────────────────────────────────
+   Le resume est un controle, pas une carte : un filet, une etiquette, un
+   chevron. Ouvert, le contenu ne recoit aucun cadre supplementaire — les
+   sections qu'il porte ont deja le leur. */
+.s8-detail { margin-bottom:1.25rem; }
+
+.s8-detail-summary {
+  display:flex; align-items:center; gap:0.5rem;
+  padding:0.7rem 0.15rem;
+  border-bottom:2px solid var(--border-subtle);
+  cursor:pointer; list-style:none;
+  font-size:0.85rem; font-weight:600; color:var(--text-secondary);
+  transition:border-color var(--t) var(--ease-out), color var(--t) var(--ease-out);
+}
+
+/* Le triangle natif de <summary> doublerait le chevron. */
+.s8-detail-summary::-webkit-details-marker { display:none; }
+.s8-detail-summary::marker { content:''; }
+
+.s8-detail-summary:hover { border-bottom-color:var(--border-hover); color:var(--text); }
+
+.s8-detail-summary:focus-visible {
+  outline:2px solid var(--accent-strong); outline-offset:3px; border-radius:4px;
+}
+
+.s8-detail-hint {
+  font-size:0.72rem; font-weight:500; color:var(--text-muted);
+  letter-spacing:0.02em;
+}
+
+.s8-detail-chevron {
+  margin-left:auto; flex-shrink:0; color:var(--text-muted);
+  transition:transform var(--t) var(--ease-out);
+}
+
+.s8-detail[open] > .s8-detail-summary { border-bottom-color:var(--accent-strong); color:var(--text); }
+.s8-detail[open] .s8-detail-chevron { transform:rotate(180deg); }
+
+.s8-detail-body { padding-top:1.1rem; }
+
+/* Les deux sections portees par le detail se suivent : la derniere n'a plus
+   besoin de pousser le controle vers le bas. */
+.s8-detail-body > *:last-child { margin-bottom:0; }
+
+@media (prefers-reduced-motion:reduce) {
+  .s8-detail-chevron { transition:none; }
 }

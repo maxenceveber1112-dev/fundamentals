@@ -20,7 +20,7 @@
   <div id="summary">Chargement…</div>
   <div id="out"></div>
 
-  <script src="immo-core.js"></script>
+  <script src="immo-core.js?v=core2"></script>
   <script>
   (function(){
     var out = document.getElementById('out');
@@ -45,7 +45,7 @@
     check('calculateBorrowingCapacity inverse de payment ≈ 160000', approx(cap, 160000, 5), cap);
 
     // estimateAcquisitionFees
-    check('estimateAcquisitionFees(200000,"ancien") = 14000 (7%)', estimateAcquisitionFees(200000,'ancien') === 14000, estimateAcquisitionFees(200000,'ancien'));
+    check('frais ancien 200 000 suit NOTARY_RATE_ANCIEN', estimateAcquisitionFees(200000,'ancien') === Math.round(200000*NOTARY_RATE_ANCIEN), estimateAcquisitionFees(200000,'ancien'));
     check('estimateAcquisitionFees(200000,"neuf") = 5000 (2,5%)', estimateAcquisitionFees(200000,'neuf') === 5000, estimateAcquisitionFees(200000,'neuf'));
     check('estimateAcquisitionFees(50000,"ancien") = 5000 (<75k → 10%)', estimateAcquisitionFees(50000,'ancien') === 5000, estimateAcquisitionFees(50000,'ancien'));
     check('estimateAcquisitionFees(0) = 0', estimateAcquisitionFees(0,'ancien') === 0);
@@ -74,9 +74,25 @@
     check('getDeptFromPostal("69003") = "69"', getDeptFromPostal('69003') === '69', getDeptFromPostal('69003'));
     check('getDeptFromPostal("") = null', getDeptFromPostal('') === null);
 
+    // La Corse : codes postaux en 20xxx, departements nommes 2A / 2B.
+    check('getDeptFromPostal("20000") = "2A" (Ajaccio)', getDeptFromPostal('20000') === '2A', getDeptFromPostal('20000'));
+    check('getDeptFromPostal("20200") = "2B" (Bastia)', getDeptFromPostal('20200') === '2B', getDeptFromPostal('20200'));
+    check('getDeptFromPostal("20620") = "2B"', getDeptFromPostal('20620') === '2B', getDeptFromPostal('20620'));
+
     // getPrixM2
     check('getPrixM2("75001") > 0 (Paris)', getPrixM2('75001') > 0, getPrixM2('75001'));
     check('getPrixM2("00000") = default', getPrixM2('00000') === (typeof PRIX_M2 !== 'undefined' ? PRIX_M2['default'] : null), getPrixM2('00000'));
+    check('getPrixM2("20000") ne retombe pas sur le defaut', getPrixM2('20000') !== PRIX_M2['default'] && getPrixM2('20000') === PRIX_M2['2A'], getPrixM2('20000'));
+    check('getPrixM2("20200") = prix 2B', getPrixM2('20200') === PRIX_M2['2B'], getPrixM2('20200'));
+    check('DEPT_NAMES couvre tout PRIX_M2', Object.keys(PRIX_M2).filter(function(k){return k!=='default' && !DEPT_NAMES[k];}).length === 0);
+
+    // estimateAcquisitionFees — le type de bien prime sur le seuil bas
+    check('frais neuf 60 000 = 2,5 % (pas 10 %)', estimateAcquisitionFees(60000,'neuf') === Math.round(60000*NOTARY_RATE_NEUF), estimateAcquisitionFees(60000,'neuf'));
+    check('frais ancien 60 000 = 10 % (seuil bas)', estimateAcquisitionFees(60000,'ancien') === Math.round(60000*NOTARY_RATE_LOW), estimateAcquisitionFees(60000,'ancien'));
+    check('frais ancien 200 000 = 7,5 %', estimateAcquisitionFees(200000,'ancien') === Math.round(200000*NOTARY_RATE_ANCIEN), estimateAcquisitionFees(200000,'ancien'));
+    check('frais neuf 200 000 = 2,5 %', estimateAcquisitionFees(200000,'neuf') === Math.round(200000*NOTARY_RATE_NEUF), estimateAcquisitionFees(200000,'neuf'));
+    check('frais prix nul = 0', estimateAcquisitionFees(0,'ancien') === 0);
+    check('taux ancien dans la fourchette annoncee 7-8 %', NOTARY_RATE_ANCIEN >= 0.07 && NOTARY_RATE_ANCIEN <= 0.08, NOTARY_RATE_ANCIEN);
 
     // getTypoById / estimateTypoPrice
     var t = getTypoById('t2');

@@ -27,8 +27,8 @@
   --text-strong: #0C0A09;
   --text-primary: #1C1917;
   --text-secondary: #57534E;
-  --text-muted: #78716C;
-  --text-faint: #756E67; /* AA 4.7:1 sur fond clair #FAF8F5 (était #A8A29E ~2.4:1) */
+  --text-muted: #706964; /* AA 4,5 tenu aussi sur les lavis des briques (etait #78716C : 4,23) */
+  --text-faint: #6F6861; /* AA sur le fond nu ET sur les lavis des briques (etait #756E67 : 4,43) */
 
   /* ── Bordures ── */
   --border: rgba(28,25,23,0.07);
@@ -80,6 +80,7 @@
   --green-border: rgba(34,197,94,0.32);
   --red: #DC2626;
   --red-soft: rgba(220,38,38,0.10);
+  --red-text: #B91C1C;
   --orange: #EA580C;
   /* Encre orange. --orange est fait pour des aplats : comme couleur de
      caractere il donne 3,36 sur le fond nu et 2,98 sur son propre lavis.
@@ -173,6 +174,9 @@ html.dark {
   --green-dim: rgba(74,222,128,0.18);
   --green-border: rgba(74,222,128,0.30);
   --red: #f87171;
+  /* Meme separation que --green / --green-text : l'aplat sert de fond, le
+     texte a besoin d'une version qui tienne sur les lavis. */
+  --red-text: #FCA5A5;
   --red-soft: rgba(248,113,113,0.12);
   --orange: #fbbf24;
   /* En sombre l'orange est clair : il passe deja comme encre. */

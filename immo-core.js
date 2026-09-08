@@ -10,7 +10,11 @@
 var EFFORT_MAX = 0.35;
 var RENT_WEIGHT = 0.70;   // part des loyers attendus retenue par les banques dans la capacite d'emprunt
 var NOTARY_RATE_LOW = 0.10;
-var NOTARY_RATE_ANCIEN = 0.07;
+/* Le glossaire de la brique annonce « environ 7-8 % dans l'ancien » ; la
+   constante calculait 7 %, le bas de la fourchette. On prend le milieu, qui
+   colle aussi a la hausse des droits departementaux entree en vigueur en
+   2025. Une seule constante a bouger si le bareme change encore. */
+var NOTARY_RATE_ANCIEN = 0.075;
 var NOTARY_RATE_NEUF = 0.025;
 var PRICE_THRESHOLD_LOW = 75000;
 
@@ -65,6 +69,18 @@ var DEPT_NAMES = {
 function getDeptFromPostal(cp) {
   if (!cp || cp.length < 2) return null;
   if (['971','972','973','974','976'].includes(cp.substring(0,3))) return cp.substring(0,3);
+  /* La Corse n'a pas de departement « 20 » : les codes postaux existent en
+     20xxx mais les departements s'appellent 2A et 2B. getDeptFromPostal
+     renvoyait donc '20', absent de PRIX_M2 comme de DEPT_NAMES — Ajaccio et
+     Bastia retombaient sur le prix national par defaut (2 300 EUR/m² au lieu
+     de 4 500 et 3 300) et affichaient un departement vide.
+     Repartition usuelle : 200xx-201xx en Corse-du-Sud, 202xx-206xx en
+     Haute-Corse. Quelques communes font exception ; l'ecart reste sans
+     commune mesure avec le repli national. */
+  if (cp.substring(0,2) === '20') {
+    var c3 = cp.substring(0,3);
+    return (c3 === '200' || c3 === '201') ? '2A' : '2B';
+  }
   return cp.substring(0,2);
 }
 function getPrixM2(cp) {
@@ -122,8 +138,12 @@ function calculateMobilizableDownPayment(availableSavings, familyHelp, protected
 
 function estimateAcquisitionFees(price, propertyType) {
   if (!price || price <= 0) return 0;
-  if (price < PRICE_THRESHOLD_LOW) return Math.round(price * NOTARY_RATE_LOW);
+  /* Le neuf est en TVA : ses frais restent reduits quel que soit le prix.
+     Le seuil bas, lui, corrige le poids des frais fixes sur un petit prix —
+     ce qui ne concerne que l'ancien. Teste avant le type, il facturait 10 %
+     a un neuf a 60 000 EUR au lieu de 2,5 %. */
   if (propertyType === 'neuf' || propertyType === 'vefa') return Math.round(price * NOTARY_RATE_NEUF);
+  if (price < PRICE_THRESHOLD_LOW) return Math.round(price * NOTARY_RATE_LOW);
   return Math.round(price * NOTARY_RATE_ANCIEN);
 }
 

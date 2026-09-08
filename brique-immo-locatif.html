@@ -31,25 +31,33 @@
   <!-- Styles communs aux deux briques immobilieres. Cette feuille occupe
        l'emplacement exact du bloc en ligne qu'elle remplace, pour preserver
        l'ordre de cascade vis-a-vis de theme.css. -->
-  <link rel="stylesheet" href="immo-commun.css?v=zone3" />
+  <link rel="stylesheet" href="immo-commun.css?v=da11" />
   <style>
     /* Règles propres à l'investissement locatif. Le reste vit dans
        immo-commun.css, chargé juste au-dessus. */
 
+/* §1.6 — la troisieme famille vit ici et non dans la feuille commune :
+   sans elle, la carte de cette brique serait restee encadree pendant que
+   ses deux soeurs passaient au lavis. */
 /* — Amber: Investissement locatif */
 .project-type-card[data-val="investissement_locatif"] {
-  background:linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.04) 100%);
-  border:1.5px solid rgba(245,158,11,0.25);
+  background:
+    radial-gradient(120% 150% at 6% 0%, rgba(245,158,11,0.11) 0%, transparent 68%),
+    linear-gradient(rgba(245,158,11,0.05), rgba(245,158,11,0.05));
 }
 
 .project-type-card[data-val="investissement_locatif"]:hover {
-  border-color:rgba(245,158,11,0.55); background:linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(245,158,11,0.08) 100%);
-  box-shadow:0 4px 28px -4px rgba(245,158,11,0.25); transform:translateY(-3px) scale(1.015);
+  background:
+    radial-gradient(120% 150% at 6% 0%, rgba(245,158,11,0.17) 0%, transparent 68%),
+    linear-gradient(rgba(245,158,11,0.07), rgba(245,158,11,0.07));
 }
 
 .project-type-card[data-val="investissement_locatif"].selected {
-  border-color:#f59e0b; background:linear-gradient(135deg, rgba(245,158,11,0.22) 0%, rgba(245,158,11,0.12) 100%);
-  box-shadow:0 0 0 2px rgba(245,158,11,0.2), 0 4px 32px -4px rgba(245,158,11,0.35); transform:scale(1.02);
+  border-radius:1.25rem 1.25rem 2.4rem 1.25rem;
+  background:
+    radial-gradient(120% 155% at 6% 0%, rgba(245,158,11,0.26) 0%, transparent 70%),
+    radial-gradient(90% 130% at 96% 96%, rgba(245,158,11,0.16) 0%, transparent 60%),
+    linear-gradient(rgba(245,158,11,0.10), rgba(245,158,11,0.10));
 }
 
 
@@ -156,13 +164,15 @@ html.dark .s6-loyer-kicker { color:#a78bfa; }
 
 
 /* Charges & Risques grouped card */
+/* Le jumeau exact de .s4-group restait une carte : sur le meme ecran, un
+   groupe en lavis et un groupe encadre ne racontaient pas la meme chose. */
 .s6-charges-group {
-  padding:1rem 1.125rem; border-radius:1rem;
-  background:rgba(139,92,246,0.05); border:1px solid rgba(139,92,246,0.12);
+  padding:1rem 1.125rem; border-radius:1rem 1rem 2.2rem 1rem;
+  background:radial-gradient(120% 150% at 6% 0%, rgba(139,92,246,0.08) 0%, transparent 68%);
   margin-top:0.75rem;
 }
 
-html.dark .s6-charges-group { background:rgba(139,92,246,0.09); border-color:rgba(139,92,246,0.18); }
+html.dark .s6-charges-group { background:radial-gradient(120% 150% at 6% 0%, rgba(139,92,246,0.13) 0%, transparent 68%); }
 
 .s6-charges-kicker {
   font-size:0.68rem; font-weight:700; text-transform:uppercase;
@@ -194,27 +204,29 @@ html.dark .s6-suggest-banner {
 html.dark .s6-suggest-text strong { color:#a78bfa; }
 
 .s6-charges-grid {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:0.5rem 1.25rem;
+  align-items:stretch;
 }
 
 @media(max-width:600px) { .s6-charges-grid { grid-template-columns:1fr; } }
 
+/* §1.8 — la mini-carte n'affiche qu'une valeur : un filet suffit. */
 .s6-charge-mini {
-  padding:0.7rem 0.65rem; border-radius:0.75rem;
-  background:var(--bg-elevated); border:1px solid var(--border-subtle);
+  padding:0.6rem 0.15rem 0.5rem; border-radius:0;
+  background:none; border:none;
+  border-bottom:2px solid var(--border-subtle);
   text-align:center;
 }
-
-html.dark .s6-charge-mini { background:rgba(255,255,255,0.04); }
 
 .s6-charge-mini-label {
   font-size:0.7rem; font-weight:600; color:var(--text-muted); margin-bottom:0.25rem;
   display:flex; align-items:center; justify-content:center; gap:0.25rem;
 }
 
+/* §1.10 — un mot en petites capitales, pas une gelule. */
 .s6-badge-estime {
-  font-size:0.55rem; font-weight:700; padding:0.1rem 0.35rem;
-  border-radius:9999px; background:rgba(16,185,129,0.12); color:#10b981;
+  font-size:0.58rem; font-weight:700; letter-spacing:0.05em;
+  text-transform:uppercase; color:var(--green-text);
   vertical-align:middle;
 }
 
@@ -243,28 +255,51 @@ html.dark .s6-charge-mini { background:rgba(255,255,255,0.04); }
 
 @media(max-width:600px) { .s6-gestion-cards { grid-template-columns:1fr; } }
 
+/* §1.6 — meme geste que les cartes de projet : un lavis, un coin qui
+   s'ouvre, et la coche deja nue en haut a droite. La bordure disparait. */
 .s6-gestion-card {
   position:relative; padding:0.875rem 0.75rem; border-radius:1rem;
-  background:var(--surface-2); border:2px solid transparent;
-  cursor:pointer; transition:all 0.2s ease; text-align:center;
+  border:none;
+  background:
+    radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.10) 0%, transparent 68%),
+    linear-gradient(rgba(120,113,108,0.055), rgba(120,113,108,0.055));
+  cursor:pointer; transition:background 0.2s ease, border-radius 0.2s ease; text-align:center;
 }
 
-html.dark .s6-gestion-card { background:rgba(255,255,255,0.04); }
+html.dark .s6-gestion-card {
+  background:
+    radial-gradient(120% 150% at 6% 0%, rgba(255,255,255,0.09) 0%, transparent 68%),
+    linear-gradient(rgba(255,255,255,0.04), rgba(255,255,255,0.04));
+}
 
-.s6-gestion-card:hover { border-color:rgba(139,92,246,0.3); }
+.s6-gestion-card:hover {
+  background:
+    radial-gradient(120% 150% at 6% 0%, rgba(139,92,246,0.14) 0%, transparent 68%),
+    linear-gradient(rgba(120,113,108,0.055), rgba(120,113,108,0.055));
+}
 
 .s6-gestion-card.active {
-  background:rgba(139,92,246,0.08); border-color:rgba(139,92,246,0.5);
+  border-radius:1rem 1rem 2.2rem 1rem;
+  background:
+    radial-gradient(120% 155% at 6% 0%, rgba(139,92,246,0.24) 0%, transparent 70%),
+    radial-gradient(90% 130% at 96% 96%, rgba(139,92,246,0.15) 0%, transparent 60%),
+    linear-gradient(rgba(139,92,246,0.09), rgba(139,92,246,0.09));
 }
 
-html.dark .s6-gestion-card.active { background:rgba(139,92,246,0.15); border-color:#a78bfa; }
+html.dark .s6-gestion-card.active {
+  background:
+    radial-gradient(120% 155% at 6% 0%, rgba(167,139,250,0.28) 0%, transparent 70%),
+    radial-gradient(90% 130% at 96% 96%, rgba(167,139,250,0.18) 0%, transparent 60%),
+    linear-gradient(rgba(167,139,250,0.10), rgba(167,139,250,0.10));
+}
 
+/* §1.6 r.3 — la coche de selection perd sa pastille : le glyphe seul, a
+   l'accent, dit deja « celle-ci ». */
 .s6-gestion-card .s6-gc-check {
-  position:absolute; top:0.5rem; right:0.5rem;
-  width:18px; height:18px; border-radius:50%;
-  background:rgba(139,92,246,0.15); color:#8b5cf6;
+  position:absolute; top:0.45rem; right:0.6rem;
+  color:var(--accent-strong);
   display:none; align-items:center; justify-content:center;
-  font-size:0.65rem; font-weight:700;
+  font-size:0.8rem; font-weight:700;
 }
 
 .s6-gestion-card.active .s6-gc-check { display:flex; }
@@ -276,7 +311,7 @@ html.dark .s6-gestion-card.active { background:rgba(139,92,246,0.15); border-col
 }
 
 .s6-gestion-card .s6-gc-desc {
-  font-size:0.72rem; color:var(--text-faint); margin-top:0.15rem;
+  font-size:0.72rem; color:var(--text-secondary); margin-top:0.15rem;
 }
 
 .s6-gestion-input-wrap {
@@ -311,14 +346,15 @@ html.dark .s6-gestion-input-inner { background:rgba(255,255,255,0.04); }
   letter-spacing:0.06em; color:var(--text-muted);
 }
 
+/* §1.10 — l'etat se lit a la couleur ; l'animation le signale deja. */
 .pulse-badge {
-  font-size:0.7rem; font-weight:600; border-radius:9999px;
-  padding:3px 10px; animation:pulse-badge 2s infinite;
+  font-size:0.7rem; font-weight:600;
+  animation:pulse-badge 2s infinite;
 }
 
-.badge-green { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); }
+.badge-green { background:rgba(16,185,129,0.15); color:var(--green-text); border:1px solid rgba(16,185,129,0.3); }
 
-.badge-orange { background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); }
+.badge-orange { background:rgba(245,158,11,0.15); color:var(--orange-text); border:1px solid rgba(245,158,11,0.3); }
 
 .badge-red { background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); }
 
@@ -407,9 +443,9 @@ html.dark .s6-rendement-kicker { color:#a78bfa; }
   font-size:0.78rem; font-weight:600;
 }
 
-.s6-pill-green { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); }
+.s6-pill-green { background:rgba(16,185,129,0.15); color:var(--green-text); border:1px solid rgba(16,185,129,0.3); }
 
-.s6-pill-amber { background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); }
+.s6-pill-amber { background:rgba(245,158,11,0.15); color:var(--orange-text); border:1px solid rgba(245,158,11,0.3); }
 
 
 /* Capacité résiduelle bubble — lightweight border-left style */
@@ -427,10 +463,8 @@ html.dark .s6-capacity-bubble { border-left-color:rgba(139,92,246,0.5); }
 .s6-capacity-bubble .s6-cap-icon { font-size:1.1rem; flex-shrink:0; margin-top:0.1rem; }
 
 .s6-capacity-bubble strong {
-  font-family:var(--font-display); font-weight:600; color:#8b5cf6;
+  font-family:var(--font-display); font-weight:600; color:var(--accent-strong);
 }
-
-html.dark .s6-capacity-bubble strong { color:#a78bfa; }
 
 
 /* Prix hint — conditional popup */
@@ -452,7 +486,7 @@ html.dark .s6-capacity-bubble strong { color:#a78bfa; }
 .s6-prix-hint-btn {
   background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.3);
   border-radius:9999px; padding:4px 14px; font-size:0.75rem;
-  color:#f59e0b; cursor:pointer;
+  color:var(--orange-text); cursor:pointer;
 }
 
 .s6-prix-hint-btn:hover { background:rgba(245,158,11,0.25); }
@@ -512,10 +546,10 @@ html.dark .s6-info-card { background:rgba(255,255,255,0.04); border-color:rgba(2
   margin-left:0.2rem; cursor:help; vertical-align:middle;
 }
 
+/* §1.6 r.3 — glyphe nu. */
 .s6-gi .s6-gi-icon {
-  width:14px; height:14px; border-radius:50%;
-  background:var(--surface-3); color:var(--text-faint);
-  font-size:0.55rem; font-weight:700;
+  width:14px; height:14px;
+  color:var(--text-faint); font-size:0.7rem; font-weight:700;
   display:inline-flex; align-items:center; justify-content:center;
   line-height:1;
 }
@@ -589,7 +623,7 @@ html.dark .s8-bilan-locatif-cell .s8-bilan-cell-value { color: #C4B5FD; }
 
 html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
   </style>
-  <link rel="stylesheet" href="theme.css?v=contraste3">
+  <link rel="stylesheet" href="theme.css?v=contraste5">
   <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
        voile soit peint avant la mise en page encore vide. -->
   <link rel="stylesheet" href="chargement.css?v=1" />
@@ -616,7 +650,7 @@ html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
 <script src="nav-avatar.js"></script>
-<script src="immo-core.js"></script>
+<script src="immo-core.js?v=core2"></script>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MAIN LAYOUT (sidebar.js injecte la sidebar à gauche)       -->
@@ -1208,10 +1242,15 @@ html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
                 </div>
                 <div class="s5-commune-info" id="s5-commune-info">
                   <div class="s5-info-line">
-                    <span class="s5-info-label">Prix moyen estimé</span>
-                    <span class="s5-info-value" id="s5-prixm2">—</span>
+                    <label class="s5-info-label" for="s5-prixm2">Prix moyen au m&sup2;</label>
+                    <span class="s5-info-edit">
+                      <input type="text" inputmode="numeric" id="s5-prixm2" class="s5-info-value"
+                             placeholder="&mdash;" autocomplete="off" aria-describedby="s5-info-source"
+                             oninput="s5OnPrixM2Input(this)" onblur="s5PrixM2Blur(this)" />
+                      <span class="s5-info-unit" aria-hidden="true">&euro;/m&sup2;</span>
+                    </span>
                   </div>
-                  <div class="s5-info-source">Source&nbsp;: DVF 2024 (data.gouv) · agrégé département</div>
+                  <div class="s5-info-source" id="s5-info-source">M&eacute;diane du d&eacute;partement (DVF 2024) &mdash; modifiable</div>
                 </div>
               </div>
             </div>
@@ -1630,22 +1669,12 @@ html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
 
         <!-- ═══ SCREEN 8 — Diagnostic final ═══ -->
         <div class="screen" id="screen-8">
-          <div class="diag-premium-section">
-            <div class="diag-premium-header">
-              <div class="diag-premium-kicker">DIAGNOSTIC IMMOBILIER</div>
-              <h2 class="diag-premium-title">Ton premier diagnostic immobilier est prêt.</h2>
-            </div>
-
-            <div class="pdf-pill-wrap" style="display:flex;justify-content:center;margin-top:1.5rem;">
-              <button class="pdf-pill" onclick="downloadPDFResume()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                Télécharger mon diagnostic PDF
-              </button>
-            </div>
+          <!-- Un en-tete de 208 px pour annoncer le verdict qui suit
+               immediatement : le titre reprend la forme des sept autres
+               ecrans, et le telechargement rejoint les actions de fin. -->
+          <div class="diag-premium-header">
+            <div class="diag-premium-kicker">DIAGNOSTIC IMMOBILIER</div>
+            <h2 class="diag-premium-title">Ton premier diagnostic immobilier est prêt.</h2>
           </div>
           <!-- ═══ 2. SCORE GLOBAL + 4 SOUS-SCORES ═══ -->
           <div class="s8-score-card" role="region" aria-labelledby="s8-score-verdict">
@@ -1696,58 +1725,75 @@ html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
             </div>
           </div>
 
-          <!-- ═══ 3. BILAN EN CHIFFRES ═══ -->
-          <div class="s8-bilan">
-            <div class="s8-bilan-kicker">TON BILAN IMMOBILIER</div>
-            <div class="s8-bilan-row">
-              <div class="s8-bilan-cell">
-                <div class="s8-bilan-cell-label">Capacité emprunt</div>
-                <div class="s8-bilan-cell-value" id="s8-bilan-emprunt">--</div>
-              </div>
-              <div class="s8-bilan-cell">
-                <div class="s8-bilan-cell-label">Apport</div>
-                <div class="s8-bilan-cell-value" id="s8-bilan-apport">--</div>
-              </div>
-              <div class="s8-bilan-cell">
-                <div class="s8-bilan-cell-label">Budget total</div>
-                <div class="s8-bilan-cell-value" id="s8-bilan-budget">--</div>
-              </div>
-              <div class="s8-bilan-cell">
-                <div class="s8-bilan-cell-label">Mensualité</div>
-                <div class="s8-bilan-cell-value" id="s8-bilan-mensualite">--</div>
-              </div>
-            </div>
-            <div class="s8-bilan-locatif" id="s8-bilan-locatif" hidden>
-              <div class="s8-bilan-locatif-label">SI TU LE METS EN LOCATION</div>
+          <!-- ═══ 3–4. LE DÉTAIL, REPLIÉ PAR DÉFAUT ═══ -->
+          <!-- L'écran final empilait neuf sections de même poids sur plus de
+               2 100 px : le verdict, qui est la réponse, se lisait au milieu
+               d'une masse. Le bilan chiffré et les typologies sont de la
+               référence — ils restent à un geste, sans peser sur la lecture.
+               <details> plutôt qu'un script : clavier et lecteurs d'écran le
+               connaissent déjà, et il fonctionne sans JavaScript. -->
+          <details class="s8-detail">
+            <summary class="s8-detail-summary">
+              <span class="s8-detail-label">Le détail chiffré</span>
+              <span class="s8-detail-hint">bilan &middot; typologies</span>
+              <svg class="s8-detail-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="s8-detail-body">
+            <!-- ═══ 3. BILAN EN CHIFFRES ═══ -->
+            <div class="s8-bilan">
+              <div class="s8-bilan-kicker">TON BILAN IMMOBILIER</div>
               <div class="s8-bilan-row">
-                <div class="s8-bilan-cell s8-bilan-locatif-cell">
-                  <div class="s8-bilan-cell-label">Loyer estimé</div>
-                  <div class="s8-bilan-cell-value" id="s8-loc-loyer">--</div>
+                <div class="s8-bilan-cell">
+                  <div class="s8-bilan-cell-label">Capacité emprunt</div>
+                  <div class="s8-bilan-cell-value" id="s8-bilan-emprunt">--</div>
                 </div>
-                <div class="s8-bilan-cell s8-bilan-locatif-cell" id="s8-loc-cashflow-cell">
-                  <div class="s8-bilan-cell-label">Cashflow</div>
-                  <div class="s8-bilan-cell-value" id="s8-loc-cashflow">--</div>
+                <div class="s8-bilan-cell">
+                  <div class="s8-bilan-cell-label">Apport</div>
+                  <div class="s8-bilan-cell-value" id="s8-bilan-apport">--</div>
                 </div>
-                <div class="s8-bilan-cell s8-bilan-locatif-cell">
-                  <div class="s8-bilan-cell-label">Rendement net</div>
-                  <div class="s8-bilan-cell-value" id="s8-loc-rendement">--</div>
+                <div class="s8-bilan-cell">
+                  <div class="s8-bilan-cell-label">Budget total</div>
+                  <div class="s8-bilan-cell-value" id="s8-bilan-budget">--</div>
                 </div>
-                <div class="s8-bilan-cell s8-bilan-locatif-cell">
-                  <div class="s8-bilan-cell-label">Capacité (loyers incl.)</div>
-                  <div class="s8-bilan-cell-value" id="s8-loc-cap-res">--</div>
+                <div class="s8-bilan-cell">
+                  <div class="s8-bilan-cell-label">Mensualité</div>
+                  <div class="s8-bilan-cell-value" id="s8-bilan-mensualite">--</div>
+                </div>
+              </div>
+              <div class="s8-bilan-locatif" id="s8-bilan-locatif" hidden>
+                <div class="s8-bilan-locatif-label">SI TU LE METS EN LOCATION</div>
+                <div class="s8-bilan-row">
+                  <div class="s8-bilan-cell s8-bilan-locatif-cell">
+                    <div class="s8-bilan-cell-label">Loyer estimé</div>
+                    <div class="s8-bilan-cell-value" id="s8-loc-loyer">--</div>
+                  </div>
+                  <div class="s8-bilan-cell s8-bilan-locatif-cell" id="s8-loc-cashflow-cell">
+                    <div class="s8-bilan-cell-label">Cashflow</div>
+                    <div class="s8-bilan-cell-value" id="s8-loc-cashflow">--</div>
+                  </div>
+                  <div class="s8-bilan-cell s8-bilan-locatif-cell">
+                    <div class="s8-bilan-cell-label">Rendement net</div>
+                    <div class="s8-bilan-cell-value" id="s8-loc-rendement">--</div>
+                  </div>
+                  <div class="s8-bilan-cell s8-bilan-locatif-cell">
+                    <div class="s8-bilan-cell-label">Capacité (loyers incl.)</div>
+                    <div class="s8-bilan-cell-value" id="s8-loc-cap-res">--</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- ═══ 4. TYPOLOGIES SUR LA COMMUNE ═══ -->
-          <div class="s8-typo-section">
-            <div class="s8-bilan-kicker" id="s8-typo-kicker">TYPOLOGIES DANS TON DÉPARTEMENT</div>
-            <p class="s8-typo-sub" id="s8-typo-sub">Croisement de ton budget avec les prix moyens DVF (agrégé département).</p>
-            <div class="s8-typo-grid" id="s8-typo-grid">
-              <!-- généré par JS -->
+            <!-- ═══ 4. TYPOLOGIES SUR LA COMMUNE ═══ -->
+            <div class="s8-typo-section">
+              <div class="s8-bilan-kicker" id="s8-typo-kicker">TYPOLOGIES DANS TON DÉPARTEMENT</div>
+              <p class="s8-typo-sub" id="s8-typo-sub">Croisement de ton budget avec les prix moyens DVF (agrégé département).</p>
+              <div class="s8-typo-grid" id="s8-typo-grid">
+                <!-- généré par JS -->
+              </div>
             </div>
-          </div>
+
+            </div>
+          </details>
 
           <!-- ═══ 5. TOP 3 LEVIERS ═══ -->
           <div class="s8-leviers" id="s8-leviers-section">
@@ -1758,11 +1804,6 @@ html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
           </div>
 
           <!-- ═══ 6. ACHETER VS LOUER (COLLAPSÉ PAR DÉFAUT) ═══ -->
-          <div class="s8-vs-highlight" aria-hidden="true">
-            <span class="s8-vs-highlight-dot"></span>
-            <span class="s8-vs-highlight-label">LOCATIF OU PLACEMENT&nbsp;?</span>
-            <span class="s8-vs-highlight-dot"></span>
-          </div>
           <div class="s8-vs-teaser" id="s8-vs-teaser" role="button" tabindex="0"
                aria-expanded="false" aria-controls="s8-vs-content"
                onclick="s8ToggleVs(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();s8ToggleVs(this);}">
@@ -1818,6 +1859,17 @@ html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
               <p class="reco-desc" id="reco-next-text">--</p>
               <button class="btn-hero-primary" id="reco-next-btn" onclick="goToNextBrick()" style="align-self:flex-start;">Commencer</button>
             </div>
+          </div>
+
+          <div class="pdf-pill-wrap">
+            <button class="pdf-pill" onclick="downloadPDFResume()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Télécharger mon diagnostic PDF
+            </button>
           </div>
 
           <div class="nav-btns" style="margin-top:1rem;">
@@ -1994,7 +2046,7 @@ var S = {
   // Brique 100% locatif : le type de projet est figé sur l'investissement locatif.
   projectType: 'investissement_locatif', horizon: '3m', status: '', primo: '', propertyType: 'ancien',
   locationType: 'nue', // 'nue' | 'meublee'
-  codePostal: '', prixM2: 2500, deptName: '',
+  codePostal: '', prixM2: 2500, prixM2Manuel: false, deptName: '',
   communeNom: '', communeInsee: '', communeChoisie: false, typoChoisie: '', typosShortlist: [],
   revenus: 0, revenusCompl: 0, autresEntrees: 0, charges: 0, chargesFixes: 0, credits: 0, loyer: 0,
   duree: 25, taux: 3.0, assurance: 0, assuranceEmprunteur: 0, presetMode: 'equilibre',
@@ -5384,7 +5436,9 @@ function s5PickCommune(el) {
   S.communeInsee = insee;
   S.codePostal = cp;
   S.communeChoisie = true;
-  // Le prix m² reste un fallback département (DVF agrégé)
+  // Nouvelle commune = nouveau marche : une correction manuelle precedente
+  // ne vaut plus, on repart de la mediane departementale.
+  S.prixM2Manuel = false;
   S.prixM2 = getPrixM2(cp);
   S.deptName = DEPT_NAMES[dep] || dep;
   s5RenderInfo();
@@ -5392,11 +5446,64 @@ function s5PickCommune(el) {
   s5PickTypo(s5SuggestTypoId(s5GetBudget().total, S.prixM2));
 }
 
-function s5RenderInfo() {
-  var el = $('s5-prixm2');
+/* Le champ demande une COMMUNE mais PRIX_M2 ne connait que le departement :
+   Nancy recevait la mediane de Meurthe-et-Moselle, la meme que le moindre
+   village. Plutot que d'inventer un coefficient, on rend la valeur
+   corrigeable — celui qui connait son marche la corrige, et tout ce qui en
+   decoule (typologies, budget atteignable, leviers) suit. */
+var S5_SRC_DEPT = 'M&eacute;diane du d&eacute;partement (DVF 2024) &mdash; modifiable';
+var S5_SRC_MANUEL = 'Ta valeur &mdash; tout se recalcule dessus.';
+var S5_PRIXM2_MIN = 200, S5_PRIXM2_MAX = 40000;
+
+/* L'autosauvegarde de la brique ne se declenche qu'au changement d'ecran :
+   une valeur corrigee puis un rechargement, et la correction etait perdue.
+   (Le garde 'saveState' ecrit ici au depart ne pointait aucune fonction
+   existante : il ne sauvegardait rien tout en le laissant croire.) */
+function s5Autosave() {
+  if (typeof autosaveBrickProgress !== 'function') return;
+  var idx = (typeof S.currentScreen === 'number') ? S.currentScreen : 0;
+  autosaveBrickProgress(BRICK_ID, idx, S);
+}
+
+function s5RenderInfo(remettreEnForme) {
+  var el = $('s5-prixm2'), src = $('s5-info-source');
   if (!el) return;
-  if (!S.communeChoisie) { el.textContent = '—'; return; }
-  el.textContent = new Intl.NumberFormat('fr-FR').format(S.prixM2) + ' €/m²';
+  if (!S.communeChoisie) { el.value = ''; if (src) src.innerHTML = S5_SRC_DEPT; return; }
+  /* Ne pas reecrire le champ pendant la frappe : l'utilisateur perdrait son
+     curseur des le deuxieme chiffre. La sortie du champ, elle, demande la
+     remise en forme explicitement — pendant l'evenement blur le navigateur
+     ne dit pas de facon fiable si le champ a encore le focus. */
+  if (remettreEnForme || document.activeElement !== el) el.value = new Intl.NumberFormat('fr-FR').format(S.prixM2);
+  if (src) src.innerHTML = S.prixM2Manuel ? S5_SRC_MANUEL : S5_SRC_DEPT;
+}
+
+function s5PrixM2Valide(v) {
+  var x = parseInt(String(v).replace(/[^0-9]/g, ''), 10);
+  return (x && x >= S5_PRIXM2_MIN && x <= S5_PRIXM2_MAX) ? x : null;
+}
+
+function s5OnPrixM2Input(el) {
+  var x = s5PrixM2Valide(el.value);
+  if (x === null) return;          // saisie en cours : on ne recalcule pas sur un chiffre isole
+  S.prixM2 = x;
+  S.prixM2Manuel = true;
+  s5RenderInfo();
+  s5RenderCards();
+  s5RenderPills();
+  s5Autosave();
+}
+
+function s5PrixM2Blur(el) {
+  /* Champ vide ou aberrant : on revient a la mediane departementale plutot
+     que de laisser un budget calcule sur une valeur fantaisiste. */
+  if (s5PrixM2Valide(el.value) === null) {
+    S.prixM2Manuel = false;
+    S.prixM2 = getPrixM2(S.codePostal);
+    s5RenderCards();
+    s5RenderPills();
+    s5Autosave();
+  }
+  s5RenderInfo(true);
 }
 
 /* Budget total = capacité d'emprunt + apport mobilisable */
