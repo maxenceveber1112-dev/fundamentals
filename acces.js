@@ -62,16 +62,24 @@
 
     var style = document.createElement('style');
     style.textContent =
+      // Masque par DECOUPE, pas par deplacement. Un translateY(-160%) laisse
+      // l'element exister au-dessus du haut de page : sur telephone, le rebond
+      // de defilement decouvre cette zone et on voit passer le rectangle. Ici
+      // il ne mesure qu'un pixel et son contenu est rogne — il n'y a plus rien
+      // a apercevoir.
       '.f-skip{position:absolute;left:0.5rem;top:0.5rem;z-index:2147483001;' +
-      'transform:translateY(-160%);transition:transform .16s ease;' +
+      'width:1px;height:1px;padding:0;overflow:hidden;white-space:nowrap;' +
+      'clip:rect(0 0 0 0);clip-path:inset(50%);' +
       'background:var(--accent-strong,#5B21B6);color:var(--bg,#fff);' +
       'font:600 0.875rem/1 var(--font-body,Inter,system-ui,sans-serif);' +
-      'padding:0.7rem 1.05rem;border-radius:0.6rem;text-decoration:none;' +
+      'border-radius:0.6rem;text-decoration:none;' +
       'box-shadow:0 6px 20px rgba(20,20,30,.22)}' +
       /* Il n'apparaît qu'au focus clavier : invisible à la souris, donc
          aucun changement pour le parcours voyant habituel. */
-      '.f-skip:focus{transform:translateY(0);outline:2px solid var(--text,#1C1917);outline-offset:2px}' +
-      '@media (prefers-reduced-motion: reduce){.f-skip{transition:none}}' +
+      '.f-skip:focus{width:auto;height:auto;padding:0.7rem 1.05rem;overflow:visible;' +
+      'clip:auto;clip-path:none;white-space:normal;' +
+      'outline:2px solid var(--text,#1C1917);outline-offset:2px}' +
+
       '#' + cible.id + ':focus{outline:none}';
     document.head.appendChild(style);
 

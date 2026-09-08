@@ -172,15 +172,20 @@
     transition:all 0.2s;
   }
   .bpc-step.active { background:var(--accent-soft); }
+  /* §1.7 — le numero d'etape perd sa rondelle : c'est un chiffre de la
+     plateforme, en Fraunces italique. La largeur minimale remplace la
+     pastille pour garder les libelles alignes. L'etat ne passe plus par un
+     aplat mais par la couleur du chiffre. */
   .bpc-step-num {
-    width:20px; height:20px; border-radius:50%; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    font-size:0.6875rem; font-weight:700;
-    background:var(--surface-2); color:var(--text-faint); border:1px solid var(--border-mid);
-    transition:all 0.3s;
+    min-width:1.15rem; flex-shrink:0;
+    display:flex; align-items:center; justify-content:flex-start;
+    font-family:var(--font-display); font-style:italic; font-weight:400;
+    font-size:1.05rem; line-height:1; font-variant-numeric:tabular-nums;
+    background:none; border:none; border-radius:0;
+    color:var(--text-faint);
   }
-  .bpc-step.active  .bpc-step-num { background:var(--accent-strong); color:#fff; border-color:transparent; }
-  .bpc-step.done    .bpc-step-num { background:var(--green-soft); color:var(--green-text); border-color:transparent; }
+  .bpc-step.active .bpc-step-num { background:none; color:var(--accent-strong); }
+  .bpc-step.done .bpc-step-num { background:none; color:var(--green-text); }
   .bpc-step-label { font-size:0.8125rem; color:var(--text-muted); }
   .bpc-step.active .bpc-step-label { color:var(--text); font-weight:600; }
   .bpc-step.done   .bpc-step-label { color:var(--text-muted); text-decoration:line-through; }
@@ -3760,6 +3765,6 @@ function updateS2ChartResults(simActive, simGhost) {
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
-<script src="acces.js?v=2"></script>
+<script src="acces.js?v=evitement1"></script>
 </body>
 </html>

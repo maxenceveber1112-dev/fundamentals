@@ -108,19 +108,21 @@ html.dark .brique-progress-card {
 }
 .bpc-step.active { background:var(--v3-accent-soft); color:var(--v3-text); }
 .bpc-step.done { color:var(--v3-text-muted); }
-.bpc-step-num {
-  width:22px; height:22px; border-radius:50%;
-  background:var(--v3-track);
-  color:var(--v3-text-faint);
-  font-size:11px; font-weight:600;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  transition: background .2s, color .2s;
-}
-.bpc-step.active .bpc-step-num { background:var(--v3-accent-strong); color:#fff; }
-.bpc-step.done .bpc-step-num {
-  background:var(--v3-accent-soft); color:var(--v3-accent-strong);
-}
-html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
+/* §1.7 — le numero d'etape perd sa rondelle : c'est un chiffre de la
+     plateforme, en Fraunces italique. La largeur minimale remplace la
+     pastille pour garder les libelles alignes. L'etat ne passe plus par un
+     aplat mais par la couleur du chiffre. */
+  .bpc-step-num {
+    min-width:1.15rem; flex-shrink:0;
+    display:flex; align-items:center; justify-content:flex-start;
+    font-family:var(--font-display); font-style:italic; font-weight:400;
+    font-size:1.05rem; line-height:1; font-variant-numeric:tabular-nums;
+    background:none; border:none; border-radius:0;
+    color:var(--text-faint);
+  }
+.bpc-step.active .bpc-step-num { background:none; color:var(--accent-strong); }
+.bpc-step.done .bpc-step-num { background:none; color:var(--green-text); }
+
 .bpc-step-label { font-size:13px; font-weight:500; min-width:0; line-height:1.3; }
 .bpc-step.active .bpc-step-label { color:var(--v3-text); font-weight:600; }
 
@@ -2537,6 +2539,6 @@ function escAttr(str) {
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
-<script src="acces.js?v=2"></script>
+<script src="acces.js?v=evitement1"></script>
 </body>
 </html>

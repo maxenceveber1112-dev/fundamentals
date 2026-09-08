@@ -298,19 +298,24 @@ html.dark .brique-progress-card { backdrop-filter:blur(12px); }
 
 .bpc-step.done   { color:var(--v3-text-muted); }
 
-.bpc-step-num {
-  width:20px; height:20px; border-radius:50%;
-  background:var(--v3-track); color:var(--v3-text-faint);
-  font-size:10px; font-weight:700;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  transition:background .2s, color .2s;
-}
+/* §1.7 — le numero d'etape perd sa rondelle : c'est un chiffre de la
+     plateforme, en Fraunces italique. La largeur minimale remplace la
+     pastille pour garder les libelles alignes. L'etat ne passe plus par un
+     aplat mais par la couleur du chiffre. */
+  .bpc-step-num {
+    min-width:1.15rem; flex-shrink:0;
+    display:flex; align-items:center; justify-content:flex-start;
+    font-family:var(--font-display); font-style:italic; font-weight:400;
+    font-size:1.05rem; line-height:1; font-variant-numeric:tabular-nums;
+    background:none; border:none; border-radius:0;
+    color:var(--text-faint);
+  }
 
-.bpc-step.active .bpc-step-num { background:var(--v3-accent-strong); color:#fff; }
+.bpc-step.active .bpc-step-num { background:none; color:var(--accent-strong); }
 
-.bpc-step.done   .bpc-step-num { background:var(--v3-accent-soft); color:var(--v3-accent-strong); }
+.bpc-step.done .bpc-step-num { background:none; color:var(--green-text); }
 
-html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
+
 
 .bpc-step-label { font-size:13px; font-weight:500; min-width:0; line-height:1.3; }
 
@@ -420,49 +425,35 @@ html.dark .brique-sidebar-v2 { backdrop-filter:blur(12px); }
 .sb2-node:focus-visible { outline:2px solid var(--v3-accent-strong); outline-offset:2px; border-radius:0.5rem; }
 
 
-.sb2-node::before {
-  content:''; position:absolute;
-  left:11px; top:26px; bottom:-10px;
-  width:2px;
-  background:var(--v3-border-subtle);
-  transition:background 0.3s ease;
-  z-index:0;
-}
+/* Le trait de liaison partait du centre de la rondelle (left:11px, soit
+   la moitie des 24px). Sans rondelle il traverserait les chiffres : la
+   liste verticale numerotee dit deja l'ordre. */
 
-.sb2-node:last-child::before { display:none; }
 
-.sb2-node.done::before { background:var(--v3-accent-strong); }
+
+
 
 .sb2-node.active::before {
   background:linear-gradient(180deg, var(--v3-accent-strong) 0%, var(--v3-border-subtle) 100%);
 }
 
+/* §1.7 — le numero perd sa rondelle, comme dans les six autres panneaux
+   de la plateforme. La largeur minimale garde les libelles alignes. */
 .sb2-node-bullet {
-  position:relative; z-index:1;
-  width:24px; height:24px; border-radius:50%;
-  background:var(--v3-bg-elevated);
-  border:2px solid var(--v3-border-subtle);
-  display:flex; align-items:center; justify-content:center;
-  font-size:0.6875rem; font-weight:700;
+  position:relative; z-index:1; min-width:1.3rem; flex-shrink:0;
+  display:flex; align-items:center; justify-content:flex-start;
+  font-family:var(--font-display); font-style:italic; font-weight:400;
+  font-size:1.05rem; line-height:1; font-variant-numeric:tabular-nums;
+  background:none; border:none; border-radius:0;
   color:var(--v3-text-faint);
-  flex-shrink:0;
-  transition:all 0.3s var(--ease-out);
+  transition:color 0.2s ease;
 }
 
-.sb2-node.done .sb2-node-bullet {
-  background:var(--v3-accent-strong);
-  border-color:var(--v3-accent-strong);
-  color:#fff;
-}
+.sb2-node.done .sb2-node-bullet { background:none; border:none; color:var(--green-text); }
 
-.sb2-node.active .sb2-node-bullet {
-  background:var(--v3-bg-elevated);
-  border-color:var(--v3-accent-strong);
-  color:var(--v3-accent-strong);
-  box-shadow:0 0 0 4px var(--v3-accent-soft);
-}
+.sb2-node.active .sb2-node-bullet { background:none; border:none; color:var(--v3-accent-strong); }
 
-html.dark .sb2-node.done .sb2-node-bullet { color:#0B0B1A; }
+
 
 .sb2-node-content { flex:1; min-width:0; }
 
@@ -2514,9 +2505,9 @@ html.dark .z2-dashboard-card-kicker .kicker-dot { background:var(--v3-accent-str
   padding:0.25rem 0.5rem; font-size:0.75rem;
 }
 
-.bpc-steps.compact .bpc-step-num {
-  width:18px; height:18px; font-size:9px;
-}
+/* Variante compacte : le chiffre reste un chiffre, seule sa taille change.
+   Les width/height d'origine reglaient une rondelle qui n'existe plus. */
+.bpc-steps.compact .bpc-step-num { font-size:0.92rem; min-width:1rem; }
 
 .bpc-steps.compact .bpc-step-label { font-size:0.72rem; }
 

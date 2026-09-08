@@ -405,6 +405,13 @@
       padding:clamp(.85rem, 2vh, 1.35rem) 1.5rem clamp(.7rem, 1.7vh, 1.15rem); }
     .try-head { display:flex; align-items:center; flex-wrap:wrap; gap:clamp(.7rem, 1.7vh, 1.15rem) 2rem; }
     .try-txt { flex:1 1 300px; min-width:0; }
+    /* Raccourci vers le formulaire, pour qui a deja un compte. Masque par
+       defaut : il ne sert qu'en mobile, ou le formulaire passe sous
+       l'argumentaire. */
+    .auth-vers-connexion { display:none; align-self:flex-start; font-size:0.78rem;
+      font-weight:600; color:var(--accent-strong); text-decoration:none;
+      padding:0.3rem 0; margin-bottom:0.6rem; border-bottom:1px solid currentColor; }
+    .auth-vers-connexion:hover { opacity:0.8; }
     .try-title { font-family:'Fraunces','Instrument Serif',Georgia,serif; font-style:italic;
       font-weight:400; font-size:1.22rem; line-height:1.18; color:var(--text); }
     .try-sub { font-size:.78rem; color:var(--text-muted); line-height:1.55; margin-top:.35rem; }
@@ -465,14 +472,21 @@
         justify-content:flex-start; gap:1.25rem; }
       /* Les trois promesses et le logo restent masques : ils allongeraient
          le defilement avant le formulaire pour qui vient juste se connecter. */
-      .auth-left-content > :not(.try):not(.auth-intro) { display:none; }
+      .auth-left-content > :not(.try):not(.auth-intro):not(.auth-vers-connexion) { display:none; }
       /* Le selecteur de theme est fixe en haut a droite : on lui reserve
          sa place, sinon le kicker lui passe dessous. */
+      /* Le raccourci n'existe qu'en mobile : sur grand ecran les deux colonnes
+         sont cote a cote, le formulaire est deja sous les yeux. */
+      .auth-vers-connexion { display:block; }
       .auth-intro { margin-bottom:0.25rem; }
       .auth-intro .auth-kicker { padding-right:3.25rem; }
       .auth-right { order:2; min-height:auto; padding-top:1rem; padding-bottom:1.5rem; }
       .try { margin-top:0; }
       .try-head { flex-direction:column; align-items:stretch; gap:1rem; }
+      /* En colonne, le flex-basis de 300px de .try-txt cesse d'etre une
+         largeur pour devenir une hauteur : le bloc reservait 300px pour
+         81px de texte, d'ou le grand vide avant le bouton. */
+      .try-txt { flex:0 0 auto; }
       .try-cta { width:100%; }
       .try-links { grid-template-columns:1fr; }
       .try-links .try-link + .try-link { border-top:1px solid var(--border-subtle); }
@@ -512,6 +526,7 @@
         <span class="name">Fundamentals</span>
       </a>
 
+      <a href="#connexion" class="auth-vers-connexion">J&#8217;ai d&#233;j&#224; un compte</a>
       <div class="auth-intro">
         <p class="auth-kicker">Apprends à gérer ton argent, brique par brique</p>
         <h1 class="auth-headline">
@@ -583,7 +598,7 @@
 
   <!-- RIGHT PANEL -->
   <div class="auth-right">
-    <div class="auth-card">
+    <div class="auth-card" id="connexion">
 
       <div>
         <h2 class="auth-card-title" id="card-title">Bienvenue</h2>
@@ -868,6 +883,6 @@
      lignes ici et sur les autres pages, et retirer les deux domaines
      cloudflareinsights du CSP dans netlify.toml. -->
 <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "741e03f5f567432bb91b463b2f45bc94"}'></script>
-<script src="acces.js?v=2"></script>
+<script src="acces.js?v=evitement1"></script>
 </body>
 </html>
