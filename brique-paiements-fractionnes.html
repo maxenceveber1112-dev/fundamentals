@@ -32,8 +32,12 @@
   --v3-border-subtle: rgba(28,25,23,.07);
   --v3-text: #1C1917;
   --v3-text-secondary: #57534E;
-  --v3-text-muted: #78716C;
-  --v3-text-faint: #A8A29E;
+  /* Alias du jeton de plateforme. Ces deux-la portaient une copie figee
+     de --text-faint / --text-muted, restee aux anciennes valeurs : le
+     clair a #A8A29E (2,4:1) et le sombre a #71717A (4,03). Les aliaser
+     evite qu'une correction du theme oublie la moitie de la plateforme. */
+  --v3-text-muted: var(--text-muted);
+  --v3-text-faint: var(--text-faint);
   --v3-accent-strong: #5B21B6;
   --v3-accent-soft: rgba(196,181,253,.22);
   --v3-track: #E7E5E4;
@@ -44,8 +48,8 @@ html.dark {
   --v3-border-subtle: rgba(255,255,255,.08);
   --v3-text: #F5F5F4;
   --v3-text-secondary: #D4D4D8;
-  --v3-text-muted: #A1A1AA;
-  --v3-text-faint: #71717A;
+  --v3-text-muted: var(--text-muted);
+  --v3-text-faint: var(--text-faint);
   --v3-accent-strong: #A78BFA;
   --v3-accent-soft: rgba(167,139,250,.14);
   --v3-track: rgba(255,255,255,.08);
@@ -213,13 +217,13 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
       line-height:1.15;letter-spacing:-0.02em;
       color:var(--text);margin-bottom:0.625rem;
     }
-    .brick-subtitle{font-size:0.9rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5;}
+    .brick-subtitle{font-size:0.9rem;color:var(--ink-soft);margin-bottom:1.5rem;line-height:1.5;}
 
     /* ── Reassurance ── */
     .badge-gratuit{background:var(--green-dim);color:var(--green-text);border:1px solid var(--green-border);}
     .strategy-vide{padding:1.125rem;border:1px dashed var(--border);border-radius:var(--r-lg);
       font-size:0.85rem;color:var(--text-muted);line-height:1.6;text-align:center;}
-    .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-dim);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green-text);margin-bottom:1.25rem;}
+    .reassurance{display:inline-flex;align-items:center;gap:0.4rem;padding:0.5rem 0.875rem;border-radius:var(--r-full);background:var(--green-soft);border:1px solid var(--green-border);font-size:0.78rem;color:var(--green-text);margin-bottom:1.25rem;}
 
     /* ── Input fields ── */
     .field-group{margin-bottom:1.25rem;}
@@ -238,7 +242,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
     .input-euro-sign{position:absolute;right:0.875rem;top:50%;transform:translateY(-50%);font-size:0.9rem;color:var(--text-muted);pointer-events:none;}
 
     /* ── Buttons ── */
-    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
+    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:var(--accent-fill);font-size:0.95rem;font-weight:700;color:var(--accent-pill-text);border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
     .btn-primary:hover{box-shadow:0 0 40px rgba(99,102,241,0.5),0 6px 20px rgba(0,0,0,0.5);}
     .btn-primary:active{transform:scale(0.98);}
     .btn-primary:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
@@ -371,7 +375,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
     .hero-kicker{
       font-size:0.6875rem;font-weight:600;
       letter-spacing:0.14em;text-transform:uppercase;
-      color:var(--text-muted);margin-bottom:1.125rem;
+      color:var(--ink-soft);margin-bottom:1.125rem;
       display:flex;align-items:center;gap:0.5rem;
     }
     html.dark .hero-kicker{color:#A5B4FC;}
@@ -393,7 +397,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
       font-size:0.82rem;color:var(--text);line-height:1.55;
     }
   </style>
-  <link rel="stylesheet" href="theme.css?v=vert1">
+  <link rel="stylesheet" href="theme.css?v=contraste3">
   <style>
     /* Ces deux tokens n'existent pas dans theme.css : chaque brique les
        definit chez elle. Valeurs reprises telles quelles de budget-base,
@@ -824,7 +828,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-1" style="display:none;">
     <div class="brick-card">
-      <h1 class="brick-title">Qu'est-ce qui est encore en cours&nbsp;?</h1>
+      <h2 class="brick-title">Qu'est-ce qui est encore en cours&nbsp;?</h2>
       <p class="brick-subtitle">Ajoute seulement ce dont tu te souviens. On peut compléter plus tard.</p>
 
       <div id="special-state-banner" style="display:none;"></div>
@@ -856,7 +860,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-2" style="display:none;">
     <div class="brick-card">
-      <h1 class="brick-title">Voilà ce que ces paiements prennent ensemble.</h1>
+      <h2 class="brick-title">Voilà ce que ces paiements prennent ensemble.</h2>
       <p class="brick-subtitle">C'est souvent ça qui rend le mois flou.</p>
 
       <!-- A. La barre du mois : la part prise avant toute décision -->
@@ -896,7 +900,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-3" style="display:none;">
     <div class="brick-card">
-      <h1 class="brick-title">Est-ce que ça vaut le coup d'en solder un&nbsp;?</h1>
+      <h2 class="brick-title">Est-ce que ça vaut le coup d'en solder un&nbsp;?</h2>
       <p class="brick-subtitle">Avancer de l'argent ne fait pas toujours économiser quelque chose. Ça dépend de ce que le paiement te coûte.</p>
 
       <div class="axe" id="axe">
@@ -930,7 +934,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-4" style="display:none;">
     <div class="brick-card">
-      <h1 class="brick-title">Le vrai piège, ce n'est pas un paiement. C'est l'enchaînement.</h1>
+      <h2 class="brick-title">Le vrai piège, ce n'est pas un paiement. C'est l'enchaînement.</h2>
       <p class="brick-subtitle">Chaque achat s'annonce en petites mensualités. Voilà ce que ça fait mis bout à bout.</p>
 
       <!-- A. Le nombre que le fractionné ne montre jamais -->
@@ -970,7 +974,7 @@ html.dark .bpc-step.done .bpc-step-num { color:#C4B5FD; }
   ──────────────────────────────────────────────── -->
   <div class="screen" id="screen-5" style="display:none;">
     <div class="brick-card">
-      <h1 class="brick-title">Ton prochain pas.</h1>
+      <h2 class="brick-title">Ton prochain pas.</h2>
       <p class="brick-subtitle">Choisis ce qui te semble le plus accessible maintenant.</p>
 
       <div class="engagement-options" id="engagement-options">
@@ -2516,8 +2520,8 @@ function escAttr(str) {
   updateStepIndicator(0);
 </script>
 
-<script src="feedback-widget.js?v=a11y1"></script>
-<script src="cookie-banner.js?v=polices2"></script>
+<script src="feedback-widget.js?v=contraste1"></script>
+<script src="cookie-banner.js?v=contraste1"></script>
 <script src="theme.js"></script>
 
 <script>

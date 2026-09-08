@@ -415,8 +415,12 @@
       box-shadow: 0 4px 20px rgba(91,33,182,0.25);
       transition: transform 0.15s var(--ease-out), box-shadow var(--t), filter 0.15s;
     }
+    /* Le degrade sombre est clair : du blanc dessus ne donne que 2,72. On
+       garde le degrade — c'est la couleur d'appel de l'ecran — et on encre
+       en --bg, qui donne 6,21. Meme correctif que pour --accent-strong. */
     html.dark .btn-next {
       background: linear-gradient(135deg, #A78BFA 0%, #6B8AFE 100%);
+      color: var(--bg);
       box-shadow: 0 4px 24px rgba(139,92,246,0.35);
     }
     .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,33,182,0.30); filter: brightness(1.05); }
@@ -485,7 +489,7 @@
       padding:0.45rem 0.95rem; border-radius:var(--r-full); border:none; cursor:pointer;
       transition:filter .15s, color var(--t); }
     .onb-reprise-oui { background:var(--accent-strong); color:#fff; }
-    html.dark .onb-reprise-oui { background:linear-gradient(135deg,#A78BFA 0%,#6B8AFE 100%); }
+    html.dark .onb-reprise-oui { background:linear-gradient(135deg,#A78BFA 0%,#6B8AFE 100%); color:var(--bg); }
     .onb-reprise-oui:hover { filter:brightness(1.08); }
     .onb-reprise-non { background:transparent; color:var(--text-muted); }
     .onb-reprise-non:hover { color:var(--text); }
@@ -615,6 +619,12 @@
     .rv-tag  { display:block; font-size:12.5px; color:var(--text-muted); line-height:1.5; margin-top:4px; }
     .rv-duree { flex:0 0 auto; font-size:11px; color:var(--text-faint);
       font-variant-numeric:tabular-nums; white-space:nowrap; }
+    /* Marqueur des modules pas encore ecrits. Il prend la place de la duree :
+       une duree annoncee sur un module inexistant promet un contenu pret. */
+    .rv-avenir { flex:0 0 auto; font-size:11px; font-weight:600; color:var(--text-muted);
+      white-space:nowrap; padding:0.15rem 0.5rem; border-radius:9999px;
+      border:1px solid var(--border-subtle); }
+    .rv-item--avenir .rv-name { color:var(--text-muted); }
     .rv-note { flex:0 0 auto; font-size:11px; font-weight:600; color:var(--text-muted);
       max-width:10rem; text-align:right; line-height:1.35; }
 
@@ -749,7 +759,7 @@
     .sel-item:hover:not(.selected){background:rgba(255,255,255,.5)!important;}
     html.dark .sel-item:hover:not(.selected){background:rgba(255,255,255,.06)!important;}
   </style>
-  <link rel="stylesheet" href="theme.css?v=vert1">
+  <link rel="stylesheet" href="theme.css?v=contraste3">
 </head>
 <body>
 <div class="onb-aurora" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
@@ -1918,12 +1928,17 @@ function revealPlan() {
     parPhase[ph].forEach(function (id) {
       var m = BRIQUES_META[id]; rang++;
       retard = Math.min(retard + 55, 900);
-      var premier = rang === 1;
+      // Un module n'est jouable que s'il a une page. BRICK_FILES fait foi :
+      // c'est deja la source du tableau de bord, les deux ecrans disent donc
+      // enfin la meme chose.
+      var jouable = (typeof BRICK_FILES !== 'undefined') && !!BRICK_FILES[id];
+      var premier = rang === 1 && jouable;
       var droite = premier
         ? '<button type="button" class="rv-badge" onclick="goToDashboard()"'
           + ' aria-label="Commencer : ' + esc(m.nom).replace(/"/g, '&quot;') + '">On commence ici</button>'
-        : (notes[id] ? '<span class="rv-note">' + esc(notes[id]) + '</span>'
-                     : '<span class="rv-duree">' + esc(m.duree || '') + '</span>');
+        : (!jouable ? '<span class="rv-avenir">à venir</span>'
+                    : notes[id] ? '<span class="rv-note">' + esc(notes[id]) + '</span>'
+                                : '<span class="rv-duree">' + esc(m.duree || '') + '</span>');
       var pourquoi = RV_RAISONS[id]
         ? '<span class="rv-why"><span class="rv-why-mark" aria-hidden="true">\u2192</span>'
           + esc(RV_RAISONS[id]) + '</span>' : '';
@@ -1936,7 +1951,8 @@ function revealPlan() {
               return '<span class="rv-chap">' + esc(c) + '</span>'; }).join('')
           + '</span>';
       }
-      chemin += '<div class="rv-item' + (premier ? ' rv-item--first' : '') + '"'
+      chemin += '<div class="rv-item' + (premier ? ' rv-item--first' : '')
+            + (jouable ? '' : ' rv-item--avenir') + '"'
             + ' style="animation-delay:' + retard + 'ms">'
             + '<span class="rv-node" aria-hidden="true">'
             +   ((typeof iconeBriqueSVG === 'function' && iconeBriqueSVG(m.id, { taille:18, trait:1.9 }))
@@ -2186,8 +2202,8 @@ updatePreview();
   </div>
 </div>
 
-<script src="feedback-widget.js?v=a11y1"></script>
-<script src="cookie-banner.js?v=polices2"></script>
+<script src="feedback-widget.js?v=contraste1"></script>
+<script src="cookie-banner.js?v=contraste1"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc

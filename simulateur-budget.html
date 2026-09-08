@@ -166,13 +166,13 @@
         radial-gradient(115% 165% at 8% 25%, rgba(167,139,250,0.16) 0%, transparent 62%),
         radial-gradient(90% 140% at 96% 96%, rgba(167,139,250,0.09) 0%, transparent 58%);
     }
-    .sb-banner-label { font-size:0.68rem; font-weight:600; color:var(--text-muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.1rem; }
+    .sb-banner-label { font-size:0.68rem; font-weight:600; color:var(--ink-soft); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:0.1rem; }
     .sb-banner-value { font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:2.5rem; line-height:1.02; color:var(--text); }
-    .sb-banner-value .unit { font-size:1.1rem; font-weight:500; color:var(--text-muted); font-family:'Inter',sans-serif; }
-    .sb-banner-meta { text-align:right; font-size:0.85rem; color:var(--text-muted); line-height:1.55; }
+    .sb-banner-value .unit { font-size:1.1rem; font-weight:500; color:var(--ink-soft); font-family:'Inter',sans-serif; }
+    .sb-banner-meta { text-align:right; font-size:0.85rem; color:var(--ink-soft); line-height:1.55; }
     .sb-banner-meta b { color:var(--text); font-weight:700; }
     .sb-meta-sm { font-size:0.8rem; }
-    .sb-meta-sm2 { font-size:0.74rem; color:var(--text-faint); }
+    .sb-meta-sm2 { font-size:0.74rem; color:var(--ink-soft); }
     .sb-alert { font-size:0.95rem; font-weight:700; color:#DC2626; }
     html.dark .sb-alert { color:#F87171; }
     @media(max-width:560px){ .sb-banner-meta { text-align:left; } }
@@ -205,7 +205,7 @@
     .sb-section-head {
       display:flex; align-items:center; gap:0.55rem;
       font-size:0.72rem; font-weight:700; letter-spacing:0.06em;
-      text-transform:uppercase; color:var(--text-muted); margin-bottom:0.75rem;
+      text-transform:uppercase; color:var(--ink-soft); margin-bottom:0.75rem;
     }
     /* Plus de marqueur devant le titre : c'est le sous-total qui porte la
        couleur. Elle designe alors une donnee, pas un ornement — un chiffre
@@ -296,7 +296,7 @@
     .sb-tbl { width:100%; border-collapse:collapse; font-size:0.79rem; }
     .sb-tbl caption {
       text-align:left; font-size:0.67rem; font-weight:700; letter-spacing:0.09em;
-      text-transform:uppercase; color:var(--text-muted);
+      text-transform:uppercase; color:var(--ink-soft);
       padding:0.55rem 0 0.3rem;
     }
     .sb-tbl th, .sb-tbl td { padding:0.3rem 0.2rem; text-align:left; }
@@ -338,7 +338,7 @@
   </style>
   <!-- theme.css apres la CSS de la page, comme sur les 15 autres :
        il porte les jetons communs et doit pouvoir les imposer. -->
-  <link rel="stylesheet" href="theme.css?v=vert1" />
+  <link rel="stylesheet" href="theme.css?v=contraste3" />
 </head>
 <body>
   <main class="sb-wrap">
@@ -950,8 +950,8 @@
     });
   })();
   </script>
-  <script src="feedback-widget.js?v=a11y1"></script>
-  <script src="cookie-banner.js?v=polices2"></script>
+  <script src="feedback-widget.js?v=contraste1"></script>
+  <script src="cookie-banner.js?v=contraste1"></script>
   <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc

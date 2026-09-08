@@ -84,8 +84,12 @@
   --v3-border-subtle:rgba(28,25,23,.07);
   --v3-text:         #1C1917;
   --v3-text-secondary:#57534E;
-  --v3-text-muted:   #78716C;
-  --v3-text-faint:   #A8A29E;
+  /* Alias du jeton de plateforme. Ces deux-la portaient une copie figee
+     de --text-faint / --text-muted, restee aux anciennes valeurs : le
+     clair a #A8A29E (2,4:1) et le sombre a #71717A (4,03). Les aliaser
+     evite qu'une correction du theme oublie la moitie de la plateforme. */
+  --v3-text-muted:   var(--text-muted);
+  --v3-text-faint:   var(--text-faint);
   --v3-accent-strong:#5B21B6;
   --v3-accent-soft:  rgba(196,181,253,.22);
   --v3-track:        #E7E5E4;
@@ -147,8 +151,8 @@ html.dark {
   --v3-border-subtle:rgba(255,255,255,.08);
   --v3-text:         #F5F5F4;
   --v3-text-secondary:#D4D4D8;
-  --v3-text-muted:   #A1A1AA;
-  --v3-text-faint:   #71717A;
+  --v3-text-muted:   var(--text-muted);
+  --v3-text-faint:   var(--text-faint);
   --v3-accent-strong:#A78BFA;
   --v3-accent-soft:  rgba(167,139,250,.14);
   --v3-track:        rgba(255,255,255,.08);
@@ -485,9 +489,12 @@ html.dark .sb2-node.done .sb2-node-bullet { color:#0B0B1A; }
 
 
 /* Synthèse unique */
+/* Une zone, pas une carte : ce bloc vit deja dans .brique-sidebar-v2, qui
+   porte fond, bordure et ombre. Son propre lavis suffit a le detacher —
+   la bordure en faisait une carte dans une carte (guide §1.2). */
 .sb2-synth {
   background:linear-gradient(180deg, var(--v3-accent-soft) 0%, var(--surface-2) 100%);
-  border:1px solid var(--v3-border-subtle);
+  
   border-radius:1rem;
   padding:1rem 1.125rem 1.125rem;
   position:relative;
@@ -699,7 +706,9 @@ html.dark .cb-banner--neutral .cb-banner-text strong { color:#A78BFA; }
 
 .cb-banner--warning .cb-banner-icon { background:#f59e0b; }
 
-.cb-banner--warning .cb-banner-text strong { color:#b45309; }
+/* #b45309 sur le fond ambre de la banniere ne donnait que 4,48. Le jeton
+   d'encre orange y tient 6,52, et remplace une couleur ecrite en dur. */
+.cb-banner--warning .cb-banner-text strong { color:var(--orange-text); }
 
 html.dark .cb-banner--warning { background:rgba(251,191,36,0.10); border-color:rgba(251,191,36,0.32); }
 
@@ -797,7 +806,7 @@ html.dark .hero-cream { backdrop-filter:blur(20px); -webkit-backdrop-filter:blur
 .hero-kicker {
   font-size:0.6875rem; font-weight:600;
   letter-spacing:0.14em; text-transform:uppercase;
-  color:var(--text-muted); margin-bottom:1.125rem;
+  color:var(--ink-soft); margin-bottom:1.125rem;
   display:flex; align-items:center; gap:0.5rem;
 }
 
@@ -821,7 +830,7 @@ html.dark .hero-kicker { color:#A5B4FC; }
 
 
 .hero-desc {
-  font-size:0.9375rem; color:var(--text-muted);
+  font-size:0.9375rem; color:var(--ink-soft);
   max-width:480px; line-height:1.6; margin-bottom:2rem;
 }
 
@@ -845,7 +854,7 @@ html.dark .hero-kicker { color:#A5B4FC; }
 .btn-hero-primary {
   display:inline-flex; align-items:center; gap:0.5rem;
   padding:0.75rem 1.375rem; border-radius:9999px;
-  background:var(--accent); color:var(--accent-pill-text);
+  background:var(--accent-fill); color:var(--accent-pill-text);
   font-size:0.875rem; font-weight:600; border:none; cursor:pointer;
   transition:filter 0.2s ease, transform 0.12s ease;
 }
@@ -864,7 +873,7 @@ html.dark .btn-hero-primary:hover { filter:brightness(1.08); }
 
 
 .btn-hero-secondary {
-  font-size:0.8125rem; font-weight:500; color:var(--text-muted);
+  font-size:0.8125rem; font-weight:500; color:var(--ink-soft);
   text-decoration:none; cursor:pointer;
   transition:color var(--t);
   background:none; border:none;
@@ -907,7 +916,7 @@ html.dark .brick-kicker { color:#A5B4FC; }
 }
 
 .brick-subtitle {
-  font-size:0.9rem; color:var(--text-muted);
+  font-size:0.9rem; color:var(--ink-soft);
   margin-bottom:1.75rem; line-height:1.55;
 }
 
@@ -2352,7 +2361,7 @@ html:not(.dark) .hypotheses-pill { color:var(--text-muted); }
   align-self:flex-end;
   display:inline-flex; align-items:center; gap:0.4rem;
   padding:0.5rem 1rem; border-radius:9999px;
-  background:var(--accent); color:var(--accent-pill-text);
+  background:var(--accent-fill); color:var(--accent-pill-text);
   font-size:0.8rem; font-weight:600; border:none; cursor:pointer;
   transition:filter 0.2s ease;
 }

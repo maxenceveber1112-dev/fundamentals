@@ -40,7 +40,11 @@
   /* ── Accent (violet de marque) ── */
   --accent: #C4B5FD;
   --accent-strong: #5B21B6;
-  --accent-fill: linear-gradient(135deg, #8B5CF6, #3B82F6);
+  /* Fond des boutons d'action. Il portait #8B5CF6 -> #3B82F6, trop clair
+     pour du blanc : 4,23 au depart, 3,68 a l'arrivee, dans les deux themes.
+     Un cran plus fonce sur chaque borne donne 5,17 sur toute la course,
+     sans changer l'identite violet -> bleu. */
+  --accent-fill: linear-gradient(135deg, #7C3AED, #2563EB);
   --accent-soft: rgba(196,181,253,0.22);
   --accent-pill-text: #FFFFFF;
   --violet: #7C3AED;
@@ -77,6 +81,10 @@
   --red: #DC2626;
   --red-soft: rgba(220,38,38,0.10);
   --orange: #EA580C;
+  /* Encre orange. --orange est fait pour des aplats : comme couleur de
+     caractere il donne 3,36 sur le fond nu et 2,98 sur son propre lavis.
+     Meme separation que --green / --green-text. */
+  --orange-text: #9A3412;
   --orange-soft: rgba(234,88,12,0.10);
   --orange-dim: rgba(234,88,12,0.18);
   --orange-border: rgba(234,88,12,0.32);
@@ -126,7 +134,12 @@ html.dark {
   --text-primary: #F5F5F4;
   --text-secondary: #D4D4D8;
   --text-muted: #A1A1AA;
-  --text-faint: #71717A;
+  /* Le pendant sombre de la ligne 31. Il etait reste a #71717A, qui ne
+     donne que 4,03 sur --bg, 3,89 sur un fond eleve et 3,57 sur
+     --surface-2 : le clair avait ete corrige, le sombre oublie.
+     #8A8A96 est la teinte la plus discrete qui tienne 4,5 sur les trois
+     (5,06 au pire), en restant en retrait de --text-muted (#A1A1AA). */
+  --text-faint: #9CA3AF;
 
   /* ── Bordures ── */
   --border: rgba(255,255,255,0.06);
@@ -138,7 +151,11 @@ html.dark {
   /* ── Accent ── */
   --accent: linear-gradient(90deg,#8B5CF6 0%,#6366F1 60%,#3B82F6 100%);
   --accent-strong: #A78BFA;
-  --accent-fill: linear-gradient(135deg, #8B5CF6, #3B82F6);
+  /* Fond des boutons d'action. Il portait #8B5CF6 -> #3B82F6, trop clair
+     pour du blanc : 4,23 au depart, 3,68 a l'arrivee, dans les deux themes.
+     Un cran plus fonce sur chaque borne donne 5,17 sur toute la course,
+     sans changer l'identite violet -> bleu. */
+  --accent-fill: linear-gradient(135deg, #7C3AED, #2563EB);
   --accent-soft: rgba(167,139,250,0.14);
   --accent-pill-text: #FFFFFF;
   --violet: #A78BFA;
@@ -158,6 +175,8 @@ html.dark {
   --red: #f87171;
   --red-soft: rgba(248,113,113,0.12);
   --orange: #fbbf24;
+  /* En sombre l'orange est clair : il passe deja comme encre. */
+  --orange-text: var(--orange);
   --orange-soft: rgba(251,191,36,0.12);
   --orange-dim: rgba(251,191,36,0.18);
   --orange-border: rgba(251,191,36,0.30);

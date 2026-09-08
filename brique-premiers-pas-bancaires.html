@@ -70,7 +70,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 html.dark .hero-cream::after{color:rgba(139,92,246,.16)}
 .hero-in{position:relative;z-index:1}
 .kick{font-size:.6875rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--text-muted);margin-bottom:1rem}
+  color:var(--ink-soft);margin-bottom:1rem}
 .h1{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:2.15rem;
   line-height:1.15;color:var(--text)}
 .h2{font-family:var(--font-display);font-style:italic;font-weight:400;font-size:1.6rem;
@@ -228,7 +228,7 @@ html.dark .boucle::after{color:rgba(139,92,246,.15)}
 .qr-o{display:flex;flex-wrap:wrap;gap:.4rem}
 .opt{font-family:inherit;font-size:.81rem;font-weight:500;padding:.55rem 1rem;
   border-radius:var(--r-full);border:1px solid var(--border-mid);background:transparent;
-  color:var(--text-muted);cursor:pointer;transition:all var(--t)}
+  color:var(--ink-soft);cursor:pointer;transition:all var(--t)}
 .opt:hover{border-color:var(--border-hover);color:var(--text)}
 .opt.on{background:var(--accent-soft);border-color:var(--accent-strong);color:var(--text);font-weight:600}
 
@@ -413,10 +413,15 @@ html.dark .reco::after{color:rgba(139,92,246,.13)}
   <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
        voile soit peint avant la mise en page encore vide. -->
   <link rel="stylesheet" href="chargement.css?v=1" />
-  <noscript><style>.ec{display:none}</style>
-  <!-- theme.css apres la CSS de la page, comme sur les 15 autres :
-       il porte les jetons communs et doit pouvoir les imposer. -->
-<link rel="stylesheet" href="theme.css?v=vert1" /></noscript>
+  <noscript><style>.ec{display:none}</style></noscript>
+  <!-- theme.css apres la CSS de la page, comme sur les 15 autres : il porte
+       les jetons communs et doit pouvoir les imposer.
+       ATTENTION : ce lien doit rester HORS du <noscript> ci-dessus. Il y a
+       ete enferme le 05/09 par un script qui le posait « apres le dernier
+       </style> de la tete » — c'etait celui du noscript. Resultat : aucun
+       jeton ne resolvait, body{color:var(--text)} retombait sur le noir, et
+       la brique etait illisible en theme sombre (contraste 1,08). -->
+  <link rel="stylesheet" href="theme.css?v=contraste3" />
 </head>
 <body data-brick-name="Premiers pas bancaires">
 <!-- Écran de chargement — voir chargement.css / chargement.js -->
@@ -1326,8 +1331,8 @@ window.addEventListener('resize', function () {
 })().then(window.finChargementSi, window.finChargementSi);
 </script>
 
-<script src="feedback-widget.js?v=a11y1"></script>
-<script src="cookie-banner.js?v=polices2"></script>
+<script src="feedback-widget.js?v=contraste1"></script>
+<script src="cookie-banner.js?v=contraste1"></script>
 <script src="theme.js"></script>
 
 <!-- Cloudflare Web Analytics — sans cookie, sans suivi individuel, donc

@@ -45,7 +45,10 @@
       '#fund-cookie-banner button{font-family:inherit;font-size:.82rem;font-weight:600;' +
       'padding:.55rem 1.1rem;border-radius:9px;cursor:pointer;border:1px solid transparent;' +
       'transition:opacity .15s,background .15s,border-color .15s;}' +
-      '#fund-cookie-banner .fc-accept{background-image:linear-gradient(135deg,#8B5CF6,#3B82F6);background-color:#8B5CF6;color:#fff;flex:1;min-width:140px;}' +
+      // Le degrade portait #8B5CF6 -> #3B82F6 : du blanc dessus donne 3,68.
+      // Un cran plus fonce sur chaque borne donne 5,17, sans changer la
+      // teinte. C'est un bouton de consentement : il doit se lire.
+      '#fund-cookie-banner .fc-accept{background-image:linear-gradient(135deg,#7C3AED,#2563EB);background-color:#7C3AED;color:#fff;flex:1;min-width:140px;}' +
       '#fund-cookie-banner .fc-accept:hover{opacity:.9;}' +
       '#fund-cookie-banner .fc-essential{background:transparent;color:var(--text-muted,#C7C7D1);border-color:var(--border-mid,var(--border,rgba(128,128,128,0.28)));}' +
       '#fund-cookie-banner .fc-essential:hover{border-color:var(--border-hover,var(--accent-strong,rgba(128,128,128,0.5)));color:var(--text,#F5F5F4);}' +

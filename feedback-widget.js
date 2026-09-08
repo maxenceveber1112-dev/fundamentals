@@ -11,6 +11,18 @@
   if (!BETA_MODE) return;
 
   const pageName = window.location.pathname.split('/').pop().replace('.html','') || 'index';
+  // pageName reste la CLE envoyee a submitFeedback : c'est elle qui identifie
+  // la page cote donnees, on n'y touche pas. Mais l'afficher telle quelle
+  // montrait « Page : brique-budget-base » a l'utilisateur. On cherche donc
+  // un libelle lisible : le nom de brique porte par le <body>, sinon le titre
+  // du document debarrasse du prefixe de marque, sinon la cle en dernier repli.
+  function libellePage() {
+    var b = document.body && document.body.dataset ? document.body.dataset.brickName : null;
+    if (b) return b;
+    var t = (document.title || '').split(/\s[—|]\s/).pop().trim();
+    if (t && t.toLowerCase() !== 'fundamentals') return t;
+    return pageName;
+  }
   const MAX_CHARS = 500;
 
   // Capture de la dernière erreur technique (or pur en bêta)
@@ -99,9 +111,9 @@
     html.dark #fb-panel { background: #14162a; border-color: #252845; box-shadow: 0 16px 50px rgba(0,0,0,0.55); }
     #fb-panel.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
 
-    #fb-panel h4 { font-size: 0.92rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.25rem; }
+    #fb-panel h2 { font-size: 0.92rem; font-weight: 700; color: #1a1a2e; margin-bottom: 0.25rem; }
     #fb-panel p  { font-size: 0.75rem; color: #78716c; margin-bottom: 1rem; }
-    html.dark #fb-panel h4 { color: #fff; }
+    html.dark #fb-panel h2 { color: #fff; }
     html.dark #fb-panel p  { color: #8b90b8; }
 
     .fb-stars { display: flex; gap: 0.375rem; margin-bottom: 0.875rem; }
@@ -126,9 +138,15 @@
     .fb-textarea::placeholder { color: #a8a29e; }
     html.dark .fb-textarea::placeholder { color: #565a7e; }
 
-    .fb-count { text-align: right; font-size: 0.68rem; color: #a8a29e; margin-bottom: 0.6rem; }
+    /* #a8a29e donnait 2,52 sur le panneau blanc. */
+    .fb-count { text-align: right; font-size: 0.68rem; color: #78716C; margin-bottom: 0.6rem; }
     .fb-count.warn { color: #ea580c; }
-    html.dark .fb-count { color: #565a7e; }
+    /* Le nom de page etait en #a855f7 pose en style en ligne : 3,96 sur
+       le panneau clair. Une seule valeur ne peut pas servir les deux
+       themes, d'ou cette classe. */
+    .fb-page { color: #7E22CE; }
+    html.dark .fb-page { color: #C084FC; }
+    html.dark .fb-count { color: #7B82AE; }   /* 2,68 -> 4,79 */
 
     .fb-bug {
       display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.875rem;
@@ -141,7 +159,8 @@
 
     .fb-submit {
       width: 100%; padding: 0.7rem; border-radius: 9999px;
-      background: linear-gradient(135deg, #6366f1, #c084fc);
+      /* #c084fc etait trop clair pour du blanc : 2,64. */
+      background: linear-gradient(135deg, #4F46E5, #7C3AED);
       font-size: 0.85rem; font-weight: 700; color: #fff; border: none;
       cursor: pointer; font-family: 'Inter', sans-serif;
       box-shadow: 0 4px 18px rgba(99,102,241,0.32);
@@ -178,8 +197,8 @@
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-label', 'Feedback bêta');
   panel.innerHTML = `
-    <h4>Comment tu trouves cette page ?</h4>
-    <p>Page : <strong style="color:#a855f7;">${pageName}</strong> — ton retour nous aide énormément.</p>
+    <h2>Comment tu trouves cette page ?</h2>
+    <p>Page : <strong class="fb-page">${libellePage()}</strong> — ton retour nous aide énormément.</p>
     <div class="fb-stars" role="radiogroup" aria-label="Note de 1 à 5">
       <button class="fb-star" role="radio" aria-checked="false" data-val="1" aria-label="Décevant">😕</button>
       <button class="fb-star" role="radio" aria-checked="false" data-val="2" aria-label="Bof">😐</button>
