@@ -624,7 +624,6 @@
     }
     /* Rien a ouvrir ici : le curseur ne doit pas promettre une action. */
     .sim-card--off { cursor: default; }
-    .sim-card border-color: var(--border); }
     .sim-card:hover { box-shadow: 0 4px 16px rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); }
     html.dark .sim-card { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); }
     html.dark .sim-card:hover { border-color: rgba(139,92,246,0.4); }
@@ -659,41 +658,24 @@
       color: var(--text-muted);
       line-height: 1.4;
     }
-    .sim-card-value {
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #8b5cf6;
-      margin-top: 0.75rem;
-      line-height: 1.1;
+/* Deux faits au plus, sur une ligne, dans l'encre du sous-titre. La ligne
+       est reservee meme vide : sans cela, une carte renseignee etirait toute
+       la rangee et laissait les autres avec un grand vide. */
+    .sim-card-faits {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem;
+      margin-top: 0.55rem; min-height: 1.15rem;
+      font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;
     }
-    html.dark .sim-card-value { color: #a78bfa; }
-    .sim-card-value-label {
-      font-size: 0.6875rem;
-      color: var(--text-muted);
-      margin-top: 0.125rem;
+    .sim-card-faits strong {
+      font-weight: 600; color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
     }
-    /* Detail du simulateur — visible en permanence */
-    .sim-card-body-inner {
-      padding-top: 1rem;
-      border-top: 1px solid var(--border);
-      margin-top: 1rem;
-    }
+    .sim-fait-sep { color: var(--border-mid); }
     /* L'action se cale en bas : les cartes s'alignent malgre des contenus
        de longueurs differentes. */
     .sim-card-foot { margin-top: auto; padding-top: 1rem; }
-    .sim-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem 0;
-      font-size: 0.8125rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .sim-row:last-child { border-bottom: none; }
-    .sim-row-label { color: var(--text-muted); }
-    .sim-row-val { font-weight: 600; color: var(--text-primary, var(--text)); }
+    /* .sim-row* retirees : le tableau des cartes a laisse la place a une
+       ligne de deux faits, plus rien ne porte ces classes. */
     .sim-cta {
       display: inline-flex;
       align-items: center;
@@ -835,6 +817,9 @@
       background:var(--accent-strong); color:#fff; font-size:0.875rem; font-weight:600;
       border:none; cursor:pointer; }
     .adj-save:hover { filter:brightness(1.06); }
+    /* En sombre, --accent-strong est un violet CLAIR : du blanc dessus
+       tombe a 2,72. L encre passe au fond de la page, qui tranche. */
+    html.dark .adj-save { color:var(--bg); }
     .modal-overlay.open .modal { transform:translateY(0); }
 
     /* ── RESPONSIVE ── */
@@ -1961,12 +1946,9 @@
       colorClass: 'violet',
       name: 'Capacité d\'emprunt ou mensualité',
       sub: 'Simule ta mensualité ou ton montant empruntable',
-      value: borrowing ? formatEuro(borrowing) : null,
-      valueLabel: borrowing ? 'capacité estimée' : null,
-      rows: borrowing ? [
-        { label: 'Mensualité max', val: formatEuro(mensualite) + '/mois' },
-        { label: 'Apport disponible', val: formatEuro(apport) },
-        { label: 'Budget total', val: formatEuro((borrowing||0) + (apport||0)) },
+      faits: borrowing ? [
+        { cle: 'capacité', val: formatEuro(borrowing) },
+        mensualite ? { cle: 'mensualité', val: formatEuro(mensualite) + '/mois' } : null,
       ] : [],
       ctaLabel: 'Ouvrir le simulateur',
       ctaHref: 'simulateur-emprunt.html',
@@ -1981,9 +1963,7 @@
       colorClass: 'teal',
       name: 'Simulateur de budget',
       sub: 'Visualise ton budget en Sankey (guidé ou libre)',
-      value: null,
-      valueLabel: null,
-      rows: [],
+      faits: [],
       ctaLabel: 'Ouvrir le simulateur',
       ctaHref: 'simulateur-budget.html',
       ctaDisabled: false,
@@ -2009,12 +1989,10 @@
       colorClass: 'teal',
       name: 'Gérer mes dettes',
       sub: 'Taux d\'endettement et plan de remboursement',
-      value: creditsMens ? formatEuro(creditsMens) + '/mois' : null,
-      valueLabel: creditsMens ? 'en mensualités' : null,
-      rows: creditsMens ? [
-        { label: 'Mensualités totales', val: formatEuro(creditsMens) },
-        tauxEndetSim ? { label: 'Taux d\'endettement', val: tauxEndetSim.toFixed(1) + ' %' } : null,
-      ].filter(Boolean) : [],
+      faits: creditsMens ? [
+        { cle: 'mensualités', val: formatEuro(creditsMens) + '/mois' },
+        tauxEndetSim ? { cle: 'endettement', val: tauxEndetSim.toFixed(1) + ' %' } : null,
+      ] : [],
       ctaLabel: dettesBriqueDone ? 'Voir mon plan' : 'Commencer',
       ctaHref: 'brique-plan-desendettement.html',
       ctaDisabled: false,
@@ -2030,12 +2008,9 @@
       colorClass: 'violet',
       name: 'Coût réel d\'un crédit',
       sub: 'Intérêts totaux sur la durée',
-      value: (borrowing && tauxHypo && duree) ? formatEuro(Math.round(mensualite * duree * 12 - borrowing)) : null,
-      valueLabel: (borrowing && tauxHypo && duree) ? 'intérêts sur ' + duree + ' ans' : null,
-      rows: (borrowing && tauxHypo && duree) ? [
-        { label: 'Taux simulé', val: (tauxHypo * 100).toFixed(2) + ' %' },
-        { label: 'Durée', val: duree + ' ans' },
-        { label: 'Capital emprunté', val: formatEuro(borrowing) },
+      faits: (borrowing && tauxHypo && duree) ? [
+        { cle: 'intérêts', val: formatEuro(Math.round(mensualite * duree * 12 - borrowing)) },
+        { cle: 'sur', val: duree + ' ans à ' + (tauxHypo * 100).toFixed(2).replace('.', ',') + ' %' },
       ] : [],
       ctaLabel: 'Bientôt disponible',
       ctaHref: null,
@@ -2058,14 +2033,11 @@
           <div class="sim-card-icon ${cfg.colorClass}">${cfg.icon}</div>
           <div class="sim-card-name">${cfg.name}</div>
           <div class="sim-card-sub">${cfg.sub}</div>
-          ${cfg.value ? `<div class="sim-card-value">${cfg.value}</div><div class="sim-card-value-label">${cfg.valueLabel}</div>` : ''}
+          <div class="sim-card-faits">${(cfg.faits || []).filter(Boolean)
+            .map(f => `<span>${f.cle} <strong>${f.val}</strong></span>`)
+            .join('<span class="sim-fait-sep" aria-hidden="true">·</span>')}</div>
         </div>
       </div>
-      ${cfg.rows.length ? `<div class="sim-card-body">
-        <div class="sim-card-body-inner">
-          ${cfg.rows.map(r => `<div class="sim-row"><span class="sim-row-label">${r.label}</span><span class="sim-row-val">${r.val}</span></div>`).join('')}
-        </div>
-      </div>` : ''}
       <div class="sim-card-foot">
         ${cfg.ctaDisabled
           ? `<span class="sim-cta-disabled">${cfg.ctaLabel}</span>`
@@ -2626,7 +2598,10 @@
     // Tant que rien n'est pre-calcule, on le dit — en trois mots, pas en
     // deux phrases.
     var sim = document.getElementById('explorer-simulateurs');
-    if (sim && !sim.querySelector('.sim-row')) {
+    // Le repere etait .sim-row, disparu avec le tableau des cartes : sans
+    // ce changement la mention se serait affichee meme avec des donnees.
+    // Un <strong> ne existe que si une carte porte au moins un fait.
+    if (sim && !sim.querySelector('.sim-card-faits strong')) {
       bouts.push('se remplissent avec tes chiffres');
     }
     el.innerHTML = bouts.join('<span class="meta-sep">\u00b7</span>');
