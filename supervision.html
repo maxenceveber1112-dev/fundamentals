@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fundamentals — supervision</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1200px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  h2{font-size:13px;color:#A78BFA;margin:22px 0 6px;font-weight:400}
+  p.intro{color:#A1A1AA;margin:0 0 16px;max-width:76ch}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#FBBF24}.gris{color:#A1A1AA}
+  input,button{font:inherit}
+  input{background:#12121f;border:1px solid #333;color:#E7E5E4;padding:6px 10px;
+        border-radius:6px;width:min(560px,100%)}
+  button{background:#5B21B6;border:0;color:#fff;padding:7px 14px;border-radius:6px;cursor:pointer}
+  button:hover{filter:brightness(1.1)}
+  table{border-collapse:collapse;width:100%;margin-top:10px}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:5px 12px 5px 0;font-weight:400}
+  td{padding:4px 12px 4px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  code{color:#C4B5FD}
+  details{margin-top:8px}
+  summary{cursor:pointer;color:#A1A1AA}
+  pre{white-space:pre-wrap;color:#A1A1AA;margin:6px 0 0}
+</style>
+</head>
+<body>
+<h1>Supervision — erreurs JavaScript remontées par la production</h1>
+<p class="intro">
+  Cette page ne contient aucune clé. Colle ici une clé de <strong>service</strong>
+  Supabase pour lire la table : elle reste dans ce navigateur, le temps de
+  l'onglet. La table n'a volontairement aucune politique de lecture publique —
+  la clé anon, qui est publique, peut signaler une erreur mais pas en lire une.
+</p>
+
+<h2>1 · La collecte est-elle en place ?</h2>
+<div id="etat-collecte" class="gris">vérification…</div>
+
+<h2>2 · Lire les erreurs</h2>
+<p>
+  <input id="cle" type="password" placeholder="clé de service Supabase (service_role)" autocomplete="off">
+  <button onclick="charger()">Charger</button>
+  <span id="etat" class="gris"></span>
+</p>
+<div id="resume"></div>
+<table id="t"><tr>
+  <th>signature</th><th class="n">occurrences</th><th>dernière</th>
+  <th>pages</th><th>navigateurs</th><th>versions</th>
+</tr></table>
+<div id="detail"></div>
+
+<script>
+var URL_SB = 'https://avnxkfthqgeehcjuxoej.supabase.co';
+
+/* ── 1. Le collecteur est-il servi et actif ? ─────────────────────── */
+(async function () {
+  var el = document.getElementById('etat-collecte');
+  var lignes = [];
+  var pages = ['index.html', 'dashboard.html', 'brique-achat-immobilier.html',
+               'simulateur-emprunt.html', 'brique-budget-base.html'];
+  var manquantes = [];
+  for (var i = 0; i < pages.length; i++) {
+    try {
+      var html = await (await fetch(pages[i] + '?sv=' + Date.now())).text();
+      if (!/supervision\.js/.test(html)) manquantes.push(pages[i]);
+    } catch (e) { manquantes.push(pages[i] + ' (illisible)'); }
+  }
+  var js = false;
+  try { js = /addEventListener\('error'/.test(await (await fetch('supervision.js?sv=' + Date.now())).text()); } catch (e) {}
+
+  lignes.push(js
+    ? '<span class="ok">✓</span> supervision.js est servi et installe ses écouteurs'
+    : '<span class="ko">✗</span> supervision.js est introuvable ou incomplet');
+  lignes.push(manquantes.length === 0
+    ? '<span class="ok">✓</span> les ' + pages.length + ' pages témoins l\'incluent'
+    : '<span class="ko">✗</span> pages sans collecteur : ' + manquantes.join(', '));
+  el.innerHTML = lignes.join('<br>');
+})();
+
+/* ── 2. Lecture de la table ───────────────────────────────────────── */
+async function charger() {
+  var cle = document.getElementById('cle').value.trim();
+  var etat = document.getElementById('etat');
+  var t = document.getElementById('t');
+  [].slice.call(t.querySelectorAll('tr')).slice(1).forEach(function (r) { r.remove(); });
+  document.getElementById('resume').innerHTML = '';
+  document.getElementById('detail').innerHTML = '';
+  if (!cle) { etat.innerHTML = '<span class="attente">colle une clé de service</span>'; return; }
+  etat.textContent = 'lecture…';
+
+  var r;
+  try {
+    r = await fetch(URL_SB + '/rest/v1/js_errors?select=*&order=cree_le.desc&limit=1000',
+      { headers: { apikey: cle, Authorization: 'Bearer ' + cle } });
+  } catch (e) {
+    etat.innerHTML = '<span class="ko">réseau : ' + e.message + '</span>'; return;
+  }
+  if (!r.ok) {
+    var txt = await r.text();
+    etat.innerHTML = /relation .* does not exist|PGRST205/.test(txt)
+      ? '<span class="attente">La table n\'existe pas encore — exécute <code>supervision.sql</code> dans l\'éditeur SQL de Supabase.</span>'
+      : '<span class="ko">HTTP ' + r.status + ' — ' + txt.slice(0, 200) + '</span>';
+    return;
+  }
+  var lignes = await r.json();
+  etat.textContent = '';
+
+  if (!lignes.length) {
+    document.getElementById('resume').innerHTML =
+      '<span class="ok">Aucune erreur remontée.</span> <span class="gris">C\'est le résultat attendu — '
+      + 'mais vérifie que la collecte est bien en place (section 1) avant de conclure.</span>';
+    return;
+  }
+
+  /* On regroupe sur la signature : ce qui compte est le nombre de DÉFAUTS
+     distincts, pas le nombre de lignes — une erreur en boucle en produirait
+     des milliers pour un seul bug. */
+  var parSig = {};
+  lignes.forEach(function (l) {
+    var g = parSig[l.signature] = parSig[l.signature] || {
+      n: 0, derniere: l.cree_le, exemple: l,
+      pages: {}, navs: {}, versions: {}
+    };
+    g.n++;
+    if (l.cree_le > g.derniere) { g.derniere = l.cree_le; g.exemple = l; }
+    if (l.chemin) g.pages[l.chemin] = 1;
+    if (l.navigateur) g.navs[l.navigateur] = 1;
+    if (l.version) g.versions[l.version] = 1;
+  });
+  var groupes = Object.keys(parSig).map(function (k) { return [k, parSig[k]]; })
+                      .sort(function (a, b) { return b[1].n - a[1].n; });
+
+  var recentes = lignes.filter(function (l) {
+    return (Date.now() - new Date(l.cree_le).getTime()) < 7 * 24 * 3600 * 1000;
+  }).length;
+  document.getElementById('resume').innerHTML =
+    '<b>' + groupes.length + '</b> défaut(s) distinct(s) · <b>' + lignes.length
+    + '</b> occurrence(s) au total · <b>' + recentes + '</b> sur les sept derniers jours';
+
+  groupes.forEach(function (g) {
+    var k = g[0], v = g[1], e = v.exemple;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td><code>' + echapper(e.message).slice(0, 90) + '</code><br>'
+      + '<span class="gris">' + echapper(e.fichier || '?') + ':' + (e.ligne || '?') + '</span></td>'
+      + '<td class="n">' + v.n + '</td>'
+      + '<td class="gris">' + new Date(v.derniere).toLocaleString('fr-FR') + '</td>'
+      + '<td class="gris">' + Object.keys(v.pages).join('<br>') + '</td>'
+      + '<td class="gris">' + Object.keys(v.navs).join(', ') + '</td>'
+      + '<td class="gris">' + Object.keys(v.versions).join(', ') + '</td></tr>'
+      + (e.pile ? '<tr><td colspan="6"><details><summary>pile d\'appel</summary><pre>'
+         + echapper(e.pile) + '</pre></details></td></tr>' : ''));
+  });
+}
+
+function echapper(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+</script>
+</body>
+</html>

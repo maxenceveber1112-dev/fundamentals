@@ -165,6 +165,38 @@ async function submitFeedback(page, rating, message, meta) {
   return { error: error?.message };
 }
 
+// ─── SUPERVISION ───────────────────────────────────────────────────
+
+/* Remontee d une erreur JavaScript. Volontairement SANS user_id : une
+   erreur decrit du code, pas une personne, et la table n a aucune
+   politique de lecture cote navigateur.
+
+   Ne leve jamais : si la table n existe pas encore, si Supabase est
+   injoignable ou si la cle est refusee, on avale. Un collecteur qui casse
+   la page serait pire que pas de collecteur. */
+async function logJsError(err) {
+  try {
+    const sb = getClient(); if (!sb) return;
+    await sb.from('js_errors').insert({
+      signature: err.signature,
+      message: err.message,
+      fichier: err.fichier || null,
+      ligne: err.ligne || null,
+      colonne: err.colonne || null,
+      pile: err.pile || null,
+      chemin: err.chemin || null,
+      brique: err.brique || null,
+      ecran: err.ecran || null,
+      theme: err.theme || null,
+      appareil: err.appareil || null,
+      navigateur: err.navigateur || null,
+      version: err.version || null
+    });
+  } catch (e) {
+    /* silence volontaire */
+  }
+}
+
 // ─── RESET ─────────────────────────────────────────────────────────
 async function resetUserData() {
   const user = await getCurrentUser();
