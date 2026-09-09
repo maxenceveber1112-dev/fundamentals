@@ -31,7 +31,7 @@
   <!-- Styles communs aux deux briques immobilieres. Cette feuille occupe
        l'emplacement exact du bloc en ligne qu'elle remplace, pour preserver
        l'ordre de cascade vis-a-vis de theme.css. -->
-  <link rel="stylesheet" href="immo-commun.css?v=da12" />
+  <link rel="stylesheet" href="immo-commun.css?v=da17" />
   <link rel="stylesheet" href="theme.css?v=contraste5">
   <!-- Ecran de chargement : feuille bloquante au rendu, pour que le
        voile soit peint avant la mise en page encore vide. -->
@@ -526,15 +526,14 @@
               <div class="apport-hero-label">TON APPORT MOBILISABLE</div>
               <div class="apport-hero-value" id="apport-hero-value">--</div>
               <div class="apport-hero-sub" id="apport-hero-sub"></div>
-              <button class="btn-hero-primary" onclick="goToScreen(4)" style="align-self:flex-start;">
+            </div>
+
+            <div class="nav-btns" style="margin-top:1.25rem;">
+              <button class="btn-hero-secondary" onclick="goToScreen(2)">← Retour</button>
+              <button class="btn-hero-primary" onclick="goToScreen(4)">
                 Continuer
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
-            </div>
-
-            <div class="nav-btns" style="margin-top:0.5rem;">
-              <button class="btn-hero-secondary" onclick="goToScreen(2)">← Retour</button>
-              <span></span>
             </div>
           </div>
         </div>
@@ -2130,7 +2129,13 @@ function updateCapacity() {
   // ─── Marker "Tu es ici" ───
   var marker = $('z2-marker');
   var markerLabel = $('z2-marker-label');
-  if (marker) marker.style.left = Math.min(tauxEffortA, 100) + '%';
+  var pctMarqueur = Math.min(tauxEffortA, 100);
+  if (marker) marker.style.left = pctMarqueur + '%';
+  /* L etiquette etait centree sur son trait : a 0 % elle debordait de la zone
+     par la gauche et se faisait couper par overflow:hidden. Un decalage egal
+     au pourcentage la fait passer de calee-a-gauche (0 %) a centree (50 %) a
+     calee-a-droite (100 %) : elle reste dedans a toutes les positions. */
+  if (markerLabel) markerLabel.style.transform = 'translateX(-' + pctMarqueur + '%)';
   if (markerLabel) markerLabel.textContent = '● ' + Math.round(tauxEffortA * 10) / 10 + '% aujourd\'hui';
 
   // ─── Context line ───

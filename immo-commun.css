@@ -686,9 +686,10 @@ html.dark .sb2-synth.locked {
 
 
 /* Variante neutre (import S2) */
+/* Un bandeau porte un message : sa teinte suffit a le signaler, le cadre
+   n'ajoutait qu'un trait de plus a compter. */
 .cb-banner--neutral {
-  background:color-mix(in srgb, var(--v3-accent-strong) 7%, transparent);
-  border:1px solid color-mix(in srgb, var(--v3-accent-strong) 22%, transparent);
+  background:color-mix(in srgb, var(--v3-accent-strong) 9%, transparent);
 }
 
 .cb-banner--neutral .cb-banner-icon { background:var(--v3-accent-strong); }
@@ -699,7 +700,10 @@ html.dark .cb-banner--neutral { background:color-mix(in srgb, #A78BFA 14%, trans
 
 html.dark .cb-banner--neutral .cb-banner-icon { background:#A78BFA; }
 
-html.dark .cb-banner--neutral .cb-banner-text strong { color:#A78BFA; }
+/* Le bandeau est pose sur le lavis du panneau : les deux teintes accent
+   s additionnent et l accent lui-meme tombe a 4,46 en sombre. Le gras
+   passe au cran plus clair de la meme famille. */
+html.dark .cb-banner--neutral .cb-banner-text strong { color:#C4B5FD; }
 
 
 /* Variante warning (S0 épargne incomplète) */
@@ -944,22 +948,35 @@ html.dark .brick-kicker { color:#A5B4FC; }
 }
 
 
+/* §1.8 — un champ de saisie est une ligne ou l'on ecrit, pas une boite.
+   Le cadre tombe, le filet reste : c'est lui qui dit ou poser le curseur,
+   et c'est lui qui prend l'accent au focus. */
 .field-input {
-  width:100%; padding:0.75rem 1rem;
-  background:var(--surface-2);
-  border:1.5px solid var(--border-mid);
-  border-radius:var(--r-md);
+  width:100%; padding:0.6rem 0.15rem 0.5rem;
+  background:none;
+  border:none; border-bottom:2px solid var(--border-mid);
+  border-radius:0;
   color:var(--text); font-size:0.95rem; font-family:inherit;
-  transition:border-color var(--t), box-shadow var(--t);
+  transition:border-color var(--t), border-width var(--t);
 }
 
-.field-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+.field-input:hover { border-bottom-color:var(--border-hover); }
+
+/* L'anneau porte dessinait un cadre autour d'un element qui n'en a plus.
+   Un filet epaissi a l'accent se voit autant, sans rien encadrer. Le
+   rembourrage compense l'epaisseur pour que la ligne suivante ne bouge pas. */
+.field-input:focus {
+  outline:none;
+  border-bottom-color:var(--accent-strong);
+  border-bottom-width:3px;
+  padding-bottom:calc(0.5rem - 1px);
+}
 
 .field-input::placeholder { color:var(--text-faint); }
 
-.field-input.prefilled { border-color:rgba(34,197,94,0.3); }
+.field-input.prefilled { border-bottom-color:rgba(34,197,94,0.55); }
 
-.field-input.prefilled:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,0.1); }
+.field-input.prefilled:focus { border-bottom-color:var(--green); }
 
 
 /* Grilles champs */
@@ -1617,12 +1634,17 @@ html.dark .preset-btn.active { color:var(--v3-accent-strong); }
 
 .epargne-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
 
+/* §1.8 — chacune n'affiche qu'un montant modifiable : un filet suffit,
+   comme les champs de l'ecran « vrai cout ». */
 .epargne-item {
-  background:var(--bg-elevated); border-radius:0.875rem; padding:0.875rem;
-  border:1.5px solid var(--border-mid); cursor:pointer; transition:all var(--t);
+  background:none; border:none;
+  border-bottom:2px solid var(--border-mid);
+  border-radius:0; padding:0.7rem 0.15rem 0.55rem;
+  cursor:pointer; transition:border-color var(--t);
 }
 
-.epargne-item:hover { border-color:var(--accent-strong); }
+.epargne-item:hover { border-bottom-color:var(--accent-strong); }
+.epargne-item:focus-within { border-bottom-color:var(--accent-strong); }
 
 .epargne-item-label { font-size:0.72rem; font-weight:600; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.25rem; }
 
@@ -1651,10 +1673,19 @@ html.dark .repartition-mobilisable { background:var(--v3-accent-strong); }
 /* ══════════════════════════════════════════════════════════════
    HERO CARD APPORT (écran 3)
 ══════════════════════════════════════════════════════════════ */
+/* §1.3 — ce bloc porte le chiffre cle de l'ecran : un halo derriere le
+   nombre dit mieux « voici la reponse » qu'un cadre autour. Le lavis
+   s'eteint avant le bord (rien a aligner) et le coin bas-droit s'ouvre
+   (§1.9). Le filigrane de la maison reste : c'est lui qui donne au bloc son
+   identite. */
 .apport-hero {
-  position:relative; overflow:hidden; border-radius:1rem;
-  background:var(--cream-grad); border:1px solid var(--cream-border);
-  padding:1.5rem; display:flex; flex-direction:column; gap:0.75rem;
+  position:relative; overflow:hidden;
+  border-radius:1rem 1rem 2.4rem 1rem;
+  background:radial-gradient(120% 155% at 6% 0%,
+             color-mix(in srgb, var(--accent-strong) 13%, transparent) 0%,
+             transparent 72%);
+  padding:1.5rem 1.5rem 1.6rem;
+  display:flex; flex-direction:column; gap:0.5rem;
 }
 
 /* (Commit 4) Watermark hero apport — SVG à la place de l'emoji */
@@ -1672,7 +1703,7 @@ html.dark .apport-hero-bg { opacity:0.11; color:var(--v3-accent-strong, #FBBF24)
 
 html.dark .apport-hero-label { color:var(--v3-accent-strong); }
 
-.apport-hero-value { font-family:var(--font-display); font-size:2rem; font-weight:400; color:var(--text); line-height:1.1; }
+.apport-hero-value { font-family:var(--font-display); font-size:2.4rem; font-weight:400; color:var(--text); line-height:1.05; letter-spacing:-0.015em; }
 
 .apport-hero-sub { font-size:0.8rem; color:var(--text-secondary); }
 
@@ -2213,7 +2244,10 @@ html.dark .z2-capital { color:var(--v3-accent-strong); }
    trait, qui suffit a la rattacher. */
 .z2-marker-label {
   position:absolute; bottom:calc(100% + 4px); left:50%;
-  transform:translateX(-50%); white-space:nowrap;
+  /* Le marqueur demarre a 0 % : centrer l etiquette la faisait deborder de la
+     zone avant meme le premier calcul. Le defaut suit donc la position de
+     depart (calee a gauche) ; le script la recentre ensuite au prorata. */
+  transform:translateX(0); white-space:nowrap;
   font-size:0.68rem; font-weight:600; color:var(--accent-strong);
 }
 
@@ -2263,10 +2297,13 @@ html:not(.dark) .z2-hcsf-label { color:var(--text-faint); }
 
 
 /* Reste à vivre */
+/* §1.10 — un rappel de valeur n a pas besoin d une gelule pour se lire ;
+   dans une zone deja teintee, elle ne faisait qu ajouter une surface. */
 .z2-rav {
   font-size:0.875rem; color:var(--text-secondary); text-align:center;
-  margin-top:0.5rem; padding:0.5rem 0.75rem;
-  background:var(--surface-2); border-radius:0.75rem; display:inline-block;
+  margin-top:0.75rem; padding:0.5rem 0 0;
+  border-top:1px solid var(--border-subtle);
+  display:inline-block;
 }
 
 .z2-rav strong { font-weight:600; color:var(--text); }
@@ -2328,11 +2365,11 @@ html:not(.dark) .z2-hcsf-label { color:var(--text-faint); }
 /* ── ZONE 3 : Hypotheses pill ── */
 .z3-pill-wrap { position:relative; text-align:center; margin-top:1.25rem; }
 
+/* Un rappel d hypotheses, pas un objet : la gelule tombe, le texte reste. */
 .hypotheses-pill {
   display:inline-flex; align-items:center; gap:12px;
-  background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.2);
-  border-radius:9999px; padding:10px 20px;
-  font-size:0.85rem; color:rgba(255,255,255,0.7);
+  padding:10px 0;
+  font-size:0.85rem; color:var(--text-secondary);
   cursor:default;
 }
 
@@ -2406,14 +2443,19 @@ html.dark .hypotheses-close-btn:hover { filter:brightness(1.08); }
 /* ══════════════════════════════════════════════════════════════
    SCREEN 2 v4 — PILLS FUSION (2 grandes pills)
 ══════════════════════════════════════════════════════════════ */
+/* §1.2 — la tuile groupe un libelle, une valeur et son detail : elle garde
+   une identite, mais en zone. §1.9 : le coin bas-droit s'ouvre. */
 .z1-pill {
   position:relative; overflow:hidden;
-  background:rgba(139,92,246,0.05); border:1.5px solid rgba(139,92,246,0.15);
-  border-radius:1rem; padding:1.25rem 1.125rem;
-  transition:all 0.2s ease;
+  background:radial-gradient(120% 150% at 6% 0%, rgba(139,92,246,0.10) 0%, transparent 68%);
+  border-radius:1rem 1rem 2.2rem 1rem; padding:1.25rem 1.125rem;
+  transition:background 0.2s ease;
 }
 
-.z1-pill:hover { transform:scale(1.01); box-shadow:var(--shadow-hover); border-color:rgba(139,92,246,0.3); }
+/* Agrandir une zone sans bord la ferait flotter : le lavis se densifie. */
+.z1-pill:hover {
+  background:radial-gradient(120% 150% at 6% 0%, rgba(139,92,246,0.16) 0%, transparent 68%);
+}
 
 .z1-pill-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; }
 
@@ -2483,7 +2525,7 @@ html.dark .z1-pill-sub-link { color:var(--v3-accent-strong); }
 }
 
 .z1-pill-expand .field-input {
-  font-size:0.875rem; padding:0.5rem 0.75rem;
+  font-size:0.875rem; padding:0.45rem 0.15rem 0.4rem;
 }
 
 
@@ -2497,14 +2539,16 @@ html.dark .z1-pill-sub-link { color:var(--v3-accent-strong); }
 /* ══════════════════════════════════════════════════════════════
    SCREEN 2 v4 — CARD DASHBOARD (Zone 2 wrapper)
 ══════════════════════════════════════════════════════════════ */
+/* §1.2 — le panneau de diagnostic groupe le chiffre cle, sa jauge et ses
+   rappels : il garde une identite, mais en zone. Le degrade s eteignait sur
+   un aplat au bord, ce qui demandait un cadre pour tenir ; le lavis radial
+   s eteint avant, donc plus rien a aligner. Coin bas-droit ouvert (§1.9). */
 .z2-dashboard-card {
   position:relative; overflow:hidden;
-  background:linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(139,92,246,0.05) 100%);
-  border:1px solid rgba(139,92,246,0.2);
-  border-radius:20px;
+  background:radial-gradient(120% 150% at 6% 0%, rgba(139,92,246,0.13) 0%, transparent 70%);
+  border-radius:20px 20px 2.6rem 20px;
   padding:1.5rem;
   margin-top:0.75rem;
-  box-shadow:0 2px 12px rgba(99,102,241,0.06);
 }
 
 .z2-dashboard-card-kicker {
@@ -3690,10 +3734,11 @@ html.dark .s5-neighbours-cta-secondary:hover { color:#0B0B1A; }
   gap:.75rem; margin-bottom: 1.5rem;
 }
 
+/* §1.8 — un indicateur affiche une valeur : filet, pas cadre. */
 .s7-kpi {
-  padding:1rem 1.1rem; border-radius: var(--r-md);
-  background: var(--surface-2);
-  border:1px solid var(--border-subtle);
+  padding:0.7rem 0.15rem 0.55rem; border-radius:0;
+  background:none;
+  border:none; border-bottom:2px solid var(--border-subtle);
 }
 
 .s7-kpi-label {
@@ -3718,11 +3763,13 @@ html.dark .s5-neighbours-cta-secondary:hover { color:#0B0B1A; }
 .s7-kpi.highlight .s7-kpi-value { color: var(--accent-strong); }
 
 
+/* Un rappel d hypotheses est un message : sa teinte le signale, le cadre
+   n ajoutait qu un trait. */
 .s7-hypotheses {
   display:flex; align-items:flex-start; gap:.65rem;
-  padding:.85rem 1rem; border-radius: var(--r-md);
-  background: var(--accent-soft);
-  border:1px solid rgba(196,181,253,.3);
+  padding:.85rem 1rem; border-radius: var(--r-md) var(--r-md) 1.6rem var(--r-md);
+  background: radial-gradient(120% 150% at 6% 0%,
+              color-mix(in srgb, var(--accent-strong) 12%, transparent) 0%, transparent 70%);
   font-size:.82rem; color: var(--text-secondary);
   margin-bottom:1rem;
 }
@@ -3732,10 +3779,12 @@ html.dark .s7-hypotheses { border-color: rgba(167,139,250,.25); }
 .s7-hypotheses-icon { font-size:1rem; flex-shrink:0; }
 
 
+/* §1.2 — l enveloppe du graphique groupe sans se cliquer : elle passe en
+   zone, et son coin bas-droit s ouvre comme les autres. */
 .s7-chart-wrap {
-  background: var(--surface);
-  border:1px solid var(--border-subtle);
-  border-radius: var(--r-lg);
+  background: radial-gradient(120% 150% at 6% 0%,
+              color-mix(in srgb, var(--text) 5%, transparent) 0%, transparent 68%);
+  border-radius: var(--r-lg) var(--r-lg) 2.2rem var(--r-lg);
   padding:1.5rem 1.25rem 1.25rem;
   margin-bottom:1.25rem;
 }
@@ -3842,8 +3891,8 @@ html.dark .s7-chart-svg .area-net { fill:rgba(74,222,128,.12); }
 }
 
 .s7-revente-card {
-  padding:.9rem 1rem; border-radius: var(--r-md);
-  background: var(--surface-2); border:1px solid var(--border-subtle);
+  padding:0.7rem 0.15rem 0.55rem; border-radius:0;
+  background:none; border:none; border-bottom:2px solid var(--border-subtle);
 }
 
 .s7-revente-card-label {
