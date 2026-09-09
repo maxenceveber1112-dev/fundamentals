@@ -3469,16 +3469,23 @@ html.dark .s5-change-btn:hover { color:#0B0B1A; }
 
 .s5-autocomplete { position:relative; }
 
+/* §1.8 — le dernier champ encore en boite : celui de la commune. Il suit
+   maintenant les quinze autres. La liste de suggestions, elle, garde son
+   cadre : elle flotte au-dessus du contenu et doit s en detacher. */
 .s5-autocomplete input {
-  width:100%; padding:0.7rem 0.9rem; font-size:0.95rem;
-  border:1px solid var(--v3-border-subtle); border-radius:10px;
-  background:var(--v3-bg-elevated); color:var(--v3-text);
-  font-family:inherit; transition:border-color 0.15s ease, box-shadow 0.15s ease;
+  width:100%; padding:0.6rem 0.15rem 0.5rem; font-size:0.95rem;
+  border:none; border-bottom:2px solid var(--border-mid); border-radius:0;
+  background:none; color:var(--v3-text);
+  font-family:inherit; transition:border-color var(--t), border-width var(--t);
 }
 
+.s5-autocomplete input:hover { border-bottom-color:var(--border-hover); }
+
 .s5-autocomplete input:focus {
-  outline:none; border-color:var(--v3-accent-strong);
-  box-shadow:0 0 0 3px var(--v3-accent-soft);
+  outline:none;
+  border-bottom-color:var(--accent-strong);
+  border-bottom-width:3px;
+  padding-bottom:calc(0.5rem - 1px);
 }
 
 .s5-suggest {
