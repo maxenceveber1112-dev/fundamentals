@@ -221,7 +221,8 @@ html.dark .brique-progress-card {
     .brick-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 100% 0%,rgba(99,102,241,0.06),transparent 70%);pointer-events:none;}
 
     /* TITLES */
-    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:#fff;line-height:1.25;margin-bottom:0.5rem;}
+    /* Blanc herite du temps ou la plateforme etait sombre : invisible en clair. */
+    .brick-title{font-size:clamp(1.3rem,3.5vw,1.7rem);font-weight:800;color:var(--text);line-height:1.25;margin-bottom:0.5rem;}
     .brick-subtitle{font-size:0.9rem;color:var(--ink-soft);margin-bottom:1.5rem;line-height:1.5;}
 
     /* REASSURANCE */
@@ -244,7 +245,10 @@ html.dark .brique-progress-card {
     .chip.selected{background:var(--indigo-dim);border-color:rgba(99,102,241,0.4);color:#a5b4fc;font-weight:600;}
 
     /* BUTTONS */
-    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);background:linear-gradient(135deg,var(--indigo),var(--purple));font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
+    .btn-primary{display:flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;padding:1rem;border-radius:var(--r-full);/* Le bouton porte du blanc : ses deux bornes doivent tenir dans les deux
+       themes. --indigo vire au clair en sombre et faisait tomber le blanc
+       a 2,98 ; les bornes sont fixees. */
+    background:linear-gradient(135deg,#4F46E5,#6D28D9);font-size:0.95rem;font-weight:700;color:#fff;border:none;box-shadow:0 0 28px rgba(99,102,241,0.35),0 4px 16px rgba(0,0,0,0.4);transition:box-shadow var(--t),transform 0.12s var(--ease-spring);margin-top:1.5rem;}
     .btn-primary:hover{box-shadow:0 0 40px rgba(99,102,241,0.5),0 6px 20px rgba(0,0,0,0.5);}
     .btn-primary:active{transform:scale(0.98);}
     .btn-primary:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}

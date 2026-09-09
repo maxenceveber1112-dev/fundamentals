@@ -3495,7 +3495,7 @@ html.dark .s5-change-btn:hover { color:#0B0B1A; }
 
 .s5-info-unit { font-size:0.85rem; font-weight:600; color:var(--v3-accent-strong); }
 
-.s5-info-source { font-size:0.7rem; color:var(--v3-text-muted); }
+.s5-info-source { font-size:0.7rem; color:var(--text-secondary); }
 
 
 /* BLOC 2 — Pills typologie */
@@ -3602,7 +3602,7 @@ html.dark .s5-typo-pill.selected.suggested::after { color:#0B0B1A; }
   font-variant-numeric:tabular-nums;
 }
 
-.s5-recap-detail { font-size:0.75rem; color:var(--v3-text-muted); }
+.s5-recap-detail { font-size:0.75rem; color:var(--text-secondary); }
 
 
 /* BLOC 4 — Adaptation si budget insuffisant (sans changement de commune) */
@@ -3848,7 +3848,7 @@ html.dark .s7-chart-svg .area-net { fill:rgba(74,222,128,.12); }
 
 .s7-revente-card-label {
   font-size:.68rem; font-weight:600; letter-spacing:.08em;
-  text-transform: uppercase; color: var(--text-muted);
+  text-transform: uppercase; color: var(--text-secondary);
   margin-bottom:.2rem;
 }
 
@@ -4418,6 +4418,9 @@ html.dark .s8-typo-card.over .s8-typo-badge { color: var(--red-text); }
 }
 
 .s8-levier-action strong { color: var(--accent-strong); }
+/* Sur le lavis d accent de la zone, l accent lui-meme tombe a 4,27 en sombre :
+   le mot en gras passe au cran plus clair de la meme famille. */
+html.dark .s8-levier-action strong { color: #C4B5FD; }
 
 .s8-levier-result {
   font-size: .78rem; color: var(--text-muted);

@@ -105,12 +105,11 @@ html.dark .hero-cream::after{color:rgba(139,92,246,.16)}
   border-bottom:1px solid var(--border-subtle)}
 .rp{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:.4rem;
   background:none;border:none;cursor:pointer;font-family:inherit;padding:0}
-.rp-d{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--border-hover);
-  background:var(--bg-elevated);display:flex;align-items:center;justify-content:center;
-  font-size:.68rem;font-weight:700;color:var(--text-faint);transition:all var(--t)}
-.rp.lu .rp-d{border-color:var(--green);background:var(--green-soft);color:var(--green-text)}
-.rp.on .rp-d{border-color:var(--accent-strong);background:var(--accent-strong);color:#fff;
-  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-strong) 14%,transparent)}
+.rp-d{width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-style:italic;font-size:1.05rem;font-weight:500;
+  line-height:1;color:var(--text-faint);transition:color var(--t)}
+.rp.lu .rp-d{color:var(--green-text)}
+.rp.on .rp-d{color:var(--accent-strong)}
 .rp-l{font-size:.63rem;font-weight:600;color:var(--text-faint);white-space:nowrap;
   letter-spacing:.02em;transition:color var(--t)}
 .rp.on .rp-l{color:var(--accent-strong)}
@@ -164,6 +163,9 @@ html.dark .hero-cream::after{color:rgba(139,92,246,.16)}
   color:var(--text);cursor:pointer;transition:all var(--t)}
 .btn-mini:hover{border-color:var(--border-hover)}
 .btn-mini.plein{background:var(--accent-strong);border-color:var(--accent-strong);color:#fff}
+/* En sombre, --accent-strong est un violet CLAIR : du blanc dessus tombe a
+   2,72. L'encre passe au fond de la page, qui tranche. */
+html.dark .btn-mini.plein{color:var(--bg)}
 .btn-mini.plein:hover{filter:brightness(1.08)}
 
 /* bloc repliable, reutilise pour « pas besoin » et « autre chose » */
@@ -241,10 +243,10 @@ html.dark .boucle::after{color:rgba(139,92,246,.15)}
 .cb.reco{border-color:var(--accent-strong);
   box-shadow:var(--shadow-card),0 0 0 3px color-mix(in srgb,var(--accent-strong) 12%,transparent);
   transform:translateY(-3px)}
+/* §1.10 — l'etiquette perd sa gelule ET sa geometrie ; blanche sur accent,
+   elle serait devenue invisible sur le fond de la carte. */
 .cb-b{display:inline-block;margin-bottom:.5rem;font-size:.6rem;font-weight:700;
-  letter-spacing:.07em;text-transform:uppercase;color:#fff;
-  background:var(--accent-strong);padding:.2rem .55rem;border-radius:var(--r-full)}
-html.dark .cb-b{background:#7C3AED}
+  letter-spacing:.07em;text-transform:uppercase;color:var(--accent-strong)}
 .cb-n{font-size:.85rem;font-weight:600;line-height:1.3;margin-bottom:.55rem}
 .cb-l{display:flex;gap:.4rem;font-size:.75rem;color:var(--text-muted);line-height:1.45;padding:.22rem 0}
 .cb-l i{flex:0 0 auto;font-style:normal;font-weight:700}
@@ -271,7 +273,9 @@ html.dark .reco::after{color:rgba(139,92,246,.13)}
 .empile{display:flex;flex-direction:column;gap:.7rem}
 .liste{background:var(--bg-elevated);border:1px solid var(--border-subtle);
   border-radius:var(--r-lg);padding:1.25rem 1.3rem;box-shadow:var(--shadow-card)}
-.liste-h{font-size:.9rem;font-weight:600;margin-bottom:.15rem}
+/* Sans couleur declaree, ce titre heritait d'un noir pose plus haut : il
+   devenait illisible en theme sombre. */
+.liste-h{font-size:.9rem;font-weight:600;margin-bottom:.15rem;color:var(--text)}
 .liste-s{font-size:.78rem;color:var(--text-muted);margin-bottom:.9rem;line-height:1.5}
 .li{display:flex;gap:.7rem;padding:.7rem 0}
 .li + .li{border-top:1px solid var(--border-subtle)}
@@ -306,11 +310,12 @@ html.dark .reco::after{color:rgba(139,92,246,.13)}
 .fr-l::before{content:'';position:absolute;left:12px;top:16px;bottom:16px;width:2px;
   background:linear-gradient(to bottom,var(--accent-strong),var(--border-mid) 35%);border-radius:2px}
 .fr-i{position:relative;padding:.7rem 0;opacity:0;animation:fadeUp .4s var(--ease-out) forwards}
-.fr-d{position:absolute;left:-2.5rem;top:.8rem;width:26px;height:26px;border-radius:50%;
-  background:var(--bg-elevated);border:2px solid var(--border-mid);display:flex;
-  align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-faint)}
-.fr-i.now .fr-d{border-color:var(--accent-strong);background:var(--accent-strong);color:#fff;
-  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-strong) 14%,transparent)}
+.fr-d{position:absolute;left:-2.5rem;top:.7rem;width:26px;height:26px;border-radius:50%;
+  background:var(--bg-elevated);display:flex;
+  align-items:center;justify-content:center;
+  font-family:var(--font-display);font-style:italic;font-size:1.05rem;font-weight:500;
+  line-height:1;color:var(--text-faint);transition:color var(--t)}
+.fr-i.now .fr-d{color:var(--accent-strong)}
 .fr-t{font-size:.88rem;font-weight:600}
 .fr-i.now .fr-t{color:var(--accent-strong)}
 .fr-s{font-size:.8rem;color:var(--text-muted);line-height:1.6;margin-top:.1rem}
