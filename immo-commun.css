@@ -2495,7 +2495,15 @@ html.dark .z1-pill-input { color:var(--v3-accent-strong); }
 
 .z1-pill.editing .z1-pill-input { display:block; }
 
-.z1-pill.editing { border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+/* La tuile est passee en zone : elle n a plus de bordure a colorer, et un
+   anneau porte redessinait un cadre autour d un element qui n en a pas.
+   L etat d edition se dit comme la selection des cartes de choix (§1.6) :
+   le lavis se densifie et le coin bas-droit s ouvre. */
+.z1-pill.editing {
+  background:radial-gradient(120% 155% at 6% 0%, rgba(139,92,246,0.24) 0%, transparent 70%),
+             radial-gradient(90% 130% at 96% 96%, rgba(139,92,246,0.15) 0%, transparent 60%);
+  border-radius:1rem 1rem 2.6rem 1rem;
+}
 
 
 .z1-pill-sub {
