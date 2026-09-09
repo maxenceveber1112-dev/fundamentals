@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>fonds-urgence — tests des paliers et du rythme</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1040px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  h2{font-size:13px;color:#A78BFA;margin:20px 0 6px;font-weight:400}
+  p.intro{color:#A1A1AA;margin:0 0 18px;max-width:74ch}
+  #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#FBBF24}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
+  td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<h1>brique-fonds-urgence.html — tests de <code>calculateMatelasSecurity</code></h1>
+<p class="intro">
+  Ce moteur fixe trois paliers d'épargne de précaution, en désigne un comme
+  cible, puis annonce en combien de mois on l'atteint. Trois erreurs y
+  seraient invisibles à la lecture : des paliers qui se croisent (le
+  « solide » sous l'« utile »), une cible qui ignore un découvert, ou un
+  nombre de mois calculé sur le mauvais reste. Dans les trois cas la brique
+  resterait crédible et donnerait un mauvais conseil. La brique exigeant une
+  session, on extrait la fonction du fichier servi et on l'exécute seule —
+  elle ne touche pas au DOM.
+</p>
+<div id="bilan">exécution…</div>
+<table id="t"><tr><th>cas</th><th>attendu</th><th>obtenu</th><th></th></tr></table>
+
+<script>
+var resultats = [];
+function verifier(nom, attendu, obtenu, tol) {
+  var t = tol === undefined ? 0 : tol;
+  var ok = (typeof attendu === 'number' && typeof obtenu === 'number')
+    ? Math.abs(attendu - obtenu) <= t
+    : String(attendu) === String(obtenu);
+  resultats.push({ nom: nom, attendu: attendu, obtenu: obtenu, ok: ok });
+}
+
+/* Découpe une fonction du source en comptant ses accolades. */
+function corps(src, nom) {
+  var m = src.match(new RegExp("function\\s+" + nom + "\\s*\\([^)]*\\)\\s*\\{"));
+  if (!m) return null;
+  var i = m.index + m[0].length, p = 1;
+  while (i < src.length && p) { if (src[i] === "{") p++; else if (src[i] === "}") p--; i++; }
+  return src.slice(m.index, i);
+}
+
+(async function () {
+  var src = await (await fetch('brique-fonds-urgence.html?test=' + Date.now())).text();
+  var moteur = corps(src, 'calculateMatelasSecurity');
+  if (!moteur) {
+    document.getElementById('bilan').innerHTML =
+      '<span class="ko">Extraction impossible : calculateMatelasSecurity est introuvable.</span>';
+    window.__fini = true;
+    return;
+  }
+
+  var M = {};
+  try {
+    // formatEuro est la seule dependance externe du moteur : il ne s'en sert
+    // que pour composer des libelles, jamais pour calculer.
+    new Function('sortie',
+      'function formatEuro(v){ return String(Math.round(v || 0)) + " EUR"; }\n'
+      + moteur
+      + '\nsortie.calc = calculateMatelasSecurity;')(M);
+  } catch (e) {
+    var csp = /unsafe-eval|Content Security Policy/i.test(e.message);
+    document.getElementById('bilan').innerHTML = csp
+      ? '<span class="attente">⚠ Suite non exécutée ici.</span><br>'
+        + '<span style="color:#A1A1AA;font-weight:400">Elle extrait la fonction du moteur et l\'évalue, '
+        + 'ce qui demande <code>unsafe-eval</code> — interdit par la CSP de production, à juste titre. '
+        + 'Lance-la depuis un serveur local : <code>tests.html</code> sur localhost.</span>'
+      : '<span class="ko">' + e.message + '</span>';
+    window.__nonExecutable = csp;
+    window.__fini = true;
+    return;
+  }
+
+  var calc = M.calc;
+
+  /* ══ Un profil de reference, decline ensuite ═════════════════════════ */
+  function profil(sup) {
+    var base = {
+      revenus: 2000, aides: 0,
+      charges_vitales_saisies: 1000,
+      epargne_liquide_total: 0,
+      epargne_mensuelle: 0,
+      status_pro: 'sal_prof_inter',
+      dettes_types: [],
+      reste_a_vivre: 1000
+    };
+    for (var k in (sup || {})) base[k] = sup[k];
+    return base;
+  }
+
+  /* ══ Les trois paliers ne doivent jamais se croiser ══════════════════ */
+  // C'est l'invariant du moteur : « solide » sous « utile » afficherait un
+  // objectif superieur au palier suivant, et la barre de progression
+  // reculerait en avancant.
+  var casMonotonie = [
+    ['profil type', {}],
+    ['sans charges declarees', { charges_vitales_saisies: 0, total_besoins: 0, charges_fixes_total: 0 }],
+    ['charges tres elevees', { charges_vitales_saisies: 4000, revenus: 9000, reste_a_vivre: 5000 }],
+    ['tres petit budget', { revenus: 700, charges_vitales_saisies: 600, reste_a_vivre: 100 }],
+    ['epargne mensuelle forte', { epargne_mensuelle: 800 }],
+    ['profil fragile', { status_pro: 'etudiant', revenus: 500, charges_vitales_saisies: 400, reste_a_vivre: 100 }],
+    ['avec decouvert', { dettes_types: ['decouvert_regulier'] }],
+    ['reste a vivre negatif', { reste_a_vivre: -200 }]
+  ];
+  casMonotonie.forEach(function (c) {
+    var r = calc(profil(c[1]));
+    verifier('paliers croissants — ' + c[0], true,
+             r.palierPremierCoussin < r.palierSecuriteUtile
+             && r.palierSecuriteUtile <= r.palierSecuriteSolide);
+  });
+
+  /* ══ Le premier coussin ══════════════════════════════════════════════ */
+  var r1 = calc(profil());
+  verifier('premier coussin = moitie des charges, arrondi a 50', 500, r1.palierPremierCoussin);
+  // Un plancher absolu : en dessous de 150 EUR, un « coussin » ne coussine rien.
+  var rPetit = calc(profil({ charges_vitales_saisies: 100, revenus: 300, reste_a_vivre: 50 }));
+  verifier('plancher absolu de 150 EUR', true, rPetit.palierPremierCoussin >= 150);
+  // Sans charges declarees, le moteur retombe sur la moitie des revenus.
+  var rSansCharges = calc(profil({ charges_vitales_saisies: 0, total_besoins: 0, charges_fixes_total: 0 }));
+  verifier('sans charges : base = 50 % des revenus', 1000, rSansCharges.chargesVitalesMensuelles);
+
+  /* ══ Les arrondis annonces ═══════════════════════════════════════════ */
+  verifier('coussin arrondi au multiple de 50', 0, r1.palierPremierCoussin % 50);
+  verifier('securite utile arrondie au multiple de 50', 0, r1.palierSecuriteUtile % 50);
+  verifier('securite solide arrondie au multiple de 100', 0, r1.palierSecuriteSolide % 100);
+
+  /* ══ La stabilite du profil ══════════════════════════════════════════ */
+  verifier('salarie sans decouvert = stable', 'stable', calc(profil()).stabiliteProfil);
+  verifier('etudiant = moins stable', 'moins_stable',
+           calc(profil({ status_pro: 'etudiant' })).stabiliteProfil);
+  verifier('cadre = tres stable', 'tres_stable',
+           calc(profil({ status_pro: 'cadre_prof_lib' })).stabiliteProfil);
+  // Un decouvert regulier prime sur tout : c'est le signe d'une tresorerie
+  // deja tendue, quel que soit le statut.
+  verifier('un decouvert ramene un cadre a moins stable', 'moins_stable',
+           calc(profil({ status_pro: 'cadre_prof_lib', dettes_types: ['decouvert_regulier'] })).stabiliteProfil);
+  verifier('un reste a vivre negatif aussi', 'moins_stable',
+           calc(profil({ status_pro: 'cadre_prof_lib', reste_a_vivre: -1 })).stabiliteProfil);
+  // Plus le profil est stable, plus l'objectif intermediaire peut etre large.
+  verifier('un profil plus stable vise plus haut', true,
+           calc(profil({ status_pro: 'cadre_prof_lib' })).palierSecuriteUtile
+           > calc(profil({ status_pro: 'etudiant' })).palierSecuriteUtile);
+
+  /* ══ La cible recommandee ════════════════════════════════════════════ */
+  verifier('sans decouvert : la cible est la securite utile',
+           r1.palierSecuriteUtile, r1.cibleRecommandee);
+  // Avec un decouvert, viser trois mois de charges decourage : on vise le
+  // premier coussin, atteignable, avant de parler du reste.
+  var rDec = calc(profil({ dettes_types: ['decouvert_regulier'] }));
+  verifier('avec decouvert : la cible redescend au premier coussin',
+           rDec.palierPremierCoussin, rDec.cibleRecommandee);
+  verifier('… et le moteur le signale', true, rDec.hasDecouvert);
+
+  /* ══ Le reste a construire ═══════════════════════════════════════════ */
+  var rDejaLa = calc(profil({ epargne_liquide_total: 99999 }));
+  verifier('epargne suffisante : plus rien a construire', 0, rDejaLa.resteAConstruire);
+  verifier('… et zero mois a attendre', 0, rDejaLa.moisRecommande);
+  var rMoitie = calc(profil({ epargne_liquide_total: 300 }));
+  verifier('reste = cible - epargne', rMoitie.cibleRecommandee - 300, rMoitie.resteAConstruire);
+
+  // Une saisie a zero fait foi : sinon le moteur reprendrait la valeur du
+  // profil et annoncerait une epargne que la personne vient de nier avoir.
+  var rZeroSaisi = calc(profil({ epargne_liquide_total: 5000, epargne_saisie: 0, epargne_saisie_touched: true }));
+  verifier('un zero saisi fait foi sur le profil', 0, rZeroSaisi.epargneDisponible);
+  var rNonTouche = calc(profil({ epargne_liquide_total: 5000 }));
+  verifier('champ non touche : le profil fait foi', 5000, rNonTouche.epargneDisponible);
+
+  /* ══ Les rythmes ═════════════════════════════════════════════════════ */
+  // Sans epargne declaree, le rythme se deduit de la marge par paliers.
+  var rMarge = calc(profil({ reste_a_vivre: 400 }));
+  verifier('marge 400 : rythme recommande de 100', 100, rMarge.rythmeRecommande);
+  verifier('les trois rythmes sont croissants', true,
+           rMarge.rythmePrudent < rMarge.rythmeRecommande && rMarge.rythmeRecommande < rMarge.rythmeRapide);
+  // Avec une epargne declaree, les rythmes en sont des parts.
+  var rEp = calc(profil({ epargne_mensuelle: 200, reste_a_vivre: 500 }));
+  verifier('epargne declaree : le recommande la reprend', 200, rEp.rythmeRecommande);
+  verifier('le prudent en est la moitie', 100, rEp.rythmePrudent);
+  verifier('le rapide depasse toujours le recommande', true, rEp.rythmeRapide > rEp.rythmeRecommande);
+
+  /* ══ Les mois annonces ═══════════════════════════════════════════════ */
+  // C'est le chiffre que la personne retient. Il doit etre l'arrondi
+  // SUPERIEUR : annoncer 3 mois quand il en faut 3,2 fait rater la date.
+  var rMois = calc(profil({ epargne_liquide_total: 0, epargne_mensuelle: 100, reste_a_vivre: 500 }));
+  verifier('mois = arrondi superieur du reste divise par le rythme',
+           Math.ceil(rMois.resteAConstruire / rMois.rythmeRecommande), rMois.moisRecommande);
+  verifier('un rythme plus rapide donne moins de mois', true, rMois.moisRapide <= rMois.moisRecommande);
+  verifier('un rythme prudent donne plus de mois', true, rMois.moisPrudent >= rMois.moisRecommande);
+  verifier('aucun mois n est negatif', true,
+           rMois.moisPrudent >= 0 && rMois.moisRecommande >= 0 && rMois.moisRapide >= 0);
+
+  /* ══ Les paliers adaptatifs ══════════════════════════════════════════ */
+  // Quelqu'un qui epargne beaucoup atteindrait le palier intermediaire en
+  // moins de six mois : le moteur releve alors l'objectif. L'invariant de
+  // monotonie doit tenir malgre ce relevement — c'est la qu'il casserait.
+  var rAdapt = calc(profil({ epargne_mensuelle: 900, reste_a_vivre: 1200 }));
+  var rSans  = calc(profil({ epargne_mensuelle: 0 }));
+  verifier('forte epargne : le palier intermediaire monte', true,
+           rAdapt.palierSecuriteUtile > rSans.palierSecuriteUtile);
+  verifier('… et le solide reste au-dessus', true,
+           rAdapt.palierSecuriteSolide >= rAdapt.palierSecuriteUtile + 100);
+
+  /* ══ Rendu ═══════════════════════════════════════════════════════════ */
+  var t = document.getElementById('t'), ko = 0;
+  resultats.forEach(function (r) {
+    if (!r.ok) ko++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td>' + r.nom + '</td><td class="n">' + r.attendu + '</td><td class="n">' + r.obtenu
+      + '</td><td class="' + (r.ok ? 'ok' : 'ko') + '">' + (r.ok ? '✓' : '✗') + '</td></tr>');
+  });
+  document.getElementById('bilan').innerHTML = ko === 0
+    ? '<span class="ok">✅ ' + resultats.length + ' assertions, aucune en échec</span>'
+    : '<span class="ko">❌ ' + ko + ' échec(s) sur ' + resultats.length + '</span>';
+  // Le lanceur lit __total / __echecs ; __TESTS__ reste pour la lecture
+  // directe de la page.
+  window.__total = resultats.length;
+  window.__echecs = ko;
+  window.__TESTS__ = { passed: resultats.length - ko, failed: ko };
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>

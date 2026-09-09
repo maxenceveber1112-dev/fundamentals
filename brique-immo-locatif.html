@@ -650,7 +650,7 @@ html.dark .s8-bilan-locatif-cell.neg .s8-bilan-cell-value { color: #FB923C; }
 <script src="shared.js"></script>
 <script src="supabase.js"></script>
 <script src="nav-avatar.js"></script>
-<script src="immo-core.js?v=core2"></script>
+<script src="immo-core.js?v=core3"></script>
 
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MAIN LAYOUT (sidebar.js injecte la sidebar à gauche)       -->
@@ -3552,12 +3552,12 @@ function recalcLocatif() {
   var chargesExploitMens = assurancePNO + chargesLoc + gestionLoc + taxeFoncMensuelle + entretienMens + coproMens;
 
   // Cash-flow : loyer net de vacance − (mensualité + assurance emprunteur + charges d'exploitation)
-  var loyerEffectif = loyer - (loyer * vacance / 12);
-  var cashFlow = loyerEffectif - (mensualite + assuranceEmpr + chargesExploitMens);
+  var loyerEffectif = loyerEffectifMensuel(loyer, vacance);
+  var cashFlow = cashFlowMensuel(loyerEffectif, mensualite, assuranceEmpr, chargesExploitMens);
   S.cashFlow = cashFlow;
 
   // Rendement brut : loyer (hors charges) annuel / prix
-  var rendBrut = (loyer * 12) / prixBien * 100;
+  var rendBrut = rendementBrut(loyer, prixBien);
   S.rendementBrut = rendBrut;
 
   // Rendement net : (loyer − charges d'exploitation) annuel / COÛT TOTAL d'acquisition.
@@ -3565,7 +3565,7 @@ function recalcLocatif() {
   // (ni mensualité ni assurance emprunteur ici ; ils sont dans le cash-flow).
   var fraisNotaireNet = n(S.fraisNotaire) || estimateAcquisitionFees(prixBien, S.propertyType);
   var coutTotalNet = prixBien + fraisNotaireNet + n(S.fraisAgence) + n(S.fraisGarantie) + n(S.fraisDossier) + n(S.travauxAutres);
-  var rendNet = ((loyer * 12) - (chargesExploitMens * 12)) / (coutTotalNet || prixBien) * 100;
+  var rendNet = rendementNet(loyer, chargesExploitMens, coutTotalNet || prixBien);
   S.rendementNet = rendNet;
 
   // Animate rendement values

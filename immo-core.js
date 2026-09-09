@@ -147,6 +147,43 @@ function estimateAcquisitionFees(price, propertyType) {
   return Math.round(price * NOTARY_RATE_ANCIEN);
 }
 
+/* --- Rendement locatif et cash-flow (fonctions pures) ------------------
+   Extraites de recalcLocatif() : elles y etaient melees a des lectures de
+   champs et a des animations, donc intestables sans monter un DOM entier.
+
+   Deux notions a ne pas confondre, et c'est tout l'interet de les nommer :
+   - le RENDEMENT mesure l'actif. Il ignore le financement (ni mensualite ni
+     assurance emprunteur) et se rapporte au cout TOTAL d'acquisition ;
+   - le CASH-FLOW mesure ce qui entre et sort du compte chaque mois. Lui
+     inclut la mensualite et l'assurance emprunteur.
+   Les melanger donne un chiffre credible et faux. */
+
+/* La vacance s'exprime en MOIS de loyer perdus par an. */
+function loyerEffectifMensuel(loyerMensuel, vacanceMois) {
+  var l = n(loyerMensuel);
+  if (l <= 0) return 0;
+  var v = Math.min(12, Math.max(0, n(vacanceMois)));
+  return l - (l * v / 12);
+}
+
+function rendementBrut(loyerMensuel, prixBien) {
+  var p = n(prixBien);
+  if (p <= 0) return 0;
+  return (n(loyerMensuel) * 12) / p * 100;
+}
+
+/* Le denominateur est le cout TOTAL : payer 10 000 EUR de frais ne rapporte
+   pas un euro de loyer de plus, mais immobilise bien 10 000 EUR. */
+function rendementNet(loyerMensuel, chargesExploitMensuelles, coutTotalAcquisition) {
+  var c = n(coutTotalAcquisition);
+  if (c <= 0) return 0;
+  return ((n(loyerMensuel) * 12) - (n(chargesExploitMensuelles) * 12)) / c * 100;
+}
+
+function cashFlowMensuel(loyerEffectif, mensualiteCredit, assuranceEmprunteur, chargesExploitMensuelles) {
+  return n(loyerEffectif) - (n(mensualiteCredit) + n(assuranceEmprunteur) + n(chargesExploitMensuelles));
+}
+
 /* --- Helpers numeriques / formatage --- */
 function n(v) { var x = parseFloat(v); return isNaN(x) ? 0 : x; }
 function fmt(v) {

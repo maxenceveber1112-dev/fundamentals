@@ -20,7 +20,7 @@
   <div id="summary">Chargement…</div>
   <div id="out"></div>
 
-  <script src="immo-core.js?v=core2"></script>
+  <script src="immo-core.js?v=core3"></script>
   <script>
   (function(){
     var out = document.getElementById('out');
@@ -99,6 +99,38 @@
     check('getTypoById("t2").id = "t2"', t && t.id === 't2', t && t.id);
     check('getTypoById("zzz") = fallback (objet)', !!getTypoById('zzz') && typeof getTypoById('zzz') === 'object');
     check('estimateTypoPrice({surface:50,mult:1},3000) = 150000', estimateTypoPrice({surface:50,mult:1},3000) === 150000, estimateTypoPrice({surface:50,mult:1},3000));
+
+    // ─── Rendement locatif et cash-flow ───────────────────────────────
+    // check() attend une CONDITION, pas une valeur attendue.
+    // La vacance est en MOIS de loyer perdus par an : 0,5 mois = 1/24e.
+    check('vacance 0 : loyer effectif = loyer', loyerEffectifMensuel(800, 0) === 800, loyerEffectifMensuel(800, 0));
+    check('vacance 0,5 mois retire 1/24e', Math.round(loyerEffectifMensuel(800, 0.5)) === Math.round(800 - 800/24), loyerEffectifMensuel(800, 0.5));
+    check('vacance 12 mois : plus rien', loyerEffectifMensuel(800, 12) === 0, loyerEffectifMensuel(800, 12));
+    check('vacance au-dela de 12 est bornee', loyerEffectifMensuel(800, 99) === 0, loyerEffectifMensuel(800, 99));
+    check('vacance negative ignoree', loyerEffectifMensuel(800, -3) === 800, loyerEffectifMensuel(800, -3));
+    check('loyer nul : rien a perdre', loyerEffectifMensuel(0, 0.5) === 0, loyerEffectifMensuel(0, 0.5));
+
+    check('rendement brut 800/mois sur 200 000 = 4,8 %', Math.abs(rendementBrut(800, 200000) - 4.8) < 0.001, rendementBrut(800, 200000));
+    check('prix nul : pas de division par zero', rendementBrut(800, 0) === 0, rendementBrut(800, 0));
+
+    // Le rendement mesure l'ACTIF : il ignore le financement et se rapporte au
+    // cout TOTAL. Payer 20 000 de frais ne rapporte pas un euro de loyer de
+    // plus, mais immobilise bien 20 000.
+    check('rendement net = (loyer - charges) x12 / cout total',
+          Math.abs(rendementNet(800, 250, 220000) - 3.0) < 0.001, rendementNet(800, 250, 220000));
+    check('les frais font baisser le rendement net',
+          rendementNet(800, 250, 220000) < rendementNet(800, 250, 200000));
+    check('cout total nul : pas de division par zero', rendementNet(800, 250, 0) === 0, rendementNet(800, 250, 0));
+    check('charges superieures au loyer : rendement negatif', rendementNet(800, 900, 200000) < 0, rendementNet(800, 900, 200000));
+
+    // Le cash-flow, lui, INCLUT le financement. Confondre les deux donnerait
+    // un chiffre credible et faux.
+    check('cash-flow = loyer effectif - mensualite - assurance - charges',
+          cashFlowMensuel(800, 700, 25, 225) === -150, cashFlowMensuel(800, 700, 25, 225));
+    check('cash-flow positif si le loyer couvre tout', cashFlowMensuel(1000, 700, 25, 225) === 50, cashFlowMensuel(1000, 700, 25, 225));
+    check('la mensualite deplace le cash-flow, pas le rendement',
+          cashFlowMensuel(800, 700, 25, 250) !== cashFlowMensuel(800, 900, 25, 250)
+          && rendementNet(800, 250, 220000) === rendementNet(800, 250, 220000));
 
     // constants present
     check('EFFORT_MAX = 0.35', typeof EFFORT_MAX !== 'undefined' && EFFORT_MAX === 0.35);

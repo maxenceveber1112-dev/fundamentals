@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>simulateur de budget — tests du mode libre</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1040px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  p.intro{color:#A1A1AA;margin:0 0 18px;max-width:74ch}
+  #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#FBBF24}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
+  td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+  #banc{position:absolute;left:-9999px;top:0}
+</style>
+</head>
+<body>
+<h1>simulateur-budget.html — tests de <code>buildFree</code> (mode libre)</h1>
+<p class="intro">
+  Le mode guidé était couvert, le mode libre non. C'est pourtant lui qui
+  agrège des catégories que l'utilisateur invente : un poste ignoré, une
+  épargne comptée deux fois ou un « non réparti » qui apparaît de travers ne
+  produiraient pas d'erreur — juste un Sankey faux. Cette fonction lit le
+  DOM ; on lui en fournit un, réduit aux éléments qu'elle interroge.
+</p>
+<div id="bilan">exécution…</div>
+<table id="t"><tr><th>cas</th><th>attendu</th><th>obtenu</th><th></th></tr></table>
+<div id="banc" aria-hidden="true"></div>
+
+<script>
+var resultats = [];
+function verifier(nom, attendu, obtenu, tol) {
+  var t = tol === undefined ? 0 : tol;
+  var ok = (typeof attendu === 'number' && typeof obtenu === 'number')
+    ? Math.abs(attendu - obtenu) <= t
+    : String(attendu) === String(obtenu);
+  resultats.push({ nom: nom, attendu: attendu, obtenu: obtenu, ok: ok });
+}
+function corps(src, nom) {
+  var m = src.match(new RegExp("function\\s+" + nom + "\\s*\\([^)]*\\)\\s*\\{"));
+  if (!m) return null;
+  var i = m.index + m[0].length, p = 1;
+  while (i < src.length && p) { if (src[i] === "{") p++; else if (src[i] === "}") p--; i++; }
+  return src.slice(m.index, i);
+}
+
+/* ── Le banc : uniquement ce que buildFree interroge ────────────────── */
+function monter(revenus, categories) {
+  var banc = document.getElementById('banc');
+  banc.innerHTML = '<div id="f-income-list"></div><div id="f-cats-list"></div>';
+  var inc = document.getElementById('f-income-list');
+  revenus.forEach(function (r) {
+    var d = document.createElement('div');
+    d.className = 'sb-row';
+    d.innerHTML = '<input class="name" value="' + r[0] + '"><input class="amt" value="' + r[1] + '">';
+    inc.appendChild(d);
+  });
+  var cl = document.getElementById('f-cats-list');
+  categories.forEach(function (c) {
+    var d = document.createElement('div');
+    d.className = 'sb-cat';
+    var lignes = c.postes.map(function (p) {
+      return '<div class="sb-row"><input class="name" value="' + p[0] + '"><input class="amt" value="' + p[1] + '"></div>';
+    }).join('');
+    d.innerHTML = '<div class="sb-cat-head"><input class="name" value="' + c.nom + '">'
+                + '<input type="checkbox" class="sb-cat-ep"' + (c.epargne ? ' checked' : '') + '></div>'
+                + '<div class="sb-subs">' + lignes + '</div>';
+    cl.appendChild(d);
+  });
+}
+
+(async function () {
+  var src = await (await fetch('simulateur-budget.html?test=' + Date.now())).text();
+  var morceaux = [corps(src, 'buildFree'), corps(src, 'resteSignif')];
+  if (morceaux.some(function (x) { return !x; })) {
+    document.getElementById('bilan').innerHTML =
+      '<span class="ko">Extraction impossible : buildFree ou resteSignif est introuvable.</span>';
+    window.__fini = true;
+    return;
+  }
+
+  var M = {};
+  try {
+    // Les trois helpers restants ne servent qu'a choisir une COULEUR : ils
+    // n'entrent dans aucun calcul. On les bouchonne pour isoler l'agregation.
+    new Function('sortie',
+      'function el(id){ return document.getElementById(id); }\n'
+      + 'function vertEpargne(){ return "vert"; }\n'
+      + 'function catColorForIndex(i){ return "c" + i; }\n'
+      + 'var jetonSuivant = 0;\n'
+      + 'function jetonDe(cat){ if(!cat.dataset.jeton) cat.dataset.jeton = String(jetonSuivant++); return parseInt(cat.dataset.jeton, 10); }\n'
+      + morceaux.join('\n\n')
+      + '\nsortie.buildFree = buildFree;\nsortie.resteSignif = resteSignif;')(M);
+  } catch (e) {
+    var csp = /unsafe-eval|Content Security Policy/i.test(e.message);
+    document.getElementById('bilan').innerHTML = csp
+      ? '<span class="attente">⚠ Suite non exécutée ici.</span><br>'
+        + '<span style="color:#A1A1AA;font-weight:400">Elle extrait les fonctions du simulateur et les évalue, '
+        + 'ce qui demande <code>unsafe-eval</code> — interdit par la CSP de production, à juste titre. '
+        + 'Lance-la depuis un serveur local : <code>tests.html</code> sur localhost.</span>'
+      : '<span class="ko">' + e.message + '</span>';
+    window.__nonExecutable = csp;
+    window.__fini = true;
+    return;
+  }
+
+  var bf = M.buildFree;
+
+  /* ══ L'agregation de base ════════════════════════════════════════════ */
+  monter([['Salaire', 2000]], [
+    { nom: 'Logement', epargne: false, postes: [['Loyer', 700], ['Charges', 100]] },
+    { nom: 'Vie',      epargne: false, postes: [['Courses', 300]] }
+  ]);
+  var m = bf();
+  verifier('total des revenus', 2000, m.totalInc);
+  verifier('total depense = somme de tous les postes', 1100, m.spent);
+  verifier('reste = revenus - depenses', 900, m.reste);
+  verifier('deux categories retenues', 2, m.outflows.filter(function (o) { return o.kind !== 'reste'; }).length);
+
+  /* ══ Ce qui doit etre ignore ═════════════════════════════════════════ */
+  // Un poste a zero n'est pas une depense : le laisser passer dessinerait
+  // un fil de largeur nulle dans le Sankey.
+  monter([['Salaire', 1000], ['Prime', 0]], [
+    { nom: 'Vide',  epargne: false, postes: [['Rien', 0]] },
+    { nom: 'Plein', epargne: false, postes: [['Loyer', 400], ['Zero', 0]] }
+  ]);
+  m = bf();
+  verifier('un revenu a zero est ignore', 1, m.income.length);
+  verifier('une categorie entierement vide est ignoree', 1,
+           m.outflows.filter(function (o) { return o.kind !== 'reste'; }).length);
+  verifier('un poste a zero dans une categorie pleine est ignore', 1,
+           m.outflows[0].children.length);
+  verifier('… et ne compte pas dans le total', 400, m.spent);
+
+  /* ══ L'epargne ═══════════════════════════════════════════════════════ */
+  // Elle est A LA FOIS une sortie et un montant epargne : c'est voulu, mais
+  // elle ne doit etre comptee qu'une fois dans chaque.
+  monter([['Salaire', 2000]], [
+    { nom: 'Logement', epargne: false, postes: [['Loyer', 800]] },
+    { nom: 'Epargne',  epargne: true,  postes: [['Livret A', 200], ['PEA', 100]] }
+  ]);
+  m = bf();
+  verifier('l epargne somme ses postes', 300, m.epargne);
+  verifier('l epargne compte aussi comme une sortie', 1100, m.spent);
+  verifier('le reste en tient compte', 900, m.reste);
+  var catEp = m.outflows.filter(function (o) { return o.name === 'Epargne'; })[0];
+  verifier('la categorie epargne recoit sa couleur dediee', 'vert', catEp.color);
+
+  // Deux categories marquees epargne s'additionnent.
+  monter([['Salaire', 2000]], [
+    { nom: 'Livret', epargne: true, postes: [['A', 100]] },
+    { nom: 'Bourse', epargne: true, postes: [['ETF', 250]] }
+  ]);
+  verifier('deux categories epargne s additionnent', 350, bf().epargne);
+
+  /* ══ Le « non reparti » ══════════════════════════════════════════════ */
+  // Il n'apparait que s'il est significatif : sinon chaque arrondi ferait
+  // surgir un fil parasite dans le diagramme.
+  monter([['Salaire', 1000]], [{ nom: 'Tout', epargne: false, postes: [['Loyer', 995]] }]);
+  m = bf();
+  verifier('un reste de 5 EUR ne s affiche pas', 0,
+           m.outflows.filter(function (o) { return o.kind === 'reste'; }).length);
+  verifier('… mais il reste dans le modele', 5, m.reste);
+
+  monter([['Salaire', 1000]], [{ nom: 'Tout', epargne: false, postes: [['Loyer', 700]] }]);
+  m = bf();
+  verifier('un reste de 300 EUR s affiche', 1,
+           m.outflows.filter(function (o) { return o.kind === 'reste'; }).length);
+  verifier('… avec le bon montant', 300,
+           m.outflows.filter(function (o) { return o.kind === 'reste'; })[0].val);
+
+  // Le seuil : le plus grand entre 20 EUR et 2 % des revenus.
+  verifier('seuil — 19 EUR sur 1 000 : insignifiant', false, M.resteSignif(19, 1000));
+  verifier('seuil — 20 EUR sur 1 000 : significatif', true, M.resteSignif(20, 1000));
+  verifier('seuil — 2 % prime sur les 20 EUR quand les revenus sont eleves',
+           false, M.resteSignif(50, 5000));
+  verifier('… et 100 EUR sur 5 000 passe', true, M.resteSignif(100, 5000));
+
+  /* ══ Le depassement ══════════════════════════════════════════════════ */
+  // Depenser plus qu'on ne gagne est un cas reel : le reste ne doit jamais
+  // devenir negatif, sinon le Sankey dessinerait un fil a l'envers.
+  monter([['Salaire', 1000]], [{ nom: 'Trop', epargne: false, postes: [['Loyer', 1500]] }]);
+  m = bf();
+  verifier('depenses superieures aux revenus : reste borne a zero', 0, m.reste);
+  verifier('… mais la depense reelle est conservee', 1500, m.spent);
+  verifier('… et aucun fil « non reparti »', 0,
+           m.outflows.filter(function (o) { return o.kind === 'reste'; }).length);
+
+  /* ══ Le cas vide ═════════════════════════════════════════════════════ */
+  monter([], []);
+  m = bf();
+  verifier('aucune saisie : total nul', 0, m.totalInc);
+  verifier('aucune saisie : aucune sortie', 0, m.outflows.length);
+  verifier('aucune saisie : epargne nulle', 0, m.epargne);
+
+  /* ══ Les libelles ════════════════════════════════════════════════════ */
+  monter([['', 500]], [{ nom: '', epargne: false, postes: [['', 100]] }]);
+  m = bf();
+  verifier('un revenu sans nom prend un libelle par defaut', 'Revenu', m.income[0].name);
+  verifier('une categorie sans nom aussi', 'Catégorie', m.outflows[0].name);
+  verifier('un poste sans nom aussi', 'Poste', m.outflows[0].children[0].name);
+
+  /* ══ Rendu ═══════════════════════════════════════════════════════════ */
+  var t = document.getElementById('t'), ko = 0;
+  resultats.forEach(function (r) {
+    if (!r.ok) ko++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td>' + r.nom + '</td><td class="n">' + r.attendu + '</td><td class="n">' + r.obtenu
+      + '</td><td class="' + (r.ok ? 'ok' : 'ko') + '">' + (r.ok ? '✓' : '✗') + '</td></tr>');
+  });
+  document.getElementById('bilan').innerHTML = ko === 0
+    ? '<span class="ok">✅ ' + resultats.length + ' assertions, aucune en échec</span>'
+    : '<span class="ko">❌ ' + ko + ' échec(s) sur ' + resultats.length + '</span>';
+  // Le lanceur lit __total / __echecs ; __TESTS__ reste pour la lecture
+  // directe de la page.
+  window.__total = resultats.length;
+  window.__echecs = ko;
+  window.__TESTS__ = { passed: resultats.length - ko, failed: ko };
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>
