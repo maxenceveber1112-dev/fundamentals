@@ -419,15 +419,20 @@
     white-space:nowrap;
   }
 
+  /* §1.8 — un champ de saisie est une ligne, pas une boite. */
   .field-input {
-    width:100%; padding:0.75rem 1rem;
-    background:var(--surface-2);
-    border:1.5px solid var(--border-mid);
-    border-radius:var(--r-md);
+    width:100%; padding:0.6rem 0.15rem 0.5rem;
+    background:none;
+    border:none; border-bottom:2px solid var(--border-mid);
+    border-radius:0;
     color:var(--text); font-size:0.95rem; font-family:inherit;
-    transition:border-color var(--t), box-shadow var(--t);
+    transition:border-color var(--t);
   }
-  .field-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+  .field-input:hover { border-bottom-color:var(--border-hover); }
+  .field-input:focus {
+    outline:none; border-bottom-color:var(--accent-strong);
+    border-bottom-width:3px; padding-bottom:calc(0.5rem - 1px);
+  }
   .field-input::placeholder { color:var(--text-faint); }
   .field-input.prefilled { border-color:rgba(34,197,94,0.3); }
   .field-input.prefilled:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,0.1); }
@@ -591,10 +596,11 @@
   #leviers-kicker { font-size:0.75rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:0.75rem; display:none; }
 
   /* ── Screen 3 — Dettes (design unifié avec brique dettes) ── */
+  /* §1.2 — la ligne groupe les champs d'une dette : zone plutot que carte,
+     sinon les filets se lisaient dans une boite dans une boite. */
   .dette-row {
-    background:var(--surface-2);
-    border:1px solid var(--border-subtle);
-    border-radius:var(--r-lg);
+    background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.09) 0%, transparent 68%);
+    border-radius:var(--r-lg) var(--r-lg) 2.2rem var(--r-lg);
     padding:1rem 1.125rem;
     display:flex; flex-direction:column; gap:0.75rem;
     transition:border-color var(--t);
@@ -612,18 +618,22 @@
   .dette-dot.rouge  { background:#F87171; }
   .dette-select {
     flex:1;
-    background:var(--bg-elevated); border:1.5px solid var(--border-mid);
-    border-radius:var(--r-md); padding:0.625rem 0.875rem;
+    background-color:transparent; border:none; border-bottom:2px solid var(--border-mid);
+    border-radius:0; padding:0.55rem 0.15rem 0.45rem;
     font-size:0.9rem; color:var(--text); font-family:inherit;
-    cursor:pointer; transition:border-color 0.15s, box-shadow 0.15s;
+    cursor:pointer; transition:border-color 0.15s;
     appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     background-repeat:no-repeat;
     background-position:right 0.75rem center;
     padding-right:2.25rem;
   }
-  html.dark .dette-select { background-color:var(--surface-2); }
-  .dette-select:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+  html.dark .dette-select { background-color:transparent; }
+  .dette-select:hover { border-bottom-color:var(--border-hover); }
+  .dette-select:focus {
+    outline:none; border-bottom-color:var(--accent-strong);
+    border-bottom-width:3px; padding-bottom:calc(0.45rem - 1px);
+  }
 
   .dette-fields { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.625rem; }
   @media(max-width:520px) {
@@ -631,15 +641,21 @@
     .dette-fields .dette-input-wrap:last-child { grid-column:1 / -1; }
   }
   .dette-input-wrap { position:relative; }
+  /* §1.8 — le champ est une ligne ou l'on ecrit. */
   .dette-input {
     width:100%;
-    background:var(--bg-elevated); border:1.5px solid var(--border-mid);
-    border-radius:var(--r-md); padding:0.625rem 2.5rem 0.625rem 0.875rem;
+    background:none; border:none; border-bottom:2px solid var(--border-mid);
+    border-radius:0; padding:0.55rem 2rem 0.45rem 0.15rem;
     font-size:0.9rem; color:var(--text); font-family:inherit;
-    transition:border-color 0.15s, box-shadow 0.15s;
+    transition:border-color 0.15s;
   }
+  .dette-input:hover { border-bottom-color:var(--border-hover); }
   .dette-input::placeholder { color:var(--text-faint); }
-  .dette-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+  /* L'anneau porte encadrait un element sans cadre : le filet s'epaissit. */
+  .dette-input:focus {
+    outline:none; border-bottom-color:var(--accent-strong);
+    border-bottom-width:3px; padding-bottom:calc(0.45rem - 1px);
+  }
   .dette-input-suffix {
     position:absolute; right:0.75rem; top:50%; transform:translateY(-50%);
     font-size:0.8rem; color:var(--text-faint); pointer-events:none;
@@ -714,12 +730,12 @@
     display:grid; grid-template-columns:repeat(2,1fr); gap:0.625rem;
   }
   @media(max-width:520px) { .recap-grid { grid-template-columns:1fr; } }
+  /* §1.8 — quatre tuiles qui n'affichent qu'un montant : des filets. */
   .recap-block {
-    padding:1rem 1.125rem;
-    background:var(--bg-elevated);
-    border:1px solid var(--border-subtle);
-    border-radius:0.875rem;
-    box-shadow:var(--shadow-card);
+    padding:0.7rem 0.15rem 0.55rem;
+    background:none;
+    border:none; border-bottom:2px solid var(--border-subtle);
+    border-radius:0;
   }
   .recap-val {
     font-family:var(--font-display);
