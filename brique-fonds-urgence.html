@@ -335,29 +335,53 @@
   }
 
   /* ── Fields ── */
-  .field-group { display:flex; flex-direction:column; gap:0.375rem; margin-bottom:1.25rem; }
+  /* Une ligne de compte, pas une ligne de formulaire : le libelle et son
+     aide tiennent la gauche, le montant la droite. Trois champs de 465 px
+     empiles donnaient la meme liste neutre que l'ecran 1 du budget. */
+  .field-group {
+    display:grid; grid-template-columns:1fr auto;
+    align-items:baseline; column-gap:0; row-gap:0.45rem;
+    margin-bottom:1.25rem;
+  }
+  .field-group > * { grid-column:1; min-width:0; }
+  .field-group > .euro-wrap { grid-column:2; grid-row:1; margin-left:1.1rem; }
   .field-label {
-    font-size:0.82rem; font-weight:600; color:var(--text);
-    display:flex; align-items:center; gap:0.5rem;
+    font-size:0.875rem; font-weight:500; color:var(--text);
+    display:flex; align-items:center; gap:0.5rem; line-height:1.35;
   }
-  .field-help { font-size:0.75rem; color:var(--text-faint); margin-top:0.2rem; }
+  .field-help { font-size:0.75rem; color:var(--text-faint); margin-top:0; }
 
+  /* §1.8 — un champ de saisie est une ligne ou l'on ecrit, pas une boite. */
   .field-input {
-    width:100%; padding:0.75rem 1rem;
-    background:var(--surface-2);
-    border:1.5px solid var(--border-mid);
-    border-radius:var(--r-md);
+    /* La hauteur se prend par le haut : le filet reste colle au nombre au
+       lieu de tomber sur la premiere ligne de l'aide. */
+    width:100%; padding:0.55rem 0.15rem 0.28rem;
+    background:none;
+    border:none; border-bottom:2px solid var(--border-mid);
+    border-radius:0;
     color:var(--text); font-size:0.95rem; font-family:inherit;
-    transition:border-color var(--t), box-shadow var(--t);
+    transition:border-color var(--t);
   }
-  .field-input:focus { outline:none; border-color:var(--accent-strong); box-shadow:0 0 0 3px var(--accent-soft); }
+  .field-input:hover { border-bottom-color:var(--border-hover); }
+  /* L'anneau porte encadrait un element qui n'a plus de cadre : le filet
+     s'epaissit, et le rembourrage compense pour ne pas decaler la suite. */
+  .field-input:focus {
+    outline:none; border-bottom-color:var(--accent-strong);
+    border-bottom-width:3px; padding-bottom:calc(0.28rem - 1px);
+  }
   .field-input::placeholder { color:var(--text-faint); }
-  .field-input.prefilled { border-color:rgba(34,197,94,0.3); }
-  .field-input.prefilled:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,0.1); }
+  /* Meme correction qu'ailleurs : ni border-color sur quatre cotes, ni
+     anneau porte, sur un champ qui n'a plus qu'un filet. */
+  .field-input.prefilled { border-bottom-color:color-mix(in srgb, var(--green) 45%, transparent); }
+  .field-input.prefilled:focus { border-bottom-color:var(--green); }
 
-  .euro-wrap { position:relative; display:flex; align-items:center; }
-  .euro-wrap .field-input { padding-right:2.5rem; }
-  .euro-suffix { position:absolute; right:0.875rem; font-size:0.9rem; color:var(--text-muted); pointer-events:none; font-weight:600; }
+  .euro-wrap { position:relative; display:flex; align-items:baseline; }
+  .euro-wrap .field-input {
+    width:8.25rem; padding-right:1.5rem;
+    text-align:right; font-variant-numeric:tabular-nums;
+  }
+  .euro-suffix { position:absolute; right:0.15rem; bottom:0.3rem; font-size:0.85rem; color:var(--text-faint); pointer-events:none; font-weight:400; }
+  @media(max-width:520px) { .euro-wrap .field-input { width:6.6rem; } }
 
   .badge-prefilled {
     font-size:0.6rem; font-weight:600; letter-spacing:0.06em;
@@ -670,12 +694,13 @@
   }
   .rythme-card:hover { background:rgba(0,0,0,0.025); }
   html.dark .rythme-card:hover { background:rgba(255,255,255,0.04); }
+  /* §1.6 — le segment retenu se distingue par son assise, pas par un cadre
+     ET une ombre ET une bordure. L'etui reste une gelule : c'est la forme
+     meme d'un controle segmente, pas une decoration. */
   .rythme-card.selected {
     background:var(--bg-elevated);
-    border-color:var(--accent-strong);
-    box-shadow:0 2px 8px rgba(91,33,182,0.12);
+    border-color:transparent;
   }
-  html.dark .rythme-card.selected { box-shadow:0 2px 8px rgba(167,139,250,0.22); }
   .rythme-card-info { display:contents; }
   .rythme-card-label {
     font-size:0.72rem; font-weight:500; color:var(--text-muted);
@@ -1315,21 +1340,24 @@
   /* ═════════════════════════════════════════════════════════════════
      SHIELDSTACK — header brique permanent (4 écrans)
   ════════════════════════════════════════════════════════════════ */
+  /* §1.2 — cet en-tete groupe les trois boucliers et leur progression :
+     il garde une identite, mais en zone. Le lavis s'eteint avant le bord,
+     donc plus aucun trait a aligner, et le coin bas-droit s'ouvre (§1.9). */
   .shield-header {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--r-xl);
+    background: radial-gradient(120% 150% at 6% 0%,
+                color-mix(in srgb, var(--accent-strong) 10%, transparent) 0%,
+                transparent 68%);
+    border-radius: var(--r-xl) var(--r-xl) 2.2rem var(--r-xl);
     padding: 1.25rem 1.5rem;
     margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    box-shadow: var(--shadow-card);
+    /* Pas d ombre portee : elle redessinerait le cadre qu on vient de retirer. */
     position: relative;
     overflow: hidden;
     animation: fadeSlideUp 0.6s var(--ease-out) both;
   }
-  html.dark .shield-header { backdrop-filter: blur(12px); }
   .shield-header-body { flex: 1; min-width: 0; }
   .shield-header-title {
     font-family: 'Fraunces', serif;
@@ -1340,7 +1368,7 @@
     margin-bottom: 0.25rem;
   }
   .shield-header-sub {
-    color: var(--text-muted);
+    color: var(--text-secondary);
     font-size: 0.8125rem;
     margin-bottom: 0.875rem;
   }
@@ -1363,7 +1391,7 @@
     justify-content: space-between;
     margin-top: 0.5rem;
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: var(--text-secondary);
   }
   .shield-header-meta strong { color: var(--text); font-weight: 600; }
   .shield-header.preview-mode .shield-header-progress,
@@ -1502,10 +1530,16 @@
     background: transparent;
   }
   .shield-pick:hover { background: var(--bg); }
+  /* §1.6 — trois marqueurs disaient « celui-ci » en meme temps : bordure,
+     aplat et anneau porte. Un seul geste suffit — le lavis se densifie et le
+     coin bas-droit s'ouvre. */
   .shield-pick.picked {
-    border-color: var(--accent-strong);
-    background: var(--bg);
-    box-shadow: 0 0 0 3px var(--accent-soft);
+    border-color: transparent;
+    border-radius: var(--r-md) var(--r-md) 1.6rem var(--r-md);
+    background:
+      radial-gradient(120% 155% at 6% 0%, var(--accent-soft) 0%, transparent 70%),
+      radial-gradient(90% 130% at 96% 96%, var(--accent-soft) 0%, transparent 60%),
+      linear-gradient(var(--accent-soft), var(--accent-soft));
   }
   .shield-pick-svg {
     width: 70px;
@@ -1531,6 +1565,9 @@
     font-weight: 700;
     letter-spacing: 0.5px;
   }
+  /* Sur le lavis d accent de la tuile choisie, l accent lui-meme tombe a
+     4,12 en sombre : le mot passe au cran plus clair de la meme famille. */
+  html.dark .shield-pick.picked .reco-pill { color: #C4B5FD; }
   .shield-pick-amount {
     font-family: 'Fraunces', serif;
     font-size: 1.125rem;
@@ -1539,7 +1576,7 @@
   }
   .shield-pick-desc {
     font-size: 0.6875rem;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     line-height: 1.35;
   }
   .shield-pick.reached::after {
@@ -1568,10 +1605,12 @@
   /* ═════════════════════════════════════════════════════════════════
      CTX NARRATIVE — phrase dynamique sous le sélecteur (écrans 2/3/4)
   ════════════════════════════════════════════════════════════════ */
+  /* Un bandeau porte un message : sa teinte suffit a le signaler. */
   .ctx-narrative {
-    background: var(--accent-soft);
-    border: 1px solid var(--accent);
-    border-radius: var(--r-md);
+    background: radial-gradient(120% 150% at 6% 0%,
+                color-mix(in srgb, var(--accent-strong) 12%, transparent) 0%,
+                transparent 70%);
+    border-radius: var(--r-md) var(--r-md) 1.6rem var(--r-md);
     padding: 0.75rem 0.875rem;
     margin: 0 0 1rem;
     font-size: 0.8125rem;
@@ -1734,20 +1773,20 @@
             <!-- Épargne disponible -->
             <div class="field-group">
               <label class="field-label" for="input-epargne">
-                Épargne disponible (€)
+                Épargne disponible
                 <span class="badge-prefilled" id="badge-epargne" style="display:none">✓ Pré-rempli</span>
               </label>
               <div class="euro-wrap">
                 <input type="number" id="input-epargne" class="field-input" placeholder="ex : 500" min="0" inputmode="numeric" aria-label="Épargne disponible en euros"/>
                 <span class="euro-suffix">€</span>
               </div>
-              <div class="field-help">Livrets, comptes accessibles immédiatement</div>
+              <div class="field-help">Livrets, comptes accessibles immédiatement.</div>
             </div>
 
             <!-- Charges vitales -->
             <div class="field-group">
               <label class="field-label" for="input-charges-vitales">
-                Charges vitales estimées (€/mois)
+                Charges vitales, chaque mois
                 <span class="badge-prefilled" id="badge-charges" style="display:none">✓ Pré-rempli</span>
               </label>
               <div class="euro-wrap">
@@ -1768,13 +1807,13 @@
             <!-- Épargne mensuelle (optional) -->
             <div class="field-group">
               <label class="field-label" for="input-epargne-mensuelle">
-                Ce que tu mets déjà de côté (€/mois)
+                Ce que tu mets déjà de côté, chaque mois
               </label>
               <div class="euro-wrap">
                 <input type="number" id="input-epargne-mensuelle" class="field-input" placeholder="optionnel" min="0" inputmode="numeric" aria-label="Épargne mensuelle actuelle"/>
                 <span class="euro-suffix">€</span>
               </div>
-              <div class="field-help">Facultatif — même 5 € ça compte</div>
+              <div class="field-help">Facultatif — même 5 € par mois comptent.</div>
             </div>
           </div>
 
@@ -1885,7 +1924,7 @@
           </button>
           <div class="custom-rythme-wrap" id="custom-rythme-wrap">
             <div class="field-group" style="margin-bottom:0">
-              <label class="field-label" for="input-rythme-custom">Montant personnalisé (€/mois)</label>
+              <label class="field-label" for="input-rythme-custom">Montant personnalisé, chaque mois</label>
               <div class="euro-wrap">
                 <input type="number" id="input-rythme-custom" class="field-input" placeholder="ex : 75" min="1" inputmode="numeric" aria-label="Rythme personnalisé"/>
                 <span class="euro-suffix">€</span>

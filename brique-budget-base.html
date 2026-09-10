@@ -405,11 +405,37 @@
     margin-bottom:1.75rem; line-height:1.55;
   }
 
-  /* ── Champs ── */
-  .field-group { display:flex; flex-direction:column; gap:0.375rem; }
+  /* ── Champs : une ligne de compte, pas une ligne de formulaire ──
+     Le libelle et son exemple tiennent la gauche, le montant la droite.
+     Le filet ne court plus sur toute la largeur : il ne souligne que le
+     chiffre. Quatorze barres identiques deviennent une colonne de
+     montants, ce qu'est un budget. */
+  .field-group {
+    display:grid; grid-template-columns:1fr auto auto;
+    align-items:baseline; column-gap:0; row-gap:0.45rem;
+  }
+  /* Tout tient la colonne de gauche, sauf le montant et son unite. */
+  .field-group > * { grid-column:1; min-width:0; }
+  /* L'ecart est porte par le champ, pas par la grille : un column-gap
+     aurait aussi decolle le « € » du dernier chiffre. */
+  .field-group > .field-input { grid-column:2; grid-row:1; margin-left:1.1rem; }
+  .field-group::after {
+    content:'€'; grid-column:3; grid-row:1;
+    font-size:0.85rem; color:var(--text-faint); padding-left:0.28rem;
+  }
+  /* Quand la personne est hebergee a titre gratuit, le champ « loyer » est
+     masque mais son groupe reste : sans cela, un « € » flotterait seul a
+     droite d'un libelle sans montant. */
+  .field-group.sans-montant::after { content:none; }
   .field-label {
-    font-size:0.82rem; font-weight:600; color:var(--text);
-    display:flex; align-items:center; gap:0.5rem;
+    font-size:0.875rem; font-weight:500; color:var(--text);
+    display:flex; align-items:center; gap:0.5rem; line-height:1.35;
+  }
+  /* L'unite est peinte par ::after : elle doit rester dans le nom lu a
+     voix haute, sinon le champ s'annonce sans sa monnaie. */
+  .u-sr {
+    position:absolute; width:1px; height:1px; overflow:hidden;
+    clip-path:inset(50%); white-space:nowrap;
   }
 
   .badge-prefilled {
@@ -421,7 +447,11 @@
 
   /* §1.8 — un champ de saisie est une ligne, pas une boite. */
   .field-input {
-    width:100%; padding:0.6rem 0.15rem 0.5rem;
+    /* La hauteur se prend par le haut : le filet reste colle au nombre au
+       lieu de tomber sur la premiere ligne de l'aide, et la cible tactile
+       ne perd rien. */
+    width:7.5rem; padding:0.55rem 0.15rem 0.28rem;
+    text-align:right; font-variant-numeric:tabular-nums;
     background:none;
     border:none; border-bottom:2px solid var(--border-mid);
     border-radius:0;
@@ -431,15 +461,19 @@
   .field-input:hover { border-bottom-color:var(--border-hover); }
   .field-input:focus {
     outline:none; border-bottom-color:var(--accent-strong);
-    border-bottom-width:3px; padding-bottom:calc(0.5rem - 1px);
+    border-bottom-width:3px; padding-bottom:calc(0.28rem - 1px);
   }
   .field-input::placeholder { color:var(--text-faint); }
-  .field-input.prefilled { border-color:rgba(34,197,94,0.3); }
-  .field-input.prefilled:focus { border-color:var(--green); box-shadow:0 0 0 3px rgba(34,197,94,0.1); }
+  .field-input::-webkit-outer-spin-button,
+  .field-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  .field-input[type=number] { -moz-appearance:textfield; appearance:textfield; }
+  /* Le champ n'a plus qu'un filet : un border-color sur quatre cotes et un
+     anneau porte de 3 px encadraient un cadre qui n'existe plus. */
+  .field-input.prefilled { border-bottom-color:color-mix(in srgb, var(--green) 45%, transparent); }
+  .field-input.prefilled:focus { border-bottom-color:var(--green); }
 
   /* Grille 2 champs */
-  .fields-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-  @media(max-width:520px) { .fields-grid { grid-template-columns:1fr; } }
+  .fields-grid { display:grid; grid-template-columns:1fr; gap:1rem; }
 
   /* ── Fourchette revenus (chips) ── */
   .fourchette-link {
@@ -598,24 +632,55 @@
   /* ── Screen 3 — Dettes (design unifié avec brique dettes) ── */
   /* §1.2 — la ligne groupe les champs d'une dette : zone plutot que carte,
      sinon les filets se lisaient dans une boite dans une boite. */
+  /* §1.2 — la teinte de la zone EST son signal. La ligne portait sa
+     classification en pastille et en mot ; le bloc, lui, ne disait rien et
+     paraissait donc trop leger. Il la porte maintenant, sur quatre degres
+     et sans couleur nouvelle : vert pour ce qui va, orange faible pour ce
+     qui merite un regard, orange franc pour ce qui coute, rouge pour ce
+     qui presse.
+     La transition et le survol visaient un border-color sur un element
+     sans bordure depuis sa conversion en zone : du code qui ne peignait
+     rien. */
   .dette-row {
-    background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.09) 0%, transparent 68%);
+    background:
+      radial-gradient(120% 150% at 6% 0%,
+        color-mix(in srgb, var(--text) 8%, transparent) 0%, transparent 72%),
+      linear-gradient(color-mix(in srgb, var(--text) 4%, transparent),
+                      color-mix(in srgb, var(--text) 4%, transparent));
     border-radius:var(--r-lg) var(--r-lg) 2.2rem var(--r-lg);
     padding:1rem 1.125rem;
     display:flex; flex-direction:column; gap:0.75rem;
-    transition:border-color var(--t);
+    transition:background 0.3s var(--ease-out);
     animation:fadeSlideUp 0.3s var(--ease-out) both;
   }
-  .dette-row:hover { border-color:var(--border-mid); }
+  .dette-row.t-vert   {
+    background:
+      radial-gradient(120% 150% at 6% 0%,
+        color-mix(in srgb, var(--green) 15%, transparent) 0%, transparent 72%),
+      linear-gradient(color-mix(in srgb, var(--green) 6%, transparent),
+                      color-mix(in srgb, var(--green) 6%, transparent)); }
+  /* « A analyser » n'est pas une alerte faible, c'est un indetermine : la
+     zone reste neutre, comme une ligne qu'on vient d'ajouter et dont on
+     n'a pas encore dit le type. Le mot ambre, lui, dit quoi verifier. */
+  .dette-row.t-jaune  {
+    background:
+      radial-gradient(120% 150% at 6% 0%,
+        color-mix(in srgb, var(--text) 8%, transparent) 0%, transparent 72%),
+      linear-gradient(color-mix(in srgb, var(--text) 4%, transparent),
+                      color-mix(in srgb, var(--text) 4%, transparent)); }
+  .dette-row.t-orange {
+    background:
+      radial-gradient(120% 150% at 6% 0%,
+        color-mix(in srgb, var(--orange) 19%, transparent) 0%, transparent 72%),
+      linear-gradient(color-mix(in srgb, var(--orange) 8%, transparent),
+                      color-mix(in srgb, var(--orange) 8%, transparent)); }
+  .dette-row.t-rouge  {
+    background:
+      radial-gradient(120% 150% at 6% 0%,
+        color-mix(in srgb, var(--red) 18%, transparent) 0%, transparent 72%),
+      linear-gradient(color-mix(in srgb, var(--red) 7%, transparent),
+                      color-mix(in srgb, var(--red) 7%, transparent)); }
   .dette-row-top { display:flex; gap:0.75rem; align-items:center; }
-  .dette-dot {
-    width:12px; height:12px; border-radius:50%; flex-shrink:0;
-    transition:background 0.3s;
-  }
-  .dette-dot.vert   { background:#22C55E; }
-  .dette-dot.jaune  { background:#FBBF24; }
-  .dette-dot.orange { background:#FB923C; }
-  .dette-dot.rouge  { background:#F87171; }
   .dette-select {
     flex:1;
     background-color:transparent; border:none; border-bottom:2px solid var(--border-mid);
@@ -656,9 +721,12 @@
     outline:none; border-bottom-color:var(--accent-strong);
     border-bottom-width:3px; padding-bottom:calc(0.45rem - 1px);
   }
+  /* Encres relevees : sur le lavis rouge, --text-faint tombait a 4,13 et
+     --text-muted a 4,06. Le lavis porte l'information, il ne doit pas
+     couter la lisibilite de ce qui est ecrit dessus. */
   .dette-input-suffix {
     position:absolute; right:0.75rem; top:50%; transform:translateY(-50%);
-    font-size:0.8rem; color:var(--text-faint); pointer-events:none;
+    font-size:0.8rem; color:var(--text-secondary); pointer-events:none;
   }
 
   .dette-classification {
@@ -679,7 +747,7 @@
   html.dark .dette-badge.jaune { color:#FDE68A; }
   .dette-badge.orange { color:var(--orange-text); }
   .dette-badge.rouge  { color:var(--red-text); }
-  .dette-badge-text { font-size:0.78rem; color:var(--text-muted); font-style:italic; }
+  .dette-badge-text { font-size:0.78rem; color:var(--text-secondary); font-style:italic; }
 
   .dette-row-delete {
     width:28px; height:28px; border-radius:50%; flex-shrink:0;
@@ -702,11 +770,13 @@
   html.dark .add-dette-btn:hover { color:#A78BFA; border-color:#A78BFA; }
 
   /* Pas de dette card */
+  /* §1.2 — une bonne nouvelle n'a pas besoin d'un cadre pour se voir. */
   .no-dette-card {
-    padding:1rem 1.25rem; border-radius:0.875rem;
-    border:1px solid rgba(34,197,94,0.25);
-    background:rgba(34,197,94,0.06);
-    font-size:0.875rem; color:var(--text-muted);
+    padding:1rem 1.25rem;
+    border-radius:0.875rem 0.875rem 1.6rem 0.875rem;
+    background:radial-gradient(120% 150% at 6% 0%,
+      color-mix(in srgb, var(--green) 14%, transparent) 0%, transparent 70%);
+    font-size:0.875rem; color:var(--text-secondary);
     display:flex; align-items:center; gap:0.625rem;
   }
 
@@ -718,9 +788,11 @@
   }
   .dette-oublie-link:hover { color:var(--text-muted); }
   .dette-oublie-tip {
-    display:none; padding:0.75rem 1rem; border-radius:0.75rem;
-    background:var(--surface-2); border:1px solid var(--border-subtle);
-    font-size:0.8rem; color:var(--text-muted); line-height:1.55;
+    display:none; padding:0.75rem 1rem;
+    border-radius:0.75rem 0.75rem 1.4rem 0.75rem;
+    background:radial-gradient(120% 150% at 6% 0%,
+      color-mix(in srgb, var(--text) 7%, transparent) 0%, transparent 70%);
+    font-size:0.8rem; color:var(--text-secondary); line-height:1.55;
     animation:fadeIn 0.2s ease both;
   }
   .dette-oublie-tip.visible { display:block; }
@@ -1161,15 +1233,50 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
   .detail-poste-chevron { color:var(--text-muted); flex-shrink:0; transition:transform var(--t); }
   .detail-poste-toggle[aria-expanded="true"] .detail-poste-chevron { transform:rotate(180deg); }
   /* ── Sections de formulaire (refonte écran 1) ── */
-  .form-section { display:flex; flex-direction:column; gap:1.125rem; }
-  .form-section + .form-section { margin-top:1.75rem; }
-  .form-section-head { display:flex; align-items:center; gap:0.5rem; font-size:0.72rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:-0.125rem; }
-  .form-section-head .fsh-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .form-section { display:flex; flex-direction:column; gap:0.85rem; }
+  .form-section + .form-section { margin-top:2.25rem; }
+  /* §1.7 — ce qui structure se dit par la fonte. La capitale de 0,72 rem
+     avait exactement le poids d'un libelle de champ : rien ne separait
+     plus une section d'une ligne. La Fraunces italique le fait, et le
+     sous-total vivant donne a chaque section une fin lisible. */
+  .form-section-head {
+    display:grid; grid-template-columns:auto 1fr auto;
+    align-items:baseline; column-gap:0.55rem; row-gap:0.15rem;
+    margin-bottom:0.35rem;
+    font-size:1rem; font-weight:400; letter-spacing:0;
+    text-transform:none; color:var(--text);
+  }
+  .form-section-head .fsh-dot { width:7px; height:7px; border-radius:50%; grid-column:1; grid-row:1; align-self:center; }
+  .form-section-head .fsh-nom {
+    grid-column:2; grid-row:1; font-family:var(--font-display);
+    font-style:italic; font-weight:400; font-size:1.1rem; line-height:1.3;
+  }
+  /* En Fraunces, le separateur de milliers vaut 0,108 em (mesure : 4,32 px
+     a 40 px de corps) : a cette taille il disparait et « 3 710 » se lit
+     « 3710 ». Le chiffre prend donc la fonte de texte — ce qui l'aligne au
+     passage sur la colonne de montants qu'il additionne. Le nom de la
+     section garde la Fraunces italique : c'est lui qui porte la hierarchie. */
+  .form-section-head .fsh-total {
+    grid-column:3; grid-row:1; font-family:var(--font-body);
+    font-size:0.95rem; font-weight:600; font-variant-numeric:tabular-nums;
+    color:var(--text-muted); transition:color var(--t);
+  }
+  .form-section-head.in .fsh-total { color:var(--green-text); }
+  .form-section-head .fsh-hint {
+    grid-column:2 / -1; grid-row:2; font-family:var(--font-body);
+    font-size:0.75rem; font-weight:400; letter-spacing:0;
+    text-transform:none; color:var(--text-faint); line-height:1.45;
+  }
   .form-section-head.in    .fsh-dot { background:var(--green); }
   .form-section-head.fixed .fsh-dot { background:var(--accent-strong); }
   .form-section-head.var   .fsh-dot { background:#6366F1; }
-  .form-section-head .fsh-hint { margin-left:auto; font-size:0.68rem; font-weight:500; letter-spacing:0; text-transform:none; color:var(--text-faint); }
-  .field-hint { font-size:0.72rem; color:var(--text-faint); line-height:1.45; margin-top:0.35rem; margin-bottom:0; }
+  .field-hint { font-size:0.75rem; color:var(--text-faint); line-height:1.45; margin-top:0; margin-bottom:0; }
+  /* Sous 520 px la colonne de montants se resserre plutot que de passer a
+     la ligne : le libelle et son chiffre doivent rester sur le meme axe. */
+  @media(max-width:520px) {
+    .field-group { column-gap:0.7rem; }
+    .field-input { width:5.9rem; }
+  }
   #screen-1 .brick-card { padding-bottom:28px; }
   #screen-1 .sticky-bar { margin-top:0.625rem; margin-bottom:0; }
   .sticky-bar { background:var(--bg-elevated); }
@@ -1197,9 +1304,9 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
   .sankey-scroll::-webkit-scrollbar-thumb { background:var(--border-mid); border-radius:9999px; }
   /* ── Catégories personnalisées (écran 1) ── */
   .cc-row { display:flex; gap:0.5rem; align-items:center; margin-bottom:0.5rem; }
-  .cc-row .cc-name { flex:1 1 auto; min-width:0; }
+  .cc-row .cc-name { flex:1 1 auto; min-width:0; text-align:left; }
   .cc-row .cc-amount { width:84px; flex:0 0 auto; }
-  .cc-row .cc-type { width:134px; flex:0 0 auto; padding-right:1.5rem; }
+  .cc-row .cc-type { width:134px; flex:0 0 auto; padding-right:1.5rem; text-align:left; }
   .cc-del { flex:0 0 auto; width:32px; height:32px; border-radius:0.6rem; border:1px solid var(--border-subtle); background:var(--bg-elevated); color:var(--text-muted); font-size:1.15rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:color var(--t),border-color var(--t); }
   .cc-del:hover { color:var(--red); border-color:var(--red); }
   .add-cat-btn { display:inline-flex; align-items:center; justify-content:center; gap:0.4rem; width:100%; margin-top:0.25rem; font-size:0.82rem; font-weight:600; color:var(--accent-strong); background:none; border:1px dashed var(--border-mid); border-radius:0.8rem; padding:0.6rem 0.9rem; cursor:pointer; transition:background var(--t),border-color var(--t); }
@@ -1278,20 +1385,21 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
         <!-- ═══ SCREEN 1 — Diagnostic & dépenses ═══ -->
         <div class="screen" id="screen-1">
           <div class="brick-card">
-            <div class="brick-kicker">ÉTAPE 1 / 4 · CE QUI RENTRE ET CE QUI PART</div>
-            <h2 class="brick-title">D'abord, posons les bases.</h2>
-            <p class="brick-subtitle">Commence par tes chiffres principaux : tu pourras affiner ensuite.</p>
+            <div class="brick-kicker">ÉTAPE 1 / 4 · TON MOIS, POSTE PAR POSTE</div>
+            <h2 class="brick-title">Posons ton mois à plat.</h2>
+            <p class="brick-subtitle">Des ordres de grandeur suffisent : un chiffre approximatif vaut mieux que pas de chiffre du tout. Rien n'est figé, tu pourras tout reprendre.</p>
 
             <!-- ═══ SECTION 1 · Ce qui rentre ═══ -->
             <div class="form-section">
-              <div class="form-section-head in"><span class="fsh-dot"></span>Ce qui rentre</div>
+              <div class="form-section-head in"><span class="fsh-dot"></span><span class="fsh-nom">Ce qui rentre</span><span class="fsh-total" id="tot-rentre" aria-hidden="true">—</span><span class="fsh-hint">salaire, aides, coups de main</span></div>
 
               <div class="field-group">
                 <label class="field-label" for="f-revenus">
-                  Revenus mensuels nets (€)
+                  Revenus nets<span class="u-sr"> en euros</span>
                   <span class="badge-prefilled" id="badge-revenus" style="display:none;">✓ Pré-rempli</span>
                 </label>
                 <input type="number" id="f-revenus" class="field-input" placeholder="1 800" min="0" inputmode="numeric" />
+                <p class="field-hint">Ce que tu reçois vraiment sur ton compte, une fois les cotisations retirées.</p>
                 <button class="fourchette-link" id="fourchette-toggle" onclick="toggleFourchette()">Je préfère donner une fourchette</button>
                 <div class="fourchette-chips" id="fourchette-chips">
                   <button class="chip-fourchette" data-val="250"  onclick="selectFourchette(this,'< 500 €',250)">&lt; 500 €</button>
@@ -1303,59 +1411,65 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
               </div>
 
               <div class="field-group">
-                <label class="field-label" for="f-aides">Aides / autres entrées (€)</label>
-                <input type="number" id="f-aides" class="field-input" placeholder="APL, soutien familial, jobs…" min="0" inputmode="numeric" />
+                <label class="field-label" for="f-aides">Aides et extras<span class="u-sr"> en euros</span></label>
+                <input type="number" id="f-aides" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                <p class="field-hint">APL, bourse, soutien familial, petits jobs, revente.</p>
               </div>
             </div>
 
             <!-- ═══ SECTION 2 · Charges fixes ═══ -->
             <div class="form-section">
-              <div class="form-section-head fixed"><span class="fsh-dot"></span>Tes charges fixes<span class="fsh-hint">chaque mois, quasi identiques</span></div>
+              <div class="form-section-head fixed"><span class="fsh-dot"></span><span class="fsh-nom">Ce qui part tout seul</span><span class="fsh-total" id="tot-fixe" aria-hidden="true">—</span><span class="fsh-hint">même montant, tous les mois, sans que tu y penses</span></div>
 
               <div class="field-group" id="loyer-group">
                 <label class="field-label" for="f-loyer">
-                  Loyer / logement (€)
+                  Loyer<span class="u-sr"> en euros</span>
                   <span class="badge-prefilled" id="badge-loyer" style="display:none;">✓ Pré-rempli</span>
                 </label>
                 <input type="number" id="f-loyer" class="field-input" placeholder="750" min="0" inputmode="numeric" />
+                <p class="field-hint">Charges comprises. Un crédit immobilier se déclare à l'étape suivante, pas ici : sinon il compte deux fois.</p>
                 <button class="fourchette-link" id="loyer-ajouter-link" style="display:none;font-size:0.75rem;color:var(--text-faint);" onclick="showLoyerField()">Ajouter quand même</button>
               </div>
 
               <div class="field-group">
-                <label class="field-label" for="f-assurances">Assurances (€)</label>
-                <input type="number" id="f-assurances" class="field-input" placeholder="Auto, habitation, mutuelle…" min="0" inputmode="numeric" />
-                <p class="field-hint">Habitation, auto / moto, mutuelle santé, prévoyance.</p>
+                <label class="field-label" for="f-assurances">Assurances<span class="u-sr"> en euros</span></label>
+                <input type="number" id="f-assurances" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                <p class="field-hint">Habitation, auto ou moto, mutuelle santé, prévoyance.</p>
               </div>
 
               <div class="field-group">
-                <label class="field-label" for="f-abonnements">Abonnements (€)</label>
-                <input type="number" id="f-abonnements" class="field-input" placeholder="Netflix, Spotify, téléphone, sport…" min="0" inputmode="numeric" onfocus="maybeOpenPopupAbo()" />
+                <label class="field-label" for="f-abonnements">Abonnements<span class="u-sr"> en euros</span></label>
+                <input type="number" id="f-abonnements" class="field-input" placeholder="0" min="0" inputmode="numeric" onfocus="maybeOpenPopupAbo()" />
+                <p class="field-hint">Téléphone, internet, streaming, salle de sport, cloud.</p>
               </div>
 
               <div class="field-group">
-                <label class="field-label" for="f-transport">Transport (€)</label>
-                <input type="number" id="f-transport" class="field-input" placeholder="Bus, train, essence…" min="0" inputmode="numeric" />
-                <p class="field-hint">Abonnement transport, carburant, péages. Pas le crédit auto ni l'assurance (→ ci-dessus).</p>
+                <label class="field-label" for="f-transport">Transport<span class="u-sr"> en euros</span></label>
+                <input type="number" id="f-transport" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                <p class="field-hint">Abonnement, carburant, péages. Ni le crédit auto ni l'assurance : ils ont leur ligne.</p>
               </div>
             </div>
 
             <!-- ═══ SECTION 3 · Vie courante ═══ -->
             <div class="form-section">
-              <div class="form-section-head var"><span class="fsh-dot"></span>Ta vie courante<span class="fsh-hint">variable, ajustable</span></div>
+              <div class="form-section-head var"><span class="fsh-dot"></span><span class="fsh-nom">Ce que tu décides chaque mois</span><span class="fsh-total" id="tot-courant" aria-hidden="true">—</span><span class="fsh-hint">variable, donc ajustable — c'est là qu'on a de la marge</span></div>
 
               <div class="field-group">
-                <label class="field-label" for="f-courses">Courses alimentaires (€)</label>
-                <input type="number" id="f-courses" class="field-input" placeholder="Supermarché, marché…" min="0" inputmode="numeric" />
+                <label class="field-label" for="f-courses">Courses<span class="u-sr"> en euros</span></label>
+                <input type="number" id="f-courses" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                <p class="field-hint">Supermarché, marché, épicerie. Ce que tu ramènes chez toi.</p>
               </div>
 
               <div class="field-group">
-                <label class="field-label" for="f-repas">Restos, cafés & midi (€)</label>
-                <input type="number" id="f-repas" class="field-input" placeholder="Déjeuners dehors, cafés, livraison…" min="0" inputmode="numeric" />
+                <label class="field-label" for="f-repas">Restos et midis dehors<span class="u-sr"> en euros</span></label>
+                <input type="number" id="f-repas" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                <p class="field-hint">Déjeuners au travail, cafés, livraisons.</p>
               </div>
 
               <div class="field-group">
-                <label class="field-label" for="f-sorties">Sorties & loisirs (€)</label>
-                <input type="number" id="f-sorties" class="field-input" placeholder="Ciné, bar, concerts, sport…" min="0" inputmode="numeric" />
+                <label class="field-label" for="f-sorties">Sorties et loisirs<span class="u-sr"> en euros</span></label>
+                <input type="number" id="f-sorties" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                <p class="field-hint">Ciné, bars, concerts, sport, week-ends.</p>
               </div>
 
               <div style="margin-top:0.25rem;">
@@ -1366,20 +1480,24 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
                 <div class="bloc-affine" id="bloc-3">
                   <div class="fields-grid">
                     <div class="field-group">
-                      <label class="field-label" for="f-shopping">Shopping / vêtements (€)</label>
+                      <label class="field-label" for="f-shopping">Shopping<span class="u-sr"> en euros</span></label>
                       <input type="number" id="f-shopping" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                      <p class="field-hint">Vêtements, chaussures, accessoires.</p>
                     </div>
                     <div class="field-group">
-                      <label class="field-label" for="f-sante">Santé / pharmacie (€)</label>
+                      <label class="field-label" for="f-sante">Santé<span class="u-sr"> en euros</span></label>
                       <input type="number" id="f-sante" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                      <p class="field-hint">Pharmacie, consultations, ce qui n'est pas remboursé.</p>
                     </div>
                     <div class="field-group">
-                      <label class="field-label" for="f-pro">Dépenses professionnelles (€)</label>
+                      <label class="field-label" for="f-pro">Dépenses pro<span class="u-sr"> en euros</span></label>
                       <input type="number" id="f-pro" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                      <p class="field-hint">Matériel, déplacements que ton employeur ne rembourse pas.</p>
                     </div>
                     <div class="field-group">
-                      <label class="field-label" for="f-autres">Autres (€)</label>
-                      <input type="number" id="f-autres" class="field-input" placeholder="Cadeaux, imprévus…" min="0" inputmode="numeric" />
+                      <label class="field-label" for="f-autres">Autres<span class="u-sr"> en euros</span></label>
+                      <input type="number" id="f-autres" class="field-input" placeholder="0" min="0" inputmode="numeric" />
+                      <p class="field-hint">Cadeaux, imprévus, tout ce qui n'entre nulle part ailleurs.</p>
                     </div>
                   </div>
                 </div>
@@ -1394,10 +1512,11 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
 
             <!-- ═══ SECTION 4 · Épargne ═══ -->
             <div class="form-section">
-              <div class="form-section-head in"><span class="fsh-dot"></span>Ce que tu mets de côté</div>
+              <div class="form-section-head in"><span class="fsh-dot"></span><span class="fsh-nom">Ce que tu mets de côté</span><span class="fsh-total" id="tot-epargne" aria-hidden="true">—</span><span class="fsh-hint">le seul poste qui travaille pour toi</span></div>
               <div class="field-group">
-                <label class="field-label" for="f-epargne">Épargne mensuelle (€)</label>
-                <input type="number" id="f-epargne" class="field-input" placeholder="Virement automatique, livret…" min="0" inputmode="numeric" oninput="checkEpargne()" />
+                <label class="field-label" for="f-epargne">Épargne mensuelle<span class="u-sr"> en euros</span></label>
+                <input type="number" id="f-epargne" class="field-input" placeholder="0" min="0" inputmode="numeric" oninput="checkEpargne()" />
+                <p class="field-hint">Virement automatique, livret, versement programmé. Ce qui sort du compte courant.</p>
                 <div class="nudge-epargne" id="nudge-epargne">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
                   Pas encore, ce n'est pas grave.
@@ -1942,6 +2061,7 @@ function prefillFromProfil() {
     const lInput = document.getElementById('f-loyer');
     if (lGroup && lInput) {
       lInput.style.display = 'none';
+      lGroup.classList.add('sans-montant');
       document.getElementById('loyer-ajouter-link').style.display = 'inline';
     }
   } else if (profil.loyer > 0) {
@@ -1956,6 +2076,8 @@ function prefillFromProfil() {
 function showLoyerField() {
   const el = document.getElementById('f-loyer');
   if (el) el.style.display = 'block';
+  const grp = document.getElementById('loyer-group');
+  if (grp) grp.classList.remove('sans-montant');
   const link = document.getElementById('loyer-ajouter-link');
   if (link) link.style.display = 'none';
 }
@@ -2055,6 +2177,8 @@ function updateStickyBar() {
 
   const ral = totalRev - totalDep;
 
+  majSousTotaux();
+
   const stickyBar = document.getElementById('sticky-bar');
   if (stickyBar) stickyBar.style.display = 'flex';
   const btnNext = document.getElementById('btn-suivant-1');
@@ -2069,6 +2193,42 @@ function updateStickyBar() {
     ralEl.textContent = formatEuro(ral);
     ralEl.className   = 'sticky-bar-ral ' + (ral > 100 ? 'positive' : ral >= 0 ? 'warning' : 'negative');
   }
+}
+
+/* Le sous-total de chaque section, ecrit dans son en-tete.
+   Les sections d'ici decoupent le mois par previsibilite — ce qui part tout
+   seul, ce qu'on decide — et non par la grille besoins / envies de l'ecran
+   3 : les courses sont un besoin, mais elles se decident chaque semaine.
+   Les deux lectures coexistent volontairement.
+   Un tiret tant que la section est vide : « 0 € » sur une section jamais
+   touchee serait un faux zero. */
+const SECTIONS_ECRAN_1 = {
+  'tot-rentre':  ['f-revenus', 'f-aides'],
+  'tot-fixe':    ['f-loyer', 'f-assurances', 'f-abonnements', 'f-transport'],
+  'tot-courant': ['f-courses', 'f-repas', 'f-sorties', 'f-shopping', 'f-sante', 'f-pro', 'f-autres'],
+  'tot-epargne': ['f-epargne']
+};
+
+function majSousTotaux() {
+  Object.keys(SECTIONS_ECRAN_1).forEach(cible => {
+    const el = document.getElementById(cible);
+    if (!el) return;
+    let somme = 0, saisi = false;
+    SECTIONS_ECRAN_1[cible].forEach(id => {
+      const champ = document.getElementById(id);
+      const v = parseFloat(champ?.value);
+      if (!isNaN(v)) { somme += v; saisi = true; }
+    });
+    // Les categories libres vivent dans la section « ce que tu decides » :
+    // on les compte la ou elles s'affichent, sinon la somme lue a l'ecran
+    // ne tombe pas juste.
+    if (cible === 'tot-courant') {
+      (budgetData.customCats || []).forEach(c => {
+        if (c.montant) { somme += c.montant; saisi = true; }
+      });
+    }
+    el.textContent = saisi ? formatEuro(somme) : '—';
+  });
 }
 
 // ── Collecte données screen 1 ─────────────────────────────────
@@ -3271,10 +3431,11 @@ function renderDettes() {
   budgetData.dettes.forEach((d, idx) => {
     const clf = DETTE_CLASSIFICATION[d.type] || DETTE_CLASSIFICATION['autre'];
     const row = document.createElement('div');
-    row.className = 'dette-row';
+    // La classe de teinte suit la classification : renderDettes est
+    // rappele a chaque changement de type, donc la couleur suit le choix.
+    row.className = 'dette-row t-' + clf.badge;
     row.innerHTML = `
       <div class="dette-row-top">
-        <div class="dette-dot ${clf.badge}"></div>
         <select class="dette-select" onchange="updateDetteType(${idx},this.value)">
           ${DETTE_TYPES.map(t => `<option value="${t.val}" ${t.val === d.type ? 'selected' : ''}>${t.label}</option>`).join('')}
         </select>
