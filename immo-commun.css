@@ -556,8 +556,10 @@ html.dark .sb2-synth.locked {
   margin-bottom:0.25rem;
 }
 
+/* Le « k€ » est pose sur le lavis d'accent du hero, plus dense que les
+   lavis neutres : l'encre sourde y tombait a 4,37. Un cran plus sombre. */
 .sb2-synth-hero-unit {
-  font-size:1rem; color:var(--v3-text-muted);
+  font-size:1rem; color:var(--text-secondary);
   font-weight:400; letter-spacing:-0.01em;
   margin-left:0.125rem;
 }
@@ -2382,7 +2384,10 @@ html:not(.dark) .hypotheses-pill { color:var(--text-muted); }
   background:none; border:none; font:inherit; padding:0;
 }
 
-.hypotheses-pill .modifier-btn:hover { color:var(--accent); }
+/* Le survol passait de --accent-strong (une encre) a --accent (un aplat) :
+   le bouton devenait MOINS lisible au survol, a 1,85 contre le fond. Le
+   soulignement signale le survol sans rien couter au contraste. */
+.hypotheses-pill .modifier-btn:hover { text-decoration:underline; }
 
 
 /* Hypotheses popup (position:absolute, opens UP) */

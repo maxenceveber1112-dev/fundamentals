@@ -869,9 +869,12 @@
       margin-left: 0.4rem; font-weight: 400; font-size: 0.72rem;
       color: var(--text-faint); white-space: nowrap;
     }
+    /* .green etait passe aux jetons -text, pas ses deux voisins : #F97316
+       donnait 2,73 sur le fond clair, #EF4444 a peine mieux. Ce sont des
+       teintes calees pour le sombre. Les jetons -text existent pour ca. */
     .mb-card-row-val.green { color: var(--green-text); }
-    .mb-card-row-val.orange { color: #F97316; }
-    .mb-card-row-val.red { color: #EF4444; }
+    .mb-card-row-val.orange { color: var(--orange-text); }
+    .mb-card-row-val.red { color: var(--red-text); }
 
     .mb-progress { margin-top: 0.25rem; }
     .mb-progress-bar { height: 4px; background: var(--track, #E7E5E4); border-radius: 2px; overflow: hidden; }

@@ -531,7 +531,9 @@
     font-family: Inter, sans-serif;
     font-size: 11px;
     font-style: italic;
-    color: var(--text-faint);
+    /* Pose sur le lavis de .ctx-narrative — plus dense que les lavis
+       neutres — --text-faint tombait a 4,44. Un cran plus sombre suffit. */
+    color: var(--text-secondary);
     margin-top: 4px;
   }
 
@@ -1107,10 +1109,16 @@
     padding: 0;
     font-family: Inter, sans-serif;
     font-size: 0.75rem;
-    color: var(--accent, #8b5cf6);
+    /* --accent est un APLAT (#C4B5FD en clair, un degrade en sombre) : pose
+       en `color`, il donnait 1,85 contre le fond blanc, et une valeur
+       invalide en theme sombre. L'encre du meme violet, c'est
+       --accent-strong. Le defaut echappait aux sondes parce que ce panneau
+       n'apparait qu'une fois la brique Budget remplie. */
+    color: var(--accent-strong);
     font-weight: 500;
     transition: opacity 0.15s;
   }
+  html.dark .charges-detail-btn { color:#A78BFA; }
   .charges-detail-btn:hover { opacity: 0.75; }
   .charges-chevron {
     width: 14px;

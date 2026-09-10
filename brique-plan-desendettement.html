@@ -1121,9 +1121,12 @@
     font-family:var(--font-display); font-size:1.125rem; font-weight:400;
     transition:color 0.4s;
   }
-  .sticky-recap-taux.vert   { color:var(--dette-vert); }
-  .sticky-recap-taux.orange { color:var(--dette-orange); }
-  .sticky-recap-taux.rouge  { color:var(--dette-rouge); }
+  /* Les jumeaux -text existent deja dans ce fichier : ce sont eux les
+     encres. Les jetons nus sont des aplats — #22C55E donnait 2,28 sur le
+     fond blanc de la barre collante. */
+  .sticky-recap-taux.vert   { color:var(--dette-vert-text); }
+  .sticky-recap-taux.orange { color:var(--dette-orange-text); }
+  .sticky-recap-taux.rouge  { color:var(--dette-rouge-text); }
 
   /* ══════════════════════════════════════════════════════════════
      S2 STEP 2 — Mini-graphe + slider comparatif
