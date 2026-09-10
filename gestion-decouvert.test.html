@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>gestion-decouvert — tests des agios, du calendrier et du micro-plan</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1040px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  p.intro{color:#A1A1AA;margin:0 0 18px;max-width:74ch}
+  #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#FBBF24}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
+  td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<h1>brique-gestion-decouvert.html — agios, calendrier, trajectoire, micro-plan</h1>
+<p class="intro">
+  Cette brique n'est pas encore ouverte au public. C'est précisément le bon
+  moment pour la border : le jour où elle s'ouvrira, ses quatre calculs
+  seront déjà tenus. Ils annoncent le coût annuel d'un découvert, colorent
+  trente jours de calendrier, désignent la trajectoire « la plus réaliste »
+  et pré-remplissent l'engagement final. Aucun n'est vérifiable à l'œil : un
+  jour rouge de trop dans le calendrier, un coût annuel calculé sur un mois,
+  un objectif d'engagement négatif — tout cela s'affiche sans erreur. Les
+  fonctions parlent au DOM ; elles reçoivent ici un DOM simulé, ce qui permet
+  de lire ce qu'elles auraient écrit à l'écran.
+</p>
+<div id="bilan">exécution…</div>
+<table id="t"><tr><th>cas</th><th>attendu</th><th>obtenu</th><th></th></tr></table>
+
+<script>
+var resultats = [];
+function verifier(nom, attendu, obtenu, tol) {
+  var t = tol === undefined ? 0 : tol;
+  var ok = (typeof attendu === 'number' && typeof obtenu === 'number')
+    ? Math.abs(attendu - obtenu) <= t
+    : String(attendu) === String(obtenu);
+  resultats.push({ nom: nom, attendu: attendu, obtenu: obtenu, ok: ok });
+}
+
+/* Découpe une fonction du source en comptant ses accolades. */
+function corps(src, nom) {
+  var m = src.match(new RegExp("function\\s+" + nom + "\\s*\\([^)]*\\)\\s*\\{"));
+  if (!m) return null;
+  var i = m.index + m[0].length, p = 1;
+  while (i < src.length && p) { if (src[i] === "{") p++; else if (src[i] === "}") p--; i++; }
+  return src.slice(m.index, i);
+}
+
+var NOMS = ['computeCost', 'buildCalendar', 'setBadge', 'prepareMicroPlan', 'validateMontant'];
+
+/* Le DOM simulé, écrit ici et injecté dans l'évaluation. Il n'imite que ce
+   que les quatre fonctions touchent : une valeur, un texte, une classe. */
+var FAUX_DOM = [
+  'function El() { this.value = ""; this._txt = ""; this.className = "";',
+  '  this.style = {}; this.attrs = {}; this.cls = {}; this.enfants = []; }',
+  'El.prototype.setAttribute = function (k, v) { this.attrs[k] = v; };',
+  'El.prototype.getAttribute = function (k) { return this.attrs[k]; };',
+  'El.prototype.addEventListener = function () {};',
+  'El.prototype.appendChild = function (e) { this.enfants.push(e); };',
+  'El.prototype.querySelector = function () { return null; };',
+  'Object.defineProperty(El.prototype, "textContent", {',
+  '  get: function () { return this._txt; }, set: function (v) { this._txt = String(v); } });',
+  'Object.defineProperty(El.prototype, "innerHTML", {',
+  '  get: function () { return ""; }, set: function () { this.enfants = []; } });',
+  'Object.defineProperty(El.prototype, "classList", { get: function () {',
+  '  var self = this; return {',
+  '    add: function (c) { self.cls[c] = true; },',
+  '    remove: function (c) { delete self.cls[c]; },',
+  '    contains: function (c) { return !!self.cls[c]; },',
+  '    toggle: function (c, f) { var v = (f === undefined) ? !self.cls[c] : !!f;',
+  '      if (v) self.cls[c] = true; else delete self.cls[c]; return v; } }; } });',
+  'var registre = {};',
+  'var document = {',
+  '  getElementById: function (id) { if (!registre[id]) registre[id] = new El(); return registre[id]; },',
+  '  createElement: function () { return new El(); },',
+  '  querySelectorAll: function () { return []; },',
+  '  addEventListener: function () {} };',
+  // buildCalendar passe hideTooltip par valeur : non definie, la simple
+  // lecture du nom leverait une erreur avant meme le premier jour.
+  'function showTooltip() {} function hideTooltip() {}',
+  'var inputMontant = new El(), montantError = new El();',
+  'var BRICK_ID = "gestion_decouvert";'
+].join('\n');
+
+(async function () {
+  var src = await (await fetch('brique-gestion-decouvert.html?test=' + Date.now())).text();
+  var morceaux = [], manquant = null;
+  NOMS.forEach(function (n) {
+    var c = corps(src, n);
+    if (!c) { manquant = manquant || n; } else { morceaux.push(c); }
+  });
+  if (manquant) {
+    document.getElementById('bilan').innerHTML =
+      '<span class="ko">Extraction impossible : ' + manquant + ' est introuvable.</span>';
+    window.__fini = true;
+    return;
+  }
+
+  var M = {};
+  try {
+    new Function('sortie',
+      FAUX_DOM + '\n'
+      + 'var state = { joursRouge: 5, montantDecouvert: -200, trajChoix: null,'
+      + '             engagementDays: 3, alerteAmount: 0 };\n'
+      + morceaux.join('\n') + '\n'
+      + 'sortie.poser = function (s) { for (var k in (s || {})) state[k] = s[k]; return state; };\n'
+      + 'sortie.etat = function () { return state; };\n'
+      + 'sortie.el = function (id) { return document.getElementById(id); };\n'
+      + 'sortie.champ = inputMontant;\n'
+      + 'sortie.erreur = montantError;\n'
+      + NOMS.map(function (n) { return 'sortie.' + n + ' = ' + n + ';'; }).join('\n'))(M);
+  } catch (e) {
+    var csp = /unsafe-eval|Content Security Policy/i.test(e.message);
+    document.getElementById('bilan').innerHTML = csp
+      ? '<span class="attente">⚠ Suite non exécutée ici.</span><br>'
+        + '<span style="color:#A1A1AA;font-weight:400">Elle extrait les fonctions du moteur et les évalue, '
+        + 'ce qui demande <code>unsafe-eval</code> — interdit par la CSP de production, à juste titre. '
+        + 'Lance-la depuis un serveur local : <code>tests.html</code> sur localhost.</span>'
+      : '<span class="ko">' + e.message + '</span>';
+    window.__nonExecutable = csp;
+    window.__fini = true;
+    return;
+  }
+
+  /* ══ 1. Le coût du découvert ═════════════════════════════════════════ */
+  // 16 % l'an, au prorata des jours passés dans le rouge. C'est le chiffre
+  // qui doit frapper : une erreur de facteur douze le rendrait dérisoire.
+  M.poser({ montantDecouvert: -600, joursRouge: 30 });
+  M.computeCost();
+  verifier('600 EUR pendant 30 jours : 8 EUR le mois', '8 €', M.el('cost-monthly').textContent);
+  verifier('… soit 96 EUR sur l annee',                '96 €', M.el('cost-annual').textContent);
+  M.poser({ montantDecouvert: -1200, joursRouge: 15 });
+  M.computeCost();
+  verifier('deux fois plus, deux fois moins longtemps : meme cout',
+           '8 €', M.el('cost-monthly').textContent);
+  // Le signe est une convention interne : la personne a pu taper 200 ou -200.
+  M.poser({ montantDecouvert: 1200, joursRouge: 15 });
+  M.computeCost();
+  verifier('un montant positif donne le meme cout', '8 €', M.el('cost-monthly').textContent);
+  // Zero jour est clampe a un : un decouvert declare ne peut pas etre gratuit.
+  M.poser({ montantDecouvert: -600, joursRouge: 0 });
+  M.computeCost();
+  verifier('zero jour compte pour un : le cout reste non nul',
+           '< 1 €', M.el('cost-monthly').textContent);
+  verifier('… et l annuel le dit lisiblement', '3 €', M.el('cost-annual').textContent);
+  // L'annuel est bien douze fois le mensuel, jamais l'inverse.
+  var coherent = 0;
+  [[-150, 3], [-400, 12], [-900, 22], [-2500, 28]].forEach(function (c) {
+    M.poser({ montantDecouvert: c[0], joursRouge: c[1] });
+    M.computeCost();
+    var mois = parseFloat(M.el('cost-monthly').textContent) || 0;
+    var an   = parseFloat(M.el('cost-annual').textContent)  || 0;
+    if (an < mois) coherent++;
+  });
+  verifier('l annuel n est jamais inferieur au mensuel', 0, coherent);
+
+  /* ══ 2. Le seuil d alerte proposé ════════════════════════════════════ */
+  // Un quart du decouvert, arrondi a la dizaine : c'est le montant que la
+  // brique proposera de surveiller. Un chiffre non rond serait illisible.
+  M.poser({ montantDecouvert: -600, joursRouge: 5 }); M.computeCost();
+  verifier('seuil d alerte = un quart, arrondi a la dizaine', 150, M.etat().alerteAmount);
+  M.poser({ montantDecouvert: -230, joursRouge: 5 }); M.computeCost();
+  verifier('230 EUR : arrondi a 60',                            60, M.etat().alerteAmount);
+  var pasRond = 0;
+  for (var mt = 10; mt <= 5000; mt += 37) {
+    M.poser({ montantDecouvert: -mt, joursRouge: 7 });
+    M.computeCost();
+    if (M.etat().alerteAmount % 10 !== 0) pasRond++;
+  }
+  verifier('le seuil est toujours un multiple de 10', 0, pasRond);
+
+  /* ══ 3. Le calendrier des trente jours ═══════════════════════════════ */
+  // Il montre le mois : autant de jours rouges que declares, deux jours
+  // « fragiles » juste avant, le reste au vert. Un cran de decalage ferait
+  // mentir la seule image de la brique.
+  function grille(jours) {
+    M.poser({ joursRouge: jours, montantDecouvert: -300 });
+    M.buildCalendar();
+    var cellules = M.el('calendar-grid').enfants;
+    return {
+      total:  cellules.length,
+      rouge:  cellules.filter(function (c) { return /red/.test(c.className); }).length,
+      orange: cellules.filter(function (c) { return /orange/.test(c.className); }).length,
+      vert:   cellules.filter(function (c) { return /green/.test(c.className); }).length,
+      cellules: cellules
+    };
+  }
+  var g5 = grille(5);
+  verifier('le mois fait trente jours',        30, g5.total);
+  verifier('cinq jours declares, cinq rouges',  5, g5.rouge);
+  verifier('deux jours fragiles avant',         2, g5.orange);
+  verifier('le reste au vert',                 23, g5.vert);
+  verifier('les rouges sont les derniers du mois', true,
+           g5.cellules.slice(25).every(function (c) { return /red/.test(c.className); }));
+  var g0 = grille(0);
+  verifier('aucun jour rouge declare : aucun rouge', 0, g0.rouge);
+  var g30 = grille(30);
+  verifier('trente jours rouges : tout le mois',    30, g30.rouge);
+  verifier('… et plus aucun vert',                   0, g30.vert);
+  verifier('… ni de zone fragile a placer',          0, g30.orange);
+  var g29 = grille(29);
+  verifier('vingt-neuf rouges : il reste un jour a colorer', 30, g29.rouge + g29.orange + g29.vert);
+  // Chaque case est lue a voix haute : sans libelle, le calendrier est muet
+  // pour qui ne le voit pas.
+  verifier('chaque jour porte un libelle accessible', 30,
+           g5.cellules.filter(function (c) { return !!c.attrs['aria-label']; }).length);
+  verifier('aucun libelle ne contient NaN', true,
+           g5.cellules.every(function (c) { return !/NaN/.test(c.attrs['aria-label']); }));
+  verifier('aucun montant annonce n est negatif', true,
+           g5.cellules.every(function (c) { return !/−-|-\s*-/.test(c.attrs['aria-label']); }));
+
+  /* ══ 4. La trajectoire « la plus realiste » ══════════════════════════ */
+  // Un seul des deux badges doit s'afficher : deux badges, ou aucun, et le
+  // conseil se dissout.
+  function badges(montant, jours) {
+    M.poser({ montantDecouvert: montant, joursRouge: jours });
+    M.setBadge();
+    return (M.el('badge-progressive').cls.show ? 'progressive' : '')
+         + (M.el('badge-rapide').cls.show ? 'rapide' : '');
+  }
+  verifier('petit decouvert, peu de jours : le rapide',  'rapide',      badges(-200, 5));
+  verifier('plus de 400 EUR : le progressif',            'progressive', badges(-500, 5));
+  verifier('plus de 15 jours : le progressif',           'progressive', badges(-200, 20));
+  verifier('400 EUR pile : encore le rapide',            'rapide',      badges(-400, 15));
+  var deuxOuAucun = 0;
+  for (var mm = 0; mm <= 3000; mm += 137) {
+    for (var jj = 0; jj <= 30; jj += 3) {
+      if (['rapide', 'progressive'].indexOf(badges(-mm, jj)) === -1) deuxOuAucun++;
+    }
+  }
+  verifier('toujours un badge, jamais deux ni zero', 0, deuxOuAucun);
+
+  /* ══ 5. Le micro-plan ════════════════════════════════════════════════ */
+  // L'objectif pre-rempli est le nombre de jours rouges vise. Negatif, il
+  // n'aurait aucun sens ; superieur au depart, il ne serait pas un progres.
+  M.poser({ joursRouge: 12, montantDecouvert: -600, trajChoix: 'rapide', alerteAmount: 150 });
+  M.prepareMicroPlan();
+  verifier('trajectoire rapide : quatre jours de moins', 8, M.etat().engagementDays);
+  verifier('le champ est pre-rempli',                    8, M.el('engagement-days').value);
+  M.poser({ trajChoix: 'progressive' });
+  M.prepareMicroPlan();
+  verifier('trajectoire progressive : deux jours de moins', 10, M.etat().engagementDays);
+  M.poser({ joursRouge: 3, trajChoix: 'rapide' });
+  M.prepareMicroPlan();
+  verifier('trois jours rouges, objectif rapide : zero, jamais negatif',
+           0, M.etat().engagementDays);
+  var recule = 0;
+  for (var j = 0; j <= 31; j++) {
+    ['rapide', 'progressive'].forEach(function (tr) {
+      M.poser({ joursRouge: j, trajChoix: tr });
+      M.prepareMicroPlan();
+      var v = M.etat().engagementDays;
+      if (v < 0 || v > j) recule++;
+    });
+  }
+  verifier('l objectif est toujours entre 0 et les jours actuels', 0, recule);
+
+  // Le texte de la checklist reprend les chiffres de la personne, pas des
+  // valeurs d'exemple.
+  M.poser({ joursRouge: 9, trajChoix: 'rapide', alerteAmount: 150 });
+  M.prepareMicroPlan();
+  verifier('l alerte reprend le seuil calcule', true,
+           /150/.test(M.el('check-text-alerte').textContent));
+  verifier('la limite reprend les jours rouges', true,
+           /9 jours rouges/.test(M.el('check-text-limite').textContent));
+  M.poser({ alerteAmount: 0 });
+  M.prepareMicroPlan();
+  verifier('seuil non calcule : un repli a 50 EUR, jamais 0 EUR', true,
+           /50/.test(M.el('check-text-alerte').textContent)
+           && !/sous 0/.test(M.el('check-text-alerte').textContent));
+  M.poser({ joursRouge: 0 });
+  M.prepareMicroPlan();
+  verifier('aucun jour rouge : la phrase reste lisible', true,
+           /sur les jours rouges/.test(M.el('check-text-limite').textContent)
+           && !/0 jours/.test(M.el('check-text-limite').textContent));
+
+  /* ══ 6. La saisie du montant ═════════════════════════════════════════ */
+  // La brique stocke un decouvert en negatif. Selon l'habitude, la personne
+  // tape « 200 » ou « -200 » : les deux doivent aboutir au meme etat, sinon
+  // tout le reste de la brique calcule a l'envers.
+  function saisir(valeur) {
+    M.poser({ montantDecouvert: -1 });
+    M.champ.value = valeur;
+    var ok = M.validateMontant();
+    return { ok: ok, etat: M.etat().montantDecouvert, erreur: !!M.champ.cls.error };
+  }
+  verifier('« 200 » devient -200',            -200, saisir('200').etat);
+  verifier('« -200 » reste -200',             -200, saisir('-200').etat);
+  verifier('« 200 € » est nettoye',           -200, saisir('200 €').etat);
+  verifier('la saisie valide est acceptee',   true, saisir('200').ok);
+  verifier('10 000 EUR passe encore',       -10000, saisir('10000').etat);
+  var trop = saisir('10001');
+  verifier('au-dela de 10 000 : refuse',     false, trop.ok);
+  verifier('… le champ est marque en erreur', true, trop.erreur);
+  verifier('… et l etat n est pas ecrase',      -1, trop.etat);
+  var vide = saisir('');
+  verifier('champ vide : accepte, une estimation prendra le relais', true, vide.ok);
+  verifier('… sans rien ecrire dans l etat',                          -1, vide.etat);
+  var texte = saisir('je ne sais pas');
+  verifier('texte libre : accepte sans rien ecrire', true, texte.ok);
+  verifier('… et l etat reste intact',                 -1, texte.etat);
+
+  /* ══ Rendu ═══════════════════════════════════════════════════════════ */
+  var t = document.getElementById('t'), ko = 0;
+  resultats.forEach(function (x) {
+    if (!x.ok) ko++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td>' + x.nom + '</td><td class="n">' + x.attendu + '</td><td class="n">' + x.obtenu
+      + '</td><td class="' + (x.ok ? 'ok' : 'ko') + '">' + (x.ok ? '✓' : '✗') + '</td></tr>');
+  });
+  document.getElementById('bilan').innerHTML = ko === 0
+    ? '<span class="ok">✅ ' + resultats.length + ' assertions, aucune en échec</span>'
+    : '<span class="ko">❌ ' + ko + ' échec(s) sur ' + resultats.length + '</span>';
+  window.__total = resultats.length;
+  window.__echecs = ko;
+  window.__TESTS__ = { passed: resultats.length - ko, failed: ko };
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>

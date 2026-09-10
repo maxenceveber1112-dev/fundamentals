@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>premiers-pas-bancaires — tests du moteur de recommandation</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1040px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  p.intro{color:#A1A1AA;margin:0 0 18px;max-width:74ch}
+  #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#FBBF24}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
+  td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<h1>brique-premiers-pas-bancaires.html — ce que six réponses décident</h1>
+<p class="intro">
+  Cette brique ne calcule pas : elle choisit. Six réponses déterminent l'ordre
+  des notions expliquées, le type de carte recommandé, la liste de ce qui sert
+  et de ce qui ne sert pas, et l'engagement mis en avant à la fin. Aucune de
+  ces sorties n'est un nombre, donc aucune ne se vérifie à l'œil — et une
+  branche oubliée ne casse rien de visible : l'écran s'affiche, simplement
+  vide, ou avec la mauvaise carte mise en avant. Les invariants sont balayés
+  sur les <b>6 912 combinaisons</b> de réponses possibles, réponses non
+  données comprises : c'est le seul moyen d'attraper le profil qui ne
+  sélectionne rien.
+</p>
+<div id="bilan">exécution…</div>
+<table id="t"><tr><th>cas</th><th>attendu</th><th>obtenu</th><th></th></tr></table>
+
+<script>
+var resultats = [];
+function verifier(nom, attendu, obtenu, tol) {
+  var t = tol === undefined ? 0 : tol;
+  var ok = (typeof attendu === 'number' && typeof obtenu === 'number')
+    ? Math.abs(attendu - obtenu) <= t
+    : String(attendu) === String(obtenu);
+  resultats.push({ nom: nom, attendu: attendu, obtenu: obtenu, ok: ok });
+}
+
+/* Découpe une fonction du source en comptant ses accolades. */
+function corps(src, nom) {
+  var m = src.match(new RegExp("function\\s+" + nom + "\\s*\\([^)]*\\)\\s*\\{"));
+  if (!m) return null;
+  var i = m.index + m[0].length, p = 1;
+  while (i < src.length && p) { if (src[i] === "{") p++; else if (src[i] === "}") p--; i++; }
+  return src.slice(m.index, i);
+}
+/* Une constante littérale, accolades ou crochets imbriqués compris. */
+function bloc(src, nom) {
+  var m = src.match(new RegExp("const\\s+" + nom + "\\s*=\\s*[\\{\\[]"));
+  if (!m) return null;
+  var i = m.index + m[0].length, p = 1;
+  while (i < src.length && p) {
+    var c = src[i];
+    if (c === "{" || c === "[") p++;
+    else if (c === "}" || c === "]") p--;
+    i++;
+  }
+  return src.slice(m.index, i) + ";";
+}
+
+var NOMS = ['prioritaires', 'satsOrdonnes', 'estPrioritaire', 'carteRecommandee',
+            'besoins', 'engagementsPossibles', 'engagementParDefaut'];
+
+(async function () {
+  var src = await (await fetch('brique-premiers-pas-bancaires.html?test=' + Date.now())).text();
+  var morceaux = [], manquant = null;
+  NOMS.forEach(function (n) {
+    var c = corps(src, n);
+    if (!c) { manquant = manquant || n; } else { morceaux.push(c); }
+  });
+  var cartes = bloc(src, 'CARTES');
+  if (!cartes) manquant = manquant || 'CARTES';
+  if (manquant) {
+    document.getElementById('bilan').innerHTML =
+      '<span class="ko">Extraction impossible : ' + manquant + ' est introuvable.</span>';
+    window.__fini = true;
+    return;
+  }
+
+  var M = {};
+  try {
+    new Function('sortie',
+      'var A = { motif:null, statut:null, logement:null, revenus:null, voyage:null, findemois:null };\n'
+      + cartes + '\n'
+      + morceaux.join('\n') + '\n'
+      + 'sortie.CARTES = CARTES;\n'
+      + 'sortie.repondre = function (r) {\n'
+      + '  A.motif = A.statut = A.logement = A.revenus = A.voyage = A.findemois = null;\n'
+      + '  for (var k in (r || {})) A[k] = r[k]; };\n'
+      + NOMS.map(function (n) { return 'sortie.' + n + ' = ' + n + ';'; }).join('\n'))(M);
+  } catch (e) {
+    var csp = /unsafe-eval|Content Security Policy/i.test(e.message);
+    document.getElementById('bilan').innerHTML = csp
+      ? '<span class="attente">⚠ Suite non exécutée ici.</span><br>'
+        + '<span style="color:#A1A1AA;font-weight:400">Elle extrait les fonctions du moteur et les évalue, '
+        + 'ce qui demande <code>unsafe-eval</code> — interdit par la CSP de production, à juste titre. '
+        + 'Lance-la depuis un serveur local : <code>tests.html</code> sur localhost.</span>'
+      : '<span class="ko">' + e.message + '</span>';
+    window.__nonExecutable = csp;
+    window.__fini = true;
+    return;
+  }
+
+  /* Les domaines exacts des six questions, valeur « pas encore répondu »
+     comprise : c'est l'état de l'écran 2 tant qu'on n'a rien coché. */
+  var DOMAINES = {
+    motif:     [null, 'comprendre', 'premier', 'decouvert', 'arnaque', 'flou'],
+    statut:    [null, 'lycee', 'etudiant', 'alternance', 'emploi', 'autre'],
+    logement:  [null, 'parents', 'seul'],
+    revenus:   [null, 'regulier', 'irregulier', 'variable'],
+    voyage:    [null, 'jamais', 'parfois', 'souvent'],
+    findemois: [null, 'jamais', 'parfois', 'souvent']
+  };
+  var CLES = Object.keys(DOMAINES);
+  function toutesLesReponses(f) {
+    var n = 0;
+    (function rec(i, acc) {
+      if (i === CLES.length) { n++; M.repondre(acc); f(acc); return; }
+      DOMAINES[CLES[i]].forEach(function (v) {
+        var copie = Object.assign({}, acc);
+        copie[CLES[i]] = v;
+        rec(i + 1, copie);
+      });
+    })(0, {});
+    return n;
+  }
+  var NOTIONS = ['paiement', 'decouvert', 'epargne', 'credit'];
+
+  /* ══ 1. L ordre des notions ══════════════════════════════════════════ */
+  // satsOrdonnes place devant ce qui concerne le plus la personne. Le piege
+  // est la concatenation : une notion promue et non retiree du reste
+  // apparaitrait deux fois, une notion oubliee disparaitrait de la brique.
+  var ordreKo = 0, dupKo = 0, perduKo = 0;
+  var combinaisons = toutesLesReponses(function () {
+    var o = M.satsOrdonnes();
+    if (o.length !== 4) ordreKo++;
+    if (new Set(o).size !== o.length) dupKo++;
+    if (!NOTIONS.every(function (k) { return o.indexOf(k) !== -1; })) perduKo++;
+  });
+  verifier('le balayage couvre toutes les combinaisons', 6912, combinaisons);
+  verifier('toujours quatre notions, quel que soit le profil', 0, ordreKo);
+  verifier('jamais une notion en double',                      0, dupKo);
+  verifier('jamais une notion perdue',                         0, perduKo);
+
+  /* ══ 2. Ce qui passe devant, et pourquoi ═════════════════════════════ */
+  M.repondre({ findemois: 'souvent' });
+  verifier('finir le mois a zero souvent : le decouvert d abord',
+           'decouvert', M.satsOrdonnes()[0]);
+  M.repondre({ motif: 'decouvert' });
+  verifier('venir pour le decouvert : idem', 'decouvert', M.satsOrdonnes()[0]);
+  M.repondre({ logement: 'seul' });
+  verifier('vivre seul : le paiement d abord', 'paiement', M.satsOrdonnes()[0]);
+  M.repondre({ motif: 'arnaque' });
+  verifier('venir pour ne pas se faire avoir : le paiement d abord',
+           'paiement', M.satsOrdonnes()[0]);
+  M.repondre({ motif: 'premier' });
+  verifier('premier argent : le paiement d abord', 'paiement', M.satsOrdonnes()[0]);
+  // Les deux conditions ensemble : le decouvert prime, le paiement suit,
+  // et surtout il n'apparait pas deux fois.
+  M.repondre({ findemois: 'souvent', logement: 'seul', motif: 'arnaque' });
+  verifier('les deux a la fois : decouvert puis paiement',
+           'decouvert,paiement', M.satsOrdonnes().slice(0, 2).join(','));
+  verifier('… et rien en double', 4, new Set(M.satsOrdonnes()).size);
+  // Aucune mise en avant : l'ordre par defaut, et aucune pastille.
+  M.repondre({ findemois: 'jamais', logement: 'parents', motif: 'flou' });
+  verifier('aucune priorite : l ordre de reference',
+           'paiement,decouvert,epargne,credit', M.satsOrdonnes().join(','));
+  verifier('aucune pastille dans ce cas', 0,
+           NOTIONS.filter(function (k) { return M.estPrioritaire(k); }).length);
+
+  /* ══ 3. La pastille ne marque qu une notion ══════════════════════════ */
+  // Deux pastilles diraient « ces deux-la sont LA priorite » : le message
+  // se dilue, et le classement ne veut plus rien dire.
+  var pastilleKo = 0;
+  toutesLesReponses(function () {
+    var n = NOTIONS.filter(function (k) { return M.estPrioritaire(k); });
+    if (n.length > 1) pastilleKo++;
+    if (n.length === 1 && n[0] !== M.satsOrdonnes()[0]) pastilleKo++;
+  });
+  verifier('au plus une pastille, et sur la premiere notion', 0, pastilleKo);
+
+  /* ══ 4. La carte recommandee ═════════════════════════════════════════ */
+  // L'ecran 3 met en avant celle des trois cartes dont la cle est renvoyee.
+  // Une cle inconnue n'entrainerait aucune erreur : simplement, aucune des
+  // trois cartes ne serait mise en avant, et le conseil disparaitrait.
+  var cleKo = 0, texteKo = 0;
+  toutesLesReponses(function () {
+    var c = M.carteRecommandee();
+    if (!c || !M.CARTES[c.cle]) cleKo++;
+    if (!c || !c.nom || !c.pourquoi || !c.note) texteKo++;
+  });
+  verifier('la cle renvoyee designe toujours une carte existante', 0, cleKo);
+  verifier('les trois textes d accompagnement sont toujours ecrits', 0, texteKo);
+
+  M.repondre({ findemois: 'souvent' });
+  verifier('finir souvent a zero : autorisation systematique',
+           'aut', M.carteRecommandee().cle);
+  M.repondre({ findemois: 'parfois', revenus: 'regulier' });
+  verifier('parfois : debit immediat', 'imm', M.carteRecommandee().cle);
+  M.repondre({ findemois: 'jamais', revenus: 'irregulier' });
+  verifier('revenus irreguliers : debit immediat', 'imm', M.carteRecommandee().cle);
+  M.repondre({ findemois: 'jamais', revenus: 'regulier' });
+  verifier('jamais a zero et revenus reguliers : debit immediat, rassurant',
+           'imm', M.carteRecommandee().cle);
+  // Le seul cas ou les deux reponses « jamais / regulier » se rejoignent doit
+  // se lire autrement : c'est un felicitations, pas une correction.
+  verifier('… et le libelle dit que c est deja bien', true,
+           /c.est tr.s bien/.test(M.carteRecommandee().nom));
+  // Rien de repondu : jamais la carte a autorisation systematique, qui est
+  // une contrainte reelle. Le doute doit pencher du cote le plus neutre.
+  M.repondre({});
+  verifier('aucune reponse : le reglage neutre', 'imm', M.carteRecommandee().cle);
+  // La carte a debit differe existe dans le tableau comparatif mais n'est
+  // jamais recommandee : elle fait paraitre le compte plus rempli qu'il n'est.
+  var differeRecommande = 0;
+  toutesLesReponses(function () { if (M.carteRecommandee().cle === 'dif') differeRecommande++; });
+  verifier('le debit differe n est jamais recommande a ce stade', 0, differeRecommande);
+
+  /* ══ 5. Ce qui sert et ce qui ne sert pas ════════════════════════════ */
+  var vide = 0, livretManquant = 0;
+  toutesLesReponses(function () {
+    var b = M.besoins();
+    if (!b.oui.length || !b.non.length) vide++;
+    if (!b.oui.some(function (l) { return /livret/i.test(l[0]); })) livretManquant++;
+  });
+  verifier('les deux colonnes sont toujours remplies', 0, vide);
+  verifier('le livret est recommande a tout le monde',  0, livretManquant);
+
+  function libelles(liste) { return liste.map(function (l) { return l[0]; }).join(' | '); }
+  M.repondre({ logement: 'seul' });
+  verifier('vivre seul : l assurance habitation apparait', true,
+           /habitation/i.test(libelles(M.besoins().oui)));
+  verifier('… et la date des prelevements aussi', true,
+           /pr.l.vements/i.test(libelles(M.besoins().oui)));
+  M.repondre({ logement: 'parents' });
+  verifier('chez ses parents : pas d assurance habitation', false,
+           /habitation/i.test(libelles(M.besoins().oui)));
+  M.repondre({ voyage: 'souvent' });
+  verifier('voyager souvent : les frais hors zone euro apparaissent', true,
+           /hors zone euro/i.test(libelles(M.besoins().oui)));
+  M.repondre({ voyage: 'jamais' });
+  verifier('ne jamais voyager : les options etrangeres sont ecartees', true,
+           /.tranger/i.test(libelles(M.besoins().non)));
+  M.repondre({ findemois: 'jamais' });
+  verifier('jamais a zero : pas d alerte de solde proposee', false,
+           /alerte/i.test(libelles(M.besoins().oui)));
+  M.repondre({ findemois: 'parfois' });
+  verifier('parfois a zero : l alerte de solde apparait', true,
+           /alerte/i.test(libelles(M.besoins().oui)));
+  M.repondre({ statut: 'etudiant' });
+  verifier('etudiant : l offre jeune est signalee', true,
+           /offre jeune/i.test(libelles(M.besoins().oui)));
+  M.repondre({ statut: 'emploi' });
+  verifier('en emploi : pas d offre jeune', false,
+           /offre jeune/i.test(libelles(M.besoins().oui)));
+
+  /* ══ 6. L engagement mis en avant ════════════════════════════════════ */
+  // C'est le dernier geste de la brique. Si l'identifiant renvoye n'est pas
+  // dans la liste proposee, l'ecran 4 s'affiche sans rien de selectionne et
+  // le bouton final ne mene nulle part.
+  var horsListe = 0, sansDefaut = 0, listeVide = 0;
+  toutesLesReponses(function () {
+    var e = M.engagementsPossibles();
+    var d = M.engagementParDefaut();
+    if (!e.length) listeVide++;
+    if (d === null || d === undefined) sansDefaut++;
+    else if (!e.some(function (x) { return x.id === d; })) horsListe++;
+  });
+  verifier('la liste des engagements n est jamais vide',        0, listeVide);
+  verifier('un engagement est toujours mis en avant',           0, sansDefaut);
+  verifier('celui mis en avant est toujours dans la liste',     0, horsListe);
+
+  function ids() { return M.engagementsPossibles().map(function (x) { return x.id; }); }
+  M.repondre({ findemois: 'jamais', logement: 'parents' });
+  verifier('jamais a zero, chez ses parents : deux engagements',
+           'releve,livret', ids().join(','));
+  verifier('… et c est le livret qui est mis en avant', 'livret', M.engagementParDefaut());
+  M.repondre({ findemois: 'souvent', logement: 'parents' });
+  verifier('finir souvent a zero : l alerte apparait et passe devant',
+           'alerte', M.engagementParDefaut());
+  M.repondre({ findemois: 'jamais', logement: 'seul' });
+  verifier('vivre seul : lister ses prelevements devient possible', true,
+           ids().indexOf('prelev') !== -1);
+  verifier('… mais le livret reste en avant sans probleme de fin de mois',
+           'livret', M.engagementParDefaut());
+  M.repondre({ findemois: 'parfois', logement: 'seul' });
+  verifier('les quatre engagements quand tout s applique', 4, ids().length);
+  verifier('… et l alerte prime, c est le geste le moins couteux',
+           'alerte', M.engagementParDefaut());
+  // Chaque engagement porte une raison : c'est ce qui le distingue d'une
+  // liste de bonnes resolutions.
+  var sansRaison = 0;
+  toutesLesReponses(function () {
+    M.engagementsPossibles().forEach(function (x) {
+      if (!x.t || !x.d || !x.pq) sansRaison++;
+    });
+  });
+  verifier('chaque engagement dit ce qu il est et pourquoi lui', 0, sansRaison);
+
+  /* ══ Rendu ═══════════════════════════════════════════════════════════ */
+  var t = document.getElementById('t'), ko = 0;
+  resultats.forEach(function (x) {
+    if (!x.ok) ko++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td>' + x.nom + '</td><td class="n">' + x.attendu + '</td><td class="n">' + x.obtenu
+      + '</td><td class="' + (x.ok ? 'ok' : 'ko') + '">' + (x.ok ? '✓' : '✗') + '</td></tr>');
+  });
+  document.getElementById('bilan').innerHTML = ko === 0
+    ? '<span class="ok">✅ ' + resultats.length + ' assertions, aucune en échec</span>'
+    : '<span class="ko">❌ ' + ko + ' échec(s) sur ' + resultats.length + '</span>';
+  window.__total = resultats.length;
+  window.__echecs = ko;
+  window.__TESTS__ = { passed: resultats.length - ko, failed: ko };
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>

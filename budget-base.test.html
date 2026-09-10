@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>budget-base — tests de l'agrégation et du diagnostic</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1040px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  p.intro{color:#A1A1AA;margin:0 0 18px;max-width:74ch}
+  #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#FBBF24}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
+  td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<h1>brique-budget-base.html — <code>collectBudgetData</code> et <code>getBudgetSituation</code></h1>
+<p class="intro">
+  Deux fonctions portent tous les chiffres de la brique. L'une agrège les
+  quatorze champs saisis en totaux ; l'autre transforme ces totaux en un mot
+  — « tendu », « équilibré », « déficit » — dont dépendent le diagnostic, les
+  leviers proposés et la couleur de l'écran. Trois erreurs y seraient
+  invisibles à la lecture : des mensualités de crédit comptées deux fois ou
+  pas du tout, une marge confondue avec le reste à vivre (elles diffèrent de
+  toute l'épargne), et un seuil de gravité franchi à l'envers. Dans les trois
+  cas la brique resterait crédible et donnerait un mauvais conseil. Les
+  fonctions étant extraites du fichier servi, <code>collectBudgetData</code>
+  reçoit un DOM simulé : elle ne fait que lire des <code>.value</code>.
+</p>
+<div id="bilan">exécution…</div>
+<table id="t"><tr><th>cas</th><th>attendu</th><th>obtenu</th><th></th></tr></table>
+
+<script>
+var resultats = [];
+function verifier(nom, attendu, obtenu, tol) {
+  var t = tol === undefined ? 0 : tol;
+  var ok = (typeof attendu === 'number' && typeof obtenu === 'number')
+    ? Math.abs(attendu - obtenu) <= t
+    : String(attendu) === String(obtenu);
+  resultats.push({ nom: nom, attendu: attendu, obtenu: obtenu, ok: ok });
+}
+
+/* Découpe une fonction du source en comptant ses accolades. */
+function corps(src, nom) {
+  var m = src.match(new RegExp("function\\s+" + nom + "\\s*\\([^)]*\\)\\s*\\{"));
+  if (!m) return null;
+  var i = m.index + m[0].length, p = 1;
+  while (i < src.length && p) { if (src[i] === "{") p++; else if (src[i] === "}") p--; i++; }
+  return src.slice(m.index, i);
+}
+
+(async function () {
+  var src = await (await fetch('brique-budget-base.html?test=' + Date.now())).text();
+  var fSituation = corps(src, 'getBudgetSituation');
+  var fCollecte  = corps(src, 'collectBudgetData');
+  var manquant = !fSituation ? 'getBudgetSituation' : (!fCollecte ? 'collectBudgetData' : null);
+  if (manquant) {
+    document.getElementById('bilan').innerHTML =
+      '<span class="ko">Extraction impossible : ' + manquant + ' est introuvable.</span>';
+    window.__fini = true;
+    return;
+  }
+
+  var M = {};
+  try {
+    // Le seul contact de collectBudgetData avec la page est la lecture de
+    // quatorze .value : un document simule suffit. syncCustomCats recopie les
+    // categories libres du DOM vers budgetData ; ici on les pose directement.
+    new Function('sortie',
+      'var budgetData = null;\n'
+      + 'var champs = {};\n'
+      + 'var document = { getElementById: function (id) {\n'
+      + '  return Object.prototype.hasOwnProperty.call(champs, id)\n'
+      + '    ? { value: champs[id] } : null; } };\n'
+      + 'function syncCustomCats() {}\n'
+      + fSituation + '\n' + fCollecte + '\n'
+      + 'sortie.situation = getBudgetSituation;\n'
+      + 'sortie.collecte = function (saisies, bd) {\n'
+      + '  champs = saisies; budgetData = bd; collectBudgetData(); return budgetData; };')(M);
+  } catch (e) {
+    var csp = /unsafe-eval|Content Security Policy/i.test(e.message);
+    document.getElementById('bilan').innerHTML = csp
+      ? '<span class="attente">⚠ Suite non exécutée ici.</span><br>'
+        + '<span style="color:#A1A1AA;font-weight:400">Elle extrait les fonctions du moteur et les évalue, '
+        + 'ce qui demande <code>unsafe-eval</code> — interdit par la CSP de production, à juste titre. '
+        + 'Lance-la depuis un serveur local : <code>tests.html</code> sur localhost.</span>'
+      : '<span class="ko">' + e.message + '</span>';
+    window.__nonExecutable = csp;
+    window.__fini = true;
+    return;
+  }
+
+  var situation = M.situation, collecte = M.collecte;
+
+  /* ══ 1. Le diagnostic : les bornes ═══════════════════════════════════ */
+  // Chaque borne separe deux conseils differents. Une inegalite ecrite a
+  // l'envers deplacerait tout le monde d'un cran, sans rien casser d'autre.
+  function diag(reste, epargne, revenus) {
+    return situation({ revenus: revenus === undefined ? 2000 : revenus, aides: 0,
+                       reste_a_vivre: reste, epargne: epargne || 0 }).situation;
+  }
+  verifier('marge nulle : tendu',            'tendu',       diag(0, 0));
+  verifier('ratio 9 % : tendu',              'tendu',       diag(180, 0));
+  verifier('ratio 10 % pile : equilibre',    'equilibre',   diag(200, 0));
+  verifier('ratio 19 % : equilibre',         'equilibre',   diag(380, 0));
+  verifier('ratio 20 % pile : aise',         'aise',        diag(400, 0));
+  verifier('ratio 34 % : aise',              'aise',        diag(680, 0));
+  verifier('ratio 35 % pile : confortable',  'confortable', diag(700, 0));
+
+  /* ══ 2. Les deux deficits ne se valent pas ═══════════════════════════ */
+  // Quelqu'un qui met 600 EUR de cote et finit a -50 n'est pas en deficit :
+  // il a place plus que ce qui lui manque. Le conseil doit differer.
+  verifier('reste negatif, epargne insuffisante : deficit',
+           'deficit', diag(-300, 100));
+  verifier('reste negatif, epargne qui le couvre : deficit_couvert',
+           'deficit_couvert', diag(-50, 600));
+  verifier('deficit couvert pile a zero de marge reelle',
+           'deficit_couvert', diag(-600, 600));
+  // Le bonus d'epargne ne doit JAMAIS adoucir un deficit : il ferait
+  // disparaitre le seul cas ou la brique doit alerter.
+  verifier('aucun bonus quand le reste est negatif',
+           'deficit_couvert', diag(-50, 1500));
+
+  /* ══ 3. Le bonus d'epargne ═══════════════════════════════════════════ */
+  verifier('epargne 16 % : un cran gagne (equilibre -> aise)',
+           'aise', diag(0, 320));
+  verifier('epargne 14 % : aucun bonus',
+           'equilibre', diag(0, 280));
+  verifier('epargne 27,5 % : deux crans, plafonnes a confortable',
+           'confortable', diag(100, 550));
+  verifier('le bonus ne depasse jamais le dernier niveau',
+           'confortable', diag(900, 900));
+
+  /* ══ 4. Le cas ou tout vaut zero ═════════════════════════════════════ */
+  // Une division par le revenu total : sans garde, le ratio devient NaN et
+  // toutes les comparaisons deviennent fausses d'un coup.
+  var vide = situation({ revenus: 0, aides: 0, reste_a_vivre: 0, epargne: 0 });
+  verifier('revenu nul : ratio a 0, pas NaN', 0, vide.ratio);
+  verifier('revenu nul : situation definie', 'tendu', vide.situation);
+  verifier('les aides comptent dans le revenu total',
+           2200, situation({ revenus: 2000, aides: 200, reste_a_vivre: 0, epargne: 0 }).totalRev);
+  verifier('marge reelle = reste + epargne',
+           450, situation({ revenus: 2000, aides: 0, reste_a_vivre: 150, epargne: 300 }).margeReelle);
+
+  /* ══ 5. L'agregation ═════════════════════════════════════════════════ */
+  function bd(sup) {
+    var base = { dettes: [], customCats: [] };
+    for (var k in (sup || {})) base[k] = sup[k];
+    return base;
+  }
+  var saisies = {
+    'f-revenus': '2000', 'f-aides': '150',
+    'f-loyer': '700', 'f-courses': '250', 'f-transport': '80',
+    'f-assurances': '60', 'f-sante': '20', 'f-pro': '0',
+    'f-abonnements': '40', 'f-sorties': '90', 'f-repas': '110',
+    'f-shopping': '50', 'f-autres': '30',
+    'f-epargne': '200'
+  };
+  var r = collecte(saisies, bd());
+  verifier('besoins = loyer+courses+transport+sante+pro+assurances', 1110, r.total_besoins);
+  verifier('envies = abos+sorties+repas+shopping+autres',             320, r.total_envies);
+  verifier('depenses = besoins + envies + epargne',                  1630, r.total_depenses);
+  verifier('reste a vivre = revenus - depenses',                      520, r.reste_a_vivre);
+
+  /* ══ 6. Marge et reste a vivre ne sont pas le meme chiffre ═══════════ */
+  // reste_a_vivre retranche l'epargne : il mesure le non-alloue. La marge
+  // mesure ce sur quoi on peut revenir. Les confondre ferait dire a la
+  // brique « il te reste 5 EUR » a quelqu'un qui en place 1 750.
+  verifier('marge avant epargne = revenus - besoins - envies', 720, r.marge_avant_epargne);
+  verifier('identite : marge - epargne = reste a vivre',
+           r.reste_a_vivre, r.marge_avant_epargne - 200);
+  var rSansEpargne = collecte(Object.assign({}, saisies, { 'f-epargne': '0' }), bd());
+  verifier('sans epargne les deux se confondent',
+           rSansEpargne.reste_a_vivre, rSansEpargne.marge_avant_epargne);
+
+  /* ══ 7. Les mensualites de credit ════════════════════════════════════ */
+  // Elles entrent dans les besoins APRES un premier calcul : le risque est
+  // de les compter deux fois, ou de les perdre en route.
+  var rDettes = collecte(saisies, bd({ dettes: [
+    { montant_mensuel: 255 }, { montant_mensuel: 500 }, { montant_mensuel: 0 }
+  ] }));
+  verifier('total des mensualites',                       755, rDettes.total_dettes_mensuel);
+  verifier('les besoins les integrent',           1110 + 755, rDettes.total_besoins);
+  verifier('les besoins hors dettes restent disponibles', 1110, rDettes.total_besoins_sans_dettes);
+  verifier('elles ne sont comptees qu une fois',
+           rDettes.total_besoins + rDettes.total_envies + 200, rDettes.total_depenses);
+  verifier('le reste a vivre baisse d autant',
+           r.reste_a_vivre - 755, rDettes.reste_a_vivre);
+  verifier('une dette sans montant ne casse rien',
+           755, collecte(saisies, bd({ dettes: [
+             { montant_mensuel: 255 }, { montant_mensuel: 500 }, {}
+           ] })).total_dettes_mensuel);
+
+  /* ══ 8. Les categories libres ════════════════════════════════════════ */
+  var rCustom = collecte(saisies, bd({ customCats: [
+    { type: 'fixe', montant: 45 }, { type: 'courante', montant: 25 },
+    { type: 'fixe', montant: 0 }
+  ] }));
+  verifier('une categorie « fixe » va aux besoins',   1110 + 45, rCustom.total_besoins);
+  verifier('une categorie « courante » va aux envies', 320 + 25, rCustom.total_envies);
+
+  /* ══ 9. Champs vides et absents ══════════════════════════════════════ */
+  // Un champ jamais rempli renvoie '' ; un champ replie n'existe pas dans le
+  // DOM. Les deux doivent valoir zero, jamais NaN — un seul NaN contamine
+  // tous les totaux et l'ecran affiche « NaN EUR ».
+  var rVide = collecte({ 'f-revenus': '1500', 'f-loyer': '' }, bd());
+  verifier('champ vide = 0',                    0, rVide.total_envies);
+  verifier('champ absent du DOM = 0',           0, rVide.total_besoins);
+  verifier('aucun total n est NaN', true,
+           [rVide.total_besoins, rVide.total_envies, rVide.total_depenses,
+            rVide.reste_a_vivre, rVide.marge_avant_epargne].every(function (v) {
+              return typeof v === 'number' && !isNaN(v); }));
+
+  /* ══ 10. Les parts affichees ═════════════════════════════════════════ */
+  var rPct = collecte({ 'f-revenus': '2000', 'f-loyer': '1000',
+                        'f-sorties': '400', 'f-epargne': '200' }, bd());
+  verifier('part des besoins', 50, rPct.pct_besoins);
+  verifier('part des envies',  20, rPct.pct_envies);
+  verifier('part investie',    10, rPct.pct_investissement);
+  var rZero = collecte({ 'f-revenus': '0', 'f-loyer': '500' }, bd());
+  verifier('revenu nul : parts a 0, pas Infinity', 0, rZero.pct_besoins);
+  verifier('… et rien n est NaN', true, !isNaN(rZero.pct_envies) && !isNaN(rZero.pct_investissement));
+
+  /* ══ 11. Les deux fonctions se parlent ═══════════════════════════════ */
+  // getBudgetSituation lit ce que collectBudgetData ecrit : le contrat entre
+  // les deux est le seul endroit ou une renommee de champ passerait inapercue.
+  var rChaine = collecte(saisies, bd({ dettes: [{ montant_mensuel: 800 }] }));
+  var sChaine = situation(rChaine);
+  verifier('la chaine complete produit un diagnostic connu', true,
+           ['deficit','deficit_couvert','tendu','equilibre','aise','confortable']
+             .indexOf(sChaine.situation) !== -1);
+  verifier('le diagnostic reprend le reste calcule',
+           rChaine.reste_a_vivre, sChaine.reste);
+
+  /* ══ Rendu ═══════════════════════════════════════════════════════════ */
+  var t = document.getElementById('t'), ko = 0;
+  resultats.forEach(function (x) {
+    if (!x.ok) ko++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td>' + x.nom + '</td><td class="n">' + x.attendu + '</td><td class="n">' + x.obtenu
+      + '</td><td class="' + (x.ok ? 'ok' : 'ko') + '">' + (x.ok ? '✓' : '✗') + '</td></tr>');
+  });
+  document.getElementById('bilan').innerHTML = ko === 0
+    ? '<span class="ok">✅ ' + resultats.length + ' assertions, aucune en échec</span>'
+    : '<span class="ko">❌ ' + ko + ' échec(s) sur ' + resultats.length + '</span>';
+  window.__total = resultats.length;
+  window.__echecs = ko;
+  window.__TESTS__ = { passed: resultats.length - ko, failed: ko };
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>

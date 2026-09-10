@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>paiements-fractionnes — tests de l'échéancier</title>
+<style>
+  body{font:13px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:24px;
+       background:#0B0B1A;color:#E7E5E4;max-width:1040px}
+  h1{font-size:15px;color:#C4B5FD;margin:0 0 4px}
+  p.intro{color:#A1A1AA;margin:0 0 18px;max-width:74ch}
+  #bilan{font-size:15px;font-weight:700;margin:14px 0 18px}
+  .ok{color:#4ADE80}.ko{color:#F87171}.attente{color:#FBBF24}
+  table{border-collapse:collapse;width:100%}
+  th{color:#A1A1AA;text-align:left;border-bottom:1px solid #333;padding:4px 10px 4px 0;font-weight:400}
+  td{padding:3px 10px 3px 0;vertical-align:top;border-bottom:1px solid #1c1c2e}
+  td.n{text-align:right;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<h1>brique-paiements-fractionnes.html — l'échéancier et la séparation léger / lourd</h1>
+<p class="intro">
+  La brique parle de paiements en plusieurs fois, mais la personne y déclare
+  aussi ses crédits classiques. Toute la justesse tient à une séparation :
+  un crédit auto sur 26 mois ne doit ni écraser le total mis en vedette, ni
+  repousser de deux ans la date de libération annoncée. Vient ensuite
+  l'échéancier — la charge mois par mois, puis la projection « et si tu
+  continues à ce rythme » — dont dépend le graphique de l'écran 4. Une
+  erreur d'un mois sur la fenêtre d'un paiement y est indétectable à l'œil,
+  et pourtant elle décale toute la courbe.
+</p>
+<div id="bilan">exécution…</div>
+<table id="t"><tr><th>cas</th><th>attendu</th><th>obtenu</th><th></th></tr></table>
+
+<script>
+var resultats = [];
+function verifier(nom, attendu, obtenu, tol) {
+  var t = tol === undefined ? 0 : tol;
+  var ok = (typeof attendu === 'number' && typeof obtenu === 'number')
+    ? Math.abs(attendu - obtenu) <= t
+    : String(attendu) === String(obtenu);
+  resultats.push({ nom: nom, attendu: attendu, obtenu: obtenu, ok: ok });
+}
+
+/* Découpe une fonction du source en comptant ses accolades. */
+function corps(src, nom) {
+  var m = src.match(new RegExp("function\\s+" + nom + "\\s*\\([^)]*\\)\\s*\\{"));
+  if (!m) return null;
+  var i = m.index + m[0].length, p = 1;
+  while (i < src.length && p) { if (src[i] === "{") p++; else if (src[i] === "}") p--; i++; }
+  return src.slice(m.index, i);
+}
+/* La liste des types « légers » est une donnée du moteur, pas du test :
+   on la reprend du source pour que ce fichier échoue si elle change. */
+function constante(src, nom) {
+  var m = src.match(new RegExp("const\\s+" + nom + "\\s*=\\s*\\[[^\\]]*\\]\\s*;"));
+  return m ? m[0] : null;
+}
+
+var NOMS = ['getValidPayments', 'getTotalMonthly', 'paiementsLegers', 'paiementsLourds',
+            'totalLegers', 'dateLiberationLegers', 'coutSolde', 'encoursDe',
+            'chargeAuMois', 'serieCharge', 'tauxEffort'];
+
+(async function () {
+  var src = await (await fetch('brique-paiements-fractionnes.html?test=' + Date.now())).text();
+  var morceaux = [], manquant = null;
+  NOMS.forEach(function (n) {
+    var c = corps(src, n);
+    if (!c) { manquant = manquant || n; } else { morceaux.push(c); }
+  });
+  var types = constante(src, 'TYPES_LEGERS');
+  if (!types) manquant = manquant || 'TYPES_LEGERS';
+  if (manquant) {
+    document.getElementById('bilan').innerHTML =
+      '<span class="ko">Extraction impossible : ' + manquant + ' est introuvable.</span>';
+    window.__fini = true;
+    return;
+  }
+
+  var M = {};
+  try {
+    // payments est la liste vivante de la brique : on la pilote depuis le test.
+    // revenuMensuel lit le stockage de la plateforme — hors sujet ici, on la
+    // remplace par un chiffre qu'on choisit.
+    new Function('sortie',
+      'var payments = [];\n'
+      + 'var revenu = 0;\n'
+      + 'function revenuMensuel() { return revenu; }\n'
+      + types + '\n'
+      + morceaux.join('\n') + '\n'
+      + 'sortie.poser = function (liste, rev) { payments = liste; revenu = rev || 0; };\n'
+      + NOMS.map(function (n) { return 'sortie.' + n + ' = ' + n + ';'; }).join('\n'))(M);
+  } catch (e) {
+    var csp = /unsafe-eval|Content Security Policy/i.test(e.message);
+    document.getElementById('bilan').innerHTML = csp
+      ? '<span class="attente">⚠ Suite non exécutée ici.</span><br>'
+        + '<span style="color:#A1A1AA;font-weight:400">Elle extrait les fonctions du moteur et les évalue, '
+        + 'ce qui demande <code>unsafe-eval</code> — interdit par la CSP de production, à juste titre. '
+        + 'Lance-la depuis un serveur local : <code>tests.html</code> sur localhost.</span>'
+      : '<span class="ko">' + e.message + '</span>';
+    window.__nonExecutable = csp;
+    window.__fini = true;
+    return;
+  }
+
+  function p(montant, mois, type) {
+    return { amount: String(montant), months: String(mois), type: type || 'fractione' };
+  }
+
+  /* ══ 1. Ce qui compte comme une ligne valide ═════════════════════════ */
+  // Une carte a peine commencee vit dans la liste avec des champs vides.
+  // Si elle passait le filtre, tous les totaux deviendraient NaN.
+  M.poser([
+    p(50, 3),                                   // valide
+    { amount: '', months: '3', type: 'fractione' },
+    { amount: '0', months: '3', type: 'fractione' },
+    { amount: '40', months: '', type: 'fractione' },
+    { amount: '40', months: '0', type: 'fractione' },
+    { type: 'fractione' }
+  ], 0);
+  verifier('seules les lignes chiffrees comptent', 1, M.getValidPayments().length);
+  verifier('le total ignore les lignes vides',    50, M.getTotalMonthly());
+  verifier('aucun total n est NaN', true, !isNaN(M.getTotalMonthly()));
+
+  /* ══ 2. Leger contre lourd ═══════════════════════════════════════════ */
+  // C'est la separation qui donne son sujet a la brique. Un credit auto est
+  // un engagement, pas un reflexe d'achat : il se compte, il ne fait pas la une.
+  M.poser([
+    p(30, 3, 'fractione'), p(25, 4, 'carte'), p(50, 6, 'mini'),
+    p(240, 26, 'conso'),   p(120, 12, 'autre')
+  ], 0);
+  verifier('trois types sont « legers »',   3, M.paiementsLegers().length);
+  verifier('le reste est « lourd »',        2, M.paiementsLourds().length);
+  verifier('la partition est complete',
+           M.getValidPayments().length, M.paiementsLegers().length + M.paiementsLourds().length);
+  verifier('aucune ligne n est dans les deux', true,
+           M.paiementsLegers().every(function (x) { return M.paiementsLourds().indexOf(x) === -1; }));
+  verifier('total des legers',            105, M.totalLegers());
+  verifier('legers + lourds = total',
+           M.getTotalMonthly(), M.totalLegers() + (M.getTotalMonthly() - M.totalLegers()));
+
+  /* ══ 3. La date de liberation ════════════════════════════════════════ */
+  // Elle ne porte que sur les fractionnes. Sinon le credit auto sur 26 mois
+  // la repousse de deux ans et la promesse de la brique devient absurde.
+  verifier('la date suit le plus long des LEGERS, pas le credit auto',
+           6, M.dateLiberationLegers().mois);
+  verifier('elle porte un libelle lisible', true,
+           typeof M.dateLiberationLegers().texte === 'string'
+           && M.dateLiberationLegers().texte.length > 3);
+  M.poser([p(240, 26, 'conso')], 0);
+  verifier('aucun fractionne : pas de date du tout', null, M.dateLiberationLegers());
+  M.poser([], 0);
+  verifier('liste vide : pas de date',                null, M.dateLiberationLegers());
+
+  /* ══ 4. Ce que coute un solde ════════════════════════════════════════ */
+  // La brique recommandait de solder sans jamais dire le prix.
+  verifier('cout du solde = mensualite x mois', 150, M.coutSolde(p(50, 3)));
+  M.poser([p(30, 3), p(20, 6)], 0);
+  verifier('encours = somme des soldes',        210, M.encoursDe(M.getValidPayments()));
+  verifier('encours d une liste vide',            0, M.encoursDe([]));
+
+  /* ══ 5. La charge mois par mois ══════════════════════════════════════ */
+  // Un paiement de n mois pese sur les mois 0 a n-1. Un decalage d'un cran
+  // ferait payer un mois de trop, ou disparaitre le dernier.
+  var liste = M.getValidPayments();
+  verifier('mois 0 : tout pese',        50, M.chargeAuMois(liste, 0));
+  verifier('mois 2 : les deux encore',  50, M.chargeAuMois(liste, 2));
+  verifier('mois 3 : le premier est fini', 20, M.chargeAuMois(liste, 3));
+  verifier('mois 5 : dernier du second',   20, M.chargeAuMois(liste, 5));
+  verifier('mois 6 : plus rien',            0, M.chargeAuMois(liste, 6));
+  // La charge ne peut que decroitre : rien de nouveau n'entre dans ce calcul.
+  var decroissante = true;
+  for (var m = 1; m <= 12; m++) {
+    if (M.chargeAuMois(liste, m) > M.chargeAuMois(liste, m - 1)) decroissante = false;
+  }
+  verifier('la charge ne remonte jamais', true, decroissante);
+
+  /* ══ 6. La projection « si tu continues » ════════════════════════════ */
+  M.poser([p(50, 4)], 0);
+  var l1 = M.getValidPayments();
+  var sansRythme = M.serieCharge(l1, 0, 6);
+  verifier('la serie couvre horizon + 1 mois', 7, sansRythme.length);
+  verifier('sans rythme : la charge brute',
+           '50,50,50,50,0,0,0', sansRythme.join(','));
+  // Un paiement de plus tous les 3 mois, au montant et a la duree moyens
+  // deja declares — pas un chiffre invente.
+  verifier('rythme de 3 mois : la courbe remonte',
+           '50,50,50,100,50,50,100', M.serieCharge(l1, 3, 6).join(','));
+  var avec = M.serieCharge(l1, 3, 6);
+  verifier('la projection ne descend jamais sous la charge reelle', true,
+           avec.every(function (v, i) { return v >= sansRythme[i] - 1e-9; }));
+  verifier('liste vide : rien a projeter, meme avec un rythme',
+           '0,0,0,0', M.serieCharge([], 2, 3).join(','));
+  // Une duree moyenne inferieure a deux mois donnerait des pics d'un seul
+  // mois : le plancher evite une courbe en dents de scie qui ne veut rien dire.
+  M.poser([p(60, 1)], 0);
+  var court = M.serieCharge(M.getValidPayments(), 4, 6);
+  verifier('un paiement d un mois : le renouvellement dure au moins 2 mois',
+           true, court[4] > 0 && court[5] > 0);
+
+  /* ══ 7. Le taux d effort ═════════════════════════════════════════════ */
+  // Rendu null quand le revenu est inconnu : mieux vaut ne rien dire
+  // qu'afficher un pourcentage invente.
+  M.poser([p(50, 3)], 2000);
+  verifier('taux d effort arrondi',            5, M.tauxEffort(100));
+  verifier('arrondi au plus proche',           6, M.tauxEffort(110));
+  M.poser([p(50, 3)], 0);
+  verifier('revenu inconnu : aucun taux',   null, M.tauxEffort(100));
+
+  /* ══ Rendu ═══════════════════════════════════════════════════════════ */
+  var t = document.getElementById('t'), ko = 0;
+  resultats.forEach(function (x) {
+    if (!x.ok) ko++;
+    t.insertAdjacentHTML('beforeend',
+      '<tr><td>' + x.nom + '</td><td class="n">' + x.attendu + '</td><td class="n">' + x.obtenu
+      + '</td><td class="' + (x.ok ? 'ok' : 'ko') + '">' + (x.ok ? '✓' : '✗') + '</td></tr>');
+  });
+  document.getElementById('bilan').innerHTML = ko === 0
+    ? '<span class="ok">✅ ' + resultats.length + ' assertions, aucune en échec</span>'
+    : '<span class="ko">❌ ' + ko + ' échec(s) sur ' + resultats.length + '</span>';
+  window.__total = resultats.length;
+  window.__echecs = ko;
+  window.__TESTS__ = { passed: resultats.length - ko, failed: ko };
+  window.__fini = true;
+})();
+</script>
+</body>
+</html>
