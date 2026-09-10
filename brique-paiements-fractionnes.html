@@ -232,10 +232,13 @@ html.dark .brique-progress-card {
     .field-label{font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.4rem;}
     .field-help{font-size:0.75rem;color:var(--text-faint);margin-top:0.3rem;}
     .field-error{font-size:0.75rem;color:var(--orange);margin-top:0.3rem;display:none;}
-    .field-input{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
-    .field-input:focus{border-color:var(--violet);outline:none;}
+    /* §1.8 — un champ de saisie est une ligne ou l'on ecrit, pas une boite.
+       C'est deja ce que fait .inline-input plus bas : on generalise. */
+    .field-input{width:100%;padding:0.6rem 0.15rem 0.5rem;background:none;border:none;border-bottom:2px solid var(--border);border-radius:0;color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
+    .field-input:hover{border-bottom-color:var(--border-hover);}
+    .field-input:focus{border-bottom-color:var(--violet);border-bottom-width:3px;padding-bottom:calc(0.5rem - 1px);outline:none;}
     .field-input::placeholder{color:var(--text-faint);}
-    .field-input.error{border-color:var(--orange);}
+    .field-input.error{border-bottom-color:var(--orange);}
     select.field-input{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b90b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.75rem center;padding-right:2.5rem;}
 
     /* ── Amount input with euro sign ── */
@@ -293,9 +296,18 @@ html.dark .brique-progress-card {
 
     /* ── Engagement options (screen 5) ── */
     .engagement-options{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem;}
-    .engagement-option{display:flex;align-items:flex-start;gap:0.875rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.125rem;cursor:pointer;transition:border-color var(--t),background var(--t);}
-    .engagement-option:hover{border-color:var(--border-hover);background:var(--surface-3);}
-    .engagement-option.selected{border-color:var(--indigo);background:var(--indigo-dim);}
+    /* §1.6 — la pastille radio dit deja « celle-ci » : la bordure et
+       l'aplat le repetaient. Un seul geste, le lavis, et le coin qui
+       s'ouvre sur l'option retenue. */
+    .engagement-option{display:flex;align-items:flex-start;gap:0.875rem;border:none;border-radius:var(--r-lg);padding:1.125rem;cursor:pointer;transition:background var(--t),border-radius var(--t);
+      background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.10) 0%, transparent 68%),
+                 linear-gradient(rgba(120,113,108,0.05), rgba(120,113,108,0.05));}
+    .engagement-option:hover{background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.16) 0%, transparent 68%),
+                 linear-gradient(rgba(120,113,108,0.07), rgba(120,113,108,0.07));}
+    .engagement-option.selected{border-radius:var(--r-lg) var(--r-lg) 2rem var(--r-lg);
+      background:radial-gradient(120% 155% at 6% 0%, var(--indigo-dim) 0%, transparent 70%),
+                 radial-gradient(90% 130% at 96% 96%, var(--indigo-dim) 0%, transparent 60%),
+                 linear-gradient(var(--indigo-dim), var(--indigo-dim));}
     .engagement-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border-hover);background:var(--surface);flex-shrink:0;margin-top:0.15rem;transition:border-color var(--t),background var(--t);}
     .engagement-option.selected .engagement-radio{border-color:var(--indigo);background:var(--indigo);}
     .engagement-label{font-size:0.875rem;color:var(--text);line-height:1.4;flex:1;}
@@ -306,7 +318,9 @@ html.dark .brique-progress-card {
     .confirm-msg{display:none;text-align:center;padding:1.5rem;background:var(--green-dim);border:1px solid var(--green-border);border-radius:var(--r-lg);margin-top:1rem;font-size:0.9rem;color:var(--green-text);font-weight:600;animation:fadeSlideUp 0.35s var(--ease-out) both;}
 
     /* ── Exit screen ── */
-    .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
+    /* §1.2 — la carte de fin groupe le geste final : zone, coin ouvert. */
+    .exit-card{border-radius:var(--r-xl) var(--r-xl) 2.6rem var(--r-xl);padding:2rem;text-align:center;
+      background:radial-gradient(120% 150% at 6% 0%, color-mix(in srgb, var(--green) 12%, transparent) 0%, transparent 70%);}
     /* Le geste de fin, dans l'idiome SVG du reste de la plateforme. */
     .exit-icon{
       width:52px;height:52px;margin:0 auto 1rem;
@@ -315,11 +329,11 @@ html.dark .brique-progress-card {
       border:1px solid var(--green-border);color:var(--green-text);
     }
     .exit-title{font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:0.5rem;}
-    .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
+    .exit-subtitle{font-size:0.875rem;color:var(--text-secondary);margin-bottom:1.5rem;}
     .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
     .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
     .exit-item-icon{flex-shrink:0;margin-top:0.15rem;color:var(--violet);}
-    .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
+    .exit-item-text{font-size:0.85rem;color:var(--text-secondary);}
     .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
     .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
     .exit-next-text{flex:1;}
@@ -480,13 +494,15 @@ html.dark .brique-progress-card {
        A. L'encours. Le fractionne ne montre jamais ce nombre : chaque
        achat s'annonce seul, en petites mensualites. On le traite donc
        comme une declaration, pas comme une statistique de plus. */
+    /* §1.2 — le degrade finissait sur un aplat opaque : bord franc, donc
+       cadre obligatoire. Le lavis s'eteint avant le bord, et le coin
+       bas-droit s'ouvre (§1.9). */
     .encours{
       position:relative;overflow:hidden;
       padding:1.75rem 1.5rem;margin-bottom:1.5rem;
-      border:1px solid var(--border);border-radius:var(--r-xl);
-      background:
-        radial-gradient(120% 140% at 88% 8%, var(--indigo-dim) 0%, transparent 62%),
-        var(--surface-2);
+      border-radius:var(--r-xl) var(--r-xl) 2.4rem var(--r-xl);
+      background:radial-gradient(120% 150% at 6% 0%,
+        color-mix(in srgb, var(--indigo) 13%, transparent) 0%, transparent 70%);
     }
     .encours-label{
       font-size:0.72rem;font-weight:600;letter-spacing:0.1em;
@@ -568,10 +584,9 @@ html.dark .brique-progress-card {
        ce que la personne gagne, avant qu'elle ait decide quoi que ce soit. */
     .mois{
       padding:1.5rem;margin-bottom:1rem;
-      border:1px solid var(--border);border-radius:var(--r-xl);
-      background:
-        radial-gradient(130% 150% at 92% 0%, var(--indigo-dim) 0%, transparent 60%),
-        var(--surface-2);
+      border-radius:var(--r-xl) var(--r-xl) 2.2rem var(--r-xl);
+      background:radial-gradient(120% 150% at 6% 0%,
+        color-mix(in srgb, var(--indigo) 11%, transparent) 0%, transparent 68%);
     }
     .mois-tete{
       display:flex;align-items:flex-start;justify-content:space-between;
@@ -630,8 +645,10 @@ html.dark .brique-progress-card {
     /* B. Le calendrier. La piste dit la duree restante : on lit l'ordre
        d'extinction sans comparer des dates entre elles. */
     .fin{
-      padding:1.25rem;border:1px solid var(--border);
-      border-radius:var(--r-xl);background:var(--surface);
+      padding:1.25rem;
+      border-radius:var(--r-xl) var(--r-xl) 2.2rem var(--r-xl);
+      background:radial-gradient(120% 150% at 6% 0%,
+        color-mix(in srgb, var(--text) 6%, transparent) 0%, transparent 68%);
     }
     .fin-titre{
       font-size:0.7rem;font-weight:600;letter-spacing:0.1em;

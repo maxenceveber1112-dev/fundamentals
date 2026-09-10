@@ -232,8 +232,10 @@ html.dark .brique-progress-card {
     .field-group{margin-bottom:1.25rem;}
     .field-label{font-size:0.82rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.4rem;}
     .field-help{font-size:0.75rem;color:var(--text-faint);margin-top:0.3rem;}
-    .field-input{width:100%;padding:0.75rem 1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r-md);color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
-    .field-input:focus{border-color:var(--violet);outline:none;}
+    /* §1.8 — un champ de saisie est une ligne ou l'on ecrit, pas une boite. */
+    .field-input{width:100%;padding:0.6rem 0.15rem 0.5rem;background:none;border:none;border-bottom:2px solid var(--border);border-radius:0;color:var(--text);font-size:0.95rem;font-family:inherit;transition:border-color var(--t);}
+    .field-input:hover{border-bottom-color:var(--border-hover);}
+    .field-input:focus{border-bottom-color:var(--violet);border-bottom-width:3px;padding-bottom:calc(0.5rem - 1px);outline:none;}
     .field-input::placeholder{color:var(--text-faint);}
     .field-error{font-size:0.75rem;color:var(--red);margin-top:0.3rem;display:none;}
     .field-input.error{border-color:var(--red);}
@@ -286,20 +288,26 @@ html.dark .brique-progress-card {
     .cal-tooltip.visible{opacity:1;}
 
     /* COST BLOCKS */
-    .cost-block{padding:1.25rem 1.5rem;border-radius:var(--r-lg);margin-bottom:0.75rem;display:flex;justify-content:space-between;align-items:center;}
-    .cost-block.monthly{background:var(--surface-2);border:1px solid var(--border);}
-    .cost-block.annual{background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.3);}
+    /* §1.8 — un libelle et un montant sur une ligne : un filet, pas une
+       boite. Le cout annuel garde sa teinte, c'est lui qui doit frapper. */
+    .cost-block{padding:0.9rem 0.15rem 0.75rem;border-radius:0;margin-bottom:0.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--border);}
+    .cost-block.monthly{background:none;}
+    .cost-block.annual{background:none;border-bottom-color:var(--indigo);}
     .cost-label{font-size:0.85rem;color:var(--text-muted);}
     .cost-value{font-size:1.1rem;font-weight:800;color:#fff;}
     .cost-block.annual .cost-value{font-size:1.4rem;color:#a5b4fc;}
-    .mental-box{padding:1rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--violet);border-radius:var(--r-md);font-size:0.875rem;color:var(--text-muted);font-style:italic;margin-top:0.75rem;}
+    /* Il portait DEJA un filet a gauche : la boite autour ne faisait que
+       repeter ce que le trait disait. */
+    .mental-box{padding:0.75rem 0 0.75rem 1.1rem;background:none;border:none;border-left:3px solid var(--violet);border-radius:0;font-size:0.875rem;color:var(--text-secondary);font-style:italic;margin-top:0.75rem;}
 
     /* TRAJECTORY CARDS */
     .traj-cards{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin:1.25rem 0;}
     .traj-card{padding:1.25rem;border:2px solid var(--border);border-radius:var(--r-lg);cursor:pointer;transition:all var(--t);position:relative;}
     .traj-card:hover{border-color:var(--border-hover);background:var(--surface-2);}
     .traj-card.selected{border-color:rgba(99,102,241,0.5);background:var(--indigo-dim);}
-    .traj-card-title{font-size:0.95rem;font-weight:700;color:#fff;margin-bottom:0.35rem;}
+    /* Blanc pur sur fond clair : 1,00. Herite du temps ou la plateforme
+       etait sombre, et invisible depuis. */
+    .traj-card-title{font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:0.35rem;}
     .traj-card-desc{font-size:0.78rem;color:var(--text-muted);line-height:1.45;}
     .traj-timeline{font-size:0.8rem;font-weight:700;color:var(--violet);margin-top:0.625rem;display:none;}
     .traj-card.selected .traj-timeline{display:block;}
@@ -309,31 +317,44 @@ html.dark .brique-progress-card {
 
     /* CHECKLIST */
     .checklist{display:flex;flex-direction:column;gap:0.625rem;margin:1rem 0;}
-    .check-item{display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:border-color var(--t),background var(--t);}
-    .check-item:hover{border-color:var(--border-hover);}
-    .check-item.checked{background:var(--green-dim);border-color:var(--green-border);}
+    /* §1.6 — la case cochee dit deja « fait » : la bordure verte et l'aplat
+       le repetaient. Un seul geste, le lavis. */
+    .check-item{display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;border:none;border-radius:var(--r-md);cursor:pointer;transition:background var(--t),border-radius var(--t);
+      background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.10) 0%, transparent 68%),
+                 linear-gradient(rgba(120,113,108,0.05), rgba(120,113,108,0.05));}
+    .check-item:hover{background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.16) 0%, transparent 68%),
+                 linear-gradient(rgba(120,113,108,0.07), rgba(120,113,108,0.07));}
+    .check-item.checked{border-radius:var(--r-md) var(--r-md) 1.6rem var(--r-md);
+      background:radial-gradient(120% 155% at 6% 0%, var(--green-dim) 0%, transparent 70%),
+                 radial-gradient(90% 130% at 96% 96%, var(--green-dim) 0%, transparent 60%),
+                 linear-gradient(var(--green-dim), var(--green-dim));}
     .check-box{width:20px;height:20px;border-radius:5px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all var(--t);}
     .check-item.checked .check-box{background:var(--green);border-color:var(--green);}
     .check-text{font-size:0.875rem;color:var(--text-muted);line-height:1.4;}
     .check-item.checked .check-text{color:var(--text);}
 
     /* ENGAGEMENT FIELD */
-    .engagement-wrap{margin-top:1.5rem;padding:1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);}
+    .engagement-wrap{margin-top:1.5rem;padding:1.25rem;border-radius:var(--r-lg) var(--r-lg) 2.2rem var(--r-lg);
+      background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,0.09) 0%, transparent 68%);}
     .engagement-label{font-size:0.82rem;color:var(--text-muted);margin-bottom:0.5rem;}
     .engagement-inline{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;}
     .engagement-text{font-size:0.95rem;color:var(--text);}
-    .engagement-input{width:60px;padding:0.35rem 0.5rem;background:var(--surface-3);border:1.5px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:1rem;font-weight:700;text-align:center;font-family:inherit;}
-    .engagement-input:focus{border-color:var(--violet);outline:none;}
+    .engagement-input{width:60px;padding:0.3rem 0.15rem 0.25rem;background:none;border:none;border-bottom:2px solid var(--border);border-radius:0;color:var(--text);font-size:1rem;font-weight:700;text-align:center;font-family:inherit;transition:border-color var(--t);}
+    .engagement-input:focus{border-bottom-color:var(--violet);border-bottom-width:3px;padding-bottom:calc(0.25rem - 1px);outline:none;}
 
     /* EXIT SCREEN */
-    .exit-card{background:var(--surface);border:1.5px solid var(--green-border);border-radius:var(--r-xl);padding:2rem;text-align:center;}
+    .exit-card{border-radius:var(--r-xl) var(--r-xl) 2.6rem var(--r-xl);padding:2rem;text-align:center;
+      background:radial-gradient(120% 150% at 6% 0%, color-mix(in srgb, var(--green) 12%, transparent) 0%, transparent 70%);}
     .exit-icon{font-size:2.5rem;margin-bottom:1rem;}
-    .exit-title{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
-    .exit-subtitle{font-size:0.875rem;color:var(--text-muted);margin-bottom:1.5rem;}
+    /* Blanc pur, herite du temps ou la plateforme etait sombre : invisible
+       en theme clair. */
+    .exit-title{font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:0.5rem;}
+    .exit-subtitle{font-size:0.875rem;color:var(--text-secondary);margin-bottom:1.5rem;}
     .exit-summary{display:flex;flex-direction:column;gap:0.625rem;margin-bottom:1.5rem;text-align:left;}
-    .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.75rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);}
+    /* Une boite dans une boite : ces lignes vivent deja dans .exit-card. */
+    .exit-item{display:flex;align-items:flex-start;gap:0.625rem;padding:0.7rem 0.15rem 0.6rem;background:none;border:none;border-bottom:1px solid var(--border);border-radius:0;}
     .exit-item-icon{flex-shrink:0;margin-top:0.1em;}
-    .exit-item-text{font-size:0.85rem;color:var(--text-muted);}
+    .exit-item-text{font-size:0.85rem;color:var(--text-secondary);}
     .exit-next{margin-top:0.75rem;padding:0.875rem 1.25rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-md);display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);width:100%;text-align:left;}
     .exit-next:hover{border-color:var(--border-hover);background:var(--surface-3);}
     .exit-next-text{flex:1;}
@@ -952,7 +973,9 @@ html.dark .brique-progress-card {
     document.getElementById('cost-monthly').textContent = fmt(monthly);
     document.getElementById('cost-annual').textContent = fmt(annual);
 
-    // Compute alert level (20% above current overdraft as fragile threshold)
+    // Le seuil d'alerte propose : un quart du decouvert, arrondi a la
+    // dizaine. Le commentaire disait 20 %, le code en applique 25 : un
+    // commentaire qui ment est pire qu'aucun commentaire.
     state.alerteAmount = Math.round(montant * 0.25 / 10) * 10;
   }
 
