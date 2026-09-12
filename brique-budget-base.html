@@ -1234,8 +1234,49 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
   .detail-poste-chevron { color:var(--text-muted); flex-shrink:0; transition:transform var(--t); }
   .detail-poste-toggle[aria-expanded="true"] .detail-poste-chevron { transform:rotate(180deg); }
   /* ── Sections de formulaire (refonte écran 1) ── */
-  .form-section { display:flex; flex-direction:column; gap:0.85rem; }
-  .form-section + .form-section { margin-top:2.25rem; }
+  /* Un chapitre tient a un FIL : un trait vertical qui part de sa pastille,
+     descend le long de ses champs et s'eteint avant la fin — comme les lavis
+     de la plateforme s'eteignent avant le bord. Quatre fils, quatre
+     chapitres, sans une seule boite. Le titre reste a la marge, les champs
+     s'indentent dessous : c'est ce decrochement qui fait la frontiere. */
+  .form-section {
+    position:relative;
+    display:flex; flex-direction:column; gap:0.85rem;
+    padding-left:1.5rem;
+  }
+  .form-section + .form-section { margin-top:2.6rem; }
+  .form-section > .form-section-head { margin-left:-1.5rem; position:relative; z-index:2; }
+  .form-section::before {
+    content:''; position:absolute; z-index:1; pointer-events:none;
+    left:2px; top:0.95rem; bottom:0.7rem; width:2px; border-radius:2px;
+    background:linear-gradient(to bottom,
+      color-mix(in srgb, var(--fs-teinte) 62%, transparent) 0%,
+      color-mix(in srgb, var(--fs-teinte) 24%, transparent) 38%,
+      transparent 92%);
+  }
+  /* L'ouverture du chapitre : un lavis pose derriere le titre, qui s'eteint
+     vers la droite. Le fil dit « ce chapitre continue », ce lavis dit « il
+     commence ici ». Il est accroche a l'en-tete, pas a une hauteur fixe :
+     sous 520 px le sous-titre passe sur deux lignes. */
+  .form-section-head::before {
+    content:''; position:absolute; z-index:-1; pointer-events:none;
+    left:-0.7rem; right:-0.7rem; top:-0.5rem; bottom:-0.45rem;
+    border-radius:1rem 1rem 1.9rem 1rem;
+    background:radial-gradient(58% 190% at 4% 0%,
+      color-mix(in srgb, var(--fs-teinte) 13%, transparent) 0%, transparent 74%);
+  }
+  .form-section.s-in    { --fs-teinte: var(--green); }
+  .form-section.s-fixe  { --fs-teinte: var(--accent-strong); }
+  .form-section.s-var   { --fs-teinte: #6366F1; }
+  html.dark .form-section.s-var { --fs-teinte: #A78BFA; }
+  /* Sous 520 px l'indentation coute trop cher a la colonne de gauche : le
+     fil reste, plus pres du bord. */
+  @media(max-width:520px) {
+    .form-section { padding-left:0.95rem; }
+    .form-section > .form-section-head { margin-left:-0.95rem; }
+    .form-section::before { left:1px; }
+    .form-section-head::before { left:-0.45rem; right:-0.45rem; }
+  }
   /* §1.7 — ce qui structure se dit par la fonte. La capitale de 0,72 rem
      avait exactement le poids d'un libelle de champ : rien ne separait
      plus une section d'une ligne. La Fraunces italique le fait, et le
@@ -1391,7 +1432,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             <p class="brick-subtitle">Des ordres de grandeur suffisent : un chiffre approximatif vaut mieux que pas de chiffre du tout. Rien n'est figé, tu pourras tout reprendre.</p>
 
             <!-- ═══ SECTION 1 · Ce qui rentre ═══ -->
-            <div class="form-section">
+            <div class="form-section s-in">
               <div class="form-section-head in"><span class="fsh-dot"></span><span class="fsh-nom">Ce qui rentre</span><span class="fsh-total" id="tot-rentre" aria-hidden="true">—</span><span class="fsh-hint">salaire, aides, coups de main</span></div>
 
               <div class="field-group">
@@ -1419,7 +1460,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             </div>
 
             <!-- ═══ SECTION 2 · Charges fixes ═══ -->
-            <div class="form-section">
+            <div class="form-section s-fixe">
               <div class="form-section-head fixed"><span class="fsh-dot"></span><span class="fsh-nom">Ce qui part tout seul</span><span class="fsh-total" id="tot-fixe" aria-hidden="true">—</span><span class="fsh-hint">même montant, tous les mois, sans que tu y penses</span></div>
 
               <div class="field-group" id="loyer-group">
@@ -1452,7 +1493,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             </div>
 
             <!-- ═══ SECTION 3 · Vie courante ═══ -->
-            <div class="form-section">
+            <div class="form-section s-var">
               <div class="form-section-head var"><span class="fsh-dot"></span><span class="fsh-nom">Ce que tu décides chaque mois</span><span class="fsh-total" id="tot-courant" aria-hidden="true">—</span><span class="fsh-hint">variable, donc ajustable — c'est là qu'on a de la marge</span></div>
 
               <div class="field-group">
@@ -1512,7 +1553,7 @@ html.dark .modal-fin-next-cta{background:#7C3AED;}
             </div>
 
             <!-- ═══ SECTION 4 · Épargne ═══ -->
-            <div class="form-section">
+            <div class="form-section s-in">
               <div class="form-section-head in"><span class="fsh-dot"></span><span class="fsh-nom">Ce que tu mets de côté</span><span class="fsh-total" id="tot-epargne" aria-hidden="true">—</span><span class="fsh-hint">le seul poste qui travaille pour toi</span></div>
               <div class="field-group">
                 <label class="field-label" for="f-epargne">Épargne mensuelle<span class="u-sr"> en euros</span></label>
@@ -2025,6 +2066,11 @@ async function reprendreProgression() {
   if (Array.isArray(d.customCats) && d.customCats.length) budgetData.customCats = d.customCats;
 
   collectBudgetData();
+  /* collectBudgetData met a jour les DONNEES, pas l'ecran. La reprise peut
+     arriver apres qu'on a commence a saisir : sans ce rafraichissement, les
+     champs affichent les valeurs restaurees et les totaux ceux d'avant. Le
+     goToScreen ci-dessous ne le fait que si un ecran etait memorise. */
+  if (typeof updateStickyBar === 'function') updateStickyBar();
 
   // Les ecrans 3 et 4 sont des resultats, recalcules des qu'on avance : on
   // remet la personne la ou elle saisissait encore, pas sur une conclusion.
@@ -2072,6 +2118,10 @@ function prefillFromProfil() {
     budgetData.prefilled_fields.push('loyer');
     budgetData.loyer = profil.loyer;
   }
+  /* Ecrire une valeur dans un champ ne declenche pas d'evenement `input` :
+     sans cet appel, les totaux affiches ignorent ce qu'on vient de
+     pre-remplir jusqu'a ce que la personne touche autre chose. */
+  if (typeof updateStickyBar === 'function') updateStickyBar();
 }
 
 function showLoyerField() {
