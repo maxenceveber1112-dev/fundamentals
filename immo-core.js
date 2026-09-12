@@ -16,7 +16,7 @@ var NOTARY_RATE_LOW = 0.10;
    2025. Une seule constante a bouger si le bareme change encore. */
 var NOTARY_RATE_ANCIEN = 0.075;
 var NOTARY_RATE_NEUF = 0.025;
-var PRICE_THRESHOLD_LOW = 75000;
+var PRICE_THRESHOLD_LOW = 85000;
 
 /* ─── ASSURANCE AUTO PAR AGE ─────────────────────────────── */
 var ASSURANCE_RATES = {
@@ -141,7 +141,9 @@ function estimateAcquisitionFees(price, propertyType) {
   /* Le neuf est en TVA : ses frais restent reduits quel que soit le prix.
      Le seuil bas, lui, corrige le poids des frais fixes sur un petit prix —
      ce qui ne concerne que l'ancien. Teste avant le type, il facturait 10 %
-     a un neuf a 60 000 EUR au lieu de 2,5 %. */
+     a un neuf a 60 000 EUR au lieu de 2,5 %.
+     Bareme retenu : 7,5 % dans l'ancien, 10 % en dessous de 85 000 EUR,
+     2,5 % dans le neuf. */
   if (propertyType === 'neuf' || propertyType === 'vefa') return Math.round(price * NOTARY_RATE_NEUF);
   if (price < PRICE_THRESHOLD_LOW) return Math.round(price * NOTARY_RATE_LOW);
   return Math.round(price * NOTARY_RATE_ANCIEN);

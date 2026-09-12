@@ -20,7 +20,7 @@
   <div id="summary">Chargement…</div>
   <div id="out"></div>
 
-  <script src="immo-core.js?v=core3"></script>
+  <script src="immo-core.js?v=core4"></script>
   <script>
   (function(){
     var out = document.getElementById('out');
@@ -89,6 +89,12 @@
     // estimateAcquisitionFees — le type de bien prime sur le seuil bas
     check('frais neuf 60 000 = 2,5 % (pas 10 %)', estimateAcquisitionFees(60000,'neuf') === Math.round(60000*NOTARY_RATE_NEUF), estimateAcquisitionFees(60000,'neuf'));
     check('frais ancien 60 000 = 10 % (seuil bas)', estimateAcquisitionFees(60000,'ancien') === Math.round(60000*NOTARY_RATE_LOW), estimateAcquisitionFees(60000,'ancien'));
+    // Le seuil est a 85 000 EUR : on le borne des deux cotes, sinon un
+    // deplacement du seuil passerait inapercu.
+    check('frais ancien 84 999 = encore 10 %', estimateAcquisitionFees(84999,'ancien') === Math.round(84999*NOTARY_RATE_LOW), estimateAcquisitionFees(84999,'ancien'));
+    check('frais ancien 85 000 pile = 7,5 %', estimateAcquisitionFees(85000,'ancien') === Math.round(85000*NOTARY_RATE_ANCIEN), estimateAcquisitionFees(85000,'ancien'));
+    check('le seuil vaut bien 85 000', PRICE_THRESHOLD_LOW === 85000, PRICE_THRESHOLD_LOW);
+    check('le taux ancien vaut bien 7,5 %', NOTARY_RATE_ANCIEN === 0.075, NOTARY_RATE_ANCIEN);
     check('frais ancien 200 000 = 7,5 %', estimateAcquisitionFees(200000,'ancien') === Math.round(200000*NOTARY_RATE_ANCIEN), estimateAcquisitionFees(200000,'ancien'));
     check('frais neuf 200 000 = 2,5 %', estimateAcquisitionFees(200000,'neuf') === Math.round(200000*NOTARY_RATE_NEUF), estimateAcquisitionFees(200000,'neuf'));
     check('frais prix nul = 0', estimateAcquisitionFees(0,'ancien') === 0);
