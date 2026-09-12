@@ -289,8 +289,11 @@ html.dark .brique-progress-card {
 
     /* ── Strategy cards (screen 3) ── */
     .strategy-badge{flex-shrink:0;font-size:0.68rem;font-weight:700;padding:0.25rem 0.625rem;border-radius:var(--r-full);text-transform:uppercase;letter-spacing:0.06em;}
-    .badge-rapide{background:var(--orange-dim);border:1px solid var(--orange-border);color:var(--orange);}
-    .badge-durable{background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.3);color:var(--violet);}
+    /* --orange et --violet sont des APLATS : poses en `color` sur leur
+       propre aplat, ils donnaient 2,32 et 3,88. Les jumeaux -text sont les
+       encres, et ils basculent avec le theme. */
+    .badge-rapide{background:var(--orange-dim);border:1px solid var(--orange-border);color:var(--orange-text);}
+    .badge-durable{background:var(--indigo-dim);border:1px solid rgba(99,102,241,0.3);color:var(--accent-strong);}
 
     /* ── Pedagogy cards (screen 4) ── */
 
@@ -697,12 +700,14 @@ html.dark .brique-progress-card {
       display:flex;align-items:baseline;justify-content:space-between;
       flex-wrap:wrap;gap:0.375rem 1rem;margin-bottom:0.25rem;
     }
+    /* Sur le lavis lavande du panneau, --text-muted tombe a 4,29 : les
+       quatre textes qui s'y posent prennent l'encre du cran au-dessus. */
     .axe-titre{font-size:0.72rem;font-weight:600;letter-spacing:0.09em;
-      text-transform:uppercase;color:var(--text-muted);}
+      text-transform:uppercase;color:var(--text-secondary);}
     /* Le resultat vit ici, a cote du montant actuel : il n'a plus son
        propre bloc sous les options. */
     .axe-chiffres{display:flex;align-items:baseline;gap:0.5rem;}
-    .axe-maintenant{font-size:0.95rem;color:var(--text-muted);font-variant-numeric:tabular-nums;}
+    .axe-maintenant{font-size:0.95rem;color:var(--text-secondary);font-variant-numeric:tabular-nums;}
     .axe-vers{color:var(--violet);font-weight:700;visibility:hidden;}
     .axe-cible{
       font-family:var(--font-display,Georgia,serif);font-style:italic;
@@ -754,16 +759,20 @@ html.dark .brique-progress-card {
     }
     .axe-opt-corps{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:0.15rem;}
     .axe-opt-titre{font-size:0.86rem;font-weight:600;color:var(--text);}
-    .axe-opt-meta{font-size:0.75rem;color:var(--text-muted);}
+    .axe-opt-meta{font-size:0.75rem;color:var(--text-secondary);}
     .axe-opt-sep{margin:0 0.4rem;color:var(--text-faint);}
     .axe-opt-gain{font-weight:700;color:var(--text);}
     .axe-opt-cout{color:var(--text-muted);}
     .axe-choix .strategy-badge{flex-shrink:0;margin-left:auto;}
+    /* --green-text est deja la bonne encre, mais l'aplat a 18 % la ramenait
+       a 4,27. On allege l'aplat — derive du jeton existant — plutot que
+       d'inventer un vert plus sombre qui n'existe pas dans la palette. */
+    .strategy-badge.badge-gratuit{background:color-mix(in srgb, var(--green) 5%, transparent);}
 
     .axe-detail{
       margin-top:0.625rem;padding-top:0.75rem;
       border-top:1px solid var(--border);
-      font-size:0.82rem;line-height:1.6;color:var(--text-muted);
+      font-size:0.82rem;line-height:1.6;color:var(--text-secondary);
     }
     .axe-detail strong{color:var(--text);font-weight:600;}
 
