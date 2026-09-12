@@ -592,15 +592,43 @@
   }
 
   /* ── Double donut (screen 2) ── */
-  .donuts-wrap {
-    display:flex; gap:2rem; justify-content:center; flex-wrap:wrap;
-    padding:1.5rem 0;
+  /* ── Les jauges 50/30/20 ──
+     Une ligne par poste, une seule echelle de 0 a 100 %, et le repere marque
+     d'un trait sur la MEME piste : l'ecart se lit sans calcul et sans
+     aller-retour entre deux anneaux. */
+  .donuts-wrap { display:flex; flex-direction:column; gap:0.85rem; padding:0.75rem 0 0.25rem; }
+  .rep-ligne {
+    display:grid; grid-template-columns:8.5rem 1fr 3.2rem;
+    align-items:center; column-gap:0.9rem;
   }
-  .donut-block { display:flex; flex-direction:column; align-items:center; gap:0.75rem; }
-  .donut-label { font-size:0.75rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em; }
-  .donut-legend { display:flex; flex-direction:column; gap:0.3rem; }
-  .donut-legend-item { display:flex; align-items:center; gap:0.5rem; font-size:0.78rem; color:var(--text-muted); }
-  .donut-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .rep-nom { font-size:0.85rem; color:var(--text-secondary); }
+  .rep-piste { position:relative; height:10px; border-radius:5px; background:var(--track); }
+  /* Bout arrondi cote donnee, carre sur la ligne de depart. Aucune animation
+     d'entree : une animation qui part de zero affiche zero tant qu'elle n'a
+     pas demarre, et elle ne demarre pas dans un onglet masque. */
+  .rep-barre {
+    position:absolute; left:0; top:0; bottom:0;
+    border-radius:0 4px 4px 0; background:var(--accent-strong);
+  }
+  .rep-ligne.reste .rep-barre { background:var(--text-faint); }
+  /* Le repere : un trait sur la piste, pas une seconde barre. */
+  .rep-marque {
+    position:absolute; top:-4px; bottom:-4px; width:2px;
+    background:var(--text-muted); border-radius:1px;
+  }
+  .rep-val {
+    font-size:0.85rem; font-weight:600; text-align:right;
+    color:var(--text); font-variant-numeric:tabular-nums;
+  }
+  .rep-tete { font-size:0.75rem; color:var(--text-faint); line-height:1.45; margin-bottom:0.2rem; }
+  /* Sous 520 px, trois colonnes laisseraient 130 px de piste : sur une
+     echelle de 0 a 100 %, un poste a 7 % ne ferait plus que neuf pixels. */
+  @media(max-width:520px) {
+    .rep-ligne { grid-template-columns:1fr auto; row-gap:0.35rem; column-gap:0.6rem; }
+    .rep-nom { font-size:0.82rem; grid-column:1; grid-row:1; }
+    .rep-val { grid-column:2; grid-row:1; }
+    .rep-piste { grid-column:1 / -1; grid-row:2; }
+  }
 
   /* ── Barres proportionnelles ── */
   .sankey-block { display:flex; flex-direction:column; gap:0.625rem; }
@@ -632,54 +660,20 @@
   /* ── Screen 3 — Dettes (design unifié avec brique dettes) ── */
   /* §1.2 — la ligne groupe les champs d'une dette : zone plutot que carte,
      sinon les filets se lisaient dans une boite dans une boite. */
-  /* §1.2 — la teinte de la zone EST son signal. La ligne portait sa
-     classification en pastille et en mot ; le bloc, lui, ne disait rien et
-     paraissait donc trop leger. Il la porte maintenant, sur quatre degres
-     et sans couleur nouvelle : vert pour ce qui va, orange faible pour ce
-     qui merite un regard, orange franc pour ce qui coute, rouge pour ce
-     qui presse.
-     La transition et le survol visaient un border-color sur un element
-     sans bordure depuis sa conversion en zone : du code qui ne peignait
-     rien. */
+  /* Le texte se lisait sur un aplat de couleur : la teinte couvrait toute la
+     surface du bloc. Un seul lavis neutre, un cran plus dense que l'origine
+     pour que le bloc garde sa presence — la classification se dit par le mot
+     colore, qui est deja precis. La densite est un jeton : c'est le seul
+     chiffre a bouger si le reglage n'est pas le bon. */
   .dette-row {
-    background:
-      radial-gradient(120% 150% at 6% 0%,
-        color-mix(in srgb, var(--text) 8%, transparent) 0%, transparent 72%),
-      linear-gradient(color-mix(in srgb, var(--text) 4%, transparent),
-                      color-mix(in srgb, var(--text) 4%, transparent));
+    --dette-lavis: 0.13;
+    background:radial-gradient(120% 150% at 6% 0%, rgba(120,113,108,var(--dette-lavis)) 0%, transparent 70%);
     border-radius:var(--r-lg) var(--r-lg) 2.2rem var(--r-lg);
     padding:1rem 1.125rem;
     display:flex; flex-direction:column; gap:0.75rem;
-    transition:background 0.3s var(--ease-out);
     animation:fadeSlideUp 0.3s var(--ease-out) both;
   }
-  .dette-row.t-vert   {
-    background:
-      radial-gradient(120% 150% at 6% 0%,
-        color-mix(in srgb, var(--green) 15%, transparent) 0%, transparent 72%),
-      linear-gradient(color-mix(in srgb, var(--green) 6%, transparent),
-                      color-mix(in srgb, var(--green) 6%, transparent)); }
-  /* « A analyser » n'est pas une alerte faible, c'est un indetermine : la
-     zone reste neutre, comme une ligne qu'on vient d'ajouter et dont on
-     n'a pas encore dit le type. Le mot ambre, lui, dit quoi verifier. */
-  .dette-row.t-jaune  {
-    background:
-      radial-gradient(120% 150% at 6% 0%,
-        color-mix(in srgb, var(--text) 8%, transparent) 0%, transparent 72%),
-      linear-gradient(color-mix(in srgb, var(--text) 4%, transparent),
-                      color-mix(in srgb, var(--text) 4%, transparent)); }
-  .dette-row.t-orange {
-    background:
-      radial-gradient(120% 150% at 6% 0%,
-        color-mix(in srgb, var(--orange) 19%, transparent) 0%, transparent 72%),
-      linear-gradient(color-mix(in srgb, var(--orange) 8%, transparent),
-                      color-mix(in srgb, var(--orange) 8%, transparent)); }
-  .dette-row.t-rouge  {
-    background:
-      radial-gradient(120% 150% at 6% 0%,
-        color-mix(in srgb, var(--red) 18%, transparent) 0%, transparent 72%),
-      linear-gradient(color-mix(in srgb, var(--red) 7%, transparent),
-                      color-mix(in srgb, var(--red) 7%, transparent)); }
+
   .dette-row-top { display:flex; gap:0.75rem; align-items:center; }
   .dette-select {
     flex:1;
@@ -700,10 +694,17 @@
     border-bottom-width:3px; padding-bottom:calc(0.45rem - 1px);
   }
 
-  .dette-fields { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.625rem; }
+  .dette-fields { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.625rem 0.9rem; }
+  .dette-champ { display:flex; flex-direction:column; gap:0.1rem; min-width:0; }
+  /* Le nom reste quand le chiffre arrive : en placeholder, « TAEG »
+     disparaissait a la premiere frappe et il ne restait qu'un « % ». */
+  .dette-champ-lbl {
+    font-size:0.68rem; font-weight:600; letter-spacing:0.02em;
+    color:var(--text-secondary);
+  }
   @media(max-width:520px) {
     .dette-fields { grid-template-columns:1fr 1fr; }
-    .dette-fields .dette-input-wrap:last-child { grid-column:1 / -1; }
+    .dette-fields .dette-champ:last-child { grid-column:1 / -1; }
   }
   .dette-input-wrap { position:relative; }
   /* §1.8 — le champ est une ligne ou l'on ecrit. */
@@ -2638,66 +2639,59 @@ function buildScreen3() {
 
 // ── Double donut SVG ──────────────────────────────────────────
 function buildDonuts() {
-  const container = document.getElementById('donuts-wrap');
-  if (!container) return;
-  container.innerHTML = '';
+  const c = document.getElementById('donuts-wrap');
+  if (!c) return;
+  c.innerHTML = '';
 
-  const realData = [
-    { label:'Besoins',       pct: budgetData.pct_besoins,        color:'var(--accent-strong)' },
-    { label:'Envies',        pct: budgetData.pct_envies,         color:'var(--purple)' },
-    { label:'Investissement',pct: budgetData.pct_investissement, color:'var(--green)' },
-    { label:'Non alloué',    pct: Math.max(0, 100 - budgetData.pct_besoins - budgetData.pct_envies - budgetData.pct_investissement), color:'var(--track)' },
-  ].filter(d => d.pct > 0);
+  const rev = (budgetData.revenus || 0) + (budgetData.aides || 0);
+  const euros = p => Math.round(rev * p / 100);
 
-  const refData = [
-    { label:'Besoins',        pct:50, color:'var(--accent-strong)' },
-    { label:'Envies',         pct:30, color:'var(--purple)' },
-    { label:'Investissement', pct:20, color:'var(--green)' },
+  /* Le repere 50/30/20 ne dit rien du non-reparti : cette ligne n'a donc pas
+     de trait. L'ancienne version l'affichait dans un anneau et pas dans
+     l'autre, ce qui rendait la comparaison des deux anneaux invalide. */
+  const nonReparti = Math.max(0, 100
+    - (budgetData.pct_besoins || 0)
+    - (budgetData.pct_envies || 0)
+    - (budgetData.pct_investissement || 0));
+
+  const LIGNES = [
+    { nom:'Besoins',        pct: budgetData.pct_besoins || 0,        cible:50,
+      quoi:'logement, courses, transport, assurances, crédits' },
+    { nom:'Envies',         pct: budgetData.pct_envies || 0,         cible:30,
+      quoi:'sorties, restos, abonnements, shopping' },
+    { nom:'Investissement', pct: budgetData.pct_investissement || 0, cible:20,
+      quoi:'ce que tu mets de côté' },
+    { nom:'Non réparti',    pct: nonReparti,                          cible:null,
+      quoi:'ce qui reste sans affectation', reste:true }
   ];
 
-  [
-    { title:'Ta situation', data: realData },
-    { title:'Repère 50/30/20', data: refData }
-  ].forEach(({ title, data }) => {
-    const block = document.createElement('div');
-    block.className = 'donut-block';
+  const tete = document.createElement('div');
+  tete.className = 'rep-tete';
+  tete.textContent = 'Le trait sur chaque ligne marque le repère 50 / 30 / 20 — '
+    + 'une façon courante de découper un budget, pas une règle.';
+  c.appendChild(tete);
 
-    const r = 54, cx = 64, cy = 64, circ = 2 * Math.PI * r;
-    let cumOffset = 0;
-    const svgPaths = data.map(d => {
-      const dash   = (d.pct / 100) * circ;
-      const gap    = circ - dash;
-      const rotate = (cumOffset / 100) * 360 - 90;
-      cumOffset += d.pct;
-      return `<circle cx="${cx}" cy="${cy}" r="${r}"
-        fill="none" stroke="${d.color}" stroke-width="14"
-        stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}"
-        stroke-linecap="butt"
-        transform="rotate(${rotate.toFixed(1)}, ${cx}, ${cy})"
-        style="transition:stroke-dasharray 0.8s var(--ease-out);" />`;
-    }).join('');
-
-    // Texte centre
-    const mainPct = data[0]?.pct || 0;
-
-    block.innerHTML = `
-      <div class="donut-label">${title}</div>
-      <svg width="128" height="128" viewBox="0 0 128 128">
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--track)" stroke-width="14"/>
-        ${svgPaths}
-        <text x="${cx}" y="${cy - 6}" text-anchor="middle" dominant-baseline="middle"
-          style="font-family:var(--font-display);font-size:18px;font-style:italic;fill:var(--text);">${mainPct}%</text>
-        <text x="${cx}" y="${cy + 12}" text-anchor="middle"
-          style="font-size:9px;fill:var(--text-faint);font-family:'Inter',sans-serif;letter-spacing:0.05em;text-transform:uppercase;">${data[0]?.label || ''}</text>
-      </svg>
-      <div class="donut-legend">
-        ${data.map(d => `<div class="donut-legend-item">
-          <div class="donut-legend-dot" style="background:${d.color};"></div>
-          <span>${d.label} <strong style="color:var(--text);">${d.pct}%</strong></span>
-        </div>`).join('')}
-      </div>
-    `;
-    container.appendChild(block);
+  LIGNES.forEach(l => {
+    if (l.reste && l.pct <= 0) return;
+    const ligne = document.createElement('div');
+    ligne.className = 'rep-ligne' + (l.reste ? ' reste' : '');
+    /* Le lecteur d'ecran recoit la phrase entiere : le trait de repere ne se
+       lit pas, et un pourcentage seul ne dit pas de quoi il s'ecarte. */
+    const dit = l.nom + ' : ' + l.pct + ' % de tes revenus, soit '
+      + formatEuro(euros(l.pct)) + ' par mois'
+      + (l.cible === null ? '' : ' — repère : ' + l.cible + ' %') + '.';
+    ligne.setAttribute('role', 'img');
+    ligne.setAttribute('aria-label', dit);
+    ligne.title = dit + ' ' + l.quoi.charAt(0).toUpperCase() + l.quoi.slice(1) + '.';
+    ligne.innerHTML =
+        '<div class="rep-nom">' + l.nom + '</div>'
+      + '<div class="rep-piste">'
+      +   '<div class="rep-barre" style="width:' + Math.min(100, l.pct) + '%"></div>'
+      +   (l.cible === null ? ''
+          : '<div class="rep-marque" style="left:' + l.cible + '%"></div>')
+      + '</div>'
+      + '<div class="rep-val">' + l.pct + ' %</div>';
+    c.appendChild(ligne);
   });
 }
 
@@ -3442,20 +3436,29 @@ function renderDettes() {
         <button class="dette-row-delete" onclick="removeDette(${idx})" aria-label="Supprimer">×</button>
       </div>
       <div class="dette-fields">
-        <div class="dette-input-wrap">
-          <input class="dette-input" type="number" placeholder="Mensualité" value="${d.montant_mensuel || ''}" min="0"
-            oninput="updateDetteMontant(${idx},this.value)">
-          <span class="dette-input-suffix">€/mois</span>
+        <div class="dette-champ">
+          <label class="dette-champ-lbl" for="dette-${idx}-montant">Mensualité</label>
+          <div class="dette-input-wrap">
+            <input id="dette-${idx}-montant" class="dette-input" type="number" placeholder="0" value="${d.montant_mensuel || ''}" min="0"
+              oninput="updateDetteMontant(${idx},this.value)">
+            <span class="dette-input-suffix">€/mois</span>
+          </div>
         </div>
-        <div class="dette-input-wrap">
-          <input class="dette-input" type="number" placeholder="TAEG" value="${d.taeg || ''}" step="0.1" min="0"
-            oninput="updateDetteTaeg(${idx},this.value)">
-          <span class="dette-input-suffix">%</span>
+        <div class="dette-champ">
+          <label class="dette-champ-lbl" for="dette-${idx}-taeg">Taux (TAEG)</label>
+          <div class="dette-input-wrap">
+            <input id="dette-${idx}-taeg" class="dette-input" type="number" placeholder="—" value="${d.taeg || ''}" step="0.1" min="0"
+              oninput="updateDetteTaeg(${idx},this.value)">
+            <span class="dette-input-suffix">%</span>
+          </div>
         </div>
-        <div class="dette-input-wrap">
-          <input class="dette-input" type="number" placeholder="Durée" value="${d.duree_mois || ''}" min="0"
-            oninput="updateDetteDuree(${idx},this.value)">
-          <span class="dette-input-suffix">mois</span>
+        <div class="dette-champ">
+          <label class="dette-champ-lbl" for="dette-${idx}-duree">Durée restante</label>
+          <div class="dette-input-wrap">
+            <input id="dette-${idx}-duree" class="dette-input" type="number" placeholder="—" value="${d.duree_mois || ''}" min="0"
+              oninput="updateDetteDuree(${idx},this.value)">
+            <span class="dette-input-suffix">mois</span>
+          </div>
         </div>
       </div>
       <div class="dette-classification">
